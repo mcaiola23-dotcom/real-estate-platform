@@ -1,0 +1,495 @@
+Starting highlights revision... Dry Run: true
+
+Found 9 towns.
+
+[Town] Norwalk: Updating 6 highlights
+  1. Vibrant South Norwalk (SoNo) district with dining, arts, and waterfront entertainment
+  2. Coastal access with beautiful beaches and harbor activities
+  3. Metro-North commuter rail access on the New Haven Line for NYC commuting
+  4. Family-friendly attractions including The Maritime Aquarium and Stepping Stones Museum
+  5. Neighborhood diversity - waterfront villages, coastal residential, and inland communities
+  6. A strong fit for buyers who want options - walkable routine, shoreline lifestyle, or a calmer home base
+
+[Town] Greenwich: Updating 6 highlights
+  1. Greenwich Avenue as the town's signature dining and shopping corridor
+  2. Neighborhood variety - downtown walkability, coastal villages, and backcountry privacy within one town
+  3. Beautiful parks and nature preserves including Bruce Park and Greenwich Point (Tod's Point)
+  4. Metro-North commuter rail access on the New Haven Line for NYC commuting
+  5. A 'choose your lifestyle' town - train convenience, shoreline access, or retreat-like privacy
+  6. World-class cultural institutions, galleries, and community events throughout the year
+
+[Town] Fairfield: Updating 6 highlights
+  1. Multiple Metro-North stations on the New Haven Line for flexible commuting options
+  2. Beautiful shoreline beaches and waterfront parks for year-round outdoor enjoyment
+  3. A town with distinct neighborhood identities - from shoreline sections to inland, spacious areas
+  4. Strong blend of beach lifestyle and practical, year-round suburban living
+  5. Vibrant town center with diverse dining, shopping, and community events
+  6. Commuter flexibility - choose neighborhoods based on the lifestyle and station that fits best
+
+[Town] Darien: Updating 6 highlights
+  1. Walkable downtown village with shops, restaurants, and daily essentials close to home
+  2. Metro-North commuter rail access on the New Haven Line for convenient NYC commuting
+  3. Coastal lifestyle with easy access to beaches, including Weed Beach and Pear Tree Point Beach
+  4. Predominantly single-family neighborhoods with a strong sense of community
+  5. A refined, quiet day-to-day rhythm that stays practical for commuters
+  6. Seasonal shoreline routines - beach days, waterfront parks, and outdoor recreation
+
+[Town] Wilton: Updating 6 highlights
+  1. Weir Farm National Historical Park - a rare National Park dedicated to American art
+  2. A spacious, wooded setting with a calm and private day-to-day lifestyle
+  3. Metro-North commuter rail access on the Danbury Branch for NYC commuting
+  4. Primarily single-family living with an emphasis on privacy and outdoor space
+  5. Wilton Center as a friendly town hub for errands, dining, and community life
+  6. Strong fit for buyers who want breathing room while keeping Fairfield County access practical
+
+[Town] New Canaan: Updating 6 highlights
+  1. Charming village center with boutique shopping, fine dining, and daily conveniences
+  2. Waveny Park - 130 acres of open space with woodland trails and seasonal activities
+  3. Metro-North commuter rail access on the New Canaan Branch for NYC commuting
+  4. Architectural variety - classic New England homes alongside modern design
+  5. Strong fit for buyers who want a quieter routine without giving up commuter access
+  6. A neighborhood-driven town where your choice of area meaningfully shapes your lifestyle
+
+[Town] Ridgefield: Updating 6 highlights
+  1. Historic Main Street with dining, shopping, and a true town center atmosphere
+  2. Rich cultural scene including The Aldrich Contemporary Art Museum and Ridgefield Playhouse
+  3. Metro-North commuter access via the Danbury Branch line
+  4. Town variety - village-center living versus more private, space-forward sections
+  5. Strong year-round community energy with local events and traditions
+  6. A great fit for buyers who want culture and community without needing a shoreline address
+
+[Town] Westport: Updating 6 highlights
+  1. Walkable village core with Main Street dining, shopping, and a strong community atmosphere
+  2. Beautiful shoreline including Compo Beach for year-round outdoor lifestyle
+  3. Metro-North commuter rail access on the New Haven Line for NYC commuting
+  4. Distinct neighborhood options - commuter-friendly, downtown-adjacent, and coastal sections
+  5. Shoreline lifestyle without sacrificing day-to-day practicality for commuters
+  6. A town where weekends feel local - beach time, walks, and community events close to home
+
+[Town] Stamford: Updating 6 highlights
+  1. A true mix of lifestyles - downtown energy plus quieter single-family neighborhoods
+  2. Metro-North commuter rail with express service to NYC on the New Haven Line
+  3. Beautiful waterfront parks and beaches along Long Island Sound
+  4. Broad housing options - condos, townhomes, and single-family homes depending on the neighborhood
+  5. Thriving dining, arts, and entertainment scene in the downtown and Harbor Point areas
+  6. Strong fit for NYC commuters who want flexibility and housing variety
+
+
+Found 69 neighborhoods.
+
+[Neighborhood] Silvermine (new-canaan): Updating 5 highlights
+  1. Silvermine Arts Center as a major cultural anchor with a creative community spirit
+  2. A wooded, tucked-away neighborhood with distinctive local character
+  3. Primarily single-family housing with privacy and established landscaping
+  4. A creative, arts-oriented identity within New Canaan living
+  5. Easy access to New Canaan Town Center for shopping, dining, and Metro-North
+[Neighborhood] Cannondale (wilton): Updating 5 highlights
+  1. Cannondale Metro-North station (Danbury Branch) for commuter rail access
+  2. A quiet, village-style pocket with a calm residential feel
+  3. Predominantly single-family housing with an understated, local cadence
+  4. Strong fit for commuters who want rail access in a peaceful setting
+  5. Beautiful wooded surroundings and a relaxed atmosphere
+[Neighborhood] Georgetown (ridgefield): Updating 5 highlights
+  1. A quieter, more rural-feeling part of Ridgefield with a spacious lifestyle
+  2. Predominantly single-family homes with more land and privacy
+  3. A strong fit for buyers prioritizing a country-Connecticut atmosphere
+  4. Easy access to Ridgefield Center for dining, shopping, and community events
+  5. Rich cultural scene nearby including The Aldrich and Ridgefield Playhouse
+[Neighborhood] Waterside (stamford): Updating 5 highlights
+  1. Coastal parks with beach, marina, and recreation facilities
+  2. Coastal Stamford setting with a relaxed, outdoors-forward lifestyle near Long Island Sound
+  3. Mix of home styles and price points for different buyer needs
+  4. Easy drive to downtown Stamford dining, arts, and Metro-North service
+  5. Birdwatching and nature areas in nearby parks
+[Neighborhood] Long Neck Point (darien): Updating 5 highlights
+  1. A private peninsula setting with a calm, coastal atmosphere and limited through-traffic
+  2. Single-family homes with an emphasis on privacy and outdoor living
+  3. Close to Darien's shoreline amenities, including Weed Beach and Pear Tree Point Beach
+  4. Pear Tree Point Beach nearby with swimming, picnic areas, and kayak access
+  5. Easy access to downtown Darien and Metro-North service
+[Neighborhood] Ponus Ridge (new-canaan): Updating 5 highlights
+  1. A quieter residential setting with a family-oriented cadence
+  2. Predominantly single-family homes with outdoor space and established streets
+  3. Waveny Park nearby - 130 acres of open space with seasonal activities
+  4. New Canaan station on Metro-North for commuting
+  5. Easy access to New Canaan Town Center for dining, shopping, and daily services
+[Neighborhood] Talmadge Hill (new-canaan): Updating 5 highlights
+  1. Talmadge Hill Metro-North station (New Canaan Branch) for commuter rail access
+  2. A quieter, wooded New Canaan setting with a more private residential feel
+  3. Predominantly single-family housing with an emphasis on trees and outdoor space
+  4. Easy access to New Canaan Town Center for dining, shopping, and daily services
+  5. A peaceful retreat that's still well-connected to the village
+[Neighborhood] Riverside (greenwich): Updating 5 highlights
+  1. Riverside Metro-North station (New Haven Line) for commuter rail access
+  2. Greenwich Point Park (Tod's Point) nearby for beach and recreation
+  3. A quieter, residential Greenwich cadence with a strong 'neighborhood' feel
+  4. Easy access to downtown Greenwich and Old Greenwich village amenities
+  5. Family-oriented community with tree-lined streets and a welcoming atmosphere
+[Neighborhood] Wolfpit (norwalk): Updating 5 highlights
+  1. An established residential neighborhood with a steady, community-oriented feel
+  2. Primarily single-family housing with practical access around the city
+  3. Cranbury Park nearby - 227 acres with wooded trails and recreation
+  4. Norwalk River Valley Trail for hiking and outdoor activities
+  5. A strong fit for buyers who prioritize a classic neighborhood feel
+[Neighborhood] North Stamford (stamford): Updating 5 highlights
+  1. Bartlett Arboretum & Gardens with free admission, miles of trails, and natural beauty
+  2. Stamford Museum & Nature Center with trails, farm, and planetarium
+  3. Lower-density, wooded setting with many homes on larger parcels
+  4. A retreat feel while remaining within Stamford for shopping and commuting
+  5. Perfect for nature lovers who want outdoor recreation at their doorstep
+[Neighborhood] Silvermine (wilton): Updating 5 highlights
+  1. Silvermine Arts Center as a major cultural anchor with creative community spirit
+  2. A wooded, tucked-away feel with a strong local identity and character
+  3. Primarily single-family housing with privacy and outdoor space
+  4. A quieter alternative to town-center living while staying connected
+  5. Easy access to Wilton Center and Metro-North options on the Danbury Branch
+[Neighborhood] Beach (fairfield): Updating 5 highlights
+  1. Beautiful shoreline setting with sandy beaches and waterfront parks
+  2. A true coastal neighborhood feel - easy to walk, bike, and enjoy the outdoors
+  3. Coastal home styles from classic cottages to updated and newer builds
+  4. Close to Fairfield Center dining, shopping, and Metro-North commuter service
+  5. Strong community atmosphere with a beach-oriented lifestyle
+[Neighborhood] Tunxis Hill (fairfield): Updating 5 highlights
+  1. Lake Mohegan nearby for fresh-water swimming and nature trails
+  2. Predominantly single-family housing with a straightforward residential feel
+  3. Convenient access to Fairfield Center and beaches
+  4. Outdoor recreation built into the neighborhood - trails and open space nearby
+  5. A strong option for buyers who want Fairfield with easy nature access
+[Neighborhood] Greens Farms (westport): Updating 5 highlights
+  1. Green's Farms Metro-North station (New Haven Line) for commuter rail access
+  2. A quieter, established Westport neighborhood with coastal proximity
+  3. Easy access to downtown Westport and the Saugatuck area for dining and shopping
+  4. Strong fit for buyers who want a residential setting with rail convenience
+  5. Beautiful landscapes and a peaceful suburban atmosphere
+[Neighborhood] Tokeneke (darien): Updating 5 highlights
+  1. A private, quiet coastal neighborhood with larger single-family properties
+  2. Strong shoreline lifestyle with beaches and waterfront recreation nearby
+  3. Community-oriented atmosphere with local clubs and neighborhood traditions
+  4. Close to Darien's parks and shoreline amenities
+  5. Practical access to downtown Darien and Metro-North service
+[Neighborhood] Brooklawn (fairfield): Updating 5 highlights
+  1. Central Fairfield location with easy access to shops, dining, and daily services
+  2. Predominantly single-family housing with an established residential feel
+  3. Convenient access to Fairfield Center and Metro-North service
+  4. Easy access to Fairfield's beaches and parks for outdoor recreation
+  5. Family-friendly neighborhood close to schools and community resources
+[Neighborhood] Downtown Stamford (stamford): Updating 5 highlights
+  1. Mill River Park as a beautiful urban green space with year-round activities
+  2. The Palace Theatre for live performances and cultural entertainment
+  3. Stamford Transportation Center for Metro-North and broad transit connectivity
+  4. A true walkable downtown lifestyle with restaurants, shops, and daily essentials
+  5. Vibrant arts, dining, and nightlife scene
+[Neighborhood] Downtown Westport (westport): Updating 5 highlights
+  1. Westport's walkable village core - Main Street dining, shopping, and daily amenities
+  2. Westport Metro-North station (New Haven Line) for commuter rail access
+  3. A 'do more on foot' routine with dining, errands, and community life close by
+  4. Easy access to Westport's beaches and parks when you want the shoreline
+  5. Charming town center with boutique shops, galleries, and restaurants
+[Neighborhood] West Lane (ridgefield): Updating 5 highlights
+  1. A scenic, quieter Ridgefield setting that leans private and estate-oriented
+  2. Predominantly single-family housing with an emphasis on space and landscaping
+  3. Easy access to Ridgefield Center's dining and cultural scene
+  4. Rich cultural amenities in town including The Aldrich and Ridgefield Playhouse
+  5. Beautiful natural surroundings with a tranquil residential atmosphere
+[Neighborhood] Long Lots (westport): Updating 5 highlights
+  1. A classic, established Westport residential neighborhood
+  2. Predominantly single-family housing with a steady, neighborhood-oriented feel
+  3. Convenient access to downtown Westport amenities and Main Street
+  4. Westport Metro-North (New Haven Line) within reach for commuting
+  5. Easy access to beaches and parks, including Compo Beach
+[Neighborhood] Belle Haven (greenwich): Updating 5 highlights
+  1. A peninsula-style coastal enclave known for privacy and quiet residential atmosphere
+  2. Higher-end single-family housing with strong outdoor-living appeal
+  3. Close to downtown Greenwich for dining, retail, and Metro-North access
+  4. Greenwich Point Park (Tod's Point) nearby for beach and recreation
+  5. An exclusive setting with a strong sense of community
+[Neighborhood] Back Country (greenwich): Updating 5 highlights
+  1. A lower-density, estate-oriented setting where privacy and land are the main draw
+  2. Predominantly single-family homes on larger parcels with a quiet day-to-day rhythm
+  3. Greenwich Audubon Center as a local nature and outdoor resource
+  4. A true retreat feel while remaining part of Greenwich for services and commuting
+  5. Strong fit for buyers prioritizing space, trees, and privacy over walkable retail
+[Neighborhood] North Wilton (wilton): Updating 5 highlights
+  1. A spacious, wooded setting with a quiet day-to-day rhythm
+  2. Predominantly single-family homes with an emphasis on privacy and outdoor space
+  3. Weir Farm National Historical Park nearby for trails and cultural enrichment
+  4. Strong fit for buyers who want a retreat-like home base
+  5. Beautiful natural surroundings with room to breathe
+[Neighborhood] Branchville (ridgefield): Updating 5 highlights
+  1. Branchville Metro-North station (Danbury Branch) for commuter rail access
+  2. A quieter, village-style setting with a wooded, relaxed atmosphere
+  3. Primarily single-family housing with a 'country Connecticut' feel
+  4. Easy access to Ridgefield Center for Main Street dining, shopping, and culture
+  5. A peaceful setting for buyers who want nature and quiet close to home
+[Neighborhood] Westover (stamford): Updating 5 highlights
+  1. Mianus River Park trail access for wooded hiking and walking
+  2. Fort Stamford Park and Goodbody Garden - historic site and formal garden
+  3. Public golf course nearby for outdoor recreation
+  4. Quick access to the Merritt Parkway and an easy drive to downtown Stamford
+  5. A residential neighborhood with a blend of nature and convenience
+[Neighborhood] Bull's Head (stamford): Updating 5 highlights
+  1. Shopping and dining hub close to home for daily convenience
+  2. Convenient access to major highways for commuting around Fairfield County
+  3. A practical mix of housing types - single-family homes plus condo options
+  4. Easy drive to downtown Stamford dining, events, and Metro-North service
+  5. Family-friendly neighborhood with good access to schools and parks
+[Neighborhood] Oenoke Ridge (new-canaan): Updating 5 highlights
+  1. A more estate-oriented New Canaan setting where privacy and space are central
+  2. Predominantly single-family homes on larger parcels with mature landscaping
+  3. Waveny Park nearby - 130 acres of open space with trails and recreation
+  4. Easy access to New Canaan Town Center dining, shopping, and services
+  5. Metro-North New Canaan Branch access for convenient commuting
+[Neighborhood] Turn of River (stamford): Updating 5 highlights
+  1. Parks and recreation facilities with outdoor pools, courts, and hiking trails
+  2. North Stamford residential feel with quieter streets and more yard space
+  3. Convenient access for daily errands, dining, and services
+  4. Predominantly single-family housing with a classic neighborhood cadence
+  5. Easy drive to downtown Stamford for restaurants, events, and Metro-North
+[Neighborhood] Noroton Heights (darien): Updating 5 highlights
+  1. Noroton Heights Metro-North station (New Haven Line) for commuter rail access
+  2. A convenience-first neighborhood with residential streets plus nearby shops and services
+  3. Family-friendly setting with good schools and community resources
+  4. Easy access to Darien's downtown and shoreline amenities
+  5. A practical neighborhood for commuters and families alike
+[Neighborhood] North Ridgefield (ridgefield): Updating 5 highlights
+  1. A more rural, spacious setting with a quiet day-to-day rhythm
+  2. Predominantly single-family homes with larger parcels and more privacy
+  3. Strong fit for buyers prioritizing land, trees, and a country atmosphere
+  4. Easy access to Ridgefield Center for dining, shopping, and community events
+  5. Rich cultural scene in town including The Aldrich and Ridgefield Playhouse
+[Neighborhood] Silvermine (norwalk): Updating 5 highlights
+  1. Silvermine Arts Center as a major cultural anchor in the area
+  2. A wooded, tucked-away feel with a strong local identity
+  3. Primarily single-family housing with privacy and outdoor space
+  4. A quieter alternative to coastal or downtown Norwalk living
+  5. Easy access toward SoNo, East Norwalk, and Fairfield County amenities
+[Neighborhood] Shippan (stamford): Updating 5 highlights
+  1. Cummings Park - a waterfront park with beach, boardwalk, and recreation facilities
+  2. A peninsula setting with Long Island Sound views and coastal living appeal
+  3. Active boating community with marina access
+  4. Easy drive to downtown Stamford dining, arts, and Metro-North service
+  5. Strong community identity with neighborhood events and traditions
+[Neighborhood] Ridgefield Center (ridgefield): Updating 5 highlights
+  1. Historic Main Street with a true town center feel - shops, dining, and community energy
+  2. The Aldrich Contemporary Art Museum as a signature cultural destination
+  3. Ridgefield Playhouse as a major live-events and entertainment venue
+  4. A walkable lifestyle by Fairfield County standards, with culture built in
+  5. Classic Ridgefield character with strong local identity and year-round activity
+[Neighborhood] Clapboard Hill (new-canaan): Updating 5 highlights
+  1. A quiet residential setting with more privacy than the town center
+  2. Predominantly single-family housing with space and established streetscapes
+  3. Waveny Park nearby - 130 acres of open space with seasonal activities
+  4. New Canaan Metro-North station within reach for commuting
+  5. Easy access to New Canaan's village amenities for dining, shopping, and errands
+[Neighborhood] Mianus (greenwich): Updating 5 highlights
+  1. Mianus River Park with 100+ acres of trails and natural beauty
+  2. A quieter, wooded Greenwich feel with a tucked-away residential atmosphere
+  3. Primarily single-family housing with an emphasis on privacy and outdoor space
+  4. Easy access toward Cos Cob, Riverside, and downtown Greenwich amenities
+  5. A strong fit for buyers who want nature access built into daily life
+[Neighborhood] Fairfield Woods (fairfield): Updating 5 highlights
+  1. A traditional residential feel with quiet streets and established single-family homes
+  2. Easy access to Fairfield Center for restaurants, shops, and Metro-North
+  3. Quick drive to shoreline beaches and waterfront parks
+  4. Lake Mohegan nearby for fresh-water swimming and nature trails
+  5. Balanced positioning - convenient without feeling commercial
+[Neighborhood] Mid-Ridges (stamford): Updating 5 highlights
+  1. Shopping centers nearby for convenient daily errands
+  2. Central Stamford positioning with easy access to downtown dining, arts, and Metro-North
+  3. Varied housing options including single-family homes and townhome/condo inventory
+  4. Convenient access to major corridors for commuting
+  5. A practical, well-connected neighborhood for daily living
+[Neighborhood] Compo Beach (westport): Updating 5 highlights
+  1. Compo Beach Park - 29-acre town park with extensive sand beach and boardwalk
+  2. A true coastal Westport lifestyle with an outdoors-forward routine
+  3. Playground, concession stand, and volleyball courts at the beach
+  4. Strong fit for buyers prioritizing shoreline access and beach-day convenience
+  5. Beautiful waterfront location ideal for families and active lifestyles
+[Neighborhood] Byram (greenwich): Updating 5 highlights
+  1. Byram Park with beach, pool, playground, marina and walking trails
+  2. A close-knit, residential neighborhood with a practical day-to-day feel
+  3. Waterfront-oriented lifestyle with recreation amenities close to home
+  4. Quick access to downtown Greenwich and surrounding communities
+  5. A welcoming Greenwich neighborhood with strong community bonds
+[Neighborhood] Rowayton (norwalk): Updating 5 highlights
+  1. A true coastal village feel with a quiet, community-centered atmosphere
+  2. Rowayton Metro-North station (New Haven Line) for commuter rail access
+  3. Beautiful shoreline access for boating, kayaking, and beach activities
+  4. Charming village character with local shops and community events
+  5. Strong fit for buyers prioritizing a coastal lifestyle and tight-knit community
+[Neighborhood] Cranbury (norwalk): Updating 5 highlights
+  1. Cranbury Park - 227 acres with wooded trails, sculpture garden, and recreation
+  2. A quieter, residential neighborhood with more breathing room
+  3. Primarily single-family housing with a calm, neighborhood-oriented cadence
+  4. Easy access to South Norwalk dining, the shoreline, and commuter corridors
+  5. Dog-friendly outdoor spaces and nature areas
+[Neighborhood] Cos Cob (greenwich): Updating 5 highlights
+  1. Cos Cob Metro-North station (New Haven Line) for commuter rail access
+  2. Mianus River Park with 100+ acres of trails and natural beauty
+  3. A village-centered Greenwich lifestyle with a relaxed, residential cadence
+  4. Easy access to downtown Greenwich, Old Greenwich, and the rest of Fairfield County
+  5. Family-friendly community with local shops and neighborhood character
+[Neighborhood] Stanwich (greenwich): Updating 5 highlights
+  1. A quieter, estate-oriented Greenwich setting with strong emphasis on privacy
+  2. Predominantly single-family homes on larger parcels with mature landscaping
+  3. Easy access toward major corridors for commuting around Fairfield County
+  4. A 'country Greenwich' feel while still being within reach of downtown amenities
+  5. Beautiful natural surroundings and a tranquil residential atmosphere
+[Neighborhood] Downtown Greenwich (greenwich): Updating 5 highlights
+  1. Greenwich Avenue shopping and dining as the town's signature retail corridor
+  2. Greenwich Metro-North station (New Haven Line) for commuter rail access
+  3. Bruce Park - Greenwich's oldest public park with walking paths and Sound views
+  4. A true walkable lifestyle with downtown amenities and the train close by
+  5. World-class dining, boutique shopping, and cultural events
+[Neighborhood] Saugatuck (westport): Updating 5 highlights
+  1. Westport Metro-North station (New Haven Line) as a major commuter anchor
+  2. A transit-forward Westport pocket with convenient access to downtown
+  3. A range of housing options including lower-maintenance living near the train
+  4. Easy access to Main Street dining, shopping, and shoreline amenities
+  5. Vibrant neighborhood bridging downtown convenience and waterfront access
+[Neighborhood] Newfield (stamford): Updating 5 highlights
+  1. A quieter, spacious Stamford setting with a more suburban feel
+  2. Predominantly single-family housing with yards and a tucked-away atmosphere
+  3. Stamford Museum & Nature Center nearby with trails and family activities
+  4. Easy access to North Stamford parks and trails for outdoor time
+  5. Practical drive to downtown Stamford dining, events, and rail connections
+[Neighborhood] Cove (stamford): Updating 5 highlights
+  1. Cove Island Park with beaches, walking paths, and waterfront views on Long Island Sound
+  2. A coastal neighborhood with easy access to downtown Stamford dining and arts
+  3. Waterfront recreation including fishing, walking trails, and seasonal beach activities
+  4. Convenient commuting access to the Stamford Transportation Center and Metro-North
+  5. A relaxed, outdoors-forward lifestyle within the city
+[Neighborhood] University (fairfield): Updating 5 highlights
+  1. Vibrant neighborhood feel influenced by proximity to Fairfield University
+  2. Quick access to Fairfield Center dining, shops, and Metro-North service
+  3. Easy drive to shoreline beaches and waterfront parks
+  4. A mix of housing options including single-family streets and more compact inventory
+  5. Active community with university events and local amenities
+[Neighborhood] Old Hill (westport): Updating 5 highlights
+  1. A quiet Westport enclave with an established, residential feel
+  2. Predominantly single-family homes with mature landscaping and character
+  3. Easy access to downtown Westport and Main Street dining/shopping
+  4. Westport Metro-North (New Haven Line) within reach for commuting
+  5. Compo Beach Park nearby for shoreline recreation
+[Neighborhood] Old Greenwich (greenwich): Updating 5 highlights
+  1. Greenwich Point Park (Tod's Point) - a premier 147-acre beach and recreation destination
+  2. Old Greenwich Metro-North station (New Haven Line) for commuter rail access
+  3. A true coastal village feel with a strong community cadence
+  4. Charming downtown area with local shops, cafes, and restaurants
+  5. Family-friendly neighborhood with excellent schools and waterfront access
+[Neighborhood] West Norwalk (norwalk): Updating 5 highlights
+  1. A quieter, residential neighborhood away from the SoNo energy
+  2. Primarily single-family housing with a calmer day-to-day cadence
+  3. Norwalk River Valley Trail nearby for hiking and outdoor recreation
+  4. Strong fit for buyers who prioritize trails, outdoor time, and a residential setting
+  5. Easy access to the rest of Norwalk for dining, the train, and shoreline amenities
+[Neighborhood] Town Center (new-canaan): Updating 5 highlights
+  1. New Canaan Metro-North station (New Canaan Branch) for commuter rail access
+  2. Waveny Park - 130 acres of open space with trails and seasonal activities
+  3. A true walkable village routine with shops, dining, and daily errands close to home
+  4. Residential streets just outside the center for a quieter feel
+  5. Charming New England town center atmosphere with boutique shops and fine dining
+[Neighborhood] Georgetown (wilton): Updating 5 highlights
+  1. A more rural-feeling Wilton setting with a quiet, spacious day-to-day rhythm
+  2. Predominantly single-family homes with larger-lot potential and privacy
+  3. Weir Farm National Historical Park nearby for outdoor recreation and art
+  4. Strong fit for buyers who want a country-Connecticut feel within Wilton
+  5. Dog-friendly trails and nature areas close to home
+[Neighborhood] Coleytown (westport): Updating 5 highlights
+  1. A quieter, spacious Westport neighborhood with a strong residential feel
+  2. Predominantly single-family homes with larger lots and more privacy
+  3. Easy access to downtown Westport and Main Street dining and shopping
+  4. Westport Metro-North (New Haven Line) within reach for commuting
+  5. Quick access to Westport's beaches and parks for weekend lifestyle
+[Neighborhood] Davenport Point (stamford): Updating 5 highlights
+  1. A quiet peninsula-style waterfront setting with a removed, peaceful atmosphere
+  2. Primarily single-family coastal properties with Long Island Sound views
+  3. Nearby parks with beaches, marina, and recreation facilities
+  4. Close to Cove Island Park for walking, beaches, and outdoor time
+  5. Easy drive to downtown Stamford dining, arts, and Metro-North service
+[Neighborhood] East Norwalk (norwalk): Updating 5 highlights
+  1. Beautiful beaches including Calf Pasture Beach with extensive recreation amenities
+  2. East Norwalk Metro-North station (New Haven Line) for commuter rail access
+  3. A coastal, residential neighborhood feel with waterfront lifestyle
+  4. Close to South Norwalk (SoNo) dining, arts, and entertainment
+  5. Family-friendly with playgrounds, splash pads, and water activities
+[Neighborhood] Wilton Center (wilton): Updating 5 highlights
+  1. Wilton's town hub with a relaxed village cadence - shops, dining, and community life
+  2. Wilton Metro-North station (Danbury Branch) for commuter rail access
+  3. Norwalk River Valley Trail nearby for hiking and outdoor activities
+  4. A strong fit for buyers who want 'close to town' convenience without a big-city feel
+  5. Charming small-town atmosphere with local events and community spirit
+[Neighborhood] Noroton (darien): Updating 5 highlights
+  1. A settled, residential pocket with classic coastal-town character
+  2. Predominantly single-family homes with traditional New England charm
+  3. Easy access to shoreline parks and beaches, including Weed Beach
+  4. Two nearby Metro-North station options (Darien and Noroton Heights) on the New Haven Line
+  5. Quick access to parks and shoreline amenities in a convenient location
+[Neighborhood] South Ridgefield (ridgefield): Updating 5 highlights
+  1. Convenient positioning with easy access to Ridgefield's southern corridors
+  2. Predominantly single-family housing with a calm, neighborhood-first cadence
+  3. Close to Ridgefield Center's cultural scene and dining options
+  4. Branchville Metro-North station nearby for commuter rail access
+  5. A great fit for buyers who want convenience without sacrificing Ridgefield character
+[Neighborhood] Stratfield (fairfield): Updating 5 highlights
+  1. Central Fairfield positioning with convenient access to major routes
+  2. Predominantly single-family housing with a practical neighborhood feel
+  3. Easy drive to Fairfield Center dining, shops, and Metro-North service
+  4. Close to parks and Long Island Sound beaches
+  5. A convenient, no-fuss neighborhood for daily living
+[Neighborhood] Springdale (stamford): Updating 5 highlights
+  1. Springdale Metro-North station for commuter rail access
+  2. Mix of single-family streets plus condo options near the neighborhood center
+  3. Quick drive to downtown Stamford restaurants, arts, and entertainment
+  4. Family-friendly community with a neighborhood village feel
+  5. Convenient positioning for commuters and families
+[Neighborhood] Southport (fairfield): Updating 5 highlights
+  1. Southport Metro-North station (New Haven Line) for commuter rail access
+  2. A true harbor-village feel with historic character and a refined coastal atmosphere
+  3. Pequot Library as a beloved cultural anchor and community institution
+  4. Quiet beach and waterfront setting with a relaxed vibe
+  5. Classic New England charm with boutique shops and local dining
+[Neighborhood] Glenbrook (stamford): Updating 5 highlights
+  1. Glenbrook Metro-North station for commuter rail access
+  2. A mix of single-family streets plus condo options for flexible housing needs
+  3. Easy drive to downtown Stamford restaurants, events, and entertainment
+  4. Family-friendly neighborhood with a residential feel
+  5. Convenient positioning between downtown energy and suburban quiet
+[Neighborhood] Greenfield Hill (fairfield): Updating 5 highlights
+  1. A quieter, 'country Fairfield' atmosphere with larger-lot single-family homes
+  2. Spacious streetscape with mature trees and a private residential cadence
+  3. Easy access to Fairfield Center and shoreline amenities
+  4. Strong community identity built around local traditions and events
+  5. Annual Dogwood Festival as a cherished community tradition
+[Neighborhood] Grasmere (fairfield): Updating 5 highlights
+  1. A quiet residential feel with easy access to both shoreline and inland recreation
+  2. Predominantly single-family housing in an established Fairfield streetscape
+  3. Nearby beaches and waterfront parks for outdoor lifestyle
+  4. Lake Mohegan nearby for fresh-water swimming and nature trails
+  5. Convenient access to Fairfield Center and Metro-North service
+[Neighborhood] Downtown Darien (darien): Updating 5 highlights
+  1. Walkable village lifestyle with shops, restaurants, and daily errands close to home
+  2. Darien Metro-North station (New Haven Line) for commuter rail access
+  3. Easy access to Darien's shoreline parks and beaches, including Weed Beach and Pear Tree Point Beach
+  4. A charming downtown setting with a blend of convenience and coastal-town character
+  5. Strong community atmosphere with local events and neighborhood traditions
+[Neighborhood] Fairfield Center (fairfield): Updating 5 highlights
+  1. Fairfield Metro-North station (New Haven Line) for commuter rail access
+  2. A walkable downtown routine - restaurants, shops, and daily errands close to home
+  3. Residential side streets just off the center for a quieter feel
+  4. Easy access to Fairfield's beaches and parks on weekends
+  5. Strong community atmosphere with year-round local events
+[Neighborhood] West Side (stamford): Updating 5 highlights
+  1. Between downtown Stamford and the Greenwich line for strong regional positioning
+  2. Varied housing mix including multi-family, townhouse, and single-family options
+  3. Quick access to I-95 and major corridors for commuting
+  4. Easy drive to the Stamford Transportation Center for Metro-North rail access
+  5. Close to downtown restaurants, arts, and events without needing a downtown address
+[Neighborhood] South Norwalk (norwalk): Updating 5 highlights
+  1. South Norwalk (SoNo) walkability with dining, nightlife, and a waterfront feel
+  2. South Norwalk Metro-North station (New Haven Line) for commuter rail access
+  3. The Maritime Aquarium as a family-friendly cultural destination
+  4. A vibrant urban lifestyle with restaurants, galleries, and entertainment
+  5. Strong fit for buyers who want energy, convenience, and a walkable routine
+
+Done.

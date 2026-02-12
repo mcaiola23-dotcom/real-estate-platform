@@ -1,0 +1,289 @@
+{
+    "metadata": {
+        "source": "U.S. Census Bureau American Community Survey (ACS)",
+        "vintage": "2022 5-Year Estimates",
+        "sourceUrl": "https://data.census.gov",
+        "asOf": "2024-12",
+        "methodology": "ACS 5-year estimates provide data for all areas with population of 20,000+. Values are estimates with margins of error.",
+        "lastRefreshed": "2025-01-01"
+    },
+    "towns": {
+        "darien": {
+            "name": "Darien",
+            "population": 21499,
+            "medianAge": 40.8,
+            "medianHouseholdIncome": 250001,
+            "incomeNote": "$250,000+",
+            "perCapitaIncome": 150795,
+            "ownerOccupiedPercent": 87.2,
+            "medianYearBuilt": 1957,
+            "totalHousingUnits": 7358,
+            "medianHomeValue": 1612100,
+            "homeValueNote": "Top-coded",
+            "landAreaSqMi": 12.9,
+            "populationDensity": 1667,
+            "densityLabel": "HIGH",
+            "malePercent": 48.4,
+            "femalePercent": 51.6,
+            "ageGroups": {
+                "under18": 28.5,
+                "age18to24": 4.2,
+                "age25to44": 20.8,
+                "age45to64": 28.9,
+                "age65plus": 17.6
+            },
+            "education": {
+                "lessHighSchool": 1.8,
+                "highSchool": 4.9,
+                "someCollege": 9.7,
+                "bachelors": 33.1,
+                "graduate": 50.5
+            }
+        },
+        "fairfield": {
+            "name": "Fairfield",
+            "population": 61512,
+            "medianAge": 42.1,
+            "medianHouseholdIncome": 172813,
+            "perCapitaIncome": 78543,
+            "ownerOccupiedPercent": 82.5,
+            "medianYearBuilt": 1962,
+            "totalHousingUnits": 21789,
+            "medianHomeValue": 677700,
+            "landAreaSqMi": 30.0,
+            "populationDensity": 2050,
+            "densityLabel": "HIGH",
+            "malePercent": 48.2,
+            "femalePercent": 51.8,
+            "ageGroups": {
+                "under18": 25.1,
+                "age18to24": 7.8,
+                "age25to44": 20.2,
+                "age45to64": 27.5,
+                "age65plus": 19.4
+            },
+            "education": {
+                "lessHighSchool": 2.1,
+                "highSchool": 8.2,
+                "someCollege": 13.5,
+                "bachelors": 35.8,
+                "graduate": 40.4
+            }
+        },
+        "greenwich": {
+            "name": "Greenwich",
+            "population": 63518,
+            "medianAge": 44.2,
+            "medianHouseholdIncome": 195000,
+            "perCapitaIncome": 124832,
+            "ownerOccupiedPercent": 72.1,
+            "medianYearBuilt": 1957,
+            "totalHousingUnits": 25193,
+            "medianHomeValue": 1392000,
+            "homeValueNote": "Near top-code",
+            "landAreaSqMi": 47.8,
+            "populationDensity": 1329,
+            "densityLabel": "MODERATE",
+            "malePercent": 48.0,
+            "femalePercent": 52.0,
+            "ageGroups": {
+                "under18": 23.8,
+                "age18to24": 5.1,
+                "age25to44": 21.6,
+                "age45to64": 27.2,
+                "age65plus": 22.3
+            },
+            "education": {
+                "lessHighSchool": 3.2,
+                "highSchool": 6.4,
+                "someCollege": 10.8,
+                "bachelors": 32.4,
+                "graduate": 47.2
+            }
+        },
+        "new-canaan": {
+            "name": "New Canaan",
+            "population": 20622,
+            "medianAge": 43.7,
+            "medianHouseholdIncome": 250001,
+            "incomeNote": "$250,000+",
+            "perCapitaIncome": 141250,
+            "ownerOccupiedPercent": 88.4,
+            "medianYearBuilt": 1960,
+            "totalHousingUnits": 7619,
+            "medianHomeValue": 1427400,
+            "homeValueNote": "Near top-code",
+            "landAreaSqMi": 22.1,
+            "populationDensity": 933,
+            "densityLabel": "MODERATE",
+            "malePercent": 48.7,
+            "femalePercent": 51.3,
+            "ageGroups": {
+                "under18": 27.9,
+                "age18to24": 4.5,
+                "age25to44": 19.2,
+                "age45to64": 28.6,
+                "age65plus": 19.8
+            },
+            "education": {
+                "lessHighSchool": 1.4,
+                "highSchool": 4.8,
+                "someCollege": 8.9,
+                "bachelors": 34.2,
+                "graduate": 50.7
+            }
+        },
+        "norwalk": {
+            "name": "Norwalk",
+            "population": 91184,
+            "medianAge": 39.2,
+            "medianHouseholdIncome": 102891,
+            "perCapitaIncome": 52387,
+            "ownerOccupiedPercent": 58.3,
+            "medianYearBuilt": 1960,
+            "totalHousingUnits": 37044,
+            "medianHomeValue": 487600,
+            "landAreaSqMi": 22.8,
+            "populationDensity": 4000,
+            "densityLabel": "HIGH",
+            "malePercent": 48.9,
+            "femalePercent": 51.1,
+            "ageGroups": {
+                "under18": 20.8,
+                "age18to24": 8.1,
+                "age25to44": 28.9,
+                "age45to64": 26.1,
+                "age65plus": 16.1
+            },
+            "education": {
+                "lessHighSchool": 8.7,
+                "highSchool": 17.2,
+                "someCollege": 18.4,
+                "bachelors": 29.8,
+                "graduate": 25.9
+            }
+        },
+        "ridgefield": {
+            "name": "Ridgefield",
+            "population": 25033,
+            "medianAge": 43.5,
+            "medianHouseholdIncome": 195625,
+            "perCapitaIncome": 89450,
+            "ownerOccupiedPercent": 87.1,
+            "medianYearBuilt": 1970,
+            "totalHousingUnits": 9184,
+            "medianHomeValue": 701100,
+            "landAreaSqMi": 34.7,
+            "populationDensity": 722,
+            "densityLabel": "LOW",
+            "malePercent": 48.3,
+            "femalePercent": 51.7,
+            "ageGroups": {
+                "under18": 26.2,
+                "age18to24": 5.4,
+                "age25to44": 18.8,
+                "age45to64": 29.4,
+                "age65plus": 20.2
+            },
+            "education": {
+                "lessHighSchool": 1.9,
+                "highSchool": 7.1,
+                "someCollege": 12.3,
+                "bachelors": 35.9,
+                "graduate": 42.8
+            }
+        },
+        "stamford": {
+            "name": "Stamford",
+            "population": 135470,
+            "medianAge": 37.8,
+            "medianHouseholdIncome": 102436,
+            "perCapitaIncome": 58921,
+            "ownerOccupiedPercent": 47.9,
+            "medianYearBuilt": 1963,
+            "totalHousingUnits": 54875,
+            "medianHomeValue": 556200,
+            "landAreaSqMi": 37.6,
+            "populationDensity": 3603,
+            "densityLabel": "HIGH",
+            "malePercent": 48.5,
+            "femalePercent": 51.5,
+            "ageGroups": {
+                "under18": 19.2,
+                "age18to24": 8.3,
+                "age25to44": 31.2,
+                "age45to64": 24.8,
+                "age65plus": 16.5
+            },
+            "education": {
+                "lessHighSchool": 8.2,
+                "highSchool": 14.8,
+                "someCollege": 15.9,
+                "bachelors": 30.4,
+                "graduate": 30.7
+            }
+        },
+        "westport": {
+            "name": "Westport",
+            "population": 27141,
+            "medianAge": 45.3,
+            "medianHouseholdIncome": 250001,
+            "incomeNote": "$250,000+",
+            "perCapitaIncome": 132680,
+            "ownerOccupiedPercent": 87.7,
+            "medianYearBuilt": 1960,
+            "totalHousingUnits": 10332,
+            "medianHomeValue": 1377800,
+            "homeValueNote": "Near top-code",
+            "landAreaSqMi": 20.0,
+            "populationDensity": 1357,
+            "densityLabel": "MODERATE",
+            "malePercent": 48.1,
+            "femalePercent": 51.9,
+            "ageGroups": {
+                "under18": 25.4,
+                "age18to24": 5.8,
+                "age25to44": 18.5,
+                "age45to64": 28.1,
+                "age65plus": 22.2
+            },
+            "education": {
+                "lessHighSchool": 1.6,
+                "highSchool": 5.2,
+                "someCollege": 9.1,
+                "bachelors": 34.8,
+                "graduate": 49.3
+            }
+        },
+        "wilton": {
+            "name": "Wilton",
+            "population": 18503,
+            "medianAge": 43.1,
+            "medianHouseholdIncome": 231111,
+            "perCapitaIncome": 98750,
+            "ownerOccupiedPercent": 91.3,
+            "medianYearBuilt": 1972,
+            "totalHousingUnits": 6455,
+            "medianHomeValue": 810600,
+            "landAreaSqMi": 26.9,
+            "populationDensity": 688,
+            "densityLabel": "LOW",
+            "malePercent": 48.8,
+            "femalePercent": 51.2,
+            "ageGroups": {
+                "under18": 27.1,
+                "age18to24": 5.2,
+                "age25to44": 18.4,
+                "age45to64": 29.8,
+                "age65plus": 19.5
+            },
+            "education": {
+                "lessHighSchool": 1.5,
+                "highSchool": 5.8,
+                "someCollege": 10.2,
+                "bachelors": 36.1,
+                "graduate": 46.4
+            }
+        }
+    }
+}

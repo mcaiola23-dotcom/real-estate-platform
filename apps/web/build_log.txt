@@ -1,0 +1,28 @@
+
+> fairfield-agent-website@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 12.0s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+The default export of @sanity/image-url has been deprecated. Use the named export `createImageUrlBuilder` instead.
+  Generating static pages using 7 workers (0/22) ...
+  Generating static pages using 7 workers (5/22) 
+Γ¿» useSearchParams() should be wrapped in a suspense boundary at page "/home-search". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+    at Q (C:\Users\19143\Projects\fairfield-agent-website\.next\server\chunks\ssr\node_modules_next_f2865b38._.js:2:2111)
+    at o (C:\Users\19143\Projects\fairfield-agent-website\.next\server\chunks\ssr\node_modules_next_f2865b38._.js:4:5284)
+    at t (C:\Users\19143\Projects\fairfield-agent-website\.next\server\chunks\ssr\app_home-search_HomeSearchClient_tsx_3b0d860b._.js:1:7526)
+    at an (C:\Users\19143\Projects\fairfield-agent-website\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:84360)
+    at ai (C:\Users\19143\Projects\fairfield-agent-website\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:86179)
+    at ai (C:\Users\19143\Projects\fairfield-agent-website\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:104708)
+    at al (C:\Users\19143\Projects\fairfield-agent-website\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:107953)
+    at as (C:\Users\19143\Projects\fairfield-agent-website\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:105368)
+    at am (C:\Users\19143\Projects\fairfield-agent-website\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:112882)
+    at au (C:\Users\19143\Projects\fairfield-agent-website\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js:2:109985)
+Error occurred prerendering page "/home-search". Read more: https://nextjs.org/docs/messages/prerender-error
+Export encountered an error on /home-search/page: /home-search, exiting the build.
+Γ¿» Next.js build worker exited with code: 1 and signal: null

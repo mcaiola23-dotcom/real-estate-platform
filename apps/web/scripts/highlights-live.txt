@@ -1,0 +1,174 @@
+Starting highlights revision... Dry Run: false
+
+Found 9 towns.
+
+[Town] Norwalk: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] Greenwich: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] Fairfield: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] Darien: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] Wilton: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] New Canaan: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] Ridgefield: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] Westport: Updating 6 highlights
+  Γ£ô Updated
+
+[Town] Stamford: Updating 6 highlights
+  Γ£ô Updated
+
+
+Found 69 neighborhoods.
+
+[Neighborhood] Silvermine (new-canaan): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Cannondale (wilton): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Georgetown (ridgefield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Waterside (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Long Neck Point (darien): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Ponus Ridge (new-canaan): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Talmadge Hill (new-canaan): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Riverside (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Wolfpit (norwalk): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] North Stamford (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Silvermine (wilton): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Beach (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Tunxis Hill (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Greens Farms (westport): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Tokeneke (darien): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Brooklawn (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Downtown Stamford (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Downtown Westport (westport): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] West Lane (ridgefield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Long Lots (westport): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Belle Haven (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Back Country (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] North Wilton (wilton): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Branchville (ridgefield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Westover (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Bull's Head (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Oenoke Ridge (new-canaan): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Turn of River (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Noroton Heights (darien): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] North Ridgefield (ridgefield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Silvermine (norwalk): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Shippan (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Ridgefield Center (ridgefield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Clapboard Hill (new-canaan): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Mianus (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Fairfield Woods (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Mid-Ridges (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Compo Beach (westport): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Byram (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Rowayton (norwalk): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Cranbury (norwalk): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Cos Cob (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Stanwich (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Downtown Greenwich (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Saugatuck (westport): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Newfield (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Cove (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] University (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Old Hill (westport): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Old Greenwich (greenwich): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] West Norwalk (norwalk): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Town Center (new-canaan): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Georgetown (wilton): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Coleytown (westport): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Davenport Point (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] East Norwalk (norwalk): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Wilton Center (wilton): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Noroton (darien): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] South Ridgefield (ridgefield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Stratfield (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Springdale (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Southport (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Glenbrook (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Greenfield Hill (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Grasmere (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Downtown Darien (darien): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] Fairfield Center (fairfield): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] West Side (stamford): Updating 5 highlights
+  Γ£ô Updated
+[Neighborhood] South Norwalk (norwalk): Updating 5 highlights
+  Γ£ô Updated
+
+Done.

@@ -1,0 +1,21 @@
+{
+  "name": "real-estate-platform",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev:web",
+    "dev:web": "npm run dev --workspace @real-estate/web",
+    "dev:studio": "npm run dev --workspace @real-estate/studio",
+    "build": "npm run build:web && npm run build:studio",
+    "build:web": "npm run build --workspace @real-estate/web",
+    "build:studio": "npm run build --workspace @real-estate/studio",
+    "lint": "npm run lint:web && npm run lint:studio",
+    "lint:web": "npm run lint --workspace @real-estate/web",
+    "lint:studio": "npm run lint --workspace @real-estate/studio"
+  }
+}

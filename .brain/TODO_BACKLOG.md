@@ -1,0 +1,33 @@
+# TODO_BACKLOG
+
+## Critical / Now
+- [x] Create `real-estate-platform` parent repo.
+- [x] Copy current Fairfield app to `apps/web`.
+- [x] Move/initialize studio as `apps/studio`.
+- [x] Add workspace tooling and root scripts.
+- [ ] Stand up tenant/domain schema.
+- [ ] Define shared domain and event types.
+- [ ] Complete tenant context threading through remaining website APIs and data providers.
+
+## Next
+- [x] Build tenant resolver middleware by host header.
+- [ ] Implement website module registry + toggle system.
+- [ ] Create CRM app skeleton and auth integration.
+- [ ] Build lead/contact/activity database model.
+- [ ] Add event ingestion pipeline from website actions to CRM.
+
+## AI Roadmap
+- [ ] Create prompt registry and versioning.
+- [ ] Implement AI content generation pipeline for website onboarding.
+- [ ] Implement CRM next-best-action service.
+- [ ] Add AI result feedback loop and quality scoring.
+
+## Business / GTM
+- [ ] Define plan matrix (Starter/Growth/Pro/Team).
+- [ ] Define setup package scope and onboarding SLAs.
+- [ ] Define managed services add-ons and operational model.
+
+## Later
+- [ ] Team and brokerage hierarchy model.
+- [ ] Marketing attribution dashboard.
+- [ ] Listing portal pilot and feasibility analysis.

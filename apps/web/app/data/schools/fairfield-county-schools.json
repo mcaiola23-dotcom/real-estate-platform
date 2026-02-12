@@ -1,0 +1,181 @@
+{
+    "metadata": {
+        "source": "Connecticut State Department of Education",
+        "sourceUrl": "https://portal.ct.gov/SDE",
+        "reportCardBaseUrl": "https://edsight.ct.gov/SASPortal/main.do",
+        "asOf": "2024-2025",
+        "lastRefreshed": "2025-01-01",
+        "disclaimer": "School assignment depends on residence address. Verify enrollment eligibility with the district."
+    },
+    "towns": {
+        "darien": {
+            "district": "Darien Public Schools",
+            "districtUrl": "https://www.darienps.org",
+            "schools": [
+                { "name": "Holmes Elementary School", "level": "elementary", "grades": "K-5", "address": "18 Hoyt St, Darien, CT 06820", "phone": "(203) 655-3361" },
+                { "name": "Hindley Elementary School", "level": "elementary", "grades": "K-5", "address": "10 Nearwater Ln, Darien, CT 06820", "phone": "(203) 655-2584" },
+                { "name": "Ox Ridge Elementary School", "level": "elementary", "grades": "K-5", "address": "393 Mansfield Ave, Darien, CT 06820", "phone": "(203) 655-1363" },
+                { "name": "Royle Elementary School", "level": "elementary", "grades": "K-5", "address": "120 Five Mile River Rd, Darien, CT 06820", "phone": "(203) 655-1308" },
+                { "name": "Tokeneke Elementary School", "level": "elementary", "grades": "K-5", "address": "7 Old Farm Rd, Darien, CT 06820", "phone": "(203) 655-7337" },
+                { "name": "Middlesex Middle School", "level": "middle", "grades": "6-8", "address": "204 Hollow Tree Ridge Rd, Darien, CT 06820", "phone": "(203) 655-6216" },
+                { "name": "Darien High School", "level": "high", "grades": "9-12", "address": "80 High School Ln, Darien, CT 06820", "phone": "(203) 655-3981" }
+            ],
+            "lat": 41.0785,
+            "lng": -73.4687
+        },
+        "fairfield": {
+            "district": "Fairfield Public Schools",
+            "districtUrl": "https://www.fairfieldschools.org",
+            "schools": [
+                { "name": "Burr Elementary School", "level": "elementary", "grades": "K-5", "address": "1960 Burr St, Fairfield, CT 06824", "phone": "(203) 255-8340" },
+                { "name": "Dwight Elementary School", "level": "elementary", "grades": "K-5", "address": "95 Unquowa Rd, Fairfield, CT 06824", "phone": "(203) 255-8336" },
+                { "name": "Holland Hill Elementary School", "level": "elementary", "grades": "K-5", "address": "105 Meadowcroft Rd, Fairfield, CT 06824", "phone": "(203) 255-8338" },
+                { "name": "Jennings Elementary School", "level": "elementary", "grades": "K-5", "address": "1000 Jennings Rd, Fairfield, CT 06824", "phone": "(203) 255-8342" },
+                { "name": "McKinley Elementary School", "level": "elementary", "grades": "K-5", "address": "35 Eagle Rd, Fairfield, CT 06824", "phone": "(203) 255-8344" },
+                { "name": "Mill Hill Elementary School", "level": "elementary", "grades": "K-5", "address": "635 Mill Hill Ter, Fairfield, CT 06824", "phone": "(203) 255-8346" },
+                { "name": "North Stratfield Elementary School", "level": "elementary", "grades": "K-5", "address": "190 Putting Green Ln, Fairfield, CT 06824", "phone": "(203) 255-8348" },
+                { "name": "Osborn Hill Elementary School", "level": "elementary", "grades": "K-5", "address": "760 Stillson Rd, Fairfield, CT 06824", "phone": "(203) 255-8350" },
+                { "name": "Riverfield Elementary School", "level": "elementary", "grades": "K-5", "address": "1625 Mill Plain Rd, Fairfield, CT 06824", "phone": "(203) 255-8352" },
+                { "name": "Sherman Elementary School", "level": "elementary", "grades": "K-5", "address": "250 Fern St, Fairfield, CT 06824", "phone": "(203) 255-8354" },
+                { "name": "Stratfield Elementary School", "level": "elementary", "grades": "K-5", "address": "1407 Melville Ave, Fairfield, CT 06824", "phone": "(203) 255-8356" },
+                { "name": "Roger Ludlowe Middle School", "level": "middle", "grades": "6-8", "address": "689 Unquowa Rd, Fairfield, CT 06824", "phone": "(203) 255-8360" },
+                { "name": "Tomlinson Middle School", "level": "middle", "grades": "6-8", "address": "200 Unquowa Rd, Fairfield, CT 06824", "phone": "(203) 255-8362" },
+                { "name": "Fairfield Ludlowe High School", "level": "high", "grades": "9-12", "address": "785 Unquowa Rd, Fairfield, CT 06824", "phone": "(203) 255-7201" },
+                { "name": "Fairfield Warde High School", "level": "high", "grades": "9-12", "address": "755 Melville Ave, Fairfield, CT 06824", "phone": "(203) 255-8449" }
+            ],
+            "lat": 41.1409,
+            "lng": -73.2636
+        },
+        "greenwich": {
+            "district": "Greenwich Public Schools",
+            "districtUrl": "https://www.greenwichschools.org",
+            "schools": [
+                { "name": "Cos Cob School", "level": "elementary", "grades": "K-5", "address": "300 E Putnam Ave, Cos Cob, CT 06807", "phone": "(203) 869-4670" },
+                { "name": "Glenville School", "level": "elementary", "grades": "K-5", "address": "33 Riversville Rd, Greenwich, CT 06831", "phone": "(203) 531-9287" },
+                { "name": "Hamilton Avenue School", "level": "elementary", "grades": "K-5", "address": "184 Hamilton Ave, Greenwich, CT 06830", "phone": "(203) 869-1685" },
+                { "name": "International School at Dundee", "level": "elementary", "grades": "K-5", "address": "55 Florence Rd, Riverside, CT 06878", "phone": "(203) 637-3800" },
+                { "name": "Julian Curtiss School", "level": "elementary", "grades": "K-5", "address": "180 E Elm St, Greenwich, CT 06830", "phone": "(203) 869-1896" },
+                { "name": "New Lebanon School", "level": "elementary", "grades": "K-5", "address": "25 Mead Ave, Byram, CT 06830", "phone": "(203) 531-9139" },
+                { "name": "North Mianus School", "level": "elementary", "grades": "K-5", "address": "309 Palmer Hill Rd, Riverside, CT 06878", "phone": "(203) 637-9730" },
+                { "name": "North Street School", "level": "elementary", "grades": "K-5", "address": "381 North St, Greenwich, CT 06830", "phone": "(203) 869-6756" },
+                { "name": "Old Greenwich School", "level": "elementary", "grades": "K-5", "address": "285 Sound Beach Ave, Old Greenwich, CT 06870", "phone": "(203) 637-3540" },
+                { "name": "Parkway School", "level": "elementary", "grades": "K-5", "address": "141 Lower Cross Rd, Greenwich, CT 06831", "phone": "(203) 531-6725" },
+                { "name": "Riverside School", "level": "elementary", "grades": "K-5", "address": "90 Hendrie Ave, Riverside, CT 06878", "phone": "(203) 637-1440" },
+                { "name": "Central Middle School", "level": "middle", "grades": "6-8", "address": "9 Indian Rock Ln, Greenwich, CT 06830", "phone": "(203) 625-8000" },
+                { "name": "Eastern Middle School", "level": "middle", "grades": "6-8", "address": "51 Hendrie Ave, Riverside, CT 06878", "phone": "(203) 637-1744" },
+                { "name": "Western Middle School", "level": "middle", "grades": "6-8", "address": "1 Western Junior Hwy, Greenwich, CT 06831", "phone": "(203) 531-6800" },
+                { "name": "Greenwich High School", "level": "high", "grades": "9-12", "address": "10 Hillside Rd, Greenwich, CT 06830", "phone": "(203) 625-8000" }
+            ],
+            "lat": 41.0262,
+            "lng": -73.6282
+        },
+        "new-canaan": {
+            "district": "New Canaan Public Schools",
+            "districtUrl": "https://www.ncps-k12.org",
+            "schools": [
+                { "name": "East School", "level": "elementary", "grades": "K-4", "address": "54 Little Brook Rd, New Canaan, CT 06840", "phone": "(203) 594-4110" },
+                { "name": "South School", "level": "elementary", "grades": "K-4", "address": "8 Farm Rd, New Canaan, CT 06840", "phone": "(203) 594-4140" },
+                { "name": "West School", "level": "elementary", "grades": "K-4", "address": "769 Ponus Ridge Rd, New Canaan, CT 06840", "phone": "(203) 594-4180" },
+                { "name": "Saxe Middle School", "level": "middle", "grades": "5-8", "address": "468 South Ave, New Canaan, CT 06840", "phone": "(203) 594-4200" },
+                { "name": "New Canaan High School", "level": "high", "grades": "9-12", "address": "11 Farm Rd, New Canaan, CT 06840", "phone": "(203) 594-4600" }
+            ],
+            "lat": 41.1468,
+            "lng": -73.4947
+        },
+        "norwalk": {
+            "district": "Norwalk Public Schools",
+            "districtUrl": "https://www.norwalkps.org",
+            "schools": [
+                { "name": "Columbus Magnet School", "level": "elementary", "grades": "PK-5", "address": "46 Concord St, Norwalk, CT 06854", "phone": "(203) 854-4100" },
+                { "name": "Cranbury Elementary School", "level": "elementary", "grades": "PK-5", "address": "10 Knowalot Ln, Norwalk, CT 06851", "phone": "(203) 854-4110" },
+                { "name": "Fox Run Elementary School", "level": "elementary", "grades": "PK-5", "address": "228 Fillow St, Norwalk, CT 06850", "phone": "(203) 854-4120" },
+                { "name": "Jefferson Elementary School", "level": "elementary", "grades": "PK-5", "address": "75 Van Buren Ave, Norwalk, CT 06850", "phone": "(203) 854-4130" },
+                { "name": "Kendall Elementary School", "level": "elementary", "grades": "PK-5", "address": "57 Fillow St, Norwalk, CT 06850", "phone": "(203) 854-4140" },
+                { "name": "Marvin Elementary School", "level": "elementary", "grades": "PK-5", "address": "15 Calf Pasture Beach Rd, Norwalk, CT 06855", "phone": "(203) 854-4150" },
+                { "name": "Naramake Elementary School", "level": "elementary", "grades": "PK-5", "address": "15 Strawberry Hill Ave, Norwalk, CT 06851", "phone": "(203) 854-4160" },
+                { "name": "Rowayton Elementary School", "level": "elementary", "grades": "PK-5", "address": "1 Rowayton Ave, Rowayton, CT 06853", "phone": "(203) 854-4170" },
+                { "name": "Silvermine Elementary School", "level": "elementary", "grades": "PK-5", "address": "157 Perry Ave, Norwalk, CT 06850", "phone": "(203) 854-4180" },
+                { "name": "Tracey Elementary School", "level": "elementary", "grades": "PK-5", "address": "20 Camp St, Norwalk, CT 06851", "phone": "(203) 854-4190" },
+                { "name": "Wolfpit Elementary School", "level": "elementary", "grades": "PK-5", "address": "1 Starlight Dr, Norwalk, CT 06851", "phone": "(203) 854-4200" },
+                { "name": "Nathan Hale Middle School", "level": "middle", "grades": "6-8", "address": "176 Strawberry Hill Ave, Norwalk, CT 06851", "phone": "(203) 854-4210" },
+                { "name": "Ponus Ridge Middle School", "level": "middle", "grades": "6-8", "address": "21 Hunters Ln, Norwalk, CT 06850", "phone": "(203) 854-4220" },
+                { "name": "Roton Middle School", "level": "middle", "grades": "6-8", "address": "201 Highland Ave, Norwalk, CT 06854", "phone": "(203) 854-4230" },
+                { "name": "West Rocks Middle School", "level": "middle", "grades": "6-8", "address": "81 West Rocks Rd, Norwalk, CT 06851", "phone": "(203) 854-4240" },
+                { "name": "Brien McMahon High School", "level": "high", "grades": "9-12", "address": "300 Highland Ave, Norwalk, CT 06854", "phone": "(203) 852-9488" },
+                { "name": "Norwalk High School", "level": "high", "grades": "9-12", "address": "23 Calvin Murphy Dr, Norwalk, CT 06851", "phone": "(203) 838-4481" }
+            ],
+            "lat": 41.1176,
+            "lng": -73.4078
+        },
+        "ridgefield": {
+            "district": "Ridgefield Public Schools",
+            "districtUrl": "https://www.ridgefieldps.net",
+            "schools": [
+                { "name": "Branchville Elementary School", "level": "elementary", "grades": "K-5", "address": "31 School Rd, Ridgefield, CT 06877", "phone": "(203) 894-5720" },
+                { "name": "Farmingville Elementary School", "level": "elementary", "grades": "K-5", "address": "50 Farmingville Rd, Ridgefield, CT 06877", "phone": "(203) 894-5730" },
+                { "name": "Ridgebury Elementary School", "level": "elementary", "grades": "K-5", "address": "44 Bennett's Farm Rd, Ridgefield, CT 06877", "phone": "(203) 894-5740" },
+                { "name": "Scotland Elementary School", "level": "elementary", "grades": "K-5", "address": "620 Danbury Rd, Ridgefield, CT 06877", "phone": "(203) 894-5750" },
+                { "name": "Veterans Park Elementary School", "level": "elementary", "grades": "K-5", "address": "37 Soundview Rd, Ridgefield, CT 06877", "phone": "(203) 894-5760" },
+                { "name": "East Ridge Middle School", "level": "middle", "grades": "6-8", "address": "10 East Ridge Rd, Ridgefield, CT 06877", "phone": "(203) 894-5530" },
+                { "name": "Scotts Ridge Middle School", "level": "middle", "grades": "6-8", "address": "800 Danbury Rd, Ridgefield, CT 06877", "phone": "(203) 894-5540" },
+                { "name": "Ridgefield High School", "level": "high", "grades": "9-12", "address": "700 N Salem Rd, Ridgefield, CT 06877", "phone": "(203) 894-5750" }
+            ],
+            "lat": 41.2815,
+            "lng": -73.4983
+        },
+        "stamford": {
+            "district": "Stamford Public Schools",
+            "districtUrl": "https://www.stamfordpublicschools.org",
+            "schools": [
+                { "name": "Davenport Ridge Elementary School", "level": "elementary", "grades": "K-5", "address": "1249 Stillwater Rd, Stamford, CT 06902", "phone": "(203) 977-4500" },
+                { "name": "Hart Magnet Elementary School", "level": "elementary", "grades": "PK-5", "address": "61 High Ridge Rd, Stamford, CT 06905", "phone": "(203) 977-4510" },
+                { "name": "Julia A. Stark Elementary School", "level": "elementary", "grades": "K-5", "address": "398 Glenbrook Rd, Stamford, CT 06906", "phone": "(203) 977-4520" },
+                { "name": "K.T. Murphy Elementary School", "level": "elementary", "grades": "K-5", "address": "19 Horton St, Stamford, CT 06902", "phone": "(203) 977-4530" },
+                { "name": "Newfield Elementary School", "level": "elementary", "grades": "K-5", "address": "345 Pepper Ridge Rd, Stamford, CT 06905", "phone": "(203) 977-4540" },
+                { "name": "Northeast Elementary School", "level": "elementary", "grades": "PK-5", "address": "21 Faucett Rd, Stamford, CT 06906", "phone": "(203) 977-4550" },
+                { "name": "Roxbury Elementary School", "level": "elementary", "grades": "K-5", "address": "751 Westover Rd, Stamford, CT 06902", "phone": "(203) 977-4560" },
+                { "name": "Springdale Elementary School", "level": "elementary", "grades": "K-5", "address": "1127 Hope St, Stamford, CT 06907", "phone": "(203) 977-4570" },
+                { "name": "Stillmeadow Elementary School", "level": "elementary", "grades": "K-5", "address": "800 Stillwater Rd, Stamford, CT 06902", "phone": "(203) 977-4580" },
+                { "name": "Toquam Magnet Elementary School", "level": "elementary", "grades": "PK-5", "address": "280 Woodrow Ave, Stamford, CT 06902", "phone": "(203) 977-4590" },
+                { "name": "Westover Magnet Elementary School", "level": "elementary", "grades": "PK-5", "address": "412 Stillwater Ave, Stamford, CT 06902", "phone": "(203) 977-4600" },
+                { "name": "Cloonan Middle School", "level": "middle", "grades": "6-8", "address": "11 West North St, Stamford, CT 06902", "phone": "(203) 977-4610" },
+                { "name": "Dolan Middle School", "level": "middle", "grades": "6-8", "address": "51 Toms Rd, Stamford, CT 06906", "phone": "(203) 977-4620" },
+                { "name": "Rippowam Middle School", "level": "middle", "grades": "6-8", "address": "381 High Ridge Rd, Stamford, CT 06905", "phone": "(203) 977-4630" },
+                { "name": "Scofield Magnet Middle School", "level": "middle", "grades": "6-8", "address": "641 Scofieldtown Rd, Stamford, CT 06903", "phone": "(203) 977-4640" },
+                { "name": "Turn of River Middle School", "level": "middle", "grades": "6-8", "address": "117 Vine Rd, Stamford, CT 06905", "phone": "(203) 977-4650" },
+                { "name": "Stamford High School", "level": "high", "grades": "9-12", "address": "55 Strawberry Hill Ave, Stamford, CT 06902", "phone": "(203) 977-4251" },
+                { "name": "Westhill High School", "level": "high", "grades": "9-12", "address": "125 Roxbury Rd, Stamford, CT 06902", "phone": "(203) 977-4284" }
+            ],
+            "lat": 41.0534,
+            "lng": -73.5387
+        },
+        "westport": {
+            "district": "Westport Public Schools",
+            "districtUrl": "https://www.westportps.org",
+            "schools": [
+                { "name": "Coleytown Elementary School", "level": "elementary", "grades": "K-5", "address": "65 N Compo Rd, Westport, CT 06880", "phone": "(203) 341-1250" },
+                { "name": "Greens Farms Elementary School", "level": "elementary", "grades": "K-5", "address": "17 Morningside Dr S, Westport, CT 06880", "phone": "(203) 341-1260" },
+                { "name": "Kings Highway Elementary School", "level": "elementary", "grades": "K-5", "address": "125 Post Rd W, Westport, CT 06880", "phone": "(203) 341-1270" },
+                { "name": "Long Lots Elementary School", "level": "elementary", "grades": "K-5", "address": "13 Hyde Ln, Westport, CT 06880", "phone": "(203) 341-1280" },
+                { "name": "Saugatuck Elementary School", "level": "elementary", "grades": "K-5", "address": "170 Riverside Ave, Westport, CT 06880", "phone": "(203) 341-1290" },
+                { "name": "Bedford Middle School", "level": "middle", "grades": "6-8", "address": "88 N Ave, Westport, CT 06880", "phone": "(203) 341-1300" },
+                { "name": "Coleytown Middle School", "level": "middle", "grades": "6-8", "address": "255 N Ave, Westport, CT 06880", "phone": "(203) 341-1310" },
+                { "name": "Staples High School", "level": "high", "grades": "9-12", "address": "70 N Ave, Westport, CT 06880", "phone": "(203) 341-1200" }
+            ],
+            "lat": 41.1415,
+            "lng": -73.3579
+        },
+        "wilton": {
+            "district": "Wilton Public Schools",
+            "districtUrl": "https://www.wiltonps.org",
+            "schools": [
+                { "name": "Cider Mill School", "level": "elementary", "grades": "3-5", "address": "240 School Rd, Wilton, CT 06897", "phone": "(203) 762-3351" },
+                { "name": "Miller-Driscoll School", "level": "elementary", "grades": "K-2", "address": "20 School Rd, Wilton, CT 06897", "phone": "(203) 762-3381" },
+                { "name": "Middlebrook School", "level": "middle", "grades": "6-8", "address": "131 School Rd, Wilton, CT 06897", "phone": "(203) 762-3300" },
+                { "name": "Wilton High School", "level": "high", "grades": "9-12", "address": "395 Danbury Rd, Wilton, CT 06897", "phone": "(203) 762-0381" }
+            ],
+            "lat": 41.1954,
+            "lng": -73.4379
+        }
+    }
+}
