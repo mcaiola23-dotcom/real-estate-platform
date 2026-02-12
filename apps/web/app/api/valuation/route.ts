@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { WebsiteValuationRequestedEvent } from "@real-estate/types/events";
 import { ValuationRequestSchema } from "../../lib/validators";
 import { getTenantContextFromRequest } from "../../lib/tenant/resolve-tenant";
 
@@ -16,8 +17,25 @@ export async function POST(request: Request) {
 
         const tenantContext = getTenantContextFromRequest(request);
         const { propertyType, beds, baths, sqft } = result.data;
+        const valuationEvent: WebsiteValuationRequestedEvent = {
+            eventType: "website.valuation.requested",
+            version: 1,
+            occurredAt: new Date().toISOString(),
+            tenant: {
+                tenantId: tenantContext.tenantId,
+                tenantSlug: tenantContext.tenantSlug,
+                tenantDomain: tenantContext.tenantDomain,
+            },
+            payload: {
+                address: result.data.address,
+                propertyType,
+                beds,
+                baths,
+                sqft: sqft ?? null,
+            },
+        };
 
-        console.log("VALUATION REQUEST TENANT:", tenantContext.tenantId, tenantContext.tenantSlug);
+        console.log("VALUATION REQUEST TENANT:", valuationEvent.tenant.tenantId, valuationEvent.tenant.tenantSlug);
 
         // Placeholder Logic
         // Conservative constraints:

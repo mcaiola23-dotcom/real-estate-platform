@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { WebsiteLeadSubmittedEvent } from "@real-estate/types/events";
 import { LeadSubmissionSchema } from "../../lib/validators";
 import { writeClient } from "../../lib/sanity.server";
 import { getTenantContextFromRequest } from "../../lib/tenant/resolve-tenant";
@@ -17,26 +18,60 @@ export async function POST(request: Request) {
 
         const lead = result.data;
         const tenantContext = getTenantContextFromRequest(request);
+        const timestamp = new Date().toISOString();
+        const leadEvent: WebsiteLeadSubmittedEvent = {
+            eventType: "website.lead.submitted",
+            version: 1,
+            occurredAt: timestamp,
+            tenant: {
+                tenantId: tenantContext.tenantId,
+                tenantSlug: tenantContext.tenantSlug,
+                tenantDomain: tenantContext.tenantDomain,
+            },
+            payload: {
+                source: lead.source || "unknown",
+                contact: {
+                    name: lead.name || null,
+                    email: lead.email,
+                    phone: lead.phone,
+                },
+                timeframe: lead.timeframe || null,
+                message: lead.message || null,
+                listing: {
+                    id: lead.listingId || null,
+                    url: lead.listingUrl || null,
+                    address: lead.listingAddress || lead.propertyDetails?.address || null,
+                },
+                propertyDetails: lead.propertyDetails
+                    ? {
+                        propertyType: lead.propertyDetails.propertyType,
+                        beds: lead.propertyDetails.beds,
+                        baths: lead.propertyDetails.baths,
+                        sqft: lead.propertyDetails.sqft ?? null,
+                    }
+                    : null,
+            },
+        };
 
         // Logging for immediate debug
         console.log("------------------------------------------------");
         console.log("NEW HOME VALUE LEAD RECEIVED");
-        console.log("Tenant:", tenantContext.tenantId, tenantContext.tenantSlug, tenantContext.tenantDomain);
+        console.log("Tenant:", leadEvent.tenant.tenantId, leadEvent.tenant.tenantSlug, leadEvent.tenant.tenantDomain);
         console.log("Contact:", lead.email, lead.phone);
         console.log("------------------------------------------------");
 
         // Prepare Sanity Document
         const doc = {
             _type: 'lead',
-            source: lead.source || 'unknown',
+            source: leadEvent.payload.source,
             fullName: lead.name,
             email: lead.email,
             phone: lead.phone,
-            tenantId: tenantContext.tenantId,
-            tenantSlug: tenantContext.tenantSlug,
-            tenantDomain: tenantContext.tenantDomain,
+            tenantId: leadEvent.tenant.tenantId,
+            tenantSlug: leadEvent.tenant.tenantSlug,
+            tenantDomain: leadEvent.tenant.tenantDomain,
             // Property details are optional now
-            address: lead.listingAddress || lead.propertyDetails?.address,
+            address: leadEvent.payload.listing.address,
             propertyType: lead.propertyDetails?.propertyType,
             beds: lead.propertyDetails?.beds,
             baths: lead.propertyDetails?.baths,
@@ -47,7 +82,7 @@ export async function POST(request: Request) {
 
             timeframe: lead.timeframe,
             notes: lead.message, // Map message to notes
-            createdAt: new Date().toISOString(),
+            createdAt: timestamp,
         };
 
         // Create in Sanity

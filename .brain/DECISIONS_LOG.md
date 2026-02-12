@@ -29,3 +29,7 @@
 ### D-007: Standardize root workspace orchestration for monorepo workflows
 **Decision**: Add a root `package.json` with npm workspaces (`apps/*`, `packages/*`, `services/*`) and top-level scripts for `dev`, `build`, and `lint` targeting `@real-estate/web` and `@real-estate/studio`; rename app package names to those unique workspace identifiers.
 **Reason**: Establishes a single command surface for multi-app development and unblocks shared package adoption without app-to-app coupling.
+
+### D-008: Establish `@real-estate/types` as the shared contract source
+**Decision**: Create `packages/types` with tenant/domain contracts and versioned website event contracts; migrate active tenant resolution typing in `apps/web` to import from `@real-estate/types`.
+**Reason**: Centralized contracts reduce type drift across apps/services and provide a consistent base for tenant persistence and CRM event ingestion work.

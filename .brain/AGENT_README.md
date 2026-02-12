@@ -5,10 +5,12 @@ This document is the quick-start for AI agents and developers working in this re
 ## Read Order (Mandatory)
 1. `PROJECT_OVERVIEW.md`
 2. `ARCHITECTURE.md`
-3. `CURRENT_FOCUS.md`
-4. `TODO_BACKLOG.md`
-5. `DECISIONS_LOG.md`
-6. `CODING_GUIDELINES.md`
+3. `PRODUCT_SPEC.md`
+4. `BUILD_ORDER.md`
+5. `CURRENT_FOCUS.md`
+6. `TODO_BACKLOG.md`
+7. `DECISIONS_LOG.md`
+8. `CODING_GUIDELINES.md`
 
 ## Working Rules
 - Respect tenant isolation in all implementation choices.

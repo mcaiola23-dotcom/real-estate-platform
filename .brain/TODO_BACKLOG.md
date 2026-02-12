@@ -5,7 +5,7 @@
 - [x] Copy current Fairfield app to `apps/web`.
 - [x] Move/initialize studio as `apps/studio`.
 - [x] Add workspace tooling and root scripts.
-- [ ] Define shared domain and event types.
+- [x] Define shared domain and event types.
 - [ ] Stand up tenant/domain schema.
 - [ ] Complete tenant context threading through remaining website APIs and data providers.
 

@@ -1,0 +1,14 @@
+{
+  "name": "@real-estate/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tenants": "./src/tenants.ts"
+  },
+  "dependencies": {
+    "@real-estate/types": "*"
+  },
+  "types": "./src/index.ts"
+}

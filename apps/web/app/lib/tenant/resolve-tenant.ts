@@ -1,3 +1,6 @@
+import { getDefaultTenantRecord, getTenantRecordByHostname } from '@real-estate/db/tenants';
+import type { TenantContext, TenantRecord, TenantResolutionSource } from '@real-estate/types/tenant';
+
 export const TENANT_HEADER_NAMES = {
   tenantId: 'x-tenant-id',
   tenantSlug: 'x-tenant-slug',
@@ -5,26 +8,7 @@ export const TENANT_HEADER_NAMES = {
   tenantResolution: 'x-tenant-resolution',
 } as const;
 
-export type TenantResolutionSource = 'host_match' | 'localhost_fallback' | 'default_fallback';
-
-export interface TenantContext {
-  tenantId: string;
-  tenantSlug: string;
-  tenantDomain: string;
-  source: TenantResolutionSource;
-}
-
-type TenantRecord = Omit<TenantContext, 'source'>;
-
-const DEFAULT_TENANT: TenantRecord = {
-  tenantId: 'tenant_fairfield',
-  tenantSlug: 'fairfield',
-  tenantDomain: 'fairfield.localhost',
-};
-
-const TENANTS_BY_HOST: Record<string, TenantRecord> = {
-  'fairfield.localhost': DEFAULT_TENANT,
-};
+const DEFAULT_TENANT: TenantRecord = getDefaultTenantRecord();
 
 const LOCALHOST_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 
@@ -64,14 +48,14 @@ export function resolveTenantFromHost(hostHeader: string | null): TenantContext 
     return withSource(DEFAULT_TENANT, 'default_fallback');
   }
 
-  const directMatch = TENANTS_BY_HOST[normalizedHost];
+  const directMatch = getTenantRecordByHostname(normalizedHost);
   if (directMatch) {
     return withSource(directMatch, 'host_match');
   }
 
   if (normalizedHost.startsWith('www.')) {
     const withoutWww = normalizedHost.slice(4);
-    const wwwStrippedMatch = TENANTS_BY_HOST[withoutWww];
+    const wwwStrippedMatch = getTenantRecordByHostname(withoutWww);
     if (wwwStrippedMatch) {
       return withSource(wwwStrippedMatch, 'host_match');
     }
