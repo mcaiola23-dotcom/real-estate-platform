@@ -6,8 +6,9 @@
 - [x] Move/initialize studio as `apps/studio`.
 - [x] Add workspace tooling and root scripts.
 - [x] Define shared domain and event types.
-- [ ] Stand up tenant/domain schema.
+- [x] Stand up tenant/domain schema.
 - [ ] Complete tenant context threading through remaining website APIs and data providers.
+- [ ] Replace seed-backed tenant persistence with durable data store + migrations.
 
 ## Next
 - [x] Build tenant resolver middleware by host header.
