@@ -33,7 +33,7 @@ interface SyncRequestBody {
 export async function POST(request: NextRequest) {
     try {
         const { userId } = await auth();
-        const tenantContext = getTenantContextFromRequest(request);
+        const tenantContext = await getTenantContextFromRequest(request);
 
         if (!userId) {
             return NextResponse.json(
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
     try {
         const { userId } = await auth();
-        const tenantContext = getTenantContextFromRequest(request);
+        const tenantContext = await getTenantContextFromRequest(request);
 
         if (!userId) {
             return NextResponse.json(

@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function HomeSearchPage() {
-  const tenantContext = getTenantContextFromHeaders(await headers());
+  const tenantContext = await getTenantContextFromHeaders(await headers());
 
   return (
     <>

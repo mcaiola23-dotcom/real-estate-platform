@@ -3,8 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 import { resolveTenantFromHost, TENANT_HEADER_NAMES } from './app/lib/tenant/resolve-tenant';
 
-export const proxy = clerkMiddleware((_auth, req: NextRequest) => {
-  const tenantContext = resolveTenantFromHost(req.headers.get('host'));
+export const proxy = clerkMiddleware(async (_auth, req: NextRequest) => {
+  const tenantContext = await resolveTenantFromHost(req.headers.get('host'));
   const requestHeaders = new Headers(req.headers);
 
   requestHeaders.set(TENANT_HEADER_NAMES.tenantId, tenantContext.tenantId);

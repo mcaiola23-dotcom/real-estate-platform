@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String         @id
+  slug      String         @unique
+  name      String
+  status    String
+  createdAt DateTime
+  updatedAt DateTime
+  domains   TenantDomain[]
+}
+
+model TenantDomain {
+  id                 String   @id
+  tenantId           String
+  hostname           String
+  hostnameNormalized String   @unique
+  isPrimary          Boolean  @default(false)
+  isVerified         Boolean  @default(false)
+  verifiedAt         DateTime?
+  createdAt          DateTime
+  updatedAt          DateTime
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}

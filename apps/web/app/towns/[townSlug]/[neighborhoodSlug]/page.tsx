@@ -93,7 +93,7 @@ export default async function NeighborhoodPage({
     params: Promise<{ townSlug: string; neighborhoodSlug: string }>;
 }) {
     const { townSlug, neighborhoodSlug } = await params;
-    const tenantContext = getTenantContextFromHeaders(await headers());
+    const tenantContext = await getTenantContextFromHeaders(await headers());
     const neighborhood = await getNeighborhoodBySlug(townSlug, neighborhoodSlug);
 
     if (!neighborhood) {

@@ -112,7 +112,7 @@ export default async function TownPage({
     params: Promise<{ townSlug: string }>;
 }) {
     const { townSlug } = await params;
-    const tenantContext = getTenantContextFromHeaders(await headers());
+    const tenantContext = await getTenantContextFromHeaders(await headers());
     const town = await getTownBySlug(townSlug);
 
     if (!town) {

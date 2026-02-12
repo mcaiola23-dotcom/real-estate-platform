@@ -15,7 +15,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const tenantContext = getTenantContextFromRequest(request);
+        const tenantContext = await getTenantContextFromRequest(request);
         const { propertyType, beds, baths, sqft } = result.data;
         const valuationEvent: WebsiteValuationRequestedEvent = {
             eventType: "website.valuation.requested",

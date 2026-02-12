@@ -9,11 +9,12 @@
 - [x] Stand up tenant/domain schema.
 - [x] Complete tenant context threading through remaining website APIs and data providers.
 - [x] Complete tenant context threading through remaining client-side/static data providers.
-- [ ] Replace seed-backed tenant persistence with durable data store + migrations.
+- [x] Replace seed-backed tenant persistence with durable data store + migrations.
 
 ## Next
 - [x] Build tenant resolver middleware by host header.
 - [ ] Implement website module registry + toggle system.
+- [x] Install `@real-estate/db` workspace dependencies and run Prisma generate/migrate/seed locally.
 - [ ] Create CRM app skeleton and auth integration.
 - [ ] Build lead/contact/activity database model.
 - [ ] Add event ingestion pipeline from website actions to CRM.

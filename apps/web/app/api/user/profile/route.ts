@@ -23,7 +23,7 @@ const sanityClient = createClient({
 export async function GET(request: Request) {
     try {
         const { userId } = await auth();
-        const tenantContext = getTenantContextFromRequest(request);
+        const tenantContext = await getTenantContextFromRequest(request);
 
         if (!userId) {
             return NextResponse.json(

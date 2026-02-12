@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         }
 
         const lead = result.data;
-        const tenantContext = getTenantContextFromRequest(request);
+        const tenantContext = await getTenantContextFromRequest(request);
         const timestamp = new Date().toISOString();
         const leadEvent: WebsiteLeadSubmittedEvent = {
             eventType: "website.lead.submitted",

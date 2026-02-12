@@ -8,8 +8,6 @@ export const TENANT_HEADER_NAMES = {
   tenantResolution: 'x-tenant-resolution',
 } as const;
 
-const DEFAULT_TENANT: TenantRecord = getDefaultTenantRecord();
-
 const LOCALHOST_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 
 function normalizeHost(hostHeader: string | null): string | null {
@@ -41,38 +39,39 @@ function isTenantResolutionSource(value: string | null): value is TenantResoluti
   return value === 'host_match' || value === 'localhost_fallback' || value === 'default_fallback';
 }
 
-export function resolveTenantFromHost(hostHeader: string | null): TenantContext {
+export async function resolveTenantFromHost(hostHeader: string | null): Promise<TenantContext> {
   const normalizedHost = normalizeHost(hostHeader);
+  const defaultTenant = await getDefaultTenantRecord();
 
   if (!normalizedHost) {
-    return withSource(DEFAULT_TENANT, 'default_fallback');
+    return withSource(defaultTenant, 'default_fallback');
   }
 
-  const directMatch = getTenantRecordByHostname(normalizedHost);
+  const directMatch = await getTenantRecordByHostname(normalizedHost);
   if (directMatch) {
     return withSource(directMatch, 'host_match');
   }
 
   if (normalizedHost.startsWith('www.')) {
     const withoutWww = normalizedHost.slice(4);
-    const wwwStrippedMatch = getTenantRecordByHostname(withoutWww);
+    const wwwStrippedMatch = await getTenantRecordByHostname(withoutWww);
     if (wwwStrippedMatch) {
       return withSource(wwwStrippedMatch, 'host_match');
     }
   }
 
   if (LOCALHOST_HOSTS.has(normalizedHost) || normalizedHost.endsWith('.localhost')) {
-    return withSource(DEFAULT_TENANT, 'localhost_fallback');
+    return withSource(defaultTenant, 'localhost_fallback');
   }
 
-  return withSource(DEFAULT_TENANT, 'default_fallback');
+  return withSource(defaultTenant, 'default_fallback');
 }
 
-export function getTenantContextFromRequest(request: Request): TenantContext {
+export async function getTenantContextFromRequest(request: Request): Promise<TenantContext> {
   return getTenantContextFromHeaders(request.headers);
 }
 
-export function getTenantContextFromHeaders(headers: Headers): TenantContext {
+export async function getTenantContextFromHeaders(headers: Headers): Promise<TenantContext> {
   const tenantId = headers.get(TENANT_HEADER_NAMES.tenantId);
   const tenantSlug = headers.get(TENANT_HEADER_NAMES.tenantSlug);
   const tenantDomain = headers.get(TENANT_HEADER_NAMES.tenantDomain);
@@ -87,5 +86,5 @@ export function getTenantContextFromHeaders(headers: Headers): TenantContext {
     };
   }
 
-  return resolveTenantFromHost(headers.get('host'));
+  return await resolveTenantFromHost(headers.get('host'));
 }
