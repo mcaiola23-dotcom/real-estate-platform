@@ -9,10 +9,12 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 3. Shared `packages/types` contract baseline is in place and active `apps/web` tenant/event typing now imports from the shared package.
 4. Tenant/domain persistence baseline now lives in `packages/db`, and `apps/web` host resolution now loads tenant/domain mappings from shared db package lookups.
 5. Tenant scoping has been added to `apps/web` user profile sync endpoints and server-side town data providers (`walkscore`/`places`) now receive tenant context with tenant-specific cache variants.
+6. Explicit tenant context interfaces are now threaded through remaining client-side/static data providers (`atAGlance`, `taxes`, `schools`, `listings`) and their key call sites (`town` pages and `home-search`).
 
 ## Immediate Next Steps
-- Complete tenant context threading for remaining client-side/static data providers (`atAGlance`, `taxes`, `schools`, `listings`) using explicit tenant context interfaces.
 - Evolve `packages/db` from seed-backed module to durable storage integration with migrations.
+- Add durable tenant/domain migration + seeding flow for `Tenant` and `TenantDomain`.
+- Implement website module registry + tenant module toggle system (`WebsiteConfig`/`ModuleConfig`) to advance Phase 1 exit criteria.
 - Expand `packages/types` coverage as additional CRM/control-plane entities are introduced.
 
 ## Session Validation (2026-02-12)
@@ -24,6 +26,8 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 - `apps/web/node_modules/.bin/tsx.cmd scripts/check-tenant-resolution.ts` passes with `Tenant resolution checks passed.`
 - `npm run lint --workspace @real-estate/web -- app/lib/tenant/resolve-tenant.ts app/api/user/profile/route.ts app/api/user/sync/route.ts app/lib/data/providers/walkscore.provider.ts app/lib/data/providers/places.provider.ts` passes.
 - `npm run build --workspace @real-estate/web` passes after tenant threading updates and Turbopack workspace root configuration.
+- `npm run lint --workspace @real-estate/web -- app/lib/data/providers/tenant-context.ts app/lib/data/providers/atAGlance.provider.ts app/lib/data/providers/taxes.provider.ts app/lib/data/providers/schools.provider.ts app/lib/data/providers/listings.types.ts app/components/data/AtAGlanceModule.tsx app/components/data/TaxesModule.tsx app/components/data/SchoolsModule.tsx app/home-search/page.tsx` passes.
+- `npm run build --workspace @real-estate/web` passes after client/static provider tenant-context threading.
 
 ## Do Not Do Yet
 - Do not start listing portal product build.

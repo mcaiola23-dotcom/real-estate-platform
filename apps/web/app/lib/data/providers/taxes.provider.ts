@@ -6,6 +6,7 @@
  */
 
 import taxesData from '../../../data/taxes/fairfield-county-mill-rates.json';
+import type { TenantScope } from './tenant-context';
 
 export interface TaxData {
     millRate: number;
@@ -25,7 +26,8 @@ export interface TaxResult {
 /**
  * Get tax data for a town
  */
-export function getTaxesForTown(townSlug: string): TaxResult {
+export function getTaxesForTown(townSlug: string, _tenantContext?: TenantScope): TaxResult {
+    void _tenantContext;
     const metadata = taxesData.metadata;
     const townData = taxesData.towns[townSlug as keyof typeof taxesData.towns];
 

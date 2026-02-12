@@ -203,6 +203,7 @@ export default async function NeighborhoodPage({
                         neighborhoodSlug={neighborhoodSlug}
                         neighborhoodName={neighborhood.name}
                         center={TOWN_CENTERS[townSlug]}
+                        tenantContext={tenantContext}
                     />
                 </section>
             </Container>

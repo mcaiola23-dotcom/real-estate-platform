@@ -13,6 +13,7 @@ import {
     calculatePropertyTax,
     formatTaxAmount,
 } from '../../lib/data/providers/taxes.provider';
+import type { TenantScope } from '../../lib/data/providers/tenant-context';
 
 // Default home values for calculator (used when ACS data is top-coded or unavailable)
 const DEFAULT_HOME_VALUES: Record<string, number> = {
@@ -43,14 +44,16 @@ interface TaxesModuleProps {
     townSlug: string;
     townName: string;
     isNeighborhoodContext?: boolean;
+    tenantContext?: TenantScope;
 }
 
 export function TaxesModule({
     townSlug,
     townName,
     isNeighborhoodContext = false,
+    tenantContext,
 }: TaxesModuleProps) {
-    const result = getTaxesForTown(townSlug);
+    const result = getTaxesForTown(townSlug, tenantContext);
     const defaultValue = DEFAULT_HOME_VALUES[townSlug] || 750000;
     const [homeValue, setHomeValue] = useState<number>(defaultValue);
     const [inputValue, setInputValue] = useState<string>(defaultValue.toLocaleString());

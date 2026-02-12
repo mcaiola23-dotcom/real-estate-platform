@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { headers } from "next/headers";
 import HomeSearchClient from "./HomeSearchClient";
+import { getTenantContextFromHeaders } from "../lib/tenant/resolve-tenant";
 
 export const metadata = {
   title: "Home Search | Fairfield County Real Estate",
@@ -8,11 +10,13 @@ export const metadata = {
     "Explore a refined home search experience for Fairfield County listings, with map-based browsing and thoughtful filters.",
 };
 
-export default function HomeSearchPage() {
+export default async function HomeSearchPage() {
+  const tenantContext = getTenantContextFromHeaders(await headers());
+
   return (
     <>
       <Suspense fallback={<div className="min-h-screen grid place-items-center">Loading search...</div>}>
-        <HomeSearchClient />
+        <HomeSearchClient tenantContext={tenantContext} />
       </Suspense>
 
       {/* Bottom CTA */}

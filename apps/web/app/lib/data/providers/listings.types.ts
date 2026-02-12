@@ -5,6 +5,8 @@
  * This contract allows swapping between mock and real IDX providers.
  */
 
+import type { TenantScope } from './tenant-context';
+
 export type ListingStatus = 'active' | 'pending' | 'sold';
 
 export type PropertyType = 
@@ -77,6 +79,7 @@ export interface ListingBounds {
 
 export interface ListingSearchParams {
     scope: 'global' | 'town' | 'neighborhood';
+    tenantContext?: TenantScope;
     townSlug?: string;
     neighborhoodSlug?: string;
     townSlugs?: string[];
@@ -106,6 +109,7 @@ export interface ListingsProvider {
 
 export interface ListingSuggestParams {
     q: string;
+    tenantContext?: TenantScope;
     townSlugs?: string[];
     status?: ListingStatus[];
     limit?: number;

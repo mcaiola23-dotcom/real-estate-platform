@@ -15,6 +15,7 @@ import {
     formatPercent,
     AtAGlanceData,
 } from '../../lib/data/providers/atAGlance.provider';
+import type { TenantScope } from '../../lib/data/providers/tenant-context';
 
 // Icons as simple SVG components
 const PopulationIcon = () => (
@@ -45,6 +46,7 @@ interface AtAGlanceModuleProps {
     townSlug: string;
     townName: string;
     isNeighborhoodContext?: boolean;
+    tenantContext?: TenantScope;
 }
 
 type TabType = 'population' | 'households' | 'education';
@@ -53,9 +55,10 @@ export function AtAGlanceModule({
     townSlug,
     townName,
     isNeighborhoodContext = false,
+    tenantContext,
 }: AtAGlanceModuleProps) {
     const [activeTab, setActiveTab] = useState<TabType>('population');
-    const result = getAtAGlanceForTown(townSlug);
+    const result = getAtAGlanceForTown(townSlug, tenantContext);
 
     if (!result.data) {
         return (

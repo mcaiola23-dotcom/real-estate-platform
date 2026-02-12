@@ -6,6 +6,7 @@
  */
 
 import acsData from '../../../data/acs/fairfield-county-towns.json';
+import type { TenantScope } from './tenant-context';
 
 export interface AgeGroups {
     under18: number;
@@ -78,7 +79,8 @@ interface TownDataRaw {
 /**
  * Get At a Glance data for a town
  */
-export function getAtAGlanceForTown(townSlug: string): AtAGlanceResult {
+export function getAtAGlanceForTown(townSlug: string, _tenantContext?: TenantScope): AtAGlanceResult {
+    void _tenantContext;
     const metadata = acsData.metadata;
     const townData = acsData.towns[townSlug as TownDataKey] as TownDataRaw | undefined;
 

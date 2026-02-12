@@ -7,6 +7,7 @@
 
 import schoolsData from '../../../data/schools/fairfield-county-schools.json';
 import { GeoPoint, calculateDistance } from '../geo/distance';
+import type { TenantScope } from './tenant-context';
 
 export interface School {
     name: string;
@@ -70,7 +71,8 @@ const schoolsDataTyped = schoolsData as unknown as SchoolsDataJson;
 /**
  * Get schools for a town
  */
-export function getSchoolsForTown(townSlug: string): TownSchoolsResult | null {
+export function getSchoolsForTown(townSlug: string, _tenantContext?: TenantScope): TownSchoolsResult | null {
+    void _tenantContext;
     const metadata = schoolsDataTyped.metadata;
     const townData = schoolsDataTyped.towns[townSlug];
 
@@ -96,8 +98,10 @@ export function getSchoolsForTown(townSlug: string): TownSchoolsResult | null {
  */
 export function getNearbySchoolsForNeighborhood(
     townSlug: string,
-    neighborhoodCenter: GeoPoint
+    neighborhoodCenter: GeoPoint,
+    _tenantContext?: TenantScope
 ): NearbySchoolsResult | null {
+    void _tenantContext;
     const metadata = schoolsDataTyped.metadata;
     const townData = schoolsDataTyped.towns[townSlug];
 

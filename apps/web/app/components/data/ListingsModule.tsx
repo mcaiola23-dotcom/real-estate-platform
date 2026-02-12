@@ -26,6 +26,7 @@ import {
     searchListings,
     formatFullPrice,
 } from '../../lib/data/providers/listings.provider';
+import type { TenantScope } from '../../lib/data/providers/tenant-context';
 import { ListingModal } from '../../home-search/ListingModal';
 import { useSavedListings } from '../../home-search/hooks/useSavedListings';
 
@@ -38,6 +39,7 @@ interface ListingsModuleProps {
     neighborhoodSlug?: string;
     neighborhoodName?: string;
     center?: { lat: number; lng: number };
+    tenantContext?: TenantScope;
 }
 
 export function ListingsModule({
@@ -46,6 +48,7 @@ export function ListingsModule({
     neighborhoodSlug,
     neighborhoodName,
     center,
+    tenantContext,
 }: ListingsModuleProps) {
     const [listings, setListings] = useState<Listing[]>([]);
     const [total, setTotal] = useState(0);
@@ -93,6 +96,7 @@ export function ListingsModule({
         try {
             const result = await searchListings({
                 scope,
+                tenantContext,
                 townSlug,
                 neighborhoodSlug,
                 filters,
@@ -108,7 +112,7 @@ export function ListingsModule({
         } finally {
             setLoading(false);
         }
-    }, [scope, townSlug, neighborhoodSlug, filters, sort, page]);
+    }, [scope, tenantContext, townSlug, neighborhoodSlug, filters, sort, page]);
 
     useEffect(() => {
         fetchListings();

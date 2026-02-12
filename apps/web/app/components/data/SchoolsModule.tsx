@@ -13,6 +13,7 @@ import {
     getNeighborhoodSchoolsDisclaimer,
     School,
 } from '../../lib/data/providers/schools.provider';
+import type { TenantScope } from '../../lib/data/providers/tenant-context';
 
 // School building icon
 const SchoolIcon = () => (
@@ -34,6 +35,7 @@ interface SchoolsModuleProps {
     townName: string;
     neighborhoodCenter?: { lat: number; lng: number };
     isNeighborhoodContext?: boolean;
+    tenantContext?: TenantScope;
 }
 
 export function SchoolsModule({
@@ -41,13 +43,14 @@ export function SchoolsModule({
     townName,
     neighborhoodCenter,
     isNeighborhoodContext = false,
+    tenantContext,
 }: SchoolsModuleProps) {
     const [activeLevel, setActiveLevel] = useState<SchoolLevel>('primary');
 
     // Get schools data
     const result = isNeighborhoodContext && neighborhoodCenter
-        ? getNearbySchoolsForNeighborhood(townSlug, neighborhoodCenter)
-        : getSchoolsForTown(townSlug);
+        ? getNearbySchoolsForNeighborhood(townSlug, neighborhoodCenter, tenantContext)
+        : getSchoolsForTown(townSlug, tenantContext);
 
     if (!result) {
         return (

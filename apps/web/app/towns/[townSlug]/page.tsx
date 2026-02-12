@@ -281,14 +281,14 @@ export default async function TownPage({
                 {/* Demographics Section */}
                 <section className="py-16 bg-stone-50 border-b border-stone-100">
                     <Container>
-                        <AtAGlanceModule townSlug={townSlug} townName={town.name} />
+                        <AtAGlanceModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
                     </Container>
                 </section>
 
                 {/* Schools Section */}
                 <section className="py-16 bg-white border-b border-stone-100">
                     <Container>
-                        <SchoolsModule townSlug={townSlug} townName={town.name} />
+                        <SchoolsModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
                     </Container>
                 </section>
 
@@ -296,7 +296,7 @@ export default async function TownPage({
                 <section className="py-16 bg-stone-50 border-b border-stone-100">
                     <Container>
                         <div className="max-w-2xl mx-auto">
-                            <TaxesModule townSlug={townSlug} townName={town.name} />
+                            <TaxesModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
                         </div>
                     </Container>
                 </section>
@@ -362,6 +362,7 @@ export default async function TownPage({
                             townSlug={townSlug}
                             townName={town.name}
                             center={TOWN_CENTERS[townSlug]}
+                            tenantContext={tenantContext}
                         />
                     </Container>
                 </section>

@@ -29,6 +29,7 @@ import { ListingModal } from "./ListingModal";
 import { useSavedListings } from "./hooks/useSavedListings";
 import { useSavedSearches } from "./hooks/useSavedSearches";
 import { SavedSearchesModal, SaveSearchDialog } from "./SavedSearchesModal";
+import type { TenantScope } from "../lib/data/providers/tenant-context";
 
 const HomeSearchMap = dynamic(() => import("./HomeSearchMap"), { ssr: false });
 
@@ -45,10 +46,12 @@ function AddressSearchBar({
   onSelect,
   initialValue = "",
   onChange,
+  tenantContext,
 }: {
   onSelect: (listing: Listing) => void;
   initialValue?: string;
   onChange?: (value: string) => void;
+  tenantContext?: TenantScope;
 }) {
   const [query, setQuery] = useState(initialValue);
   const [suggestions, setSuggestions] = useState<Listing[]>([]);
@@ -65,7 +68,7 @@ function AddressSearchBar({
       }
 
       try {
-        const results = await suggestListings({ q: query, limit: 6 });
+        const results = await suggestListings({ q: query, limit: 6, tenantContext });
         setSuggestions(results);
       } catch (error) {
         console.error("Failed to fetch suggestions:", error);
@@ -73,7 +76,7 @@ function AddressSearchBar({
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, tenantContext]);
 
   // Handle outside click
   useEffect(() => {
@@ -187,7 +190,7 @@ function AddressSearchBar({
   );
 }
 
-export default function HomeSearchClient() {
+export default function HomeSearchClient({ tenantContext }: { tenantContext?: TenantScope }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -358,6 +361,7 @@ export default function HomeSearchClient() {
       try {
         const result = await searchListings({
           scope: "global",
+          tenantContext,
           townSlugs: townSlugs.length ? townSlugs : undefined,
           neighborhoodSlugs: neighborhoodSlugs.length ? neighborhoodSlugs : undefined,
           bounds: nextBounds,
@@ -376,7 +380,7 @@ export default function HomeSearchClient() {
         setLoading(false);
       }
     },
-    [filters, neighborhoodSlugs, searchQuery, sort, townSlugs]
+    [filters, neighborhoodSlugs, searchQuery, sort, tenantContext, townSlugs]
   );
 
   useEffect(() => {
@@ -506,6 +510,7 @@ export default function HomeSearchClient() {
                 <AddressSearchBar
                   initialValue={searchQuery}
                   onChange={setSearchQuery}
+                  tenantContext={tenantContext}
                   onSelect={(listing) => {
                     openListing(listing);
                     // Optional: Center map on listing
