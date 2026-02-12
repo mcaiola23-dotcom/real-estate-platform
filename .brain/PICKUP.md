@@ -4,7 +4,7 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Upgrade tenant persistence from seed-backed storage in `packages/db` to durable DB + migrations, then implement Phase 1 website module registry/toggles.
+- Upgrade tenant persistence from seed-backed storage in `packages/db` to durable DB + migrations.
 
 ## Why This Is Next
 - Tenant-aware request flow is now in place in `apps/web`.
@@ -26,13 +26,13 @@ Use this file to start the next session quickly. Update it at the end of every w
 - Completed: `apps/web/next.config.ts` sets `experimental.externalDir` and `turbopack.root` for stable monorepo dev resolution.
 - Completed: docs updated in `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, and `.brain/DECISIONS_LOG.md`.
 - Validation: `npm run lint --workspace @real-estate/web -- app/lib/tenant/resolve-tenant.ts app/api/lead/route.ts app/api/valuation/route.ts scripts/check-tenant-resolution.ts` passes; `npm run lint --workspace @real-estate/web -- app/lib/tenant/resolve-tenant.ts app/api/user/profile/route.ts app/api/user/sync/route.ts app/lib/data/providers/walkscore.provider.ts app/lib/data/providers/places.provider.ts` passes; `npm run lint --workspace @real-estate/web -- app/lib/data/providers/tenant-context.ts app/lib/data/providers/atAGlance.provider.ts app/lib/data/providers/taxes.provider.ts app/lib/data/providers/schools.provider.ts app/lib/data/providers/listings.types.ts app/components/data/AtAGlanceModule.tsx app/components/data/TaxesModule.tsx app/components/data/SchoolsModule.tsx app/home-search/page.tsx` passes; `npm run build --workspace @real-estate/web` passes.
+- Environment note: local untracked artifacts exist at repo root (`node_modules/`, `package-lock.json`) from workspace install; they are intentionally uncommitted.
 
 ## First Actions Next Session
 1. Choose and scaffold durable storage in `packages/db` (schema + migration workflow) for `Tenant` and `TenantDomain`.
 2. Replace in-memory seed arrays in `packages/db/src/tenants.ts` with durable data access queries.
 3. Add migration/seed strategy for baseline Fairfield tenant/domain records.
-4. Introduce `WebsiteConfig`/`ModuleConfig` contract + storage primitives for tenant module toggles.
-5. Update `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, and `.brain/DECISIONS_LOG.md`.
+4. Update `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, and `.brain/DECISIONS_LOG.md`.
 
 ## Constraints To Keep
 - Maintain tenant isolation assumptions.
