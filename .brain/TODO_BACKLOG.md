@@ -8,6 +8,7 @@
 - [x] Define shared domain and event types.
 - [x] Stand up tenant/domain schema.
 - [ ] Complete tenant context threading through remaining website APIs and data providers.
+- [ ] Complete tenant context threading through remaining client-side/static data providers.
 - [ ] Replace seed-backed tenant persistence with durable data store + migrations.
 
 ## Next

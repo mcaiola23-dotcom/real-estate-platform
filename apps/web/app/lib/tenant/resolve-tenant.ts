@@ -1,5 +1,5 @@
-import { getDefaultTenantRecord, getTenantRecordByHostname } from '@real-estate/db/tenants';
-import type { TenantContext, TenantRecord, TenantResolutionSource } from '@real-estate/types/tenant';
+import { getDefaultTenantRecord, getTenantRecordByHostname } from '@real-estate/db';
+import type { TenantContext, TenantRecord, TenantResolutionSource } from '@real-estate/types';
 
 export const TENANT_HEADER_NAMES = {
   tenantId: 'x-tenant-id',
@@ -69,10 +69,14 @@ export function resolveTenantFromHost(hostHeader: string | null): TenantContext 
 }
 
 export function getTenantContextFromRequest(request: Request): TenantContext {
-  const tenantId = request.headers.get(TENANT_HEADER_NAMES.tenantId);
-  const tenantSlug = request.headers.get(TENANT_HEADER_NAMES.tenantSlug);
-  const tenantDomain = request.headers.get(TENANT_HEADER_NAMES.tenantDomain);
-  const source = request.headers.get(TENANT_HEADER_NAMES.tenantResolution);
+  return getTenantContextFromHeaders(request.headers);
+}
+
+export function getTenantContextFromHeaders(headers: Headers): TenantContext {
+  const tenantId = headers.get(TENANT_HEADER_NAMES.tenantId);
+  const tenantSlug = headers.get(TENANT_HEADER_NAMES.tenantSlug);
+  const tenantDomain = headers.get(TENANT_HEADER_NAMES.tenantDomain);
+  const source = headers.get(TENANT_HEADER_NAMES.tenantResolution);
 
   if (tenantId && tenantSlug && tenantDomain && isTenantResolutionSource(source)) {
     return {
@@ -83,5 +87,5 @@ export function getTenantContextFromRequest(request: Request): TenantContext {
     };
   }
 
-  return resolveTenantFromHost(request.headers.get('host'));
+  return resolveTenantFromHost(headers.get('host'));
 }

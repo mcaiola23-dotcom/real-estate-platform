@@ -15,6 +15,7 @@
 
 import { DATA_CONFIG, PLACES_CONFIG, isProviderEnabled } from '../config';
 import { getWithCache, getCacheEntry } from '../cache/sanityCache';
+import type { TenantContext } from '@real-estate/types';
 
 export type PoiCategory = 'coffee' | 'restaurants' | 'parksTrails' | 'shopping' | 'fitness' | 'family';
 
@@ -107,6 +108,7 @@ export async function getPois(params: {
     neighborhoodSlug?: string;
     neighborhoodId?: string;
     categories?: PoiCategory[];
+    tenantContext?: Pick<TenantContext, 'tenantId' | 'tenantSlug' | 'tenantDomain'>;
 }): Promise<PlacesResult> {
     const {
         townSlug,
@@ -118,6 +120,7 @@ export async function getPois(params: {
         neighborhoodSlug,
         neighborhoodId,
         categories = PLACES_CONFIG.categories as unknown as PoiCategory[],
+        tenantContext,
     } = params;
 
     // Check if Google Places is enabled
@@ -131,6 +134,7 @@ export async function getPois(params: {
             neighborhoodSlug,
             neighborhoodId,
             categories,
+            tenantContext,
         });
 
         if (googleResult && googleResult.pois.length > 0) {
@@ -154,9 +158,11 @@ async function getGooglePlacesPois(params: {
     neighborhoodSlug?: string;
     neighborhoodId?: string;
     categories: PoiCategory[];
+    tenantContext?: Pick<TenantContext, 'tenantId' | 'tenantSlug' | 'tenantDomain'>;
 }): Promise<PlacesResult | null> {
-    const { townSlug, townId, townName, lat, lng, neighborhoodSlug, neighborhoodId, categories } = params;
+    const { townSlug, townId, townName, lat, lng, neighborhoodSlug, neighborhoodId, categories, tenantContext } = params;
     const scope = neighborhoodSlug ? 'neighborhood' : 'town';
+    const tenantVariantPrefix = `tenant:${tenantContext?.tenantId || 'default'}`;
 
     // Try to get all categories from cache
     const allPois: Poi[] = [];
@@ -164,7 +170,7 @@ async function getGooglePlacesPois(params: {
     let latestFetchedAt = new Date().toISOString();
 
     for (const category of categories) {
-        const variant = category;
+        const variant = `${tenantVariantPrefix}:${category}`;
         
         // Check cache first
         const cached = await getCacheEntry<Poi[]>({

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { getNeighborhoodBySlug } from "../../../lib/sanity.queries";
 import { PortableText } from "@portabletext/react";
 import TownHero from "../../../components/TownHero";
@@ -20,6 +21,7 @@ import { ListingsModule } from "../../../components/data/ListingsModule";
 import { getWalkScore } from "../../../lib/data/providers/walkscore.provider";
 import { getPois } from "../../../lib/data/providers/places.provider";
 import { TOWN_CENTERS } from "../../../lib/data/town-centers";
+import { getTenantContextFromHeaders } from "../../../lib/tenant/resolve-tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -91,6 +93,7 @@ export default async function NeighborhoodPage({
     params: Promise<{ townSlug: string; neighborhoodSlug: string }>;
 }) {
     const { townSlug, neighborhoodSlug } = await params;
+    const tenantContext = getTenantContextFromHeaders(await headers());
     const neighborhood = await getNeighborhoodBySlug(townSlug, neighborhoodSlug);
 
     if (!neighborhood) {
@@ -119,6 +122,7 @@ export default async function NeighborhoodPage({
             neighborhoodSlug,
             neighborhoodId: neighborhood._id,
             address: `${neighborhood.name}, ${townName}, CT`,
+            tenantContext,
         });
     }
 

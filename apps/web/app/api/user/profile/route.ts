@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { createClient } from '@sanity/client';
+import { getTenantContextFromRequest } from '../../../lib/tenant/resolve-tenant';
 
 /**
  * Sanity client with write access for user profile operations
@@ -19,9 +20,10 @@ const sanityClient = createClient({
  * Fetches the current user's profile from Sanity.
  * Creates a new profile if one doesn't exist.
  */
-export async function GET() {
+export async function GET(request: Request) {
     try {
         const { userId } = await auth();
+        const tenantContext = getTenantContextFromRequest(request);
 
         if (!userId) {
             return NextResponse.json(
@@ -31,12 +33,23 @@ export async function GET() {
         }
 
         // Fetch existing profile
-        const profile = await sanityClient.fetch(
-            `*[_type == "userProfile" && clerkId == $clerkId][0]`,
-            { clerkId: userId }
+        let profile = await sanityClient.fetch(
+            `*[_type == "userProfile" && clerkId == $clerkId && (!defined(tenantId) || tenantId == $tenantId)][0]`,
+            { clerkId: userId, tenantId: tenantContext.tenantId }
         );
 
         if (profile) {
+            if (!profile.tenantId) {
+                profile = await sanityClient
+                    .patch(profile._id)
+                    .set({
+                        tenantId: tenantContext.tenantId,
+                        tenantSlug: tenantContext.tenantSlug,
+                        tenantDomain: tenantContext.tenantDomain,
+                        updatedAt: new Date().toISOString(),
+                    })
+                    .commit();
+            }
             return NextResponse.json({ profile });
         }
 
@@ -48,6 +61,9 @@ export async function GET() {
             email: user?.emailAddresses?.[0]?.emailAddress || '',
             firstName: user?.firstName || '',
             lastName: user?.lastName || '',
+            tenantId: tenantContext.tenantId,
+            tenantSlug: tenantContext.tenantSlug,
+            tenantDomain: tenantContext.tenantDomain,
             savedHomes: [],
             savedSearches: [],
             createdAt: new Date().toISOString(),

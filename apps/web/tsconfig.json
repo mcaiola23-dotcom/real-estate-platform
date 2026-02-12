@@ -20,9 +20,9 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@real-estate/db": ["../../packages/db/src/index.ts"],
+      "@real-estate/db": ["../../packages/db/src/index"],
       "@real-estate/db/*": ["../../packages/db/src/*"],
-      "@real-estate/types": ["../../packages/types/src/index.ts"],
+      "@real-estate/types": ["../../packages/types/src/index"],
       "@real-estate/types/*": ["../../packages/types/src/*"]
     }
   },

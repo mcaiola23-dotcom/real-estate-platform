@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { createClient } from '@sanity/client';
+import { getTenantContextFromRequest } from '../../../lib/tenant/resolve-tenant';
 
 /**
  * Sanity client with write access for user sync operations
@@ -32,6 +33,7 @@ interface SyncRequestBody {
 export async function POST(request: NextRequest) {
     try {
         const { userId } = await auth();
+        const tenantContext = getTenantContextFromRequest(request);
 
         if (!userId) {
             return NextResponse.json(
@@ -45,8 +47,8 @@ export async function POST(request: NextRequest) {
 
         // Fetch existing profile or create new one
         let profile = await sanityClient.fetch(
-            `*[_type == "userProfile" && clerkId == $clerkId][0]`,
-            { clerkId: userId }
+            `*[_type == "userProfile" && clerkId == $clerkId && (!defined(tenantId) || tenantId == $tenantId)][0]`,
+            { clerkId: userId, tenantId: tenantContext.tenantId }
         );
 
         if (!profile) {
@@ -58,11 +60,24 @@ export async function POST(request: NextRequest) {
                 email: user?.emailAddresses?.[0]?.emailAddress || '',
                 firstName: user?.firstName || '',
                 lastName: user?.lastName || '',
+                tenantId: tenantContext.tenantId,
+                tenantSlug: tenantContext.tenantSlug,
+                tenantDomain: tenantContext.tenantDomain,
                 savedHomes: [],
                 savedSearches: [],
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             });
+        } else if (!profile.tenantId) {
+            profile = await sanityClient
+                .patch(profile._id)
+                .set({
+                    tenantId: tenantContext.tenantId,
+                    tenantSlug: tenantContext.tenantSlug,
+                    tenantDomain: tenantContext.tenantDomain,
+                    updatedAt: new Date().toISOString(),
+                })
+                .commit();
         }
 
         // Merge saved homes (union of local + cloud, no duplicates)
@@ -110,6 +125,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
     try {
         const { userId } = await auth();
+        const tenantContext = getTenantContextFromRequest(request);
 
         if (!userId) {
             return NextResponse.json(
@@ -130,8 +146,8 @@ export async function PATCH(request: NextRequest) {
 
         // Fetch existing profile
         const profile = await sanityClient.fetch(
-            `*[_type == "userProfile" && clerkId == $clerkId][0]`,
-            { clerkId: userId }
+            `*[_type == "userProfile" && clerkId == $clerkId && (!defined(tenantId) || tenantId == $tenantId)][0]`,
+            { clerkId: userId, tenantId: tenantContext.tenantId }
         );
 
         if (!profile) {

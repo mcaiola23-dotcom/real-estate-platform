@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { getTownBySlug, getNeighborhoodsByTown } from "../../lib/sanity.queries";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 import TownHero from "../../components/TownHero";
@@ -22,6 +23,7 @@ import { ListingsModule } from "../../components/data/ListingsModule";
 import { getWalkScore } from "../../lib/data/providers/walkscore.provider";
 import { getPois } from "../../lib/data/providers/places.provider";
 import { TOWN_CENTERS } from "../../lib/data/town-centers";
+import { getTenantContextFromHeaders } from "../../lib/tenant/resolve-tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -110,6 +112,7 @@ export default async function TownPage({
     params: Promise<{ townSlug: string }>;
 }) {
     const { townSlug } = await params;
+    const tenantContext = getTenantContextFromHeaders(await headers());
     const town = await getTownBySlug(townSlug);
 
     if (!town) {
@@ -127,6 +130,7 @@ export default async function TownPage({
             townName: town.name,
             lat: town.center.lat,
             lng: town.center.lng,
+            tenantContext,
         });
     }
 
@@ -140,6 +144,7 @@ export default async function TownPage({
             lat: town.center.lat,
             lng: town.center.lng,
             curatedPois: town.curatedPois,
+            tenantContext,
         });
     } else if (town.curatedPois && town.curatedPois.length > 0) {
         // Use curated POIs if no coordinates
@@ -150,6 +155,7 @@ export default async function TownPage({
             lat: 0,
             lng: 0,
             curatedPois: town.curatedPois,
+            tenantContext,
         });
     }
 

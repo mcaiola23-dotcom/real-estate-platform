@@ -7,6 +7,7 @@
 
 import { DATA_CONFIG, isProviderEnabled } from '../config';
 import { getWithCache, getCacheEntry } from '../cache/sanityCache';
+import type { TenantContext } from '@real-estate/types';
 
 export interface WalkScoreData {
     walkScore: number | null;
@@ -44,6 +45,7 @@ export async function getWalkScore(params: {
     address?: string;
     neighborhoodSlug?: string;
     neighborhoodId?: string;
+    tenantContext?: Pick<TenantContext, 'tenantId' | 'tenantSlug' | 'tenantDomain'>;
 }): Promise<WalkScoreResult> {
     const {
         townSlug,
@@ -54,7 +56,9 @@ export async function getWalkScore(params: {
         address,
         neighborhoodSlug,
         neighborhoodId,
+        tenantContext,
     } = params;
+    const tenantVariant = `tenant:${tenantContext?.tenantId || 'default'}`;
 
     // Check if Walk Score is enabled
     if (!isProviderEnabled('walkScore')) {
@@ -77,6 +81,7 @@ export async function getWalkScore(params: {
         scope,
         townSlug,
         neighborhoodSlug,
+        variant: tenantVariant,
     });
 
     if (cached) {
@@ -98,6 +103,7 @@ export async function getWalkScore(params: {
         townId,
         neighborhoodSlug,
         neighborhoodId,
+        variant: tenantVariant,
         fetcher: async () => {
             const data = await fetchWalkScoreFromApi(lat, lng, address || townName);
             return { data, sourceUrl: SOURCE_URL };
