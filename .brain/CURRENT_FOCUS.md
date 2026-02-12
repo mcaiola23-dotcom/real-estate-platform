@@ -9,12 +9,14 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 3. Shared `packages/types` contract baseline is in place and active `apps/web` tenant/event typing now imports from the shared package.
 4. Durable tenant/domain persistence scaffolding now lives in `packages/db` with Prisma schema/migrations/seed flow, while `apps/web` tenant resolution now uses async shared db lookups with edge-safe seed fallback.
 5. Tenant scoping has been added to `apps/web` user profile sync endpoints and server-side town data providers (`walkscore`/`places`) now receive tenant context with tenant-specific cache variants.
-6. Explicit tenant context interfaces are now threaded through remaining client-side/static data providers (`atAGlance`, `taxes`, `schools`, `listings`) and their key call sites (`town` pages and `home-search`).
+6. Explicit tenant context interfaces are now threaded through remaining client-side/static data providers (`atAGlance`, `taxes`, `schools`, `listings`) and their key call sites (`town` pages and `home-search`), with tenant-scoped module toggle gating now applied in town/neighborhood module rendering paths.
+7. Prisma runtime hardening is now in place in `packages/db` (`prisma-client`, tenant/module lookup fallbacks), so tenant resolution and module loading degrade to seed-backed behavior instead of failing page renders when local Prisma runtime/state is unavailable.
 
 ## Immediate Next Steps
-- Implement website module registry + tenant module toggle system (`WebsiteConfig`/`ModuleConfig`) to advance Phase 1 exit criteria.
 - Expand `packages/types` coverage as additional CRM/control-plane entities are introduced.
 - Create CRM app skeleton and auth integration.
+- Build lead/contact/activity database model for CRM runtime.
+- Resolve local Prisma engine file-lock issue blocking consistent `db:generate` runs on this Windows environment.
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -33,6 +35,16 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 - `npm run db:generate --workspace @real-estate/db` passes.
 - `npm run db:migrate:deploy --workspace @real-estate/db` passes and applies migration `202602120001_init_tenant_tables` to `packages/db/prisma/dev.db`.
 - `npm run db:seed --workspace @real-estate/db` passes and seeds baseline Fairfield tenant/domain records.
+- `npm run lint --workspace @real-estate/web -- app/lib/modules/tenant-modules.ts scripts/check-module-toggles.ts app/lib/tenant/resolve-tenant.ts proxy.ts` passes.
+- `npm run build --workspace @real-estate/web` passes after introducing tenant module toggle registry consumption in town/neighborhood pages.
+- `./node_modules/.bin/tsx.cmd apps/web/scripts/check-module-toggles.ts` passes with `Tenant module toggle checks passed.`
+- `./node_modules/.bin/tsx.cmd apps/web/scripts/check-tenant-resolution.ts` passes with `Tenant resolution checks passed.`
+- `npm run db:migrate:deploy --workspace @real-estate/db` passes after applying migration `202602120002_add_website_module_config`.
+- `npm run db:seed --workspace @real-estate/db` passes with SQL seed flow for tenant website/module config baseline.
+- `npm run db:generate --workspace @real-estate/db` currently fails in this environment with Windows file-lock `EPERM` on Prisma engine DLL rename (`node_modules/.prisma/client/query_engine-windows.dll.node`).
+- Browser runtime regression resolved: Prisma client/query init failures in tenant lookup paths now fall back safely to seed-backed tenant/module config data instead of throwing server-render errors.
+- `npm run lint --workspace @real-estate/web -- app/lib/tenant/resolve-tenant.ts app/lib/modules/tenant-modules.ts scripts/check-tenant-resolution.ts scripts/check-module-toggles.ts` passes after runtime hardening updates.
+- `npm run build --workspace @real-estate/web` passes after Prisma fallback and DB URL resolution updates.
 
 ## Do Not Do Yet
 - Do not start listing portal product build.

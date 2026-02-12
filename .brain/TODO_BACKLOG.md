@@ -13,11 +13,12 @@
 
 ## Next
 - [x] Build tenant resolver middleware by host header.
-- [ ] Implement website module registry + toggle system.
+- [x] Implement website module registry + toggle system.
 - [x] Install `@real-estate/db` workspace dependencies and run Prisma generate/migrate/seed locally.
 - [ ] Create CRM app skeleton and auth integration.
 - [ ] Build lead/contact/activity database model.
 - [ ] Add event ingestion pipeline from website actions to CRM.
+- [ ] Resolve local Prisma engine file-lock issue impacting `db:generate` reliability on Windows dev environment.
 
 ## AI Roadmap
 - [ ] Create prompt registry and versioning.

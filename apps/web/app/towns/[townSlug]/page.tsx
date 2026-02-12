@@ -24,6 +24,7 @@ import { getWalkScore } from "../../lib/data/providers/walkscore.provider";
 import { getPois } from "../../lib/data/providers/places.provider";
 import { TOWN_CENTERS } from "../../lib/data/town-centers";
 import { getTenantContextFromHeaders } from "../../lib/tenant/resolve-tenant";
+import { getTenantModuleToggles } from "../../lib/modules/tenant-modules";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +114,7 @@ export default async function TownPage({
 }) {
     const { townSlug } = await params;
     const tenantContext = await getTenantContextFromHeaders(await headers());
+    const moduleToggles = await getTenantModuleToggles(tenantContext);
     const town = await getTownBySlug(townSlug);
 
     if (!town) {
@@ -123,7 +125,7 @@ export default async function TownPage({
 
     // Fetch Walk Score data if center coordinates are available
     let walkScoreResult = null;
-    if (town.center?.lat && town.center?.lng) {
+    if (moduleToggles.walk_score && town.center?.lat && town.center?.lng) {
         walkScoreResult = await getWalkScore({
             townSlug,
             townId: town._id,
@@ -136,7 +138,7 @@ export default async function TownPage({
 
     // Fetch POIs data
     let poisResult = null;
-    if (town.center?.lat && town.center?.lng) {
+    if (moduleToggles.points_of_interest && town.center?.lat && town.center?.lng) {
         poisResult = await getPois({
             townSlug,
             townId: town._id,
@@ -146,7 +148,7 @@ export default async function TownPage({
             curatedPois: town.curatedPois,
             tenantContext,
         });
-    } else if (town.curatedPois && town.curatedPois.length > 0) {
+    } else if (moduleToggles.points_of_interest && town.curatedPois && town.curatedPois.length > 0) {
         // Use curated POIs if no coordinates
         poisResult = await getPois({
             townSlug,
@@ -279,48 +281,61 @@ export default async function TownPage({
                 )}
 
                 {/* Demographics Section */}
-                <section className="py-16 bg-stone-50 border-b border-stone-100">
-                    <Container>
-                        <AtAGlanceModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
-                    </Container>
-                </section>
+                {moduleToggles.at_a_glance && (
+                    <section className="py-16 bg-stone-50 border-b border-stone-100">
+                        <Container>
+                            <AtAGlanceModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
+                        </Container>
+                    </section>
+                )}
 
                 {/* Schools Section */}
-                <section className="py-16 bg-white border-b border-stone-100">
-                    <Container>
-                        <SchoolsModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
-                    </Container>
-                </section>
+                {moduleToggles.schools && (
+                    <section className="py-16 bg-white border-b border-stone-100">
+                        <Container>
+                            <SchoolsModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
+                        </Container>
+                    </section>
+                )}
 
                 {/* Property Taxes Section */}
-                <section className="py-16 bg-stone-50 border-b border-stone-100">
-                    <Container>
-                        <div className="max-w-2xl mx-auto">
-                            <TaxesModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
-                        </div>
-                    </Container>
-                </section>
+                {moduleToggles.taxes && (
+                    <section className="py-16 bg-stone-50 border-b border-stone-100">
+                        <Container>
+                            <div className="max-w-2xl mx-auto">
+                                <TaxesModule townSlug={townSlug} townName={town.name} tenantContext={tenantContext} />
+                            </div>
+                        </Container>
+                    </section>
+                )}
 
                 {/* Walk Score & POIs Section */}
-                <section className="py-16 bg-white border-b border-stone-100">
-                    <Container>
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {/* Walk Score */}
-                            {walkScoreResult ? (
-                                <WalkScoreModule result={walkScoreResult} locationName={town.name} />
-                            ) : (
-                                <WalkScoreModulePlaceholder />
-                            )}
-
-                            {/* POIs */}
-                            {poisResult && poisResult.pois.length > 0 ? (
-                                <PoisModule result={poisResult} locationName={town.name} />
-                            ) : (
-                                <PoisModulePlaceholder locationName={town.name} />
-                            )}
-                        </div>
-                    </Container>
-                </section>
+                {(moduleToggles.walk_score || moduleToggles.points_of_interest) && (
+                    <section className="py-16 bg-white border-b border-stone-100">
+                        <Container>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                {moduleToggles.walk_score && (
+                                    <>
+                                        {walkScoreResult ? (
+                                            <WalkScoreModule result={walkScoreResult} locationName={town.name} />
+                                        ) : (
+                                            <WalkScoreModulePlaceholder />
+                                        )}
+                                    </>
+                                )}
+                                {moduleToggles.points_of_interest && (
+                                    <>
+                                        {poisResult && poisResult.pois.length > 0 ? (
+                                            <PoisModule result={poisResult} locationName={town.name} />
+                                        ) : (
+                                            <PoisModulePlaceholder locationName={town.name} />
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </Container>
+                    </section>
+                )}
 
                 {/* Neighborhoods */}
                 <section className="py-16 border-b border-stone-100">
@@ -356,16 +371,18 @@ export default async function TownPage({
 
 
                 {/* Listings Section */}
-                <section className="py-16 bg-white">
-                    <Container>
-                        <ListingsModule
-                            townSlug={townSlug}
-                            townName={town.name}
-                            center={TOWN_CENTERS[townSlug]}
-                            tenantContext={tenantContext}
-                        />
-                    </Container>
-                </section>
+                {moduleToggles.listings && (
+                    <section className="py-16 bg-white">
+                        <Container>
+                            <ListingsModule
+                                townSlug={townSlug}
+                                townName={town.name}
+                                center={TOWN_CENTERS[townSlug]}
+                                tenantContext={tenantContext}
+                            />
+                        </Container>
+                    </section>
+                )}
 
                 {/* Similar Towns */}
                 <SimilarTownsSection currentTownSlug={townSlug} />

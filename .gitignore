@@ -3,3 +3,4 @@ node_modules/
 packages/db/node_modules/
 packages/db/prisma/*.db
 packages/db/prisma/*.db-journal
+packages/db/prisma/packages/

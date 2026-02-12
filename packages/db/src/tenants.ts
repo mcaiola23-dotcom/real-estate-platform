@@ -1,6 +1,7 @@
 import type { Tenant, TenantDomain, TenantRecord } from '@real-estate/types/tenant';
 
 import { DEFAULT_TENANT_ID, SEED_TENANT_DOMAINS, SEED_TENANTS } from './seed-data';
+import { getPrismaClient } from './prisma-client';
 
 function normalizeHostname(hostname: string): string {
   return hostname.trim().toLowerCase();
@@ -51,86 +52,51 @@ function resolveSeedTenantRecordByHostname(hostname: string): TenantRecord | nul
   return toTenantRecord(tenant, domain);
 }
 
-function isEdgeRuntime(): boolean {
-  return typeof (globalThis as { EdgeRuntime?: string }).EdgeRuntime !== 'undefined' || process.env.NEXT_RUNTIME === 'edge';
-}
-
-let prismaClientPromise: Promise<any | null> | null = null;
-
-async function getPrismaClient(): Promise<any | null> {
-  if (isEdgeRuntime()) {
-    return null;
-  }
-
-  if (!prismaClientPromise) {
-    prismaClientPromise = (async () => {
-      try {
-        if (!process.env.DATABASE_URL) {
-          process.env.DATABASE_URL = 'file:./packages/db/prisma/dev.db';
-        }
-
-        const dynamicImport = new Function('moduleName', 'return import(moduleName);') as (
-          moduleName: string
-        ) => Promise<{ PrismaClient?: new () => any }>;
-        const prismaModule = await dynamicImport('@prisma/client');
-        if (!prismaModule.PrismaClient) {
-          return null;
-        }
-
-        const { PrismaClient } = prismaModule;
-        const globalWithPrisma = globalThis as { __realEstatePrismaClient?: any };
-        globalWithPrisma.__realEstatePrismaClient ??= new PrismaClient();
-        return globalWithPrisma.__realEstatePrismaClient;
-      } catch {
-        return null;
-      }
-    })();
-  }
-
-  return prismaClientPromise;
-}
-
 export async function getDefaultTenantRecord(): Promise<TenantRecord> {
   const prisma = await getPrismaClient();
   if (!prisma) {
     return resolveSeedDefaultTenantRecord();
   }
 
-  const byDefaultId = await prisma.tenant.findUnique({
-    where: { id: DEFAULT_TENANT_ID },
-    include: {
-      domains: {
-        where: {
-          isPrimary: true,
-          isVerified: true,
+  try {
+    const byDefaultId = await prisma.tenant.findUnique({
+      where: { id: DEFAULT_TENANT_ID },
+      include: {
+        domains: {
+          where: {
+            isPrimary: true,
+            isVerified: true,
+          },
+          orderBy: { createdAt: 'asc' },
+          take: 1,
         },
-        orderBy: { createdAt: 'asc' },
-        take: 1,
       },
-    },
-  });
+    });
 
-  if (byDefaultId && byDefaultId.status === 'active' && byDefaultId.domains[0]) {
-    return toTenantRecord(byDefaultId, byDefaultId.domains[0]);
-  }
+    if (byDefaultId && byDefaultId.status === 'active' && byDefaultId.domains[0]) {
+      return toTenantRecord(byDefaultId, byDefaultId.domains[0]);
+    }
 
-  const firstActiveTenant = await prisma.tenant.findFirst({
-    where: { status: 'active' },
-    include: {
-      domains: {
-        where: {
-          isPrimary: true,
-          isVerified: true,
+    const firstActiveTenant = await prisma.tenant.findFirst({
+      where: { status: 'active' },
+      include: {
+        domains: {
+          where: {
+            isPrimary: true,
+            isVerified: true,
+          },
+          orderBy: { createdAt: 'asc' },
+          take: 1,
         },
-        orderBy: { createdAt: 'asc' },
-        take: 1,
       },
-    },
-    orderBy: { createdAt: 'asc' },
-  });
+      orderBy: { createdAt: 'asc' },
+    });
 
-  if (firstActiveTenant && firstActiveTenant.domains[0]) {
-    return toTenantRecord(firstActiveTenant, firstActiveTenant.domains[0]);
+    if (firstActiveTenant && firstActiveTenant.domains[0]) {
+      return toTenantRecord(firstActiveTenant, firstActiveTenant.domains[0]);
+    }
+  } catch {
+    return resolveSeedDefaultTenantRecord();
   }
 
   return resolveSeedDefaultTenantRecord();
@@ -140,26 +106,30 @@ export async function getTenantRecordByHostname(hostname: string): Promise<Tenan
   const normalized = normalizeHostname(hostname);
   const prisma = await getPrismaClient();
   if (prisma) {
-    const domain = await prisma.tenantDomain.findFirst({
-      where: {
-        hostnameNormalized: normalized,
-        isVerified: true,
-        tenant: {
-          status: 'active',
-        },
-      },
-      include: {
-        tenant: {
-          select: {
-            id: true,
-            slug: true,
+    try {
+      const domain = await prisma.tenantDomain.findFirst({
+        where: {
+          hostnameNormalized: normalized,
+          isVerified: true,
+          tenant: {
+            status: 'active',
           },
         },
-      },
-    });
+        include: {
+          tenant: {
+            select: {
+              id: true,
+              slug: true,
+            },
+          },
+        },
+      });
 
-    if (domain?.tenant) {
-      return toTenantRecord(domain.tenant, domain);
+      if (domain?.tenant) {
+        return toTenantRecord(domain.tenant, domain);
+      }
+    } catch {
+      return resolveSeedTenantRecordByHostname(normalized);
     }
   }
 

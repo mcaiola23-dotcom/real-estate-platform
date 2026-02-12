@@ -7,11 +7,12 @@
     "db:generate": "prisma generate --schema prisma/schema.prisma",
     "db:migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
-    "db:seed": "node prisma/seed.mjs"
+    "db:seed": "prisma db execute --schema prisma/schema.prisma --file prisma/seed.sql"
   },
   "exports": {
     ".": "./src/index.ts",
-    "./tenants": "./src/tenants.ts"
+    "./tenants": "./src/tenants.ts",
+    "./website-config": "./src/website-config.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
@@ -21,7 +22,7 @@
     "prisma": "^6.16.3"
   },
   "prisma": {
-    "seed": "node prisma/seed.mjs"
+    "seed": "prisma db execute --schema prisma/schema.prisma --file prisma/seed.sql"
   },
   "types": "./src/index.ts"
 }

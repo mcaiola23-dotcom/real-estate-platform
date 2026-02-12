@@ -22,6 +22,7 @@ import { getWalkScore } from "../../../lib/data/providers/walkscore.provider";
 import { getPois } from "../../../lib/data/providers/places.provider";
 import { TOWN_CENTERS } from "../../../lib/data/town-centers";
 import { getTenantContextFromHeaders } from "../../../lib/tenant/resolve-tenant";
+import { getTenantModuleToggles } from "../../../lib/modules/tenant-modules";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,7 @@ export default async function NeighborhoodPage({
 }) {
     const { townSlug, neighborhoodSlug } = await params;
     const tenantContext = await getTenantContextFromHeaders(await headers());
+    const moduleToggles = await getTenantModuleToggles(tenantContext);
     const neighborhood = await getNeighborhoodBySlug(townSlug, neighborhoodSlug);
 
     if (!neighborhood) {
@@ -112,7 +114,7 @@ export default async function NeighborhoodPage({
 
     // Fetch Walk Score data if coordinates are available
     let walkScoreResult = null;
-    if (hasCenterCoords) {
+    if (moduleToggles.walk_score && hasCenterCoords) {
         walkScoreResult = await getWalkScore({
             townSlug,
             townId,
@@ -184,7 +186,7 @@ export default async function NeighborhoodPage({
                 )}
 
                 {/* Walk Score Section */}
-                {walkScoreResult && (
+                {moduleToggles.walk_score && walkScoreResult && (
                     <section className="max-w-3xl mx-auto mb-16">
                         <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-6">
                             Walkability & Transit
@@ -196,16 +198,18 @@ export default async function NeighborhoodPage({
                 )}
 
                 {/* Listings Section */}
-                <section>
-                    <ListingsModule
-                        townSlug={townSlug}
-                        townName={townName}
-                        neighborhoodSlug={neighborhoodSlug}
-                        neighborhoodName={neighborhood.name}
-                        center={TOWN_CENTERS[townSlug]}
-                        tenantContext={tenantContext}
-                    />
-                </section>
+                {moduleToggles.listings && (
+                    <section>
+                        <ListingsModule
+                            townSlug={townSlug}
+                            townName={townName}
+                            neighborhoodSlug={neighborhoodSlug}
+                            neighborhoodName={neighborhood.name}
+                            center={TOWN_CENTERS[townSlug]}
+                            tenantContext={tenantContext}
+                        />
+                    </section>
+                )}
             </Container>
 
             {/* CTA Section */}

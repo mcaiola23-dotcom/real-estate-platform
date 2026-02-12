@@ -4,14 +4,15 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Implement website module registry + tenant module toggle system in shared packages (`WebsiteConfig` / `ModuleConfig`).
+- Create CRM app skeleton and auth integration.
 
 ## Why This Is Next
 - Tenant-aware request flow is now in place in `apps/web`.
 - Root workspace setup is complete and unblocks shared package adoption.
 - Shared contracts and tenant-context threading are now in place across active website APIs and data providers.
 - Durable tenant persistence scaffolding and local Prisma generate/migrate/seed flow are now in place.
-- The highest-value remaining Phase 1 gap is tenant-configurable website module controls.
+- Tenant-configurable website module controls are now in place via shared type/db scaffolding and town/neighborhood module gating.
+- The highest-value remaining Phase 1 gap is CRM runtime foundation (`apps/crm` skeleton + auth + core data model).
 
 ## Current Snapshot
 - Completed: host-based tenant resolver + tenant header stamping in `apps/web/proxy.ts`.
@@ -28,15 +29,21 @@ Use this file to start the next session quickly. Update it at the end of every w
 - Completed: `packages/db` now includes Prisma schema, initial tenant/domain migration SQL, and seed script (`packages/db/prisma/*`).
 - Completed: `apps/web` tenant resolution helpers and key call sites now use async shared db lookups with runtime-safe edge fallback.
 - Completed: local dependency install and Prisma setup flow (`db:generate`, `db:migrate:deploy`, `db:seed`) for durable tenant records.
+- Completed: shared website/module contracts in `packages/types/src/website-config.ts` and exports via `packages/types/src/index.ts`.
+- Completed: tenant website/module config persistence scaffolding in `packages/db` (`src/website-config.ts`, schema + migration `202602120002_add_website_module_config`, SQL seed baseline).
+- Completed: tenant-scoped module registry consumption in `apps/web` town and neighborhood pages via `apps/web/app/lib/modules/tenant-modules.ts`.
+- Completed: module toggle validation coverage in `apps/web/scripts/check-module-toggles.ts`.
+- Completed: runtime-safe Prisma fallback hardening in `packages/db` (`src/prisma-client.ts`, `src/tenants.ts`, `src/website-config.ts`) to prevent page crashes when Prisma runtime lookups fail.
 - Completed: docs updated in `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, and `.brain/DECISIONS_LOG.md`.
-- Validation: `npm run lint --workspace @real-estate/web -- app/lib/tenant/resolve-tenant.ts proxy.ts app/api/lead/route.ts app/api/valuation/route.ts app/api/user/profile/route.ts app/api/user/sync/route.ts scripts/check-tenant-resolution.ts` passes; `npm run build --workspace @real-estate/web` passes; `npm run db:generate --workspace @real-estate/db` passes; `npm run db:migrate:deploy --workspace @real-estate/db` passes; `npm run db:seed --workspace @real-estate/db` passes.
+- Validation: `npm run lint --workspace @real-estate/web -- app/lib/modules/tenant-modules.ts scripts/check-module-toggles.ts app/lib/tenant/resolve-tenant.ts proxy.ts` passes; `npm run lint --workspace @real-estate/web -- app/lib/tenant/resolve-tenant.ts app/lib/modules/tenant-modules.ts scripts/check-tenant-resolution.ts scripts/check-module-toggles.ts` passes; `npm run build --workspace @real-estate/web` passes; `./node_modules/.bin/tsx.cmd apps/web/scripts/check-module-toggles.ts` passes; `./node_modules/.bin/tsx.cmd apps/web/scripts/check-tenant-resolution.ts` passes; `npm run db:migrate:deploy --workspace @real-estate/db` passes with new module-config migration; `npm run db:seed --workspace @real-estate/db` passes with SQL seed flow.
+- Validation blocker: `npm run db:generate --workspace @real-estate/db` currently fails in this environment with Windows file lock (`EPERM`) on Prisma engine DLL rename under `node_modules/.prisma/client`.
 - Environment note: workspace dependency artifacts (`node_modules/`) are local-only.
 
 ## First Actions Next Session
-1. Define shared module-config contracts in `packages/types` for `WebsiteConfig` and `ModuleConfig`.
-2. Add durable persistence models and access utilities in `packages/db` for tenant module toggles.
-3. Implement module-registry consumption path in `apps/web` with tenant-scoped module enable/disable behavior.
-4. Add validation coverage for module toggle behavior and update `.brain` tracking docs.
+1. Scaffold `apps/crm` as a Next.js workspace app aligned with monorepo naming and root scripts.
+2. Integrate auth boundary patterns for CRM runtime using shared tenant context assumptions.
+3. Define initial CRM domain contracts (`Lead`, `Contact`, `Activity`) in `packages/types`.
+4. Add initial CRM persistence models in `packages/db` and wire tenant-scoped access helpers.
 
 ## Constraints To Keep
 - Maintain tenant isolation assumptions.
