@@ -1,0 +1,63 @@
+:root {
+  --crm-bg: #f7f7f4;
+  --crm-surface: #ffffff;
+  --crm-border: #d6d3d1;
+  --crm-text: #1f2937;
+  --crm-muted: #6b7280;
+  --crm-accent: #0f766e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--crm-bg);
+  color: var(--crm-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.crm-shell {
+  border: 1px solid var(--crm-border);
+  background: var(--crm-surface);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.crm-muted {
+  color: var(--crm-muted);
+}
+
+.crm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.crm-chip {
+  display: inline-block;
+  border: 1px solid var(--crm-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--crm-muted);
+}
+
+.crm-accent {
+  color: var(--crm-accent);
+  font-weight: 600;
+}

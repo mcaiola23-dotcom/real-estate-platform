@@ -1,5 +1,6 @@
 node_modules/
 .vscode/
+apps/*/.next/
 packages/db/node_modules/
 packages/db/prisma/*.db
 packages/db/prisma/*.db-journal

@@ -49,3 +49,5 @@ export type WebsiteValuationRequestedEvent = DomainEvent<
   'website.valuation.requested',
   WebsiteValuationRequestedPayload
 >;
+
+export type WebsiteEvent = WebsiteLeadSubmittedEvent | WebsiteValuationRequestedEvent;

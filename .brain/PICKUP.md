@@ -4,20 +4,19 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Create CRM app skeleton and auth integration.
+- Build CRM read/write API routes and UI modules for lead pipeline, contacts, and activity timeline.
 
 ## Why This Is Next
 - Tenant-aware request flow is now in place in `apps/web`.
-- Root workspace setup is complete and unblocks shared package adoption.
-- Shared contracts and tenant-context threading are now in place across active website APIs and data providers.
-- Durable tenant persistence scaffolding and local Prisma generate/migrate/seed flow are now in place.
-- Tenant-configurable website module controls are now in place via shared type/db scaffolding and town/neighborhood module gating.
-- The highest-value remaining Phase 1 gap is CRM runtime foundation (`apps/crm` skeleton + auth + core data model).
+- CRM app skeleton and auth boundary are now in place in `apps/crm`.
+- CRM core persistence models (`Contact`, `Lead`, `Activity`, `IngestedEvent`) are now in place in `packages/db`.
+- Website lead and valuation endpoints now ingest into CRM persistence through shared db helpers with idempotency.
+- The highest-value remaining Phase 1 gap is exposing that CRM data through tenant-scoped CRM APIs and operational UI workflows.
 
 ## Current Snapshot
 - Completed: host-based tenant resolver + tenant header stamping in `apps/web/proxy.ts`.
 - Completed: tenant context consumption in `apps/web/app/api/lead/route.ts` and `apps/web/app/api/valuation/route.ts`.
-- Completed: root npm workspace tooling and scripts in top-level `package.json` for `apps/web` + `apps/studio`.
+- Completed: root npm workspace tooling and scripts in top-level `package.json` for `apps/web`, `apps/crm`, and `apps/studio`.
 - Completed: `packages/types` with tenant/domain/event contracts and `apps/web` tenant typing migration to `@real-estate/types`.
 - Completed: `packages/db` tenant/domain persistence baseline with Fairfield seed data and shared tenant lookup functions.
 - Completed: `apps/web/app/lib/tenant/resolve-tenant.ts` now resolves host mappings through `@real-estate/db/tenants`.
@@ -34,16 +33,23 @@ Use this file to start the next session quickly. Update it at the end of every w
 - Completed: tenant-scoped module registry consumption in `apps/web` town and neighborhood pages via `apps/web/app/lib/modules/tenant-modules.ts`.
 - Completed: module toggle validation coverage in `apps/web/scripts/check-module-toggles.ts`.
 - Completed: runtime-safe Prisma fallback hardening in `packages/db` (`src/prisma-client.ts`, `src/tenants.ts`, `src/website-config.ts`) to prevent page crashes when Prisma runtime lookups fail.
+- Completed: `apps/crm` workspace scaffold with Clerk-protected middleware and tenant header stamping (`apps/crm/proxy.ts`), plus auth/session API baseline.
+- Completed: shared CRM contracts in `packages/types/src/crm.ts` and `packages/types/src/events.ts` (`WebsiteEvent` union export).
+- Completed: CRM persistence models/migration in `packages/db/prisma/schema.prisma` and `packages/db/prisma/migrations/202602130001_add_crm_core_models/migration.sql`.
+- Completed: shared CRM ingestion/runtime helpers in `packages/db/src/crm.ts` and exports in `packages/db/src/index.ts`.
+- Completed: website-to-CRM ingestion wiring in `apps/web/app/api/lead/route.ts` and `apps/web/app/api/valuation/route.ts`.
+- Completed: CRM dashboard shell now reads tenant-scoped summary and recent activities from shared db helpers in `apps/crm/app/page.tsx`.
+- Completed: Prisma generate reliability mitigation for Windows lock conditions via `packages/db/scripts/db-generate-safe.mjs` and `@real-estate/db` script updates.
 - Completed: docs updated in `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, and `.brain/DECISIONS_LOG.md`.
-- Validation: `npm run lint --workspace @real-estate/web -- app/lib/modules/tenant-modules.ts scripts/check-module-toggles.ts app/lib/tenant/resolve-tenant.ts proxy.ts` passes; `npm run lint --workspace @real-estate/web -- app/lib/tenant/resolve-tenant.ts app/lib/modules/tenant-modules.ts scripts/check-tenant-resolution.ts scripts/check-module-toggles.ts` passes; `npm run build --workspace @real-estate/web` passes; `./node_modules/.bin/tsx.cmd apps/web/scripts/check-module-toggles.ts` passes; `./node_modules/.bin/tsx.cmd apps/web/scripts/check-tenant-resolution.ts` passes; `npm run db:migrate:deploy --workspace @real-estate/db` passes with new module-config migration; `npm run db:seed --workspace @real-estate/db` passes with SQL seed flow.
-- Validation blocker: `npm run db:generate --workspace @real-estate/db` currently fails in this environment with Windows file lock (`EPERM`) on Prisma engine DLL rename under `node_modules/.prisma/client`.
+- Validation: `npm run db:migrate:deploy --workspace @real-estate/db` passes and applies migration `202602130001_add_crm_core_models`; `npm run db:generate --workspace @real-estate/db` completes via safe wrapper; `npm run db:seed --workspace @real-estate/db` passes; `npm run lint --workspace @real-estate/web -- app/api/lead/route.ts app/api/valuation/route.ts scripts/check-crm-ingestion.ts` passes; `npm run build --workspace @real-estate/web` passes; `npm run build --workspace @real-estate/crm` passes; `./node_modules/.bin/tsx.cmd apps/web/scripts/check-crm-ingestion.ts` passes and validates idempotency.
+- Validation note: `npm run db:generate:direct --workspace @real-estate/db` can still intermittently fail on Windows with `EPERM` during Prisma engine DLL rename; safe `db:generate` is the default mitigation path.
 - Environment note: workspace dependency artifacts (`node_modules/`) are local-only.
 
 ## First Actions Next Session
-1. Scaffold `apps/crm` as a Next.js workspace app aligned with monorepo naming and root scripts.
-2. Integrate auth boundary patterns for CRM runtime using shared tenant context assumptions.
-3. Define initial CRM domain contracts (`Lead`, `Contact`, `Activity`) in `packages/types`.
-4. Add initial CRM persistence models in `packages/db` and wire tenant-scoped access helpers.
+1. Add CRM API routes for listing/filtering tenant-scoped `Lead`, `Contact`, and `Activity` records in `apps/crm/app/api/*`.
+2. Build initial CRM UI modules in `apps/crm/app/page.tsx` (or route-level pages) for lead list, contact card, and activity timeline consumption.
+3. Extract website ingestion into a service boundary (shared queue/worker contract) to decouple `apps/web` request path from direct CRM writes.
+4. Add Prisma config migration (`prisma.config.ts`) and remove deprecated `package.json#prisma` usage in `@real-estate/db`.
 
 ## Constraints To Keep
 - Maintain tenant isolation assumptions.

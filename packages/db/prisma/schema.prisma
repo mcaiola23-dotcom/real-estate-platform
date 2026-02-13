@@ -16,6 +16,10 @@ model Tenant {
   updatedAt     DateTime
   domains       TenantDomain[]
   websiteConfig WebsiteConfig?
+  contacts      Contact[]
+  leads         Lead[]
+  activities    Activity[]
+  ingestedEvents IngestedEvent[]
 }
 
 model TenantDomain {
@@ -55,4 +59,84 @@ model ModuleConfig {
 
   @@unique([websiteConfigId, moduleKey])
   @@index([tenantId])
+}
+
+model Contact {
+  id              String   @id
+  tenantId        String
+  fullName        String?
+  email           String?
+  emailNormalized String?
+  phone           String?
+  phoneNormalized String?
+  source          String
+  createdAt       DateTime
+  updatedAt       DateTime
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  leads           Lead[]
+  activities      Activity[]
+
+  @@index([tenantId, createdAt])
+  @@unique([tenantId, emailNormalized])
+  @@unique([tenantId, phoneNormalized])
+}
+
+model Lead {
+  id             String     @id
+  tenantId       String
+  contactId      String?
+  status         String
+  leadType       String
+  source         String
+  timeframe      String?
+  notes          String?
+  listingId      String?
+  listingUrl     String?
+  listingAddress String?
+  propertyType   String?
+  beds           Int?
+  baths          Int?
+  sqft           Int?
+  createdAt      DateTime
+  updatedAt      DateTime
+  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact        Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  activities     Activity[]
+
+  @@index([tenantId, createdAt])
+  @@index([contactId])
+}
+
+model Activity {
+  id           String   @id
+  tenantId     String
+  contactId    String?
+  leadId       String?
+  activityType String
+  occurredAt   DateTime
+  summary      String
+  metadataJson String?
+  createdAt    DateTime
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact      Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead         Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, occurredAt])
+  @@index([contactId])
+  @@index([leadId])
+}
+
+model IngestedEvent {
+  id         String   @id
+  tenantId   String
+  eventType  String
+  eventKey   String
+  occurredAt DateTime
+  payloadJson String
+  processedAt DateTime
+  createdAt  DateTime
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, processedAt])
+  @@unique([tenantId, eventKey])
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ingestWebsiteEvent } from "@real-estate/db/crm";
 import type { WebsiteLeadSubmittedEvent } from "@real-estate/types/events";
 import { LeadSubmissionSchema } from "../../lib/validators";
 import { writeClient } from "../../lib/sanity.server";
@@ -59,6 +60,11 @@ export async function POST(request: Request) {
         console.log("Tenant:", leadEvent.tenant.tenantId, leadEvent.tenant.tenantSlug, leadEvent.tenant.tenantDomain);
         console.log("Contact:", lead.email, lead.phone);
         console.log("------------------------------------------------");
+
+        const ingestionResult = await ingestWebsiteEvent(leadEvent);
+        if (!ingestionResult.accepted) {
+            console.warn("CRM ingestion skipped for lead event:", ingestionResult.reason);
+        }
 
         // Prepare Sanity Document
         const doc = {
