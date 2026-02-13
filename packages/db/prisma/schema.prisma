@@ -9,18 +9,19 @@ datasource db {
 }
 
 model Tenant {
-  id            String         @id
-  slug          String         @unique
-  name          String
-  status        String
-  createdAt     DateTime
-  updatedAt     DateTime
-  domains       TenantDomain[]
-  websiteConfig WebsiteConfig?
-  contacts      Contact[]
-  leads         Lead[]
-  activities    Activity[]
-  ingestedEvents IngestedEvent[]
+  id                 String                @id
+  slug               String                @unique
+  name               String
+  status             String
+  createdAt          DateTime
+  updatedAt          DateTime
+  domains            TenantDomain[]
+  websiteConfig      WebsiteConfig?
+  controlSettings    TenantControlSettings?
+  contacts           Contact[]
+  leads              Lead[]
+  activities         Activity[]
+  ingestedEvents     IngestedEvent[]
   ingestionQueueJobs IngestionQueueJob[]
 }
 
@@ -46,6 +47,16 @@ model WebsiteConfig {
   updatedAt DateTime
   tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   modules   ModuleConfig[]
+}
+
+model TenantControlSettings {
+  id               String   @id
+  tenantId         String   @unique
+  planCode         String   @default("starter")
+  featureFlagsJson String   @default("[]")
+  createdAt        DateTime
+  updatedAt        DateTime
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
 model ModuleConfig {

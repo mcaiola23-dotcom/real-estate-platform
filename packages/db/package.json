@@ -12,6 +12,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./control-plane": "./src/control-plane.ts",
     "./crm": "./src/crm.ts",
     "./tenants": "./src/tenants.ts",
     "./website-config": "./src/website-config.ts"

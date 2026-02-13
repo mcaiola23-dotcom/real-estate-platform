@@ -57,6 +57,7 @@ Core entities:
 - `Activity`
 - `WebsiteConfig`
 - `ModuleConfig`
+- `TenantControlSettings`
 - `Subscription`
 
 ## Folder-by-Folder Ownership / Spec

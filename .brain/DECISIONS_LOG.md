@@ -162,3 +162,19 @@
 ### D-040: Use temporary tenant fixture + guaranteed cleanup in ingestion integration flow
 **Decision**: Refactor `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` to create a run-scoped tenant/domain fixture (`tenant_ingestion_<runId>`) and clean it up in `finally` via cascading tenant delete.
 **Reason**: Prevents ongoing growth of shared tenant fixture data across local test runs, improves baseline determinism (`before` starts at zero), and reduces cross-run coupling in integration assertions.
+
+### D-041: Centralize ingestion integration fixture/retry helpers and enforce cleanup assertions
+**Decision**: Add `services/ingestion-worker/scripts/test-helpers.ts` for reusable tenant fixture lifecycle setup/cleanup and forced queue retry progression, then refactor `test-enqueue-worker-flow.ts` and `test-dead-letter-commands.ts` to consume those helpers with explicit post-cleanup assertions that tenant and domain rows are removed.
+**Reason**: Reduces repeated test boilerplate while preserving explicit reliability assertions, and makes test isolation guarantees verifiable in every run.
+
+### D-042: Move delivery focus to Control Plane MVP while keeping critical reliability guardrails
+**Decision**: Prioritize implementation of `apps/admin` + shared control-plane provisioning/domain/settings flows next, and constrain additional CRM/ingestion hardening to blocking or production-critical gaps (tenant isolation, auth/RBAC boundaries, ingestion operability).
+**Reason**: Foundation reliability is now sufficient to unblock broader platform delivery; continuing reliability-first iteration without control-plane progress creates roadmap drift away from production-ready platform goals.
+
+### D-043: Model tenant plan/feature control-plane settings in dedicated persistence boundary
+**Decision**: Add `TenantControlSettings` model in Prisma (tenant-unique `planCode` + `featureFlagsJson`) and expose shared helpers in `packages/db/src/control-plane.ts` for tenant provisioning, domain lifecycle operations, and settings updates consumed by new `apps/admin` API/UI flows.
+**Reason**: Keeps control-plane concerns explicit and centrally managed without overloading CRM/web runtime models, while enabling immediate production-oriented admin workflows for onboarding/provisioning.
+
+### D-044: Apply dependency-injected route-handler pattern to admin control-plane APIs
+**Decision**: Refactor `apps/admin` tenant/domain/settings route files to export `create*Handler` factories with default production dependencies and add route integration coverage in `apps/admin/app/api/lib/routes.integration.test.ts`.
+**Reason**: Keeps testing strategy consistent with CRM route coverage, enabling deterministic request validation/mutation behavior checks without brittle runtime module mocking.

@@ -1,15 +1,10 @@
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 
-import {
-  enqueueWebsiteEvent,
-  getIngestionQueueJobById,
-  getIngestionRuntimeReadiness,
-  processWebsiteEventQueueBatch,
-  scheduleIngestionQueueJobNow,
-} from '@real-estate/db/crm';
+import { enqueueWebsiteEvent, getIngestionRuntimeReadiness, getIngestionQueueJobById } from '@real-estate/db/crm';
 import type { WebsiteLeadSubmittedEvent } from '@real-estate/types/events';
+
+import { forceQueueJobToDeadLetter, withTenantFixture } from './test-helpers';
 
 interface CommandResult {
   status: number | null;
@@ -55,66 +50,13 @@ function runNpmScript(scriptName: string, extraEnv: Record<string, string>): Com
   };
 }
 
-async function ensureDeadLetterJob(jobId: string): Promise<void> {
-  const maxLoops = 10;
-  for (let i = 0; i < maxLoops; i += 1) {
-    await scheduleIngestionQueueJobNow(jobId);
-    await processWebsiteEventQueueBatch(200);
-
-    const job = await getIngestionQueueJobById(jobId);
-    assert.ok(job, `Expected queue job ${jobId} to exist`);
-    if (job.status === 'dead_letter') {
-      return;
-    }
-  }
-
-  const finalJob = await getIngestionQueueJobById(jobId);
-  assert.equal(finalJob?.status, 'dead_letter', `Expected queue job ${jobId} to be dead-lettered`);
-}
-
 async function run() {
   const runtime = await getIngestionRuntimeReadiness();
   if (!runtime.ready) {
     throw new Error(`Ingestion runtime unavailable: ${runtime.message}`);
   }
 
-  const runId = randomUUID().slice(0, 8);
-  const tenant = {
-    tenantId: `tenant_cmd_${runId}`,
-    tenantSlug: `cmd-${runId}`,
-    tenantDomain: `cmd-${runId}.localhost`,
-  };
-
-  const { PrismaClient } = await import('../../../packages/db/generated/prisma-client/index.js');
-  const prisma = new PrismaClient();
-
-  try {
-    const now = new Date();
-    await prisma.tenant.create({
-      data: {
-        id: tenant.tenantId,
-        slug: tenant.tenantSlug,
-        name: `Command Test ${runId}`,
-        status: 'active',
-        createdAt: now,
-        updatedAt: now,
-      },
-    });
-
-    await prisma.tenantDomain.create({
-      data: {
-        id: `tenant_domain_${runId}`,
-        tenantId: tenant.tenantId,
-        hostname: tenant.tenantDomain,
-        hostnameNormalized: tenant.tenantDomain,
-        isPrimary: true,
-        isVerified: true,
-        verifiedAt: now,
-        createdAt: now,
-        updatedAt: now,
-      },
-    });
-
+  await withTenantFixture('cmd', async ({ now, runId, tenant }) => {
     const invalidEventA = {
       eventType: 'website.invalid.event',
       version: 1,
@@ -138,8 +80,8 @@ async function run() {
     assert.ok(enqueueA.jobId);
     assert.ok(enqueueB.jobId);
 
-    await ensureDeadLetterJob(enqueueA.jobId as string);
-    await ensureDeadLetterJob(enqueueB.jobId as string);
+    await forceQueueJobToDeadLetter(enqueueA.jobId as string);
+    await forceQueueJobToDeadLetter(enqueueB.jobId as string);
 
     const listResult = runNpmScript('dead-letter:list', {
       INGESTION_DEAD_LETTER_TENANT_ID: tenant.tenantId,
@@ -191,7 +133,7 @@ async function run() {
     assert.ok(jobAAfterSingle);
     assert.equal(jobAAfterSingle?.status, 'pending');
 
-    await ensureDeadLetterJob(enqueueA.jobId as string);
+    await forceQueueJobToDeadLetter(enqueueA.jobId as string);
 
     const batchRequeueResult = runNpmScript('dead-letter:requeue', {
       INGESTION_DEAD_LETTER_TENANT_ID: tenant.tenantId,
@@ -228,12 +170,7 @@ async function run() {
       jobA: enqueueA.jobId,
       jobB: enqueueB.jobId,
     });
-  } finally {
-    await prisma.tenant.deleteMany({
-      where: { id: tenant.tenantId },
-    });
-    await prisma.$disconnect();
-  }
+  });
 }
 
 run().catch((error) => {

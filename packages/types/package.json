@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./control-plane": "./src/control-plane.ts",
     "./crm": "./src/crm.ts",
     "./ingestion": "./src/ingestion.ts",
     "./tenant": "./src/tenant.ts",

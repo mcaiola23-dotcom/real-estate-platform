@@ -12,6 +12,13 @@
 - [x] Replace seed-backed tenant persistence with durable data store + migrations.
 
 ## Next
+- [x] Scaffold `apps/admin` control-plane app with protected auth boundary and internal operations dashboard shell.
+- [x] Implement shared control-plane db/contracts for tenant provisioning, domain lifecycle management, and plan/feature-flag settings.
+- [x] Add tenant provisioning/domain/status API routes in `apps/admin` and connect dashboard mutation flows.
+- [x] Add route-level tests for control-plane API validation/guard behavior and happy-path provisioning/domain updates.
+- [ ] Execute `@real-estate/admin` route-test command in a compatible local environment (tsx IPC + platform-matched esbuild) and record passing output.
+- [ ] Re-run Prisma migrate/seed validation for control-plane schema changes in a network-capable environment (`binaries.prisma.sh` reachable) and confirm migration `202602130004_add_tenant_control_settings` application.
+- [ ] Confirm `npm run build --workspace @real-estate/admin` in standard dev environment after resolving sandbox SWC/cache constraints.
 - [x] Build tenant resolver middleware by host header.
 - [x] Implement website module registry + toggle system.
 - [x] Install `@real-estate/db` workspace dependencies and run Prisma generate/migrate/seed locally.
@@ -35,6 +42,7 @@
 - [x] Add machine-readable JSON output mode for dead-letter operator commands and assert payload shape stability in integration tests.
 - [x] Add malformed valuation payload integration coverage to verify retry/backoff and max-attempt dead-letter semantics match malformed lead behavior.
 - [x] Add deterministic temporary-tenant fixture lifecycle for ingestion integration test runs to avoid persistent baseline data growth.
+- [x] Extract shared ingestion integration test helpers for tenant fixture lifecycle and forced retry progression; refactor integration scripts to consume helper and assert cleanup success.
 - [x] Move Prisma client generation/runtime loading to package-local output (`packages/db/generated/prisma-client`) to reduce shared Windows engine lock contention.
 - [x] Stabilize Prisma full-engine local generation path on Windows so ingestion scripts can run end-to-end.
 - [x] Add dead-letter queue observability + manual re-drive tooling for operations.

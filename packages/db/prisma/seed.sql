@@ -32,6 +32,23 @@ VALUES (
   '2026-02-12T00:00:00.000Z'
 );
 
+INSERT OR REPLACE INTO "TenantControlSettings" (
+  "id",
+  "tenantId",
+  "planCode",
+  "featureFlagsJson",
+  "createdAt",
+  "updatedAt"
+)
+VALUES (
+  'tenant_control_settings_tenant_fairfield',
+  'tenant_fairfield',
+  'starter',
+  '[]',
+  '2026-02-12T00:00:00.000Z',
+  '2026-02-12T00:00:00.000Z'
+);
+
 INSERT OR REPLACE INTO "ModuleConfig" (
   "id",
   "websiteConfigId",

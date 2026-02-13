@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Set up the platform foundation so the existing Fairfield site can evolve into a tenant-ready SaaS baseline without disrupting the original prototype.
+Advance from platform foundation into production-oriented SaaS buildout by delivering a working Control Plane MVP (tenant provisioning, domain lifecycle, plan/feature settings) while preserving critical tenant-isolation and ingestion reliability guardrails.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -26,11 +26,14 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 20. Dead-letter queue operator tooling is now in place with shared list/requeue helpers in `packages/db/src/crm.ts` and worker commands `worker:ingestion:dead-letter:list` / `worker:ingestion:dead-letter:requeue`.
 21. Prisma client generation/runtime loading now targets package-local output (`packages/db/generated/prisma-client`) via `packages/db/prisma/schema.prisma`, `packages/db/src/prisma-client.ts`, and `packages/db/scripts/db-generate-safe.mjs` to reduce shared engine-lock contention on Windows.
 22. CRM route handlers now expose dependency-injected factory exports (`createLeadsGetHandler`, `createContactsGetHandler`, `createContactsPostHandler`, `createActivitiesGetHandler`, `createActivitiesPostHandler`, `createLeadPatchHandler`) so route behavior can be tested deterministically without runtime module mocking.
+23. Shared ingestion test helpers now live in `services/ingestion-worker/scripts/test-helpers.ts`, and both `test-enqueue-worker-flow.ts` and `test-dead-letter-commands.ts` now consume them for fixture lifecycle setup/cleanup and forced retry progression without changing assertion coverage.
+24. Control Plane MVP scaffold is now in place via new `apps/admin` runtime (Clerk-protected proxy boundary, provisioning/dashboard UI, and admin API routes), plus shared control-plane contracts/helpers in `packages/types` and `packages/db` (`control-plane.ts`) with `TenantControlSettings` persistence scaffolding in Prisma schema/migration.
+25. Admin route-level test coverage is now scaffolded in `apps/admin/app/api/lib/routes.integration.test.ts`, and tenant/domain/settings route handlers now expose dependency-injectable factories to support deterministic route validation similar to CRM patterns.
 
 ## Immediate Next Steps
-- Expand `packages/types` coverage as additional CRM/control-plane entities are introduced.
-- Add a reusable test fixture helper for ingestion integration scripts to remove repeated forced-retry boilerplate while preserving explicit assertions.
-- Add explicit integration assertions for fixture cleanup success (tenant and domain records removed) to keep test isolation guarantees verifiable.
+- Apply and validate new Prisma migration `202602130004_add_tenant_control_settings` in a network-capable environment, then re-run db seed flow with updated control-settings seed data.
+- Execute control-plane route integration test commands in a compatible local environment and record passing output for `apps/admin/app/api/lib/routes.integration.test.ts`.
+- Resolve admin build validation environment constraints (Next SWC/cache permission and fallback runtime issues in this sandbox) and confirm `npm run build --workspace @real-estate/admin` in standard dev setup.
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -112,4 +115,13 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run test:ingestion:dead-letter-commands"` passes after adding JSON-mode command output (`INGESTION_OUTPUT_JSON=1`) and asserting machine-readable payload shape for list/single-requeue/batch-requeue command paths.
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run test:ingestion:integration"` passes after extending malformed valuation payload assertions to mirror malformed lead semantics (requeue on attempts 1-4 and `dead_letter` transition on attempt 5 with `lastError=ingestion_failed`).
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run test:ingestion:integration"` passes after switching to temporary tenant fixture lifecycle (`tenant_ingestion_<runId>`) with deterministic zero-baseline summary and guaranteed cleanup in `finally` (no shared `tenant_fairfield` growth).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run test:ingestion:integration"` passes after shared test-helper extraction (`services/ingestion-worker/scripts/test-helpers.ts`) and retry-loop refactor in `test-enqueue-worker-flow.ts`.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run test:ingestion:dead-letter-commands"` passes after migrating command integration fixture/retry setup to shared helpers and enforcing explicit post-cleanup tenant/domain deletion assertions.
+- `npm run lint --workspace @real-estate/admin` passes after control-plane app scaffold and API/UI wiring.
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` fails in this WSL-mounted workspace because `esbuild` platform binary mismatch (`@esbuild/win32-x64` present, linux binary required).
+- `npm run test:routes --workspace @real-estate/admin` fails in this sandbox due `tsx` IPC socket permission constraint (`listen EPERM /tmp/tsx-1000/*.pipe`).
+- `DATABASE_URL=file:/mnt/c/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:migrate:deploy --workspace @real-estate/db` fails in this sandbox due Prisma engine download DNS resolution error (`getaddrinfo EAI_AGAIN binaries.prisma.sh`).
+- `DATABASE_URL=file:/mnt/c/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:seed --workspace @real-estate/db` fails in this sandbox for the same Prisma engine download DNS resolution issue.
+- `npm run build --workspace @real-estate/admin` fails in this sandbox due Next SWC runtime/cache constraints (`EACCES /home/mc23/.cache/next-swc` and fallback `SyntaxError: Invalid regular expression` after cache override).
 

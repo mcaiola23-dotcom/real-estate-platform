@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
 
 import {
   enqueueWebsiteEvent,
@@ -9,9 +8,10 @@ import {
   listDeadLetterQueueJobs,
   processWebsiteEventQueueBatch,
   requeueDeadLetterQueueJob,
-  scheduleIngestionQueueJobNow,
 } from '@real-estate/db/crm';
 import type { WebsiteLeadSubmittedEvent, WebsiteValuationRequestedEvent } from '@real-estate/types/events';
+
+import { forceQueueJobAttempts, withTenantFixture } from './test-helpers';
 
 async function run() {
   const runtime = await getIngestionRuntimeReadiness();
@@ -19,43 +19,9 @@ async function run() {
     throw new Error(`Ingestion runtime unavailable: ${runtime.message}`);
   }
 
-  const runId = randomUUID().slice(0, 8);
-  const tenant = {
-    tenantId: `tenant_ingestion_${runId}`,
-    tenantSlug: `ingestion-${runId}`,
-    tenantDomain: `ingestion-${runId}.localhost`,
-  };
-  const now = new Date();
-  const leadOccurredAt = new Date(now.getTime() + 1000).toISOString();
-  const valuationOccurredAt = new Date(now.getTime() + 2000).toISOString();
-  const { PrismaClient } = await import('../../../packages/db/generated/prisma-client/index.js');
-  const prisma = new PrismaClient();
-
-  try {
-    await prisma.tenant.create({
-      data: {
-        id: tenant.tenantId,
-        slug: tenant.tenantSlug,
-        name: `Ingestion Test ${runId}`,
-        status: 'active',
-        createdAt: now,
-        updatedAt: now,
-      },
-    });
-
-    await prisma.tenantDomain.create({
-      data: {
-        id: `tenant_domain_${runId}`,
-        tenantId: tenant.tenantId,
-        hostname: tenant.tenantDomain,
-        hostnameNormalized: tenant.tenantDomain,
-        isPrimary: true,
-        isVerified: true,
-        verifiedAt: now,
-        createdAt: now,
-        updatedAt: now,
-      },
-    });
+  await withTenantFixture('ingestion', async ({ now, runId, tenant }) => {
+    const leadOccurredAt = new Date(now.getTime() + 1000).toISOString();
+    const valuationOccurredAt = new Date(now.getTime() + 2000).toISOString();
 
     const leadEvent: WebsiteLeadSubmittedEvent = {
       eventType: 'website.lead.submitted',
@@ -130,178 +96,124 @@ async function run() {
     assert.equal(after.leadCount - before.leadCount, 2, 'Tenant should gain exactly two leads (lead + valuation)');
     assert.equal(after.activityCount - before.activityCount, 2, 'Tenant should gain exactly two activities');
 
-  // Dead-letter lifecycle coverage: invalid event payload -> dead-letter -> requeue -> dead-letter again.
-  const invalidOccurredAt = new Date(now.getTime() + 3000).toISOString();
-  const invalidEvent = {
-    eventType: 'website.invalid.event',
-    version: 1,
-    occurredAt: invalidOccurredAt,
-    tenant,
-    payload: {
-      source: 'integration-worker-test-invalid',
-      note: `invalid-${runId}`,
-    },
-  } as unknown as WebsiteLeadSubmittedEvent;
+    const invalidOccurredAt = new Date(now.getTime() + 3000).toISOString();
+    const invalidEvent = {
+      eventType: 'website.invalid.event',
+      version: 1,
+      occurredAt: invalidOccurredAt,
+      tenant,
+      payload: {
+        source: 'integration-worker-test-invalid',
+        note: `invalid-${runId}`,
+      },
+    } as unknown as WebsiteLeadSubmittedEvent;
 
-  const invalidEnqueue = await enqueueWebsiteEvent(invalidEvent);
-  assert.equal(invalidEnqueue.accepted, true, 'Invalid test event should still enqueue');
-  assert.equal(invalidEnqueue.duplicate, false, 'Invalid test event should be unique');
-  assert.ok(invalidEnqueue.jobId, 'Invalid test event should return a queue job id');
+    const invalidEnqueue = await enqueueWebsiteEvent(invalidEvent);
+    assert.equal(invalidEnqueue.accepted, true, 'Invalid test event should still enqueue');
+    assert.equal(invalidEnqueue.duplicate, false, 'Invalid test event should be unique');
+    assert.ok(invalidEnqueue.jobId, 'Invalid test event should return a queue job id');
 
-  const deadLetterBatch = await processWebsiteEventQueueBatch(50);
-  assert.ok(deadLetterBatch.deadLetteredCount >= 1, 'Expected at least one dead-lettered job');
+    const deadLetterBatch = await processWebsiteEventQueueBatch(50);
+    assert.ok(deadLetterBatch.deadLetteredCount >= 1, 'Expected at least one dead-lettered job');
 
-  const deadLetterJobs = await listDeadLetterQueueJobs({ tenantId: tenant.tenantId, limit: 200 });
-  const invalidDeadLetter = deadLetterJobs.find((job) => job.id === invalidEnqueue.jobId);
-  assert.ok(invalidDeadLetter, 'Expected invalid test event to exist in dead-letter queue');
-  assert.equal(invalidDeadLetter?.lastError, 'invalid_payload', 'Expected invalid payload dead-letter reason');
+    const deadLetterJobs = await listDeadLetterQueueJobs({ tenantId: tenant.tenantId, limit: 200 });
+    const invalidDeadLetter = deadLetterJobs.find((job) => job.id === invalidEnqueue.jobId);
+    assert.ok(invalidDeadLetter, 'Expected invalid test event to exist in dead-letter queue');
+    assert.equal(invalidDeadLetter?.lastError, 'invalid_payload', 'Expected invalid payload dead-letter reason');
 
-  const requeueResult = await requeueDeadLetterQueueJob(invalidEnqueue.jobId as string);
-  assert.equal(requeueResult, true, 'Expected dead-lettered invalid event to be requeued');
+    const requeueResult = await requeueDeadLetterQueueJob(invalidEnqueue.jobId as string);
+    assert.equal(requeueResult, true, 'Expected dead-lettered invalid event to be requeued');
 
-  const reprocessedBatch = await processWebsiteEventQueueBatch(50);
-  assert.ok(reprocessedBatch.deadLetteredCount >= 1, 'Expected reprocessed invalid event to dead-letter again');
+    const reprocessedBatch = await processWebsiteEventQueueBatch(50);
+    assert.ok(reprocessedBatch.deadLetteredCount >= 1, 'Expected reprocessed invalid event to dead-letter again');
 
-  const deadLetterJobsAfterRequeue = await listDeadLetterQueueJobs({ tenantId: tenant.tenantId, limit: 200 });
-  const invalidDeadLetterAgain = deadLetterJobsAfterRequeue.find((job) => job.id === invalidEnqueue.jobId);
-  assert.ok(invalidDeadLetterAgain, 'Expected invalid test event to return to dead-letter queue after reprocessing');
+    const deadLetterJobsAfterRequeue = await listDeadLetterQueueJobs({ tenantId: tenant.tenantId, limit: 200 });
+    const invalidDeadLetterAgain = deadLetterJobsAfterRequeue.find((job) => job.id === invalidEnqueue.jobId);
+    assert.ok(invalidDeadLetterAgain, 'Expected invalid test event to return to dead-letter queue after reprocessing');
 
-  // Retry/backoff lifecycle coverage: valid eventType with invalid payload should requeue before dead-letter threshold.
-  const retryOccurredAt = new Date(now.getTime() + 4000).toISOString();
-  const retryEvent = {
-    eventType: 'website.lead.submitted',
-    version: 1,
-    occurredAt: retryOccurredAt,
-    tenant,
-    payload: {},
-  } as unknown as WebsiteLeadSubmittedEvent;
+    const retryOccurredAt = new Date(now.getTime() + 4000).toISOString();
+    const retryEvent = {
+      eventType: 'website.lead.submitted',
+      version: 1,
+      occurredAt: retryOccurredAt,
+      tenant,
+      payload: {},
+    } as unknown as WebsiteLeadSubmittedEvent;
 
-  const retryEnqueue = await enqueueWebsiteEvent(retryEvent);
-  assert.equal(retryEnqueue.accepted, true, 'Retry test event should enqueue');
-  assert.equal(retryEnqueue.duplicate, false, 'Retry test event should be unique');
-  assert.ok(retryEnqueue.jobId, 'Retry test event should return a queue job id');
+    const retryEnqueue = await enqueueWebsiteEvent(retryEvent);
+    assert.equal(retryEnqueue.accepted, true, 'Retry test event should enqueue');
+    assert.equal(retryEnqueue.duplicate, false, 'Retry test event should be unique');
+    assert.ok(retryEnqueue.jobId, 'Retry test event should return a queue job id');
 
-  const retryBatchOne = await processWebsiteEventQueueBatch(50);
-  assert.ok(retryBatchOne.requeuedCount >= 1, 'Expected failed retry test event to be requeued on first attempt');
+    const retryBatchOne = await processWebsiteEventQueueBatch(50);
+    assert.ok(retryBatchOne.requeuedCount >= 1, 'Expected failed retry test event to be requeued on first attempt');
 
-  const retryJobAfterOne = await getIngestionQueueJobById(retryEnqueue.jobId as string);
-  assert.ok(retryJobAfterOne, 'Retry test queue job should exist after first attempt');
-  assert.equal(retryJobAfterOne?.status, 'pending');
-  assert.equal(retryJobAfterOne?.attemptCount, 1);
-  assert.equal(retryJobAfterOne?.lastError, 'ingestion_failed');
-  assert.ok(
-    new Date(retryJobAfterOne?.nextAttemptAt as string).getTime() > Date.now(),
-    'Retry job nextAttemptAt should be in the future after first failure'
-  );
+    const retryJobAfterOne = await getIngestionQueueJobById(retryEnqueue.jobId as string);
+    assert.ok(retryJobAfterOne, 'Retry test queue job should exist after first attempt');
+    assert.equal(retryJobAfterOne?.status, 'pending');
+    assert.equal(retryJobAfterOne?.attemptCount, 1);
+    assert.equal(retryJobAfterOne?.lastError, 'ingestion_failed');
+    assert.ok(
+      new Date(retryJobAfterOne?.nextAttemptAt as string).getTime() > Date.now(),
+      'Retry job nextAttemptAt should be in the future after first failure'
+    );
 
-  const retryImmediateDrain = await processWebsiteEventQueueBatch(50);
-  assert.equal(retryImmediateDrain.pickedCount, 0, 'Retry job should not be immediately re-picked before nextAttemptAt');
+    const retryImmediateDrain = await processWebsiteEventQueueBatch(50);
+    assert.equal(retryImmediateDrain.pickedCount, 0, 'Retry job should not be immediately re-picked before nextAttemptAt');
 
-  const forceRetryNow = await scheduleIngestionQueueJobNow(retryEnqueue.jobId as string);
-  assert.equal(forceRetryNow, true, 'Retry test job should be schedulable for immediate next attempt');
+    const retryForcedHistory = await forceQueueJobAttempts(retryEnqueue.jobId as string, 4, 50);
+    assert.equal(retryForcedHistory.length, 4);
+    assert.ok(retryForcedHistory[0]?.batch.requeuedCount >= 1);
+    assert.ok(retryForcedHistory[1]?.batch.requeuedCount >= 1);
+    assert.ok(retryForcedHistory[2]?.batch.requeuedCount >= 1);
+    assert.ok(retryForcedHistory[3]?.batch.deadLetteredCount >= 1);
 
-  const retryBatchTwo = await processWebsiteEventQueueBatch(50);
-  assert.ok(
-    retryBatchTwo.requeuedCount >= 1,
-    'Expected retry test event to requeue again on second forced attempt (still below dead-letter threshold)'
-  );
+    const retryJobAfterFive = retryForcedHistory[3]?.job;
+    assert.ok(retryJobAfterFive, 'Retry test queue job should exist after fifth attempt');
+    assert.equal(retryJobAfterFive?.status, 'dead_letter');
+    assert.equal(retryJobAfterFive?.attemptCount, 5);
+    assert.equal(retryJobAfterFive?.lastError, 'ingestion_failed');
+    assert.ok(retryJobAfterFive?.deadLetteredAt, 'Retry test job should have deadLetteredAt after max attempts');
 
-  const retryJobAfterTwo = await getIngestionQueueJobById(retryEnqueue.jobId as string);
-  assert.ok(retryJobAfterTwo, 'Retry test queue job should exist after second attempt');
-  assert.equal(retryJobAfterTwo?.status, 'pending');
-  assert.equal(retryJobAfterTwo?.attemptCount, 2);
-  assert.equal(retryJobAfterTwo?.lastError, 'ingestion_failed');
+    const badValuationOccurredAt = new Date(now.getTime() + 5000).toISOString();
+    const badValuationEvent = {
+      eventType: 'website.valuation.requested',
+      version: 1,
+      occurredAt: badValuationOccurredAt,
+      tenant,
+      payload: {},
+    } as unknown as WebsiteValuationRequestedEvent;
 
-  const forceRetryThree = await scheduleIngestionQueueJobNow(retryEnqueue.jobId as string);
-  assert.equal(forceRetryThree, true, 'Retry test job should be schedulable for third attempt');
-  const retryBatchThree = await processWebsiteEventQueueBatch(50);
-  assert.ok(
-    retryBatchThree.requeuedCount >= 1,
-    'Expected retry test event to requeue on third attempt (still below dead-letter threshold)'
-  );
+    const badValuationEnqueue = await enqueueWebsiteEvent(badValuationEvent);
+    assert.equal(badValuationEnqueue.accepted, true, 'Malformed valuation event should enqueue');
+    assert.equal(badValuationEnqueue.duplicate, false, 'Malformed valuation event should be unique');
+    assert.ok(badValuationEnqueue.jobId, 'Malformed valuation event should return queue job id');
 
-  const forceRetryFour = await scheduleIngestionQueueJobNow(retryEnqueue.jobId as string);
-  assert.equal(forceRetryFour, true, 'Retry test job should be schedulable for fourth attempt');
-  const retryBatchFour = await processWebsiteEventQueueBatch(50);
-  assert.ok(
-    retryBatchFour.requeuedCount >= 1,
-    'Expected retry test event to requeue on fourth attempt (still below dead-letter threshold)'
-  );
+    const badValuationBatchOne = await processWebsiteEventQueueBatch(50);
+    assert.ok(badValuationBatchOne.requeuedCount >= 1, 'Expected malformed valuation event to requeue on first attempt');
 
-  const forceRetryFive = await scheduleIngestionQueueJobNow(retryEnqueue.jobId as string);
-  assert.equal(forceRetryFive, true, 'Retry test job should be schedulable for fifth attempt');
-  const retryBatchFive = await processWebsiteEventQueueBatch(50);
-  assert.ok(
-    retryBatchFive.deadLetteredCount >= 1,
-    'Expected retry test event to transition to dead-letter at max attempt threshold'
-  );
+    const badValuationJobAfterOne = await getIngestionQueueJobById(badValuationEnqueue.jobId as string);
+    assert.ok(badValuationJobAfterOne, 'Malformed valuation queue job should exist after first attempt');
+    assert.equal(badValuationJobAfterOne?.status, 'pending');
+    assert.equal(badValuationJobAfterOne?.attemptCount, 1);
+    assert.equal(badValuationJobAfterOne?.lastError, 'ingestion_failed');
 
-  const retryJobAfterFive = await getIngestionQueueJobById(retryEnqueue.jobId as string);
-  assert.ok(retryJobAfterFive, 'Retry test queue job should exist after fifth attempt');
-  assert.equal(retryJobAfterFive?.status, 'dead_letter');
-  assert.equal(retryJobAfterFive?.attemptCount, 5);
-  assert.equal(retryJobAfterFive?.lastError, 'ingestion_failed');
-  assert.ok(retryJobAfterFive?.deadLetteredAt, 'Retry test job should have deadLetteredAt after max attempts');
+    const badValuationForcedHistory = await forceQueueJobAttempts(badValuationEnqueue.jobId as string, 4, 50);
+    assert.equal(badValuationForcedHistory.length, 4);
+    assert.ok(badValuationForcedHistory[0]?.batch.requeuedCount >= 1);
+    assert.ok(badValuationForcedHistory[1]?.batch.requeuedCount >= 1);
+    assert.ok(badValuationForcedHistory[2]?.batch.requeuedCount >= 1);
+    assert.ok(badValuationForcedHistory[3]?.batch.deadLetteredCount >= 1);
 
-  // Malformed valuation payload semantics should mirror malformed lead payload behavior.
-  const badValuationOccurredAt = new Date(now.getTime() + 5000).toISOString();
-  const badValuationEvent = {
-    eventType: 'website.valuation.requested',
-    version: 1,
-    occurredAt: badValuationOccurredAt,
-    tenant,
-    payload: {},
-  } as unknown as WebsiteValuationRequestedEvent;
-
-  const badValuationEnqueue = await enqueueWebsiteEvent(badValuationEvent);
-  assert.equal(badValuationEnqueue.accepted, true, 'Malformed valuation event should enqueue');
-  assert.equal(badValuationEnqueue.duplicate, false, 'Malformed valuation event should be unique');
-  assert.ok(badValuationEnqueue.jobId, 'Malformed valuation event should return queue job id');
-
-  const badValuationBatchOne = await processWebsiteEventQueueBatch(50);
-  assert.ok(
-    badValuationBatchOne.requeuedCount >= 1,
-    'Expected malformed valuation event to requeue on first attempt'
-  );
-
-  const badValuationJobAfterOne = await getIngestionQueueJobById(badValuationEnqueue.jobId as string);
-  assert.ok(badValuationJobAfterOne, 'Malformed valuation queue job should exist after first attempt');
-  assert.equal(badValuationJobAfterOne?.status, 'pending');
-  assert.equal(badValuationJobAfterOne?.attemptCount, 1);
-  assert.equal(badValuationJobAfterOne?.lastError, 'ingestion_failed');
-
-  const forceBadValuationTwo = await scheduleIngestionQueueJobNow(badValuationEnqueue.jobId as string);
-  assert.equal(forceBadValuationTwo, true, 'Malformed valuation job should be schedulable for second attempt');
-  const badValuationBatchTwo = await processWebsiteEventQueueBatch(50);
-  assert.ok(badValuationBatchTwo.requeuedCount >= 1);
-
-  const forceBadValuationThree = await scheduleIngestionQueueJobNow(badValuationEnqueue.jobId as string);
-  assert.equal(forceBadValuationThree, true, 'Malformed valuation job should be schedulable for third attempt');
-  const badValuationBatchThree = await processWebsiteEventQueueBatch(50);
-  assert.ok(badValuationBatchThree.requeuedCount >= 1);
-
-  const forceBadValuationFour = await scheduleIngestionQueueJobNow(badValuationEnqueue.jobId as string);
-  assert.equal(forceBadValuationFour, true, 'Malformed valuation job should be schedulable for fourth attempt');
-  const badValuationBatchFour = await processWebsiteEventQueueBatch(50);
-  assert.ok(badValuationBatchFour.requeuedCount >= 1);
-
-  const forceBadValuationFive = await scheduleIngestionQueueJobNow(badValuationEnqueue.jobId as string);
-  assert.equal(forceBadValuationFive, true, 'Malformed valuation job should be schedulable for fifth attempt');
-  const badValuationBatchFive = await processWebsiteEventQueueBatch(50);
-  assert.ok(
-    badValuationBatchFive.deadLetteredCount >= 1,
-    'Expected malformed valuation event to transition to dead-letter at max attempts'
-  );
-
-  const badValuationJobAfterFive = await getIngestionQueueJobById(badValuationEnqueue.jobId as string);
-  assert.ok(badValuationJobAfterFive, 'Malformed valuation queue job should exist after fifth attempt');
-  assert.equal(badValuationJobAfterFive?.status, 'dead_letter');
-  assert.equal(badValuationJobAfterFive?.attemptCount, 5);
-  assert.equal(badValuationJobAfterFive?.lastError, 'ingestion_failed');
-  assert.ok(
-    badValuationJobAfterFive?.deadLetteredAt,
-    'Malformed valuation queue job should have deadLetteredAt after max attempts'
-  );
+    const badValuationJobAfterFive = badValuationForcedHistory[3]?.job;
+    assert.ok(badValuationJobAfterFive, 'Malformed valuation queue job should exist after fifth attempt');
+    assert.equal(badValuationJobAfterFive?.status, 'dead_letter');
+    assert.equal(badValuationJobAfterFive?.attemptCount, 5);
+    assert.equal(badValuationJobAfterFive?.lastError, 'ingestion_failed');
+    assert.ok(
+      badValuationJobAfterFive?.deadLetteredAt,
+      'Malformed valuation queue job should have deadLetteredAt after max attempts'
+    );
 
     console.log('Ingestion enqueue->worker->CRM integration check passed.');
     console.log({
@@ -320,31 +232,12 @@ async function run() {
       retryEnqueue,
       retryBatchOne,
       retryImmediateDrain,
-      forceRetryNow,
-      retryBatchTwo,
-      forceRetryThree,
-      retryBatchThree,
-      forceRetryFour,
-      retryBatchFour,
-      forceRetryFive,
-      retryBatchFive,
+      retryForcedHistory,
       badValuationEnqueue,
       badValuationBatchOne,
-      forceBadValuationTwo,
-      badValuationBatchTwo,
-      forceBadValuationThree,
-      badValuationBatchThree,
-      forceBadValuationFour,
-      badValuationBatchFour,
-      forceBadValuationFive,
-      badValuationBatchFive,
+      badValuationForcedHistory,
     });
-  } finally {
-    await prisma.tenant.deleteMany({
-      where: { id: tenant.tenantId },
-    });
-    await prisma.$disconnect();
-  }
+  });
 }
 
 run().catch((error) => {
