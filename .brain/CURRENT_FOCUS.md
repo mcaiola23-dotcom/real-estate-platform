@@ -13,14 +13,22 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 7. Prisma runtime hardening is now in place in `packages/db` (`prisma-client`, tenant/module lookup fallbacks), so tenant resolution and module loading degrade to seed-backed behavior instead of failing page renders when local Prisma runtime/state is unavailable.
 8. `apps/crm` workspace skeleton and auth boundary baseline are now in place with Clerk middleware protection, tenant header stamping, tenant resolver utilities, and initial auth/session API scaffolding.
 9. CRM core persistence is now in place in `packages/db` with `Contact`, `Lead`, `Activity`, and `IngestedEvent` models plus migration `202602130001_add_crm_core_models`.
-10. Website event ingestion now flows into CRM persistence via shared db helpers in `packages/db/src/crm.ts`, with lead and valuation events wired from `apps/web` API routes.
+10. Website event ingestion contracts are wired from `apps/web` lead/valuation API routes into shared db ingestion helpers in `packages/db/src/crm.ts`, now queue-first via enqueue + worker processing.
 11. Local Windows Prisma generate reliability has been hardened with `packages/db/scripts/db-generate-safe.mjs`, including engine-lock retry/cleanup and fallback behavior.
+12. Tenant-scoped CRM operational baseline is now in place in `apps/crm` with authenticated API routes (`/api/leads`, `/api/leads/[leadId]`, `/api/contacts`, `/api/activities`) and dashboard UI modules for lead updates, contact creation, and activity timeline logging.
+13. Website ingestion has been decoupled from direct CRM table writes via a queue boundary in `packages/db/src/crm.ts` (`enqueueWebsiteEvent`, `processWebsiteEventQueueBatch`) plus new queue model/migration `202602130002_add_ingestion_queue_jobs`.
+14. Ingestion worker runtime boundary is now scaffolded in `services/ingestion-worker` with `drain:once` worker command and root orchestration script `worker:ingestion:drain`.
+15. Prisma configuration migration is now in place with `packages/db/prisma.config.ts`, and deprecated `package.json#prisma` has been removed from `@real-estate/db`.
+16. CRM API filtering/pagination contracts are now expanded for lead/contact/activity list endpoints with shared query parsing (`apps/crm/app/api/lib/query-params.ts`) and route-level validation tests.
+17. Ingestion queue reliability hardening is now in place with retry cadence scheduling and explicit dead-letter lifecycle handling in `packages/db/src/crm.ts`, plus schema/migration updates in `packages/db/prisma/schema.prisma` and `packages/db/prisma/migrations/202602130003_add_ingestion_retry_dead_letter/migration.sql`.
+18. Ingestion runtime readiness checks are now explicit in `packages/db/src/prisma-client.ts` and exposed via `getIngestionRuntimeReadiness`, so worker and validation scripts fail fast with actionable messaging when Prisma is generated in no-engine mode.
+19. Integration test flow for enqueue -> worker -> CRM persistence is now in place in `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` with root orchestration command `npm run test:ingestion:integration`.
+20. Dead-letter queue operator tooling is now in place with shared list/requeue helpers in `packages/db/src/crm.ts` and worker commands `worker:ingestion:dead-letter:list` / `worker:ingestion:dead-letter:requeue`.
 
 ## Immediate Next Steps
 - Expand `packages/types` coverage as additional CRM/control-plane entities are introduced.
-- Build CRM read/write API routes and UI modules for lead pipeline, contacts, and activity timeline.
-- Add ingestion worker/service boundary for website events (decouple direct web->db writes).
-- Add Prisma config migration (`prisma.config.ts`) before Prisma 7 to replace deprecated `package.json#prisma`.
+- Stabilize local Prisma full-engine generation path on Windows so ingestion worker/integration scripts can execute end-to-end in this environment.
+- Add integration tests for CRM API route handlers (beyond query parser validation).
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -66,4 +74,21 @@ Set up the platform foundation so the existing Fairfield site can evolve into a 
 - npm run build --workspace @real-estate/web passes after ingestion wiring.
 - npm run build --workspace @real-estate/crm passes after CRM summary/activity integration.
 - DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db ./node_modules/.bin/tsx.cmd apps/web/scripts/check-crm-ingestion.ts passes with idempotency validation (duplicate lead event recognized and skipped).
+- npm run lint --workspace @real-estate/crm passes after adding tenant-scoped CRM API routes and UI modules.
+- npm run build --workspace @real-estate/crm passes and includes `/api/leads`, `/api/leads/[leadId]`, `/api/contacts`, and `/api/activities`.
+- npm install passes after adding `@real-estate/ingestion-worker` workspace and CRM route-test tooling (`tsx`).
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:migrate:deploy --workspace @real-estate/db passes and applies migration `202602130002_add_ingestion_queue_jobs`.
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:generate --workspace @real-estate/db passes via safe wrapper and loads `prisma.config.ts`.
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:seed --workspace @real-estate/db passes and loads `prisma.config.ts`.
+- npm run worker:ingestion:drain passes and executes `@real-estate/ingestion-worker` queue drain command.
+- npm run test:routes --workspace @real-estate/crm passes (5 tests) for route query parsing/pagination validation.
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db ./node_modules/.bin/tsx.cmd apps/web/scripts/check-crm-ingestion.ts currently fails in this environment because no-engine Prisma client generation yields datasource validation requiring `prisma://`/`prisma+postgres://` for runtime DB calls; `npm run db:generate:direct --workspace @real-estate/db` still intermittently fails with Windows `EPERM` lock.
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:migrate:deploy --workspace @real-estate/db passes and applies migration `202602130003_add_ingestion_retry_dead_letter`.
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:generate --workspace @real-estate/db falls back to `engine=none` after Windows lock retry in safe wrapper.
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:generate:direct --workspace @real-estate/db fails in this environment with Windows `EPERM` rename lock on `query_engine-windows.dll.node`.
+- npm run lint --workspace @real-estate/web -- app/api/lead/route.ts app/api/valuation/route.ts scripts/check-crm-ingestion.ts passes.
+- .\node_modules\.bin\tsc.cmd --noEmit --project apps/web/tsconfig.json passes.
+- npm run worker:ingestion:drain now fails fast with explicit runtime message when Prisma is generated in no-engine mode.
+- npm run test:ingestion:integration now fails fast with explicit runtime message when Prisma is generated in no-engine mode.
+- DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db .\node_modules\.bin\tsx.cmd apps/web/scripts/check-crm-ingestion.ts now fails fast with explicit runtime message when Prisma is generated in no-engine mode.
 

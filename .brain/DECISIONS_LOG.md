@@ -86,3 +86,31 @@
 ### D-021: Replace fragile direct Prisma generate with safe wrapper for Windows lock conditions
 **Decision**: Change `@real-estate/db` `db:generate` to `packages/db/scripts/db-generate-safe.mjs` that retries after engine artifact cleanup and falls back gracefully when Windows DLL lock conditions (`EPERM`) persist; keep `db:generate:direct` for explicit full-engine attempts.
 **Reason**: Improves day-to-day reliability of local schema/client generation in this Windows environment while preserving a direct command path for full engine regeneration.
+
+### D-022: Expose CRM operations through tenant-scoped API routes backed by shared db helpers
+**Decision**: Add authenticated CRM API routes in `apps/crm/app/api` for lead listing/status updates, contact listing/creation, and activity listing/logging; extend `packages/db/src/crm.ts` with tenant-scoped list/mutation helpers used by those routes and the CRM dashboard UI modules.
+**Reason**: Moves CRM runtime beyond scaffold state into an operational baseline while preserving tenant isolation and shared package boundaries (no app-to-app private coupling).
+
+### D-023: Decouple website ingestion path with queue-first contract and worker drain boundary
+**Decision**: Replace direct web->CRM persistence writes with queue enqueue in `apps/web` API routes via `enqueueWebsiteEvent`, add `IngestionQueueJob` model/migration (`202602130002_add_ingestion_queue_jobs`), and introduce worker-side queue processing via `processWebsiteEventQueueBatch` with `services/ingestion-worker`.
+**Reason**: Removes synchronous CRM table write coupling from website request latency path and establishes a clear worker boundary for retries/scaling.
+
+### D-024: Migrate Prisma package config to `prisma.config.ts`
+**Decision**: Add `packages/db/prisma.config.ts` and remove deprecated `package.json#prisma` configuration from `@real-estate/db`.
+**Reason**: Aligns with Prisma’s forward path before Prisma 7 and keeps schema/migration/seed config centralized in dedicated Prisma config.
+
+### D-025: Standardize CRM list endpoint query parsing with shared parser + pagination metadata
+**Decision**: Add route query parser utilities in `apps/crm/app/api/lib/query-params.ts`, expand lead/contact/activity list filters and `limit`/`offset`, and return pagination metadata from CRM list APIs; add node:test coverage for parser validation.
+**Reason**: Keeps route-level input handling deterministic and testable while enabling incremental CRM module growth without ad-hoc query parsing in each route.
+
+### D-026: Add scheduled retries and explicit dead-letter lifecycle to ingestion queue jobs
+**Decision**: Extend `IngestionQueueJob` with `nextAttemptAt` and `deadLetteredAt`, add migration `202602130003_add_ingestion_retry_dead_letter`, and update worker batch processing to only pick due jobs, retry with staged backoff cadence, and move terminal failures/invalid payloads to `dead_letter`.
+**Reason**: Improves ingestion reliability semantics and creates deterministic separation between retriable failures and terminal dead-letter outcomes.
+
+### D-027: Treat no-engine Prisma generation as unsupported for local ingestion runtime scripts
+**Decision**: Add Prisma runtime readiness checks in `packages/db/src/prisma-client.ts` and require worker/check scripts to fail fast with explicit guidance when local Prisma client is generated in no-engine mode.
+**Reason**: Prevents ambiguous runtime failures (`P6001` datasource protocol errors) and makes local operational requirements explicit until Windows full-engine generation is stable.
+
+### D-028: Expose dead-letter queue operations through shared db helpers + worker commands
+**Decision**: Add dead-letter list/requeue helpers in `packages/db/src/crm.ts` and wire operational commands in `services/ingestion-worker` (`dead-letter:list`, `dead-letter:requeue`) with root script aliases.
+**Reason**: Provides a deterministic operator workflow to inspect and re-drive dead-lettered ingestion jobs without ad-hoc DB manipulation.

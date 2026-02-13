@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ingestWebsiteEvent } from "@real-estate/db/crm";
+import { enqueueWebsiteEvent } from "@real-estate/db/crm";
 import type { WebsiteValuationRequestedEvent } from "@real-estate/types/events";
 import { ValuationRequestSchema } from "../../lib/validators";
 import { getTenantContextFromRequest } from "../../lib/tenant/resolve-tenant";
@@ -37,9 +37,9 @@ export async function POST(request: Request) {
         };
 
         console.log("VALUATION REQUEST TENANT:", valuationEvent.tenant.tenantId, valuationEvent.tenant.tenantSlug);
-        const ingestionResult = await ingestWebsiteEvent(valuationEvent);
+        const ingestionResult = await enqueueWebsiteEvent(valuationEvent);
         if (!ingestionResult.accepted) {
-            console.warn("CRM ingestion skipped for valuation event:", ingestionResult.reason);
+            console.warn("CRM ingestion enqueue failed for valuation event:", ingestionResult.reason);
         }
 
         // Placeholder Logic

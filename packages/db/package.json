@@ -23,8 +23,5 @@
   "devDependencies": {
     "prisma": "^6.16.3"
   },
-  "prisma": {
-    "seed": "prisma db execute --schema prisma/schema.prisma --file prisma/seed.sql"
-  },
   "types": "./src/index.ts"
 }

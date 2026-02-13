@@ -19,6 +19,14 @@
 - [x] Build lead/contact/activity database model.
 - [x] Add event ingestion pipeline from website actions to CRM.
 - [x] Mitigate local Prisma engine file-lock issue impacting `db:generate` reliability on Windows dev environment.
+- [x] Build tenant-scoped CRM read/write API routes and dashboard UI modules for leads, contacts, and activity timeline.
+- [x] Introduce ingestion service boundary (queue/worker contract) so website APIs enqueue events instead of direct CRM writes.
+- [x] Add Prisma config migration (`prisma.config.ts`) and remove deprecated `package.json#prisma` in `@real-estate/db`.
+- [x] Expand CRM API filtering/pagination contracts and add route-level validation tests.
+- [x] Add ingestion worker retry scheduling + dead-letter handling for production reliability.
+- [x] Add integration test flow for enqueue -> worker -> CRM persistence (tenant-scoped baseline).
+- [ ] Stabilize Prisma full-engine local generation path on Windows so ingestion scripts can run end-to-end.
+- [x] Add dead-letter queue observability + manual re-drive tooling for operations.
 
 ## AI Roadmap
 - [ ] Create prompt registry and versioning.

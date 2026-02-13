@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./crm": "./src/crm.ts",
+    "./ingestion": "./src/ingestion.ts",
     "./tenant": "./src/tenant.ts",
     "./events": "./src/events.ts"
   },

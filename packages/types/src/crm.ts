@@ -52,3 +52,33 @@ export interface CrmLeadIngestionSummary {
   leadCount: number;
   activityCount: number;
 }
+
+export interface CrmPagination {
+  limit: number;
+  offset: number;
+  nextOffset: number | null;
+}
+
+export interface CrmLeadListQuery {
+  status?: CrmLeadStatus;
+  leadType?: CrmLeadType;
+  source?: string;
+  contactId?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface CrmContactListQuery {
+  source?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface CrmActivityListQuery {
+  leadId?: string;
+  contactId?: string;
+  activityType?: string;
+  limit?: number;
+  offset?: number;
+}

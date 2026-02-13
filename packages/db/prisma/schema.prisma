@@ -20,6 +20,7 @@ model Tenant {
   leads         Lead[]
   activities    Activity[]
   ingestedEvents IngestedEvent[]
+  ingestionQueueJobs IngestionQueueJob[]
 }
 
 model TenantDomain {
@@ -138,5 +139,28 @@ model IngestedEvent {
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, processedAt])
+  @@unique([tenantId, eventKey])
+}
+
+model IngestionQueueJob {
+  id          String   @id
+  tenantId    String
+  eventType   String
+  eventKey    String
+  occurredAt  DateTime
+  payloadJson String
+  status      String
+  attemptCount Int     @default(0)
+  lastError   String?
+  createdAt   DateTime
+  updatedAt   DateTime
+  processedAt DateTime?
+  nextAttemptAt DateTime @default(now())
+  deadLetteredAt DateTime?
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status, createdAt])
+  @@index([status, createdAt])
+  @@index([status, nextAttemptAt])
   @@unique([tenantId, eventKey])
 }

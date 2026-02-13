@@ -1,7 +1,17 @@
-import { getCrmLeadIngestionSummary, ingestWebsiteEvent } from '@real-estate/db/crm';
+import {
+  enqueueWebsiteEvent,
+  getCrmLeadIngestionSummary,
+  getIngestionRuntimeReadiness,
+  processWebsiteEventQueueBatch,
+} from '@real-estate/db/crm';
 import type { WebsiteLeadSubmittedEvent, WebsiteValuationRequestedEvent } from '@real-estate/types/events';
 
 async function run() {
+  const runtime = await getIngestionRuntimeReadiness();
+  if (!runtime.ready) {
+    throw new Error(`Ingestion runtime unavailable: ${runtime.message}`);
+  }
+
   const tenant = {
     tenantId: 'tenant_fairfield',
     tenantSlug: 'fairfield',
@@ -54,15 +64,16 @@ async function run() {
   };
 
   const before = await getCrmLeadIngestionSummary(tenant.tenantId);
-  const leadResult = await ingestWebsiteEvent(leadEvent);
-  const leadDuplicate = await ingestWebsiteEvent(leadEvent);
-  const valuationResult = await ingestWebsiteEvent(valuationEvent);
+  const leadResult = await enqueueWebsiteEvent(leadEvent);
+  const leadDuplicate = await enqueueWebsiteEvent(leadEvent);
+  const valuationResult = await enqueueWebsiteEvent(valuationEvent);
+  const processed = await processWebsiteEventQueueBatch(10);
   const after = await getCrmLeadIngestionSummary(tenant.tenantId);
 
   if (!leadResult.accepted || !valuationResult.accepted) {
     console.error('Lead result:', leadResult);
     console.error('Valuation result:', valuationResult);
-    throw new Error('Ingestion failed');
+    throw new Error('Enqueue failed');
   }
 
   if (!leadDuplicate.duplicate) {
@@ -70,6 +81,7 @@ async function run() {
   }
 
   console.log('CRM ingestion check passed.');
+  console.log('Queue processing summary:', processed);
   console.log('Before:', before);
   console.log('After:', after);
   console.log('Lead result:', leadResult);
