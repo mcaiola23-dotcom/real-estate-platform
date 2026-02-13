@@ -18,6 +18,7 @@
     "build:studio": "npm run build --workspace @real-estate/studio",
     "worker:ingestion:drain": "npm run drain:once --workspace @real-estate/ingestion-worker",
     "test:ingestion:integration": "npm run test:integration --workspace @real-estate/ingestion-worker",
+    "test:ingestion:dead-letter-commands": "npm run test:dead-letter-commands --workspace @real-estate/ingestion-worker",
     "worker:ingestion:dead-letter:list": "npm run dead-letter:list --workspace @real-estate/ingestion-worker",
     "worker:ingestion:dead-letter:requeue": "npm run dead-letter:requeue --workspace @real-estate/ingestion-worker",
     "lint": "npm run lint:web && npm run lint:crm && npm run lint:studio",

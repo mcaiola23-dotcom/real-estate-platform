@@ -1,5 +1,9 @@
 import { getIngestionRuntimeReadiness, listDeadLetterQueueJobs } from '@real-estate/db/crm';
 
+function shouldEmitJson(): boolean {
+  return process.env.INGESTION_OUTPUT_JSON === '1';
+}
+
 async function run() {
   const runtime = await getIngestionRuntimeReadiness();
   if (!runtime.ready) {
@@ -24,15 +28,22 @@ async function run() {
         nextAttemptAt: job.nextAttemptAt,
       }));
 
-  console.log('Dead-letter queue listing completed.');
-  console.log({
+  const result = {
     tenantId: tenantId ?? 'all',
     limit,
     offset,
     count: jobs.length,
     includePayload,
     jobs: output,
-  });
+  };
+
+  console.log('Dead-letter queue listing completed.');
+  if (shouldEmitJson()) {
+    console.log(JSON.stringify({ event: 'dead_letter_list_result', ...result }));
+    return;
+  }
+
+  console.log(result);
 }
 
 run().catch((error) => {

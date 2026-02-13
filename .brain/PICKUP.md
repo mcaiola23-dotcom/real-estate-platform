@@ -4,80 +4,51 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Stabilize Prisma full-engine local runtime for ingestion scripts on Windows, then add dead-letter observability/re-drive tooling.
+- Create a reusable ingestion test fixture helper to remove repeated forced-retry and tenant setup boilerplate in `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` while keeping assertions explicit.
 
 ## Why This Is Next
-- Tenant-aware request flow is now in place in `apps/web`.
-- CRM app skeleton and auth boundary are now in place in `apps/crm`.
-- CRM core persistence models (`Contact`, `Lead`, `Activity`, `IngestedEvent`) are now in place in `packages/db`.
-- Website lead and valuation endpoints now enqueue CRM events through shared queue helpers.
-- CRM tenant-scoped APIs, filtering/pagination contracts, and route-level query validation tests are now in place.
-- Retry cadence + dead-letter lifecycle and integration flow are now implemented; the blocking gap is reliable full-engine Prisma runtime for local ingestion script execution.
+- Ingestion reliability coverage is now comprehensive (dead-letter lifecycle, retry/backoff, max-attempt dead-letter, command-level operator flows, malformed payload guards).
+- The remaining friction is maintainability/readability: integration script logic is long and repetitive.
+- A shared fixture helper will reduce duplication and make future ingestion assertions faster to add safely.
 
 ## Current Snapshot
-- Completed: host-based tenant resolver + tenant header stamping in `apps/web/proxy.ts`.
-- Completed: tenant context consumption in `apps/web/app/api/lead/route.ts` and `apps/web/app/api/valuation/route.ts`.
-- Completed: root npm workspace tooling and scripts in top-level `package.json` for `apps/web`, `apps/crm`, and `apps/studio`.
-- Completed: `packages/types` with tenant/domain/event contracts and `apps/web` tenant typing migration to `@real-estate/types`.
-- Completed: `packages/db` tenant/domain persistence baseline with Fairfield seed data and shared tenant lookup functions.
-- Completed: `apps/web/app/lib/tenant/resolve-tenant.ts` now resolves host mappings through `@real-estate/db/tenants`.
-- Completed: targeted tenant resolution behavior checks in `apps/web/scripts/check-tenant-resolution.ts`.
-- Completed: `apps/web/app/api/user/profile/route.ts` and `apps/web/app/api/user/sync/route.ts` now scope profile reads/writes by tenant context.
-- Completed: `walkscore` and `googlePlaces` provider cache variants now include tenant scoping, with tenant context threaded from town pages via request headers.
-- Completed: explicit `TenantScope` interfaces across remaining static/client providers (`atAGlance`, `taxes`, `schools`, `listings`) and call sites (`town` pages + `home-search`).
-- Completed: `apps/web/next.config.ts` sets `experimental.externalDir` and `turbopack.root` for stable monorepo dev resolution.
-- Completed: `packages/db` now includes Prisma schema, initial tenant/domain migration SQL, and seed script (`packages/db/prisma/*`).
-- Completed: `apps/web` tenant resolution helpers and key call sites now use async shared db lookups with runtime-safe edge fallback.
-- Completed: local dependency install and Prisma setup flow (`db:generate`, `db:migrate:deploy`, `db:seed`) for durable tenant records.
-- Completed: shared website/module contracts in `packages/types/src/website-config.ts` and exports via `packages/types/src/index.ts`.
-- Completed: tenant website/module config persistence scaffolding in `packages/db` (`src/website-config.ts`, schema + migration `202602120002_add_website_module_config`, SQL seed baseline).
-- Completed: tenant-scoped module registry consumption in `apps/web` town and neighborhood pages via `apps/web/app/lib/modules/tenant-modules.ts`.
-- Completed: module toggle validation coverage in `apps/web/scripts/check-module-toggles.ts`.
-- Completed: runtime-safe Prisma fallback hardening in `packages/db` (`src/prisma-client.ts`, `src/tenants.ts`, `src/website-config.ts`) to prevent page crashes when Prisma runtime lookups fail.
-- Completed: `apps/crm` workspace scaffold with Clerk-protected middleware and tenant header stamping (`apps/crm/proxy.ts`), plus auth/session API baseline.
-- Completed: shared CRM contracts in `packages/types/src/crm.ts` and `packages/types/src/events.ts` (`WebsiteEvent` union export).
-- Completed: CRM persistence models/migration in `packages/db/prisma/schema.prisma` and `packages/db/prisma/migrations/202602130001_add_crm_core_models/migration.sql`.
-- Completed: shared CRM ingestion/runtime helpers in `packages/db/src/crm.ts` and exports in `packages/db/src/index.ts`.
-- Completed: website-to-CRM ingestion wiring in `apps/web/app/api/lead/route.ts` and `apps/web/app/api/valuation/route.ts`.
-- Completed: CRM dashboard shell now reads tenant-scoped summary and recent activities from shared db helpers in `apps/crm/app/page.tsx`.
-- Completed: tenant-scoped CRM API routes in `apps/crm/app/api/leads/route.ts`, `apps/crm/app/api/leads/[leadId]/route.ts`, `apps/crm/app/api/contacts/route.ts`, and `apps/crm/app/api/activities/route.ts`.
-- Completed: CRM dashboard UI modules in `apps/crm/app/components/crm-workspace.tsx` now support lead status updates, manual contact capture, and activity note logging.
-- Completed: shared CRM db helpers expanded in `packages/db/src/crm.ts` for tenant-scoped list/mutation operations used by CRM routes.
-- Completed: queue-first ingestion helpers (`enqueueWebsiteEvent`, `processWebsiteEventQueueBatch`) in `packages/db/src/crm.ts`.
-- Completed: ingestion queue persistence model/migration in `packages/db/prisma/schema.prisma` and `packages/db/prisma/migrations/202602130002_add_ingestion_queue_jobs/migration.sql`.
-- Completed: website ingestion endpoints now enqueue events (`apps/web/app/api/lead/route.ts`, `apps/web/app/api/valuation/route.ts`) instead of direct CRM writes.
-- Completed: ingestion worker scaffold in `services/ingestion-worker` with drain command and root script `worker:ingestion:drain`.
-- Completed: Prisma config migration in `packages/db/prisma.config.ts` and removal of deprecated `packages/db/package.json#prisma`.
-- Completed: CRM list route query parsing/pagination utilities and validation tests in `apps/crm/app/api/lib/query-params.ts` and `apps/crm/app/api/lib/query-params.test.ts`.
-- Completed: Prisma generate reliability mitigation for Windows lock conditions via `packages/db/scripts/db-generate-safe.mjs` and `@real-estate/db` script updates.
-- Completed: ingestion queue retry scheduling and dead-letter lifecycle handling in `packages/db/src/crm.ts`.
-- Completed: ingestion queue schema update with `nextAttemptAt` and `deadLetteredAt` via migration `packages/db/prisma/migrations/202602130003_add_ingestion_retry_dead_letter/migration.sql`.
-- Completed: ingestion runtime readiness guardrails in `packages/db/src/prisma-client.ts` and consumer scripts (`services/ingestion-worker/scripts/drain-once.ts`, `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts`, `apps/web/scripts/check-crm-ingestion.ts`).
-- Completed: integration flow script `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` plus root command `npm run test:ingestion:integration`.
-- Completed: dead-letter operator tooling in `packages/db/src/crm.ts` (`listDeadLetterQueueJobs`, `requeueDeadLetterQueueJob`, `requeueDeadLetterQueueJobs`) and worker scripts (`services/ingestion-worker/scripts/dead-letter-list.ts`, `services/ingestion-worker/scripts/dead-letter-requeue.ts`).
-- Completed: docs updated in `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, and `.brain/DECISIONS_LOG.md`.
-- Validation: `npm run db:migrate:deploy --workspace @real-estate/db` passes and applies migration `202602130001_add_crm_core_models`; `npm run db:generate --workspace @real-estate/db` completes via safe wrapper; `npm run db:seed --workspace @real-estate/db` passes; `npm run lint --workspace @real-estate/web -- app/api/lead/route.ts app/api/valuation/route.ts scripts/check-crm-ingestion.ts` passes; `npm run build --workspace @real-estate/web` passes; `npm run build --workspace @real-estate/crm` passes; `./node_modules/.bin/tsx.cmd apps/web/scripts/check-crm-ingestion.ts` passes and validates idempotency.
-- Validation: `npm run lint --workspace @real-estate/crm` passes after CRM API/UI expansion; `npm run build --workspace @real-estate/crm` passes and includes new CRM API routes.
-- Validation: `npm run test:routes --workspace @real-estate/crm` passes (5/5) for route query parser and pagination coverage.
-- Validation: `npm run db:migrate:deploy --workspace @real-estate/db` passes and applies `202602130002_add_ingestion_queue_jobs`.
-- Validation: `npm run db:migrate:deploy --workspace @real-estate/db` passes and applies `202602130003_add_ingestion_retry_dead_letter`.
-- Validation: `npm run db:generate --workspace @real-estate/db` and `npm run db:seed --workspace @real-estate/db` pass and load `prisma.config.ts`.
-- Validation: `npm run db:generate --workspace @real-estate/db` falls back to `engine=none` in this environment after Windows engine-lock retries.
-- Validation: `npm run db:generate:direct --workspace @real-estate/db` fails in this environment with Windows `EPERM` rename lock on Prisma engine DLL.
-- Validation: `npm run lint --workspace @real-estate/web -- app/api/lead/route.ts app/api/valuation/route.ts scripts/check-crm-ingestion.ts` passes.
-- Validation: `.\node_modules\.bin\tsc.cmd --noEmit --project apps/web/tsconfig.json` passes.
-- Validation: `npm run worker:ingestion:drain`, `npm run test:ingestion:integration`, and `.\node_modules\.bin\tsx.cmd apps/web/scripts/check-crm-ingestion.ts` now fail fast with explicit no-engine runtime guidance.
-- Validation: `npm run worker:ingestion:dead-letter:list` and `npm run worker:ingestion:dead-letter:requeue` fail fast with explicit no-engine runtime guidance in this environment.
-- Validation note: `./node_modules/.bin/tsx.cmd apps/web/scripts/check-crm-ingestion.ts` currently fails when local Prisma generation falls back to `--no-engine` (datasource requires `prisma://`); direct full-engine generation can still intermittently fail with Windows `EPERM`.
-- Validation note: `npm run db:generate:direct --workspace @real-estate/db` can still intermittently fail on Windows with `EPERM` during Prisma engine DLL rename; safe `db:generate` is the default mitigation path.
-- Environment note: workspace dependency artifacts (`node_modules/`) are local-only.
+- Completed: Prisma client generation/runtime now targets package-local output (`packages/db/generated/prisma-client`) with Windows lock mitigation updates in `packages/db/scripts/db-generate-safe.mjs`.
+- Completed: CRM route handlers are dependency-injectable and integration-tested for auth/tenant guards, payload validation, pagination payloads, lead status activity side effects, and invalid tenant-scoped lead/contact linkage.
+- Completed: Ingestion queue reliability behavior is integration-covered end-to-end:
+  - Invalid event type -> dead-letter.
+  - Dead-letter requeue -> reprocess -> dead-letter.
+  - Retry/backoff requeue cadence with `nextAttemptAt` gating.
+  - Max-attempt transition (`attemptCount=5`) to `dead_letter`.
+  - Malformed valuation payload semantics aligned with malformed lead semantics.
+- Completed: Dead-letter operator command integration coverage added in `services/ingestion-worker/scripts/test-dead-letter-commands.ts`:
+  - `dead-letter:list` tenant-filtered flow.
+  - Single-job requeue via `INGESTION_DEAD_LETTER_JOB_ID`.
+  - Tenant batch requeue via `INGESTION_DEAD_LETTER_TENANT_ID`.
+- Completed: JSON-mode output contract for operator commands added:
+  - `INGESTION_OUTPUT_JSON=1` emits event-tagged payloads in:
+    - `services/ingestion-worker/scripts/dead-letter-list.ts`
+    - `services/ingestion-worker/scripts/dead-letter-requeue.ts`
+- Completed: Ingestion payload validation guards added in `packages/db/src/crm.ts` for malformed lead/valuation payloads to suppress noisy expected runtime stack traces.
+- Completed: Ingestion integration now uses temporary run-scoped tenant fixture (`tenant_ingestion_<runId>`) with guaranteed cleanup in `finally`, preventing persistent `tenant_fairfield` growth.
+
+## Validation (Most Recent)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:generate:direct --workspace @real-estate/db"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/crm"` passes (16/16).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/crm"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run test:ingestion:integration"` passes with temporary tenant zero-baseline and full reliability assertions.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run test:ingestion:dead-letter-commands"` passes with JSON output shape assertions.
 
 ## First Actions Next Session
-1. Resolve Windows local Prisma engine lock for consistent `npm run db:generate:direct --workspace @real-estate/db` success (or add deterministic operator workaround).
-2. Re-run `npm run worker:ingestion:drain` and `npm run test:ingestion:integration` after full-engine generation succeeds and capture passing output.
-3. Re-run dead-letter list/requeue commands and capture functional output once full-engine generation succeeds.
+1. Extract reusable helper(s) in `services/ingestion-worker/scripts` for:
+   - run-scoped tenant/domain fixture setup + cleanup
+   - forced retry progression loops
+   - queue-job state assertions by job id
+2. Refactor `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` to use helper(s) without weakening assertions.
+3. Add explicit cleanup assertions (tenant/domain records removed post-run) and re-run:
+   - `npm run test:ingestion:integration`
+   - `npm run test:ingestion:dead-letter-commands`
 
 ## Constraints To Keep
-- Maintain tenant isolation assumptions.
-- Prefer shared package patterns over app-to-app coupling.
+- Maintain tenant isolation in all request/data paths and test fixtures.
+- Keep shared package boundaries strict (no app-to-app private imports).
 - Do not touch unrelated files.

@@ -6,6 +6,7 @@
   "scripts": {
     "drain:once": "tsx scripts/drain-once.ts",
     "test:integration": "tsx scripts/test-enqueue-worker-flow.ts",
+    "test:dead-letter-commands": "tsx scripts/test-dead-letter-commands.ts",
     "dead-letter:list": "tsx scripts/dead-letter-list.ts",
     "dead-letter:requeue": "tsx scripts/dead-letter-requeue.ts"
   },

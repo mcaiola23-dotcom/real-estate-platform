@@ -67,6 +67,78 @@ function computeNextRetryAt(attemptCount: number, now: Date): Date {
   return new Date(now.getTime() + delaySeconds * 1000);
 }
 
+function isNonNullObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isWebsiteLeadPayloadValid(payload: unknown): payload is WebsiteLeadSubmittedEvent['payload'] {
+  if (!isNonNullObject(payload)) {
+    return false;
+  }
+
+  const contact = payload.contact;
+  const listing = payload.listing;
+  if (!isNonNullObject(contact) || !isNonNullObject(listing)) {
+    return false;
+  }
+
+  const hasValidName = contact.name === null || typeof contact.name === 'string';
+  const hasValidEmail = typeof contact.email === 'string';
+  const hasValidPhone = typeof contact.phone === 'string';
+  const hasValidSource = typeof payload.source === 'string';
+  const hasValidTimeframe = payload.timeframe === null || typeof payload.timeframe === 'string';
+  const hasValidMessage = payload.message === null || typeof payload.message === 'string';
+
+  if (
+    !hasValidName ||
+    !hasValidEmail ||
+    !hasValidPhone ||
+    !hasValidSource ||
+    !hasValidTimeframe ||
+    !hasValidMessage
+  ) {
+    return false;
+  }
+
+  const hasValidListingId = listing.id === null || typeof listing.id === 'string';
+  const hasValidListingUrl = listing.url === null || typeof listing.url === 'string';
+  const hasValidListingAddress = listing.address === null || typeof listing.address === 'string';
+  if (!hasValidListingId || !hasValidListingUrl || !hasValidListingAddress) {
+    return false;
+  }
+
+  const propertyDetails = payload.propertyDetails;
+  if (propertyDetails === null) {
+    return true;
+  }
+  if (!isNonNullObject(propertyDetails)) {
+    return false;
+  }
+
+  const validPropertyTypes = new Set(['single-family', 'condo', 'multi-family']);
+  return (
+    validPropertyTypes.has(String(propertyDetails.propertyType)) &&
+    typeof propertyDetails.beds === 'number' &&
+    typeof propertyDetails.baths === 'number' &&
+    (propertyDetails.sqft === null || typeof propertyDetails.sqft === 'number')
+  );
+}
+
+function isWebsiteValuationPayloadValid(payload: unknown): payload is WebsiteValuationRequestedEvent['payload'] {
+  if (!isNonNullObject(payload)) {
+    return false;
+  }
+
+  const validPropertyTypes = new Set(['single-family', 'condo', 'multi-family']);
+  return (
+    typeof payload.address === 'string' &&
+    validPropertyTypes.has(String(payload.propertyType)) &&
+    typeof payload.beds === 'number' &&
+    typeof payload.baths === 'number' &&
+    (payload.sqft === null || typeof payload.sqft === 'number')
+  );
+}
+
 function toCrmContact(record: {
   id: string;
   tenantId: string;
@@ -546,6 +618,51 @@ export async function listDeadLetterQueueJobs(
   }
 }
 
+export async function getIngestionQueueJobById(jobId: string): Promise<WebsiteIngestionJob | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return null;
+  }
+
+  try {
+    const job = await prisma.ingestionQueueJob.findUnique({
+      where: { id: jobId },
+    });
+    return job ? toWebsiteIngestionJob(job) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function scheduleIngestionQueueJobNow(jobId: string): Promise<boolean> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return false;
+  }
+
+  const now = new Date();
+  try {
+    const existing = await prisma.ingestionQueueJob.findUnique({
+      where: { id: jobId },
+      select: { id: true, status: true },
+    });
+    if (!existing || existing.status !== 'pending') {
+      return false;
+    }
+
+    await prisma.ingestionQueueJob.update({
+      where: { id: jobId },
+      data: {
+        nextAttemptAt: now,
+        updatedAt: now,
+      },
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function requeueDeadLetterQueueJob(jobId: string): Promise<boolean> {
   const prisma = await getPrismaClient();
   if (!prisma) {
@@ -635,6 +752,13 @@ export async function ingestWebsiteEvent(event: WebsiteEvent): Promise<WebsiteEv
   const prisma = await getPrismaClient();
   if (!prisma) {
     return { accepted: false, duplicate: false, reason: 'prisma_unavailable' };
+  }
+
+  if (event.eventType === 'website.lead.submitted' && !isWebsiteLeadPayloadValid(event.payload)) {
+    return { accepted: false, duplicate: false, reason: 'ingestion_failed' };
+  }
+  if (event.eventType === 'website.valuation.requested' && !isWebsiteValuationPayloadValid(event.payload)) {
+    return { accepted: false, duplicate: false, reason: 'ingestion_failed' };
   }
 
   const eventKey = buildEventKey(event);

@@ -30,12 +30,7 @@ async function resolveDefaultDatabaseUrl(): Promise<string> {
 async function hasPrismaQueryEngineArtifact(): Promise<boolean> {
   const pathModule = await import('node:path');
   const fsModule = await import('node:fs');
-  const cwd = process.cwd();
-  const candidateDirs = [
-    pathModule.resolve(cwd, 'node_modules', '.prisma', 'client'),
-    pathModule.resolve(cwd, '..', 'node_modules', '.prisma', 'client'),
-    pathModule.resolve(cwd, '..', '..', 'node_modules', '.prisma', 'client'),
-  ];
+  const candidateDirs = await resolveGeneratedClientDirs();
 
   for (const directory of candidateDirs) {
     if (!fsModule.existsSync(directory)) {
@@ -45,7 +40,7 @@ async function hasPrismaQueryEngineArtifact(): Promise<boolean> {
     try {
       const files = fsModule.readdirSync(directory);
       const hasEngineBinary = files.some((name) =>
-        /(query_engine|libquery_engine).*?(\.node|\.so|\.dylib|\.dll\.node)$/i.test(name)
+        /(query_engine|libquery_engine).*?(\.node|\.so|\.dylib|\.dll\.node|\.exe)$/i.test(name)
       );
       if (hasEngineBinary) {
         return true;
@@ -56,6 +51,34 @@ async function hasPrismaQueryEngineArtifact(): Promise<boolean> {
   }
 
   return false;
+}
+
+async function resolveGeneratedClientDirs(): Promise<string[]> {
+  const pathModule = await import('node:path');
+  const cwd = process.cwd();
+
+  return [
+    pathModule.resolve(cwd, 'packages', 'db', 'generated', 'prisma-client'),
+    pathModule.resolve(cwd, '..', 'packages', 'db', 'generated', 'prisma-client'),
+    pathModule.resolve(cwd, '..', '..', 'packages', 'db', 'generated', 'prisma-client'),
+    pathModule.resolve(cwd, 'generated', 'prisma-client'),
+    pathModule.resolve(cwd, '..', 'generated', 'prisma-client'),
+  ];
+}
+
+async function resolveGeneratedClientEntry(): Promise<string | null> {
+  const pathModule = await import('node:path');
+  const fsModule = await import('node:fs');
+
+  const candidateDirs = await resolveGeneratedClientDirs();
+  for (const directory of candidateDirs) {
+    const entry = pathModule.resolve(directory, 'index.js');
+    if (fsModule.existsSync(entry)) {
+      return entry;
+    }
+  }
+
+  return null;
 }
 
 export interface PrismaClientAvailability {
@@ -99,13 +122,22 @@ export async function getPrismaClient(): Promise<any | null> {
           return null;
         }
 
+        const generatedClientEntry = await resolveGeneratedClientEntry();
+        if (!generatedClientEntry) {
+          prismaRuntimeReason = 'missing_engine';
+          prismaRuntimeMessage =
+            'Generated Prisma client was not found. Run npm run db:generate:direct --workspace @real-estate/db.';
+          return null;
+        }
+
+        const { pathToFileURL } = await import('node:url');
         const dynamicImport = new Function('moduleName', 'return import(moduleName);') as (
           moduleName: string
         ) => Promise<{ PrismaClient?: new () => any }>;
-        const prismaModule = await dynamicImport('@prisma/client');
+        const prismaModule = await dynamicImport(pathToFileURL(generatedClientEntry).href);
         if (!prismaModule.PrismaClient) {
           prismaRuntimeReason = 'import_failed';
-          prismaRuntimeMessage = 'Unable to resolve PrismaClient from @prisma/client.';
+          prismaRuntimeMessage = 'Unable to resolve PrismaClient from generated Prisma client output.';
           return null;
         }
 

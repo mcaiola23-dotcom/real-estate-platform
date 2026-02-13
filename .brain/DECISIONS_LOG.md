@@ -114,3 +114,51 @@
 ### D-028: Expose dead-letter queue operations through shared db helpers + worker commands
 **Decision**: Add dead-letter list/requeue helpers in `packages/db/src/crm.ts` and wire operational commands in `services/ingestion-worker` (`dead-letter:list`, `dead-letter:requeue`) with root script aliases.
 **Reason**: Provides a deterministic operator workflow to inspect and re-drive dead-lettered ingestion jobs without ad-hoc DB manipulation.
+
+### D-029: Generate Prisma client to package-local output to reduce Windows engine lock contention
+**Decision**: Configure Prisma client generation output to `packages/db/generated/prisma-client` and update runtime loading/engine checks in `packages/db/src/prisma-client.ts` plus cleanup targets in `packages/db/scripts/db-generate-safe.mjs` to prioritize that path.
+**Reason**: Avoids shared `node_modules/.prisma/client` engine artifact collisions that were causing intermittent Windows `EPERM` rename locks during full-engine generation.
+
+### D-030: Validate Prisma ingestion operations from Windows-native shell in this repo setup
+**Decision**: Run Prisma full-engine generation and ingestion worker validation commands via Windows `cmd.exe` with explicit `DATABASE_URL=file:C:/.../packages/db/prisma/dev.db` when working from this mixed WSL/Windows environment.
+**Reason**: Linux-shell execution on the Windows-mounted workspace attempted Linux engine refresh paths and hit filesystem/network sandbox constraints, while Windows-native execution successfully generated engine-backed client and ran ingestion tooling end-to-end.
+
+### D-031: Make CRM route handlers dependency-injectable for deterministic route-level tests
+**Decision**: Refactor CRM API handlers (`leads`, `contacts`, `activities`, `leads/[leadId]`) to export `create*Handler` factories with default production dependencies, then add `apps/crm/app/api/lib/routes.integration.test.ts` to exercise auth/tenant guards, payload validation, pagination responses, and lead status activity side effects.
+**Reason**: Enables reliable route behavior testing without brittle module mocking while preserving current runtime behavior through default dependency wiring.
+
+### D-032: Extend ingestion integration script to cover dead-letter and requeue lifecycle
+**Decision**: Update `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` to enqueue an intentionally invalid website event, assert dead-letter placement with `invalid_payload`, requeue the dead-letter job, and assert it dead-letters again on reprocessing.
+**Reason**: Provides deterministic end-to-end validation for operator dead-letter flows (not just happy-path enqueue->process persistence), reducing regression risk in ingestion reliability behavior.
+
+### D-033: Add explicit CRM activity mutation failure coverage for tenant-scoped linkage validation
+**Decision**: Extend `apps/crm/app/api/lib/routes.integration.test.ts` with activity POST cases that send lead/contact IDs and assert 400 responses when `createActivityForTenant` rejects tenant-scoped linkage.
+**Reason**: Makes tenant-isolation failure behavior explicit at route level for activity mutations and prevents regressions where invalid cross-tenant IDs could be handled inconsistently.
+
+### D-034: Add queue job inspection/scheduling helpers to support deterministic retry cadence integration coverage
+**Decision**: Add `getIngestionQueueJobById` and `scheduleIngestionQueueJobNow` in `packages/db/src/crm.ts`, and extend `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` to assert retry requeue behavior, `nextAttemptAt` gating, and attempt count progression across repeated failures.
+**Reason**: Enables stable integration verification of retry/backoff transitions without depending on wall-clock wait times, while keeping queue behavior observable and operator-friendly.
+
+### D-035: Extend ingestion integration coverage to assert dead-letter transition at max retry attempts
+**Decision**: Update `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` to force retry attempts 3-5 on a deterministic `ingestion_failed` fixture and assert final queue state (`status=dead_letter`, `attemptCount=5`, `deadLetteredAt` set, `lastError=ingestion_failed`).
+**Reason**: Closes the reliability-test gap between retry/backoff behavior and terminal dead-letter semantics, ensuring max-attempt transition logic remains correct across future changes.
+
+### D-036: Add command-level dead-letter operator integration script with isolated tenant fixture
+**Decision**: Add `services/ingestion-worker/scripts/test-dead-letter-commands.ts` and script entry `test:dead-letter-commands`, creating an isolated temporary tenant fixture to validate `dead-letter:list`, single-job `dead-letter:requeue` (`INGESTION_DEAD_LETTER_JOB_ID`), and tenant-filtered batch requeue (`INGESTION_DEAD_LETTER_TENANT_ID`) command flows end-to-end.
+**Reason**: Provides deterministic command-surface validation for operator tooling without mutating shared tenant data, and verifies env-driven command branches beyond function-level helpers.
+
+### D-037: Validate ingestion payloads before transactional processing to suppress expected error noise
+**Decision**: Add explicit runtime payload validation guards in `packages/db/src/crm.ts` for `website.lead.submitted` and `website.valuation.requested` events before calling `resolveOrCreateContact`/transaction logic, returning deterministic ingestion failure results for malformed payloads.
+**Reason**: Prevents repeated stack-trace logging for intentionally malformed test fixtures while preserving retry/dead-letter semantics and improving signal quality in ingestion test output.
+
+### D-038: Add optional JSON-mode output contract for dead-letter operator commands
+**Decision**: Extend `services/ingestion-worker/scripts/dead-letter-list.ts` and `services/ingestion-worker/scripts/dead-letter-requeue.ts` with env-flagged JSON output (`INGESTION_OUTPUT_JSON=1`) and event-labeled payload envelopes, then assert response shape in `services/ingestion-worker/scripts/test-dead-letter-commands.ts`.
+**Reason**: Creates a stable machine-readable command output surface for operational tooling integrations while retaining human-readable default output.
+
+### D-039: Align malformed valuation payload semantics with malformed lead payload retry/dead-letter behavior
+**Decision**: Extend `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` to enqueue malformed `website.valuation.requested` payloads and assert identical queue lifecycle semantics: initial requeue with `ingestion_failed`, repeated forced retries, and terminal `dead_letter` transition at attempt 5.
+**Reason**: Ensures ingestion reliability behavior is consistent across website event types and prevents divergence between lead and valuation failure handling paths.
+
+### D-040: Use temporary tenant fixture + guaranteed cleanup in ingestion integration flow
+**Decision**: Refactor `services/ingestion-worker/scripts/test-enqueue-worker-flow.ts` to create a run-scoped tenant/domain fixture (`tenant_ingestion_<runId>`) and clean it up in `finally` via cascading tenant delete.
+**Reason**: Prevents ongoing growth of shared tenant fixture data across local test runs, improves baseline determinism (`before` starts at zero), and reduces cross-run coupling in integration assertions.

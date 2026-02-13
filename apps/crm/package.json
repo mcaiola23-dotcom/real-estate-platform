@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:routes": "tsx --test app/api/lib/query-params.test.ts"
+    "test:routes": "tsx --test app/api/lib/query-params.test.ts app/api/lib/routes.integration.test.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.3",

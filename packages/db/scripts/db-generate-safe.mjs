@@ -24,20 +24,33 @@ function hasWindowsEngineLockFailure(output) {
 }
 
 function cleanupEngineArtifacts() {
-  const candidates = [
-    path.resolve(process.cwd(), 'node_modules/.prisma/client/query_engine-windows.dll.node'),
-    path.resolve(process.cwd(), '../../node_modules/.prisma/client/query_engine-windows.dll.node'),
-    path.resolve(process.cwd(), '../../../node_modules/.prisma/client/query_engine-windows.dll.node'),
-    path.resolve(process.cwd(), '../web/node_modules/.prisma/client/query_engine-windows.dll.node'),
-    path.resolve(process.cwd(), '../crm/node_modules/.prisma/client/query_engine-windows.dll.node'),
+  const candidateDirs = [
+    path.resolve(process.cwd(), 'generated/prisma-client'),
+    path.resolve(process.cwd(), '../generated/prisma-client'),
+    path.resolve(process.cwd(), 'node_modules/.prisma/client'),
+    path.resolve(process.cwd(), '../../node_modules/.prisma/client'),
+    path.resolve(process.cwd(), '../../../node_modules/.prisma/client'),
+    path.resolve(process.cwd(), '../web/node_modules/.prisma/client'),
+    path.resolve(process.cwd(), '../crm/node_modules/.prisma/client'),
   ];
 
-  for (const candidate of candidates) {
-    if (existsSync(candidate)) {
-      try {
-        rmSync(candidate, { force: true });
-      } catch {
-        // Ignore and continue cleanup attempts.
+  for (const directory of candidateDirs) {
+    if (!existsSync(directory)) {
+      continue;
+    }
+
+    for (const filename of [
+      'query_engine-windows.dll.node',
+      'query_engine-windows.exe',
+      'libquery_engine-windows.dll.node',
+    ]) {
+      const candidate = path.resolve(directory, filename);
+      if (existsSync(candidate)) {
+        try {
+          rmSync(candidate, { force: true });
+        } catch {
+          // Ignore and continue cleanup attempts.
+        }
       }
     }
   }

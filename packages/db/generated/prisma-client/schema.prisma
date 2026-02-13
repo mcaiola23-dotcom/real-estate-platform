@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id                 String              @id
+  slug               String              @unique
+  name               String
+  status             String
+  createdAt          DateTime
+  updatedAt          DateTime
+  domains            TenantDomain[]
+  websiteConfig      WebsiteConfig?
+  contacts           Contact[]
+  leads              Lead[]
+  activities         Activity[]
+  ingestedEvents     IngestedEvent[]
+  ingestionQueueJobs IngestionQueueJob[]
+}
+
+model TenantDomain {
+  id                 String    @id
+  tenantId           String
+  hostname           String
+  hostnameNormalized String    @unique
+  isPrimary          Boolean   @default(false)
+  isVerified         Boolean   @default(false)
+  verifiedAt         DateTime?
+  createdAt          DateTime
+  updatedAt          DateTime
+  tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model WebsiteConfig {
+  id        String         @id
+  tenantId  String         @unique
+  createdAt DateTime
+  updatedAt DateTime
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  modules   ModuleConfig[]
+}
+
+model ModuleConfig {
+  id              String        @id
+  websiteConfigId String
+  tenantId        String
+  moduleKey       String
+  enabled         Boolean       @default(true)
+  sortOrder       Int           @default(0)
+  createdAt       DateTime
+  updatedAt       DateTime
+  websiteConfig   WebsiteConfig @relation(fields: [websiteConfigId], references: [id], onDelete: Cascade)
+
+  @@unique([websiteConfigId, moduleKey])
+  @@index([tenantId])
+}
+
+model Contact {
+  id              String     @id
+  tenantId        String
+  fullName        String?
+  email           String?
+  emailNormalized String?
+  phone           String?
+  phoneNormalized String?
+  source          String
+  createdAt       DateTime
+  updatedAt       DateTime
+  tenant          Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  leads           Lead[]
+  activities      Activity[]
+
+  @@unique([tenantId, emailNormalized])
+  @@unique([tenantId, phoneNormalized])
+  @@index([tenantId, createdAt])
+}
+
+model Lead {
+  id             String     @id
+  tenantId       String
+  contactId      String?
+  status         String
+  leadType       String
+  source         String
+  timeframe      String?
+  notes          String?
+  listingId      String?
+  listingUrl     String?
+  listingAddress String?
+  propertyType   String?
+  beds           Int?
+  baths          Int?
+  sqft           Int?
+  createdAt      DateTime
+  updatedAt      DateTime
+  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact        Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  activities     Activity[]
+
+  @@index([tenantId, createdAt])
+  @@index([contactId])
+}
+
+model Activity {
+  id           String   @id
+  tenantId     String
+  contactId    String?
+  leadId       String?
+  activityType String
+  occurredAt   DateTime
+  summary      String
+  metadataJson String?
+  createdAt    DateTime
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact      Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead         Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, occurredAt])
+  @@index([contactId])
+  @@index([leadId])
+}
+
+model IngestedEvent {
+  id          String   @id
+  tenantId    String
+  eventType   String
+  eventKey    String
+  occurredAt  DateTime
+  payloadJson String
+  processedAt DateTime
+  createdAt   DateTime
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, eventKey])
+  @@index([tenantId, processedAt])
+}
+
+model IngestionQueueJob {
+  id             String    @id
+  tenantId       String
+  eventType      String
+  eventKey       String
+  occurredAt     DateTime
+  payloadJson    String
+  status         String
+  attemptCount   Int       @default(0)
+  lastError      String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  processedAt    DateTime?
+  nextAttemptAt  DateTime  @default(now())
+  deadLetteredAt DateTime?
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, eventKey])
+  @@index([tenantId, status, createdAt])
+  @@index([status, createdAt])
+  @@index([status, nextAttemptAt])
+}
