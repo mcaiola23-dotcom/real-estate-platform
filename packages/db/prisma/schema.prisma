@@ -176,3 +176,20 @@ model IngestionQueueJob {
   @@index([status, nextAttemptAt])
   @@unique([tenantId, eventKey])
 }
+
+model AdminAuditEvent {
+  id           String   @id
+  tenantId     String?
+  domainId     String?
+  action       String
+  status       String
+  actorId      String?
+  actorRole    String
+  error        String?
+  metadataJson String?
+  createdAt    DateTime
+
+  @@index([tenantId, createdAt])
+  @@index([action, createdAt])
+  @@index([status, createdAt])
+}

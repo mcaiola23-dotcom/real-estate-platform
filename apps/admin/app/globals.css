@@ -121,6 +121,22 @@ button:disabled {
   font-size: 0.82rem;
 }
 
+.admin-chip-status-allowed {
+  background: #edf7ed;
+  color: #135d2f;
+}
+
+.admin-chip-status-succeeded {
+  background: #e5f6ff;
+  color: #0c5374;
+}
+
+.admin-chip-status-denied,
+.admin-chip-status-failed {
+  background: #ffeaea;
+  color: #8f2222;
+}
+
 .admin-list {
   display: grid;
   gap: 0.6rem;

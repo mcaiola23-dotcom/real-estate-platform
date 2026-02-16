@@ -5,3 +5,4 @@ packages/db/node_modules/
 packages/db/prisma/*.db
 packages/db/prisma/*.db-journal
 packages/db/prisma/packages/
+packages/db/generated/prisma-client/query_engine-windows.dll.node.tmp*

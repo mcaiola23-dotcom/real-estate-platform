@@ -178,3 +178,49 @@
 ### D-044: Apply dependency-injected route-handler pattern to admin control-plane APIs
 **Decision**: Refactor `apps/admin` tenant/domain/settings route files to export `create*Handler` factories with default production dependencies and add route integration coverage in `apps/admin/app/api/lib/routes.integration.test.ts`.
 **Reason**: Keeps testing strategy consistent with CRM route coverage, enabling deterministic request validation/mutation behavior checks without brittle runtime module mocking.
+
+## 2026-02-14
+### D-045: Treat this sandbox as non-authoritative for remaining control-plane validation commands
+**Decision**: Keep Control Plane MVP validation tasks (`db:migrate:deploy`, `db:seed`, and `@real-estate/admin` route tests) open until rerun in a compatible environment, and record sandbox failures as non-authoritative evidence only.
+**Reason**: Current sandbox constraints (Prisma engine DNS fetch failures, WSL `cmd.exe` vsock failure, and `tsx` IPC `EPERM`) prevent reliable validation outcomes for those commands.
+
+### D-046: Use Windows `cmd.exe` as authoritative validation path for current control-plane command checks
+**Decision**: Accept Windows `cmd.exe` command results as authoritative for Control Plane MVP validation in this repo layout, and close the pending validation tasks after successful runs of `db:migrate:deploy`, `db:seed`, `@real-estate/admin` route tests, and admin build.
+**Reason**: Windows-shell execution completed all blocked validations successfully, while WSL sandbox failures remained environment-specific and non-representative.
+
+### D-047: Enforce admin-only access for control-plane mutations and emit structured audit events at route boundary
+**Decision**: Add shared admin mutation access utility in `apps/admin/app/api/lib/admin-access.ts` and apply it to mutation handlers (`tenants POST`, `domains POST`, `domains/[domainId] PATCH`, `settings PATCH`) so only role `admin` can mutate, with audit emission for `allowed`/`denied`/`succeeded`/`failed`.
+**Reason**: Closes a production hardening gap where control-plane writes were protected by authentication but not explicit role-based authorization or consistent mutation audit traces.
+
+### D-048: Persist admin mutation audit events through shared db boundary and keep write path fail-open
+**Decision**: Add shared `AdminAuditEvent` persistence model/migration (`packages/db/prisma/schema.prisma`, `202602140001_add_admin_audit_events`) plus helper API in `packages/db/src/admin-audit.ts`, then update `apps/admin/app/api/lib/admin-access.ts` to write audit events through shared helper and fail-open on sink errors.
+**Reason**: Moves control-plane audit trail from app-log-only telemetry into durable/queryable shared data while preventing audit sink issues from blocking tenant/domain/settings mutation handling.
+
+### D-049: Deliver admin audit timeline read surface via helper-based tenant reads with global aggregation in app layer
+**Decision**: Add `apps/admin/app/api/admin-audit/route.ts` to serve audit timeline reads by calling `listControlPlaneAdminAuditEventsByTenant` directly for tenant-scoped requests and by aggregating per-tenant helper reads for the recent global feed, then expose operator filters (tenant/status/action) in `apps/admin/app/components/control-plane-workspace.tsx`.
+**Reason**: Provides immediate operator visibility into control-plane mutation history without introducing new app-to-app coupling or bypassing the shared db helper boundary, while keeping tenant-specific reads explicit and preserving MVP delivery momentum.
+
+### D-050: Validate new audit-read surface through route-level dependency-injected tests and Windows-authoritative command runs
+**Decision**: Extend `apps/admin/app/api/lib/routes.integration.test.ts` with `/api/admin-audit` cases for tenant-scoped filtering and global recent-feed aggregation/limit, then treat Windows `cmd.exe` runs of `npm run test:routes --workspace @real-estate/admin` and `npm run build --workspace @real-estate/admin` as authoritative validation for this slice.
+**Reason**: Keeps route behavior verification deterministic while avoiding known WSL sandbox false negatives (`tsx` IPC and SWC binary mismatch) that do not represent production/local Windows execution outcomes.
+
+## 2026-02-16
+### D-051: Treat restart recovery as explicit runtime integrity check before new implementation work
+**Decision**: After unexpected session interruption, rerun Windows-authoritative Prisma/runtime commands (`db:generate`, `db:generate:direct`, `worker:ingestion:drain`, and `@real-estate/admin` route tests) before resuming feature work, and only apply additional Prisma safe-generate mitigation if failures are reproduced.
+**Reason**: Confirms no partial or inconsistent local state remains after restart, reduces risk of chasing non-reproducible failures, and keeps reliability hardening evidence-driven.
+
+### D-052: Defer additional safe-generate mitigation unless lock failures reappear under sampled load
+**Decision**: After running a Windows loop of 15 consecutive `db:generate:direct` attempts with zero failures, keep the current `db-generate-safe` behavior unchanged for now and shift to periodic reliability sampling + logging.
+**Reason**: Current evidence does not reproduce the prior `EPERM` lock condition after restart, so code changes would be speculative; continued measurement gives an objective trigger for future hardening.
+
+### D-053: Add dedicated Prisma reliability sampling command with EPERM-focused diagnostics
+**Decision**: Add `packages/db/scripts/db-generate-reliability-sample.mjs` and expose it via `db:generate:sample` scripts (workspace + root) to run repeated generate attempts, emit pass/fail rates, detect Windows `EPERM` lock signatures, and record compact failure samples.
+**Reason**: Replaces manual loop checks with a repeatable, documented command surface and makes lock-regression evidence consistent across sessions.
+
+### D-054: Strengthen safe-generate retry envelope before no-engine fallback
+**Decision**: Update `packages/db/scripts/db-generate-safe.mjs` to perform multiple cleanup/backoff retries (`PRISMA_GENERATE_LOCK_RETRIES`, `PRISMA_GENERATE_RETRY_BACKOFF_MS`) when Windows lock signatures are detected, then fallback to `--no-engine` only after retries are exhausted.
+**Reason**: A single retry was insufficient under recurrent lock conditions; progressive retry pacing increases recovery chance while preserving deterministic fallback behavior when contention persists.
+
+### D-055: Treat Prisma temporary engine rename artifacts as operational noise to clean/ignore
+**Decision**: Expand `db-generate-safe` cleanup to remove `query_engine-windows.dll.node.tmp*` files and add the same pattern to `.gitignore`.
+**Reason**: Persistent lock retries can leave temp artifacts that pollute repo status without representing source changes; explicit cleanup/ignore keeps session diffs actionable.

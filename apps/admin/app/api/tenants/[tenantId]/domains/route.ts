@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
 
 import { addTenantDomain } from '@real-estate/db/control-plane';
+import {
+  enforceAdminMutationAccess,
+  getMutationActorFromRequest,
+  safeWriteAdminAuditLog,
+  writeAdminAuditLog,
+} from '../../../lib/admin-access';
 
 interface DomainsPostDependencies {
   addTenantDomain: typeof addTenantDomain;
+  getMutationActorFromRequest?: typeof getMutationActorFromRequest;
+  writeAdminAuditLog?: typeof writeAdminAuditLog;
 }
 
 const defaultDependencies: DomainsPostDependencies = {
@@ -13,6 +21,15 @@ const defaultDependencies: DomainsPostDependencies = {
 export function createDomainsPostHandler(dependencies: DomainsPostDependencies = defaultDependencies) {
   return async function POST(request: Request, context: { params: Promise<{ tenantId: string }> }) {
     const { tenantId } = await context.params;
+    const accessDependencies = {
+      getMutationActorFromRequest: dependencies.getMutationActorFromRequest ?? getMutationActorFromRequest,
+      writeAdminAuditLog: dependencies.writeAdminAuditLog ?? writeAdminAuditLog,
+    };
+
+    const access = await enforceAdminMutationAccess(request, { action: 'tenant.domain.add', tenantId }, accessDependencies);
+    if (!access.ok) {
+      return access.response;
+    }
 
     try {
       const body = (await request.json()) as {
@@ -31,8 +48,29 @@ export function createDomainsPostHandler(dependencies: DomainsPostDependencies =
         isVerified: body.isVerified,
       });
 
+      await safeWriteAdminAuditLog(
+        {
+          action: 'tenant.domain.add',
+          actor: access.actor,
+          status: 'succeeded',
+          tenantId,
+          domainId: domain.id,
+        },
+        accessDependencies.writeAdminAuditLog
+      );
+
       return NextResponse.json({ ok: true, domain });
     } catch (error) {
+      await safeWriteAdminAuditLog(
+        {
+          action: 'tenant.domain.add',
+          actor: access.actor,
+          status: 'failed',
+          tenantId,
+          error: error instanceof Error ? error.message : 'Domain add failed.',
+        },
+        accessDependencies.writeAdminAuditLog
+      );
       return NextResponse.json(
         { ok: false, error: error instanceof Error ? error.message : 'Domain add failed.' },
         { status: 400 }

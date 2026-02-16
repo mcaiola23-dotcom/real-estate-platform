@@ -4,51 +4,50 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Close remaining Control Plane MVP validation blockers: run pending Prisma migrate/seed commands and execute admin route tests in a compatible local environment, then record clean validation outcomes.
+- Implement and validate one additional mitigation for persistent Windows Prisma engine rename lock failures (`query_engine-windows.dll.node` `EPERM`) so direct full-engine generation success rate improves over current baseline.
 
 ## Why This Is Next
-- Control-plane scaffold and route test coverage are now implemented, but environment constraints in this sandbox blocked full command validation.
-- Migration/seed and route-test execution evidence is required before treating this admin slice as production-ready baseline.
-- Closing command-level validation now prevents hidden runtime drift while Control Plane MVP expands.
+- Reliability sampling is now first-class (`db:generate:sample`) and showed reproducible lock failures in the same session where earlier loops passed, confirming instability rather than a one-time glitch.
+- Safe generation is now more resilient (multi-retry + backoff + cleanup) but still falls back to `engine=none` under sustained lock contention, which keeps runtime-dependent workflows fragile.
+- This is now the primary blocker for deterministic local ingestion/runtime validation in the Windows-authoritative environment.
 
 ## Current Snapshot
-- Completed: New control-plane runtime scaffold in `apps/admin`:
-  - Clerk-protected auth boundary in `apps/admin/proxy.ts`.
-  - Dashboard UI + mutation workflows in `apps/admin/app/components/control-plane-workspace.tsx`.
-  - Admin API routes for tenant provisioning/listing, domain attach/status updates, and settings read/update in `apps/admin/app/api/tenants/*`.
-- Completed: Shared control-plane contracts and db helper boundary:
-  - `packages/types/src/control-plane.ts`.
-  - `packages/db/src/control-plane.ts` and package exports.
-- Completed: Control-plane persistence scaffolding:
-  - Prisma model `TenantControlSettings` in `packages/db/prisma/schema.prisma`.
-  - Migration scaffold `packages/db/prisma/migrations/202602130004_add_tenant_control_settings/migration.sql`.
-  - Seed baseline update in `packages/db/prisma/seed.sql`.
-- Completed: Admin API route-handler factories + route-level integration test scaffold:
-  - `apps/admin/app/api/tenants/route.ts`
-  - `apps/admin/app/api/tenants/[tenantId]/domains/route.ts`
-  - `apps/admin/app/api/tenants/[tenantId]/domains/[domainId]/route.ts`
-  - `apps/admin/app/api/tenants/[tenantId]/settings/route.ts`
-  - `apps/admin/app/api/lib/routes.integration.test.ts`
+- Completed this session: restart integrity validation and reliability instrumentation/hardening.
+  - Added Prisma reliability sampler script: `packages/db/scripts/db-generate-reliability-sample.mjs`.
+  - Added script aliases:
+    - Root: `npm run db:generate:sample`
+    - DB workspace: `npm run db:generate:sample --workspace @real-estate/db`
+  - Hardened safe generate retries in `packages/db/scripts/db-generate-safe.mjs`:
+    - Configurable retry count via `PRISMA_GENERATE_LOCK_RETRIES` (default `3`).
+    - Progressive backoff via `PRISMA_GENERATE_RETRY_BACKOFF_MS` (default `350`).
+    - Optional fallback control via `PRISMA_GENERATE_ALLOW_NO_ENGINE_FALLBACK`.
+    - Cleanup now includes stale temp artifacts `query_engine-windows.dll.node.tmp*`.
+  - Added ignore rule for temp engine artifacts in `.gitignore`.
+- Control plane audit slice remains implemented and validated in this repo state:
+  - Admin mutation RBAC/audit route boundary.
+  - Durable `AdminAuditEvent` persistence.
+  - Admin audit timeline API/UI + route-level tests.
 
 ## Validation (Most Recent)
-- `npm run lint --workspace @real-estate/admin` passes.
-- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
-- `npm run test:routes --workspace @real-estate/admin` fails in this sandbox due `tsx` IPC socket permission (`listen EPERM /tmp/tsx-1000/*.pipe`).
-- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` fails in this mixed environment due `esbuild` platform mismatch (`@esbuild/win32-x64` present, linux binary required).
-- `DATABASE_URL=file:/mnt/c/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:migrate:deploy --workspace @real-estate/db` fails in this sandbox due Prisma engine DNS fetch error (`getaddrinfo EAI_AGAIN binaries.prisma.sh`).
-- `DATABASE_URL=file:/mnt/c/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:seed --workspace @real-estate/db` fails in this sandbox for the same Prisma engine DNS fetch issue.
-- `npm run build --workspace @real-estate/admin` fails in this sandbox due Next SWC/cache environment constraints (`EACCES /home/mc23/.cache/next-swc`, fallback SWC runtime error after cache override).
+- Restart integrity checks:
+  - `cmd.exe /c "... && npm run db:generate --workspace @real-estate/db"` passes (full engine in that run).
+  - `cmd.exe /c "... && npm run db:generate:direct --workspace @real-estate/db"` passes (single run).
+  - `cmd.exe /c "... && npm run worker:ingestion:drain"` passes (`totalProcessed: 0`, no failures).
+  - `cmd.exe /c "... && npm run test:routes --workspace @real-estate/admin"` passes (`13/13`).
+- Reliability sampling + hardening checks:
+  - `cmd.exe /v:on /c "... for /l %i in (1,1,15) do npm run db:generate:direct --workspace @real-estate/db"` passes (`15/15`, `0` failures).
+  - `cmd.exe /c "... && npm run db:generate:sample --workspace @real-estate/db -- 6"` fails (`0/6` pass, `6/6` fail, all `EPERM` lock on rename to `query_engine-windows.dll.node`).
+  - `cmd.exe /c "... && npm run db:generate --workspace @real-estate/db"` now shows retry envelope (`3` retries with backoff), then falls back to `engine=none` when locks persist.
+  - `cmd.exe /c "... && npm run db:generate:sample --workspace @real-estate/db -- 2 --json --exit-zero"` exits `0` and emits machine-readable failure samples with full lock path context.
 
 ## First Actions Next Session
-1. Re-run DB validation in normal dev environment:
-   - `DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:migrate:deploy --workspace @real-estate/db`
-   - `DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db npm run db:seed --workspace @real-estate/db`
-2. Run admin route tests in compatible environment and capture pass output:
-   - `npm run test:routes --workspace @real-estate/admin`
-3. Resolve local build environment for admin runtime and re-run:
-   - `npm run build --workspace @real-estate/admin`
+1. Capture a fresh baseline with `npm run db:generate:sample --workspace @real-estate/db -- 10 --json --exit-zero` in Windows `cmd.exe`.
+2. Apply one new mitigation targeting the rename-lock path (file-handle/process contention on `packages/db/generated/prisma-client/query_engine-windows.dll.node`).
+3. Re-run the same sample command and compare pass/fail rates before/after in `.brain/CURRENT_FOCUS.md`.
+4. Re-run one runtime-dependent check (`worker:ingestion:drain` or ingestion integration) only if full-engine reliability improves.
 
 ## Constraints To Keep
 - Maintain tenant isolation in all request/data paths and test fixtures.
 - Keep shared package boundaries strict (no app-to-app private imports).
-- Keep CRM/ingestion hardening scoped to blocking or production-critical reliability gaps while control-plane MVP advances.
+- Treat Windows `cmd.exe` results as authoritative for Prisma reliability in this mixed WSL/Windows workspace.
+- Do not interfere with ongoing CRM build-out work being performed by another agent.

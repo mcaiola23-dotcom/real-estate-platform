@@ -146,6 +146,15 @@ exports.Prisma.WebsiteConfigScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.TenantControlSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  planCode: 'planCode',
+  featureFlagsJson: 'featureFlagsJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ModuleConfigScalarFieldEnum = {
   id: 'id',
   websiteConfigId: 'websiteConfigId',
@@ -230,6 +239,19 @@ exports.Prisma.IngestionQueueJobScalarFieldEnum = {
   deadLetteredAt: 'deadLetteredAt'
 };
 
+exports.Prisma.AdminAuditEventScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  domainId: 'domainId',
+  action: 'action',
+  status: 'status',
+  actorId: 'actorId',
+  actorRole: 'actorRole',
+  error: 'error',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -245,12 +267,14 @@ exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   TenantDomain: 'TenantDomain',
   WebsiteConfig: 'WebsiteConfig',
+  TenantControlSettings: 'TenantControlSettings',
   ModuleConfig: 'ModuleConfig',
   Contact: 'Contact',
   Lead: 'Lead',
   Activity: 'Activity',
   IngestedEvent: 'IngestedEvent',
-  IngestionQueueJob: 'IngestionQueueJob'
+  IngestionQueueJob: 'IngestionQueueJob',
+  AdminAuditEvent: 'AdminAuditEvent'
 };
 
 /**

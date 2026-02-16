@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import type { ControlPlaneTenantSnapshot } from '@real-estate/types/control-plane';
+import type { ControlPlaneAdminAuditEvent, ControlPlaneTenantSnapshot } from '@real-estate/types/control-plane';
 
+import { createAdminAuditGetHandler } from '../admin-audit/route';
 import { createTenantsGetHandler, createTenantsPostHandler } from '../tenants/route';
 import { createDomainsPostHandler } from '../tenants/[tenantId]/domains/route';
 import { createDomainPatchHandler } from '../tenants/[tenantId]/domains/[domainId]/route';
@@ -39,6 +40,32 @@ const snapshotFixture: ControlPlaneTenantSnapshot = {
   },
 };
 
+const snapshotFixtureBravo: ControlPlaneTenantSnapshot = {
+  ...snapshotFixture,
+  tenant: {
+    ...snapshotFixture.tenant,
+    id: 'tenant_bravo',
+    slug: 'bravo',
+    name: 'Bravo Realty',
+  },
+};
+
+function buildAuditEvent(overrides: Partial<ControlPlaneAdminAuditEvent> = {}): ControlPlaneAdminAuditEvent {
+  return {
+    id: 'admin_audit_default',
+    action: 'tenant.settings.update',
+    status: 'succeeded',
+    actorId: 'admin_1',
+    actorRole: 'admin',
+    tenantId: 'tenant_alpha',
+    domainId: null,
+    error: null,
+    metadata: null,
+    createdAt: '2026-02-14T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
 test('tenants GET returns snapshots', async () => {
   const get = createTenantsGetHandler({
     listTenantSnapshotsForAdmin: async () => [snapshotFixture],
@@ -62,7 +89,7 @@ test('tenants POST validates required body fields', async () => {
   const response = await post(
     new Request('http://localhost/api/tenants', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
       body: JSON.stringify({ slug: 'alpha' }),
     })
   );
@@ -96,7 +123,7 @@ test('tenants POST provisions tenant when body is valid', async () => {
   const response = await post(
     new Request('http://localhost/api/tenants', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
       body: JSON.stringify({
         slug: 'alpha',
         name: 'Alpha Realty',
@@ -121,7 +148,7 @@ test('domains POST validates hostname', async () => {
   const response = await post(
     new Request('http://localhost/api/tenants/tenant_alpha/domains', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
       body: JSON.stringify({ isPrimary: true }),
     }),
     { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
@@ -152,7 +179,7 @@ test('domains POST creates domain for tenant', async () => {
   const response = await post(
     new Request('http://localhost/api/tenants/tenant_alpha/domains', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
       body: JSON.stringify({ hostname: 'alpha-secondary.localhost' }),
     }),
     { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
@@ -171,7 +198,7 @@ test('domain PATCH returns 404 when domain missing', async () => {
   const response = await patch(
     new Request('http://localhost/api/tenants/tenant_alpha/domains/domain_missing', {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
       body: JSON.stringify({ isVerified: true }),
     }),
     { params: Promise.resolve({ tenantId: 'tenant_alpha', domainId: 'domain_missing' }) }
@@ -206,7 +233,7 @@ test('settings PATCH maps failures to 400', async () => {
   const response = await patch(
     new Request('http://localhost/api/tenants/tenant_alpha/settings', {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
       body: JSON.stringify({ planCode: 'growth' }),
     }),
     { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
@@ -216,4 +243,183 @@ test('settings PATCH maps failures to 400', async () => {
   const json = (await response.json()) as { ok: false; error: string };
   assert.equal(json.ok, false);
   assert.equal(json.error, 'boom');
+});
+
+test('tenants POST rejects non-admin actor and records denied audit event', async () => {
+  const auditEvents: Array<{ status: string; action: string }> = [];
+  const post = createTenantsPostHandler({
+    listTenantSnapshotsForAdmin: async () => [snapshotFixture],
+    provisionTenant: async () => snapshotFixture,
+    getMutationActorFromRequest: async () => ({ actorId: 'user_1', role: 'viewer' }),
+    writeAdminAuditLog: async (event) => {
+      auditEvents.push({ status: event.status, action: event.action });
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/tenants', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ slug: 'alpha', name: 'Alpha', primaryDomain: 'alpha.localhost' }),
+    })
+  );
+
+  assert.equal(response.status, 403);
+  assert.deepEqual(auditEvents, [{ status: 'denied', action: 'tenant.provision' }]);
+});
+
+test('settings PATCH rejects non-admin actor', async () => {
+  const patch = createSettingsPatchHandler({
+    getTenantControlSettings: async () => snapshotFixture.settings,
+    updateTenantControlSettings: async () => snapshotFixture.settings,
+    getMutationActorFromRequest: async () => ({ actorId: 'user_2', role: 'support' }),
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/settings', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ planCode: 'growth' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 403);
+  const json = (await response.json()) as { ok: false; error: string };
+  assert.equal(json.error, 'Admin role is required for this mutation.');
+});
+
+test('settings PATCH succeeds even when audit sink fails', async () => {
+  const patch = createSettingsPatchHandler({
+    getTenantControlSettings: async () => snapshotFixture.settings,
+    updateTenantControlSettings: async () => ({
+      ...snapshotFixture.settings,
+      planCode: 'growth',
+    }),
+    getMutationActorFromRequest: async () => ({ actorId: 'admin_1', role: 'admin' }),
+    writeAdminAuditLog: async () => {
+      throw new Error('audit_sink_down');
+    },
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/settings', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ planCode: 'growth' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; settings: { planCode: string } };
+  assert.equal(json.settings.planCode, 'growth');
+});
+
+test('admin audit GET returns tenant-scoped filtered timeline', async () => {
+  const calls: Array<{ tenantId: string; limit: number }> = [];
+  const get = createAdminAuditGetHandler({
+    listTenantSnapshotsForAdmin: async () => [snapshotFixture, snapshotFixtureBravo],
+    listControlPlaneAdminAuditEventsByTenant: async (tenantId: string, limit?: number) => {
+      calls.push({ tenantId, limit: limit ?? 100 });
+      return [
+        buildAuditEvent({
+          id: 'admin_audit_match',
+          tenantId,
+          status: 'succeeded',
+          action: 'tenant.settings.update',
+          createdAt: '2026-02-14T10:00:00.000Z',
+        }),
+        buildAuditEvent({
+          id: 'admin_audit_filtered_status',
+          tenantId,
+          status: 'failed',
+          action: 'tenant.settings.update',
+          createdAt: '2026-02-14T11:00:00.000Z',
+        }),
+        buildAuditEvent({
+          id: 'admin_audit_filtered_action',
+          tenantId,
+          status: 'succeeded',
+          action: 'tenant.domain.add',
+          createdAt: '2026-02-14T12:00:00.000Z',
+        }),
+      ];
+    },
+  });
+
+  const response = await get(
+    new Request(
+      'http://localhost/api/admin-audit?tenantId=tenant_alpha&limit=7&status=succeeded&action=tenant.settings.update'
+    )
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as {
+    ok: true;
+    scope: 'tenant';
+    tenantId: string;
+    events: ControlPlaneAdminAuditEvent[];
+  };
+  assert.equal(json.ok, true);
+  assert.equal(json.scope, 'tenant');
+  assert.equal(json.tenantId, 'tenant_alpha');
+  assert.equal(json.events.length, 1);
+  assert.equal(json.events[0]?.id, 'admin_audit_match');
+  assert.deepEqual(calls, [{ tenantId: 'tenant_alpha', limit: 7 }]);
+});
+
+test('admin audit GET returns global recent feed across tenants with limit', async () => {
+  const calls: Array<{ tenantId: string; limit: number }> = [];
+  const get = createAdminAuditGetHandler({
+    listTenantSnapshotsForAdmin: async () => [snapshotFixture, snapshotFixtureBravo],
+    listControlPlaneAdminAuditEventsByTenant: async (tenantId: string, limit?: number) => {
+      calls.push({ tenantId, limit: limit ?? 100 });
+
+      if (tenantId === 'tenant_alpha') {
+        return [
+          buildAuditEvent({
+            id: 'alpha_oldest',
+            tenantId,
+            createdAt: '2026-02-14T00:01:00.000Z',
+          }),
+          buildAuditEvent({
+            id: 'alpha_latest',
+            tenantId,
+            createdAt: '2026-02-14T00:04:00.000Z',
+          }),
+        ];
+      }
+
+      return [
+        buildAuditEvent({
+          id: 'bravo_middle',
+          tenantId,
+          createdAt: '2026-02-14T00:03:00.000Z',
+        }),
+      ];
+    },
+  });
+
+  const response = await get(new Request('http://localhost/api/admin-audit?limit=2'));
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as {
+    ok: true;
+    scope: 'global';
+    tenantId: null;
+    events: ControlPlaneAdminAuditEvent[];
+  };
+
+  assert.equal(json.ok, true);
+  assert.equal(json.scope, 'global');
+  assert.equal(json.tenantId, null);
+  assert.deepEqual(
+    json.events.map((event) => event.id),
+    ['alpha_latest', 'bravo_middle']
+  );
+  assert.deepEqual(calls, [
+    { tenantId: 'tenant_alpha', limit: 2 },
+    { tenantId: 'tenant_bravo', limit: 2 },
+  ]);
 });

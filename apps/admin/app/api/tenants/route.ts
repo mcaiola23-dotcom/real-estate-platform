@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server';
 
 import { listTenantSnapshotsForAdmin, provisionTenant } from '@real-estate/db/control-plane';
+import {
+  enforceAdminMutationAccess,
+  getMutationActorFromRequest,
+  safeWriteAdminAuditLog,
+  writeAdminAuditLog,
+} from '../lib/admin-access';
 
 interface TenantsRouteDependencies {
   listTenantSnapshotsForAdmin: typeof listTenantSnapshotsForAdmin;
   provisionTenant: typeof provisionTenant;
+  getMutationActorFromRequest?: typeof getMutationActorFromRequest;
+  writeAdminAuditLog?: typeof writeAdminAuditLog;
 }
 
 const defaultDependencies: TenantsRouteDependencies = {
@@ -21,6 +29,16 @@ export function createTenantsGetHandler(dependencies: TenantsRouteDependencies =
 
 export function createTenantsPostHandler(dependencies: TenantsRouteDependencies = defaultDependencies) {
   return async function POST(request: Request) {
+    const accessDependencies = {
+      getMutationActorFromRequest: dependencies.getMutationActorFromRequest ?? getMutationActorFromRequest,
+      writeAdminAuditLog: dependencies.writeAdminAuditLog ?? writeAdminAuditLog,
+    };
+
+    const access = await enforceAdminMutationAccess(request, { action: 'tenant.provision' }, accessDependencies);
+    if (!access.ok) {
+      return access.response;
+    }
+
     try {
       const body = (await request.json()) as {
         name?: string;
@@ -42,8 +60,27 @@ export function createTenantsPostHandler(dependencies: TenantsRouteDependencies 
         featureFlags: Array.isArray(body.featureFlags) ? body.featureFlags : [],
       });
 
+      await safeWriteAdminAuditLog(
+        {
+          action: 'tenant.provision',
+          actor: access.actor,
+          status: 'succeeded',
+          tenantId: snapshot.tenant.id,
+        },
+        accessDependencies.writeAdminAuditLog
+      );
+
       return NextResponse.json({ ok: true, tenant: snapshot });
     } catch (error) {
+      await safeWriteAdminAuditLog(
+        {
+          action: 'tenant.provision',
+          actor: access.actor,
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'Tenant provisioning failed.',
+        },
+        accessDependencies.writeAdminAuditLog
+      );
       return NextResponse.json(
         { ok: false, error: error instanceof Error ? error.message : 'Tenant provisioning failed.' },
         { status: 400 }

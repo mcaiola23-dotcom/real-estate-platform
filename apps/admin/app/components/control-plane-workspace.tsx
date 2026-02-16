@@ -1,13 +1,28 @@
 'use client';
 
-import { useMemo, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 
-import type { ControlPlaneTenantSnapshot } from '@real-estate/types/control-plane';
+import type {
+  ControlPlaneAdminAuditAction,
+  ControlPlaneAdminAuditEvent,
+  ControlPlaneAdminAuditStatus,
+  ControlPlaneTenantSnapshot,
+} from '@real-estate/types/control-plane';
 
 interface ControlPlaneWorkspaceProps {
   initialSnapshots: ControlPlaneTenantSnapshot[];
   hasClerkKey: boolean;
 }
+
+const GLOBAL_AUDIT_SCOPE = '__global__';
+
+const auditStatusOptions: ControlPlaneAdminAuditStatus[] = ['allowed', 'denied', 'succeeded', 'failed'];
+const auditActionOptions: ControlPlaneAdminAuditAction[] = [
+  'tenant.provision',
+  'tenant.domain.add',
+  'tenant.domain.update',
+  'tenant.settings.update',
+];
 
 function toCsv(values: string[]): string {
   return values.join(', ');
@@ -34,10 +49,25 @@ function buildFlagsDraftMap(snapshots: ControlPlaneTenantSnapshot[]): Record<str
   }, {});
 }
 
+function formatTimestamp(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleString();
+}
+
 export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: ControlPlaneWorkspaceProps) {
   const [snapshots, setSnapshots] = useState(initialSnapshots);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [auditEvents, setAuditEvents] = useState<ControlPlaneAdminAuditEvent[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState<string | null>(null);
+  const [selectedAuditTenantId, setSelectedAuditTenantId] = useState<string>(GLOBAL_AUDIT_SCOPE);
+  const [selectedAuditStatus, setSelectedAuditStatus] = useState<string>('all');
+  const [selectedAuditAction, setSelectedAuditAction] = useState<string>('all');
 
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -50,6 +80,47 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   const [flagsDraftByTenant, setFlagsDraftByTenant] = useState<Record<string, string>>(() => buildFlagsDraftMap(initialSnapshots));
 
   const totalTenants = useMemo(() => snapshots.length, [snapshots]);
+  const tenantNameById = useMemo(() => {
+    return snapshots.reduce<Record<string, string>>((result, snapshot) => {
+      result[snapshot.tenant.id] = snapshot.tenant.name;
+      return result;
+    }, {});
+  }, [snapshots]);
+
+  const loadAuditEvents = useCallback(async (nextTenantId: string = selectedAuditTenantId) => {
+    setAuditLoading(true);
+    setAuditError(null);
+
+    try {
+      const query = new URLSearchParams();
+      query.set('limit', '50');
+      if (nextTenantId !== GLOBAL_AUDIT_SCOPE) {
+        query.set('tenantId', nextTenantId);
+      }
+      if (selectedAuditStatus !== 'all') {
+        query.set('status', selectedAuditStatus);
+      }
+      if (selectedAuditAction !== 'all') {
+        query.set('action', selectedAuditAction);
+      }
+
+      const response = await fetch(`/api/admin-audit?${query.toString()}`, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error('Unable to load audit timeline.');
+      }
+
+      const json = (await response.json()) as { events: ControlPlaneAdminAuditEvent[] };
+      setAuditEvents(json.events);
+    } catch (loadError) {
+      setAuditError(loadError instanceof Error ? loadError.message : 'Unknown audit timeline load error.');
+    } finally {
+      setAuditLoading(false);
+    }
+  }, [selectedAuditAction, selectedAuditStatus, selectedAuditTenantId]);
+
+  useEffect(() => {
+    void loadAuditEvents();
+  }, [loadAuditEvents]);
 
   async function refresh() {
     const response = await fetch('/api/tenants', { cache: 'no-store' });
@@ -61,6 +132,12 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     setSnapshots(json.tenants);
     setPlanDraftByTenant(buildPlanDraftMap(json.tenants));
     setFlagsDraftByTenant(buildFlagsDraftMap(json.tenants));
+    if (selectedAuditTenantId !== GLOBAL_AUDIT_SCOPE && !json.tenants.some((snapshot) => snapshot.tenant.id === selectedAuditTenantId)) {
+      setSelectedAuditTenantId(GLOBAL_AUDIT_SCOPE);
+      await loadAuditEvents(GLOBAL_AUDIT_SCOPE);
+      return;
+    }
+    await loadAuditEvents();
   }
 
   async function createTenant(event: FormEvent<HTMLFormElement>) {
@@ -338,6 +415,102 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="admin-card">
+        <div className="admin-row">
+          <h2>Audit Timeline</h2>
+          <button
+            type="button"
+            disabled={loading || auditLoading}
+            onClick={() => {
+              void loadAuditEvents();
+            }}
+          >
+            Refresh Timeline
+          </button>
+        </div>
+        <p className="admin-muted">Operator view of control-plane mutation access and outcomes.</p>
+
+        <div className="admin-grid">
+          <label className="admin-field">
+            Tenant Scope
+            <select
+              value={selectedAuditTenantId}
+              onChange={(event) => {
+                setSelectedAuditTenantId(event.target.value);
+              }}
+            >
+              <option value={GLOBAL_AUDIT_SCOPE}>Global Recent Feed</option>
+              {snapshots.map((snapshot) => (
+                <option key={snapshot.tenant.id} value={snapshot.tenant.id}>
+                  {snapshot.tenant.name} ({snapshot.tenant.slug})
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="admin-field">
+            Status
+            <select
+              value={selectedAuditStatus}
+              onChange={(event) => {
+                setSelectedAuditStatus(event.target.value);
+              }}
+            >
+              <option value="all">all</option>
+              {auditStatusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="admin-field">
+            Action
+            <select
+              value={selectedAuditAction}
+              onChange={(event) => {
+                setSelectedAuditAction(event.target.value);
+              }}
+            >
+              <option value="all">all</option>
+              {auditActionOptions.map((action) => (
+                <option key={action} value={action}>
+                  {action}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {auditError ? <p className="admin-error">{auditError}</p> : null}
+        {auditLoading ? <p className="admin-muted">Loading audit timeline...</p> : null}
+        {!auditLoading && auditEvents.length === 0 ? <p className="admin-muted">No audit events found.</p> : null}
+
+        {auditEvents.length > 0 ? (
+          <ul className="admin-list">
+            {auditEvents.map((event) => (
+              <li key={event.id} className="admin-list-item">
+                <div className="admin-row">
+                  <strong>{event.action}</strong>
+                  <span className={`admin-chip admin-chip-status-${event.status}`}>{event.status}</span>
+                  <span className="admin-chip">{formatTimestamp(event.createdAt)}</span>
+                </div>
+                <div className="admin-row">
+                  <span className="admin-chip">role: {event.actorRole}</span>
+                  <span className="admin-chip">actor: {event.actorId ?? 'unknown'}</span>
+                  <span className="admin-chip">
+                    tenant: {event.tenantId ? (tenantNameById[event.tenantId] ?? event.tenantId) : 'n/a'}
+                  </span>
+                  {event.domainId ? <span className="admin-chip">domain: {event.domainId}</span> : null}
+                </div>
+                {event.error ? <p className="admin-error">{event.error}</p> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </section>
     </div>
   );

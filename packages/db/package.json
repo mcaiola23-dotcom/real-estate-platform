@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "db:generate": "node ./scripts/db-generate-safe.mjs",
+    "db:generate:sample": "node ./scripts/db-generate-reliability-sample.mjs",
     "db:generate:direct": "prisma generate --schema prisma/schema.prisma",
     "db:migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
@@ -12,6 +13,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./admin-audit": "./src/admin-audit.ts",
     "./control-plane": "./src/control-plane.ts",
     "./crm": "./src/crm.ts",
     "./tenants": "./src/tenants.ts",

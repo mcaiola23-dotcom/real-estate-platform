@@ -1,7 +1,19 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import { Inter, Cormorant_Garamond } from 'next/font/google';
 import type { Metadata } from 'next';
 
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-cormorant',
+});
 
 export const metadata: Metadata = {
   title: 'Real Estate CRM',
@@ -13,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   const content = (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${inter.variable} ${cormorant.variable}`}>{children}</body>
     </html>
   );
 
