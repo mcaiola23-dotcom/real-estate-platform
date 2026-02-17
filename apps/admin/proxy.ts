@@ -3,6 +3,13 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/health']);
 
 export const proxy = clerkMiddleware(async (auth, req) => {
+  const hasClerkKey = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+  const hasLocalDevRoleOverride = Boolean(process.env.ADMIN_LOCAL_DEV_ROLE);
+
+  if (!hasClerkKey || hasLocalDevRoleOverride) {
+    return;
+  }
+
   if (!isPublicRoute(req)) {
     await auth.protect();
   }

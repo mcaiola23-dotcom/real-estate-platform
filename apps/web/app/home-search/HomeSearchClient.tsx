@@ -30,6 +30,7 @@ import { useSavedListings } from "./hooks/useSavedListings";
 import { useSavedSearches } from "./hooks/useSavedSearches";
 import { SavedSearchesModal, SaveSearchDialog } from "./SavedSearchesModal";
 import type { TenantScope } from "../lib/data/providers/tenant-context";
+import { trackWebsiteEvent } from "../lib/analytics/website-events";
 
 const HomeSearchMap = dynamic(() => import("./HomeSearchMap"), { ssr: false });
 
@@ -356,7 +357,7 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
   }, [townSlugs, neighborhoodsByTown]);
 
   const executeSearch = useCallback(
-    async (nextPage: number, nextBounds?: ListingBounds) => {
+    async (nextPage: number, nextBounds?: ListingBounds, trigger: "initial_load" | "manual" | "pagination" | "map_bounds" | "load_saved_search" = "manual") => {
       setLoading(true);
       try {
         const result = await searchListings({
@@ -374,6 +375,28 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
         setListings(result.listings);
         setTotal(result.total);
         setTotalPages(result.totalPages);
+
+        void trackWebsiteEvent({
+          eventType: "website.search.performed",
+          payload: {
+            source: "home_search",
+            searchContext: {
+              query: searchQuery.trim() ? searchQuery.trim() : null,
+              filtersJson: JSON.stringify({
+                ...filters,
+                townSlugs,
+                neighborhoodSlugs,
+                bounds: nextBounds || null,
+                trigger,
+              }),
+              sortField: sort.field,
+              sortOrder: sort.order,
+              page: nextPage,
+            },
+            resultCount: result.total,
+            actor: null,
+          },
+        });
       } catch (error) {
         console.error("Failed to fetch listings:", error);
       } finally {
@@ -385,7 +408,7 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
 
   useEffect(() => {
     if (triggerSearchFromLoad) {
-      executeSearch(1);
+      executeSearch(1, undefined, "load_saved_search");
       setTriggerSearchFromLoad(false);
     }
   }, [triggerSearchFromLoad, executeSearch]);
@@ -394,18 +417,18 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
     if (hasInitializedSearch.current) return;
     hasInitializedSearch.current = true;
     setHasSearched(true);
-    executeSearch(1);
+    executeSearch(1, undefined, "initial_load");
   }, [executeSearch]);
 
   const handleSearch = () => {
     setHasSearched(true);
     setPage(1);
-    executeSearch(1, bounds);
+    executeSearch(1, bounds, "manual");
   };
 
   const handlePageChange = (nextPage: number) => {
     setPage(nextPage);
-    executeSearch(nextPage, bounds);
+    executeSearch(nextPage, bounds, "pagination");
   };
 
   const handleSearchArea = () => {
@@ -414,12 +437,43 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
     setPendingBounds(null);
     setHasSearched(true);
     setPage(1);
-    executeSearch(1, pendingBounds);
+    executeSearch(1, pendingBounds, "map_bounds");
   };
 
-  const openListing = (listing: Listing) => {
+  const openListing = (listing: Listing, source: string = "home_search") => {
     setSelectedListing(listing);
     setSelectedPhotoIndex(0);
+
+    void trackWebsiteEvent({
+      eventType: "website.listing.viewed",
+      payload: {
+        source,
+        listing: {
+          id: listing.id,
+          address: listing.address.street || null,
+          city: listing.address.city || null,
+          state: listing.address.state || null,
+          zip: listing.address.zip || null,
+          price: listing.price ?? null,
+          beds: listing.beds ?? null,
+          baths: listing.baths ?? null,
+          sqft: listing.sqft ?? null,
+          propertyType: listing.propertyType || null,
+        },
+        searchContext: {
+          query: searchQuery.trim() ? searchQuery.trim() : null,
+          filtersJson: JSON.stringify({
+            ...filters,
+            townSlugs,
+            neighborhoodSlugs,
+          }),
+          sortField: sort.field,
+          sortOrder: sort.order,
+          page,
+        },
+        actor: null,
+      },
+    });
   };
 
   const handleBoundsChange = useCallback((nextBounds: ListingBounds) => {
@@ -512,7 +566,7 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
                   onChange={setSearchQuery}
                   tenantContext={tenantContext}
                   onSelect={(listing) => {
-                    openListing(listing);
+                    openListing(listing, "home_search_autocomplete");
                     // Optional: Center map on listing
                     if (listing.lat && listing.lng) {
                       setBounds({
@@ -774,7 +828,7 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
             listings={hasSearched || showSaved ? displayedListings : []}
             center={defaultCenter}
             onBoundsChange={handleBoundsChange}
-            onSelectListing={openListing}
+            onSelectListing={(listing) => openListing(listing, "home_search_map")}
           />
           {pendingBounds && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2">
@@ -828,11 +882,11 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
                     <ListingCard
                       key={listing.id}
                       listing={listing}
-                      onSelect={openListing}
+                      onSelect={(selectedListing) => openListing(selectedListing, "home_search_list")}
                       isSaved={isSaved(listing.id)}
                       onToggleSave={(e) => {
                         e.stopPropagation();
-                        toggleSave(listing.id);
+                        toggleSave(listing);
                       }}
                     />
                   ))}
@@ -904,7 +958,7 @@ export default function HomeSearchClient({ tenantContext }: { tenantContext?: Te
           onPhotoChange={setSelectedPhotoIndex}
           onClose={() => setSelectedListing(null)}
           isFavorite={isSaved(selectedListing.id)}
-          onToggleFavorite={() => toggleSave(selectedListing.id)}
+          onToggleFavorite={() => toggleSave(selectedListing)}
         />
       )}
 

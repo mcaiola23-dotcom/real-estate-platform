@@ -6,7 +6,7 @@
   "scripts": {
     "db:generate": "node ./scripts/db-generate-safe.mjs",
     "db:generate:sample": "node ./scripts/db-generate-reliability-sample.mjs",
-    "db:generate:direct": "prisma generate --schema prisma/schema.prisma",
+    "db:generate:direct": "node ./scripts/db-generate-direct.mjs",
     "db:migrate": "prisma migrate dev --schema prisma/schema.prisma",
     "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
     "db:seed": "prisma db execute --schema prisma/schema.prisma --file prisma/seed.sql"

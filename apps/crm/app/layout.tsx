@@ -16,8 +16,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'Real Estate CRM',
-  description: 'Tenant-aware CRM runtime for lead and activity management.',
+  title: 'Matt Caiola CRM',
+  description: 'Tenant-aware CRM workspace for polished lead and contact management.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

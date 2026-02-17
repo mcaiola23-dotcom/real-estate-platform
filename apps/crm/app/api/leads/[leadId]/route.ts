@@ -1,6 +1,6 @@
 import type { CrmLeadStatus } from '@real-estate/types/crm';
 import type { TenantContext } from '@real-estate/types';
-import { createActivityForTenant, updateLeadForTenant } from '@real-estate/db/crm';
+import { createActivityForTenant, getLeadByIdForTenant, updateLeadForTenant } from '@real-estate/db/crm';
 import { NextResponse } from 'next/server';
 
 import { requireTenantContext } from '../../lib/tenant-route';
@@ -20,15 +20,87 @@ interface RequireTenantContextResult {
 
 interface LeadPatchDeps {
   requireTenantContext: (request: Request) => Promise<RequireTenantContextResult>;
+  getLeadByIdForTenant: typeof getLeadByIdForTenant;
   updateLeadForTenant: typeof updateLeadForTenant;
   createActivityForTenant: typeof createActivityForTenant;
 }
 
 const defaultDeps: LeadPatchDeps = {
   requireTenantContext,
+  getLeadByIdForTenant,
   updateLeadForTenant,
   createActivityForTenant,
 };
+
+export function createLeadGetHandler(deps: LeadPatchDeps = defaultDeps) {
+  return async function GET(request: Request, context: RouteContext) {
+    const { tenantContext, unauthorizedResponse } = await deps.requireTenantContext(request);
+    if (unauthorizedResponse) {
+      return unauthorizedResponse;
+    }
+
+    if (!tenantContext) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'Tenant resolution failed.',
+        },
+        { status: 401 }
+      );
+    }
+
+    const { leadId } = await context.params;
+    const lead = await deps.getLeadByIdForTenant(tenantContext.tenantId, leadId);
+    if (!lead) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'Lead not found.',
+        },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      ok: true,
+      tenantId: tenantContext.tenantId,
+      lead,
+    });
+  };
+}
+
+function toNullableString(value: unknown): string | null | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null) {
+    return null;
+  }
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function toNullableInt(value: unknown): number | null | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null || value === '') {
+    return null;
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.round(value);
+  }
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return Math.round(parsed);
+    }
+  }
+  return undefined;
+}
 
 export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
   return async function PATCH(request: Request, context: RouteContext) {
@@ -52,6 +124,12 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       | {
           status?: string;
           notes?: string | null;
+          timeframe?: string | null;
+          listingAddress?: string | null;
+          propertyType?: string | null;
+          beds?: number | string | null;
+          baths?: number | string | null;
+          sqft?: number | string | null;
         }
       | null;
 
@@ -69,9 +147,24 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       payload.status && VALID_STATUSES.has(payload.status as CrmLeadStatus)
         ? (payload.status as CrmLeadStatus)
         : undefined;
-    const notes = typeof payload.notes === 'string' ? payload.notes.trim() : payload.notes;
+    const notes = toNullableString(payload.notes);
+    const timeframe = toNullableString(payload.timeframe);
+    const listingAddress = toNullableString(payload.listingAddress);
+    const propertyType = toNullableString(payload.propertyType);
+    const beds = toNullableInt(payload.beds);
+    const baths = toNullableInt(payload.baths);
+    const sqft = toNullableInt(payload.sqft);
 
-    if (!status && payload.notes === undefined) {
+    if (
+      status === undefined &&
+      notes === undefined &&
+      timeframe === undefined &&
+      listingAddress === undefined &&
+      propertyType === undefined &&
+      beds === undefined &&
+      baths === undefined &&
+      sqft === undefined
+    ) {
       return NextResponse.json(
         {
           ok: false,
@@ -84,6 +177,12 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
     const updatedLead = await deps.updateLeadForTenant(tenantContext.tenantId, leadId, {
       status,
       notes,
+      timeframe,
+      listingAddress,
+      propertyType,
+      beds,
+      baths,
+      sqft,
     });
 
     if (!updatedLead) {
@@ -115,3 +214,4 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
 }
 
 export const PATCH = createLeadPatchHandler();
+export const GET = createLeadGetHandler();

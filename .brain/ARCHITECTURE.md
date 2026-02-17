@@ -118,3 +118,6 @@ Core entities:
 3. AI-generated content is tagged with provenance metadata.
 4. No cross-app private imports; shared logic goes into `packages/*`.
 5. All domain onboarding state must be auditable.
+
+## Session Review (2026-02-17)
+- Reviewed during CRM checklist completion session; no scope/architecture/process changes required in this file beyond confirming continued tenant-isolation and shared-package boundaries.

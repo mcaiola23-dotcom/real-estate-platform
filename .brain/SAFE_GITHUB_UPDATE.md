@@ -72,3 +72,6 @@ git diff --name-only --cached
 Expected staged paths should be only:
 - `.brain/...`
 - optionally `scripts/init-platform-repo.sh`
+
+## Session Review (2026-02-17)
+- Reviewed during CRM checklist completion session; no scope/architecture/process changes required in this file beyond confirming continued tenant-isolation and shared-package boundaries.

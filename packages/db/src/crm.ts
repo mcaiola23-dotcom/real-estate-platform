@@ -14,6 +14,10 @@ import type {
 import type {
   WebsiteEvent,
   WebsiteLeadSubmittedEvent,
+  WebsiteListingFavoritedEvent,
+  WebsiteListingUnfavoritedEvent,
+  WebsiteListingViewedEvent,
+  WebsiteSearchPerformedEvent,
   WebsiteValuationRequestedEvent,
 } from '@real-estate/types/events';
 import type {
@@ -139,6 +143,75 @@ function isWebsiteValuationPayloadValid(payload: unknown): payload is WebsiteVal
   );
 }
 
+function isWebsiteSearchPerformedPayloadValid(payload: unknown): payload is WebsiteSearchPerformedEvent['payload'] {
+  if (!isNonNullObject(payload)) {
+    return false;
+  }
+
+  if (typeof payload.source !== 'string' || !isNonNullObject(payload.searchContext)) {
+    return false;
+  }
+
+  const searchContext = payload.searchContext;
+  const hasValidQuery = searchContext.query === null || typeof searchContext.query === 'string';
+  const hasValidFilters = searchContext.filtersJson === null || typeof searchContext.filtersJson === 'string';
+  const hasValidSortField = searchContext.sortField === null || typeof searchContext.sortField === 'string';
+  const hasValidSortOrder = searchContext.sortOrder === null || typeof searchContext.sortOrder === 'string';
+  const hasValidPage = searchContext.page === null || typeof searchContext.page === 'number';
+  const hasValidResultCount = payload.resultCount === null || typeof payload.resultCount === 'number';
+  const hasValidActor = payload.actor === null || isNonNullObject(payload.actor);
+
+  return (
+    hasValidQuery &&
+    hasValidFilters &&
+    hasValidSortField &&
+    hasValidSortOrder &&
+    hasValidPage &&
+    hasValidResultCount &&
+    hasValidActor
+  );
+}
+
+function isWebsiteListingInteractionPayloadValid(
+  payload: unknown
+): payload is
+  | WebsiteListingViewedEvent['payload']
+  | WebsiteListingFavoritedEvent['payload']
+  | WebsiteListingUnfavoritedEvent['payload'] {
+  if (!isNonNullObject(payload) || typeof payload.source !== 'string' || !isNonNullObject(payload.listing)) {
+    return false;
+  }
+
+  const listing = payload.listing;
+  const hasValidListingId = typeof listing.id === 'string';
+  const hasValidAddress = listing.address === null || typeof listing.address === 'string';
+  const hasValidCity = listing.city === null || typeof listing.city === 'string';
+  const hasValidState = listing.state === null || typeof listing.state === 'string';
+  const hasValidZip = listing.zip === null || typeof listing.zip === 'string';
+  const hasValidPrice = listing.price === null || typeof listing.price === 'number';
+  const hasValidBeds = listing.beds === null || typeof listing.beds === 'number';
+  const hasValidBaths = listing.baths === null || typeof listing.baths === 'number';
+  const hasValidSqft = listing.sqft === null || typeof listing.sqft === 'number';
+  const hasValidPropertyType = listing.propertyType === null || typeof listing.propertyType === 'string';
+  const hasValidSearchContext = payload.searchContext === null || isNonNullObject(payload.searchContext);
+  const hasValidActor = payload.actor === null || isNonNullObject(payload.actor);
+
+  return (
+    hasValidListingId &&
+    hasValidAddress &&
+    hasValidCity &&
+    hasValidState &&
+    hasValidZip &&
+    hasValidPrice &&
+    hasValidBeds &&
+    hasValidBaths &&
+    hasValidSqft &&
+    hasValidPropertyType &&
+    hasValidSearchContext &&
+    hasValidActor
+  );
+}
+
 function toCrmContact(record: {
   id: string;
   tenantId: string;
@@ -243,6 +316,18 @@ export interface CreateCrmContactInput {
 export interface UpdateCrmLeadInput {
   status?: CrmLeadStatus;
   notes?: string | null;
+  timeframe?: string | null;
+  listingAddress?: string | null;
+  propertyType?: string | null;
+  beds?: number | null;
+  baths?: number | null;
+  sqft?: number | null;
+}
+
+export interface UpdateCrmContactInput {
+  fullName?: string | null;
+  email?: string | null;
+  phone?: string | null;
 }
 
 export interface CreateCrmActivityInput {
@@ -321,10 +406,50 @@ async function resolveOrCreateContact(tx: any, event: WebsiteLeadSubmittedEvent)
   return contactId;
 }
 
+async function resolveLeadForListingInteraction(
+  tx: any,
+  tenantId: string,
+  listing: {
+    id: string;
+    address: string | null;
+  }
+): Promise<{ id: string; contactId: string | null } | null> {
+  const listingId = listing.id.trim();
+  const listingAddress = listing.address?.trim();
+
+  if (!listingId && !listingAddress) {
+    return null;
+  }
+
+  const lead = await tx.lead.findFirst({
+    where: {
+      tenantId,
+      OR: [
+        ...(listingId ? [{ listingId }] : []),
+        ...(listingAddress ? [{ listingAddress }] : []),
+      ],
+    },
+    orderBy: { updatedAt: 'desc' },
+    select: {
+      id: true,
+      contactId: true,
+    },
+  });
+
+  return lead ?? null;
+}
+
 function parseWebsiteEventFromQueueRecord(record: { payloadJson: string }): WebsiteEvent | null {
   try {
     const event = JSON.parse(record.payloadJson) as WebsiteEvent;
-    if (event.eventType !== 'website.lead.submitted' && event.eventType !== 'website.valuation.requested') {
+    if (
+      event.eventType !== 'website.lead.submitted' &&
+      event.eventType !== 'website.valuation.requested' &&
+      event.eventType !== 'website.search.performed' &&
+      event.eventType !== 'website.listing.viewed' &&
+      event.eventType !== 'website.listing.favorited' &&
+      event.eventType !== 'website.listing.unfavorited'
+    ) {
       return null;
     }
     return event;
@@ -760,6 +885,17 @@ export async function ingestWebsiteEvent(event: WebsiteEvent): Promise<WebsiteEv
   if (event.eventType === 'website.valuation.requested' && !isWebsiteValuationPayloadValid(event.payload)) {
     return { accepted: false, duplicate: false, reason: 'ingestion_failed' };
   }
+  if (event.eventType === 'website.search.performed' && !isWebsiteSearchPerformedPayloadValid(event.payload)) {
+    return { accepted: false, duplicate: false, reason: 'ingestion_failed' };
+  }
+  if (
+    (event.eventType === 'website.listing.viewed' ||
+      event.eventType === 'website.listing.favorited' ||
+      event.eventType === 'website.listing.unfavorited') &&
+    !isWebsiteListingInteractionPayloadValid(event.payload)
+  ) {
+    return { accepted: false, duplicate: false, reason: 'ingestion_failed' };
+  }
 
   const eventKey = buildEventKey(event);
   const now = new Date();
@@ -861,6 +997,57 @@ export async function ingestWebsiteEvent(event: WebsiteEvent): Promise<WebsiteEv
             activityType: 'valuation_requested',
             occurredAt,
             summary: 'Website valuation request received',
+            metadataJson: JSON.stringify(event.payload),
+            createdAt: now,
+          },
+        });
+      } else if (event.eventType === 'website.search.performed') {
+        activityId = randomUUID();
+        await tx.activity.create({
+          data: {
+            id: activityId,
+            tenantId: event.tenant.tenantId,
+            contactId: null,
+            leadId: null,
+            activityType: 'website_search_performed',
+            occurredAt,
+            summary: `Home search performed (${event.payload.resultCount ?? 0} results)`,
+            metadataJson: JSON.stringify(event.payload),
+            createdAt: now,
+          },
+        });
+      } else if (
+        event.eventType === 'website.listing.viewed' ||
+        event.eventType === 'website.listing.favorited' ||
+        event.eventType === 'website.listing.unfavorited'
+      ) {
+        const linkedLead = await resolveLeadForListingInteraction(tx, event.tenant.tenantId, {
+          id: event.payload.listing.id,
+          address: event.payload.listing.address,
+        });
+
+        const interactionSummary =
+          event.eventType === 'website.listing.viewed'
+            ? `Listing viewed: ${event.payload.listing.address || event.payload.listing.id}`
+            : event.eventType === 'website.listing.favorited'
+              ? `Listing favorited: ${event.payload.listing.address || event.payload.listing.id}`
+              : `Listing unfavorited: ${event.payload.listing.address || event.payload.listing.id}`;
+
+        activityId = randomUUID();
+        await tx.activity.create({
+          data: {
+            id: activityId,
+            tenantId: event.tenant.tenantId,
+            contactId: linkedLead?.contactId ?? null,
+            leadId: linkedLead?.id ?? null,
+            activityType:
+              event.eventType === 'website.listing.viewed'
+                ? 'website_listing_viewed'
+                : event.eventType === 'website.listing.favorited'
+                  ? 'website_listing_favorited'
+                  : 'website_listing_unfavorited',
+            occurredAt,
+            summary: interactionSummary,
             metadataJson: JSON.stringify(event.payload),
             createdAt: now,
           },
@@ -1121,6 +1308,24 @@ export async function updateLeadForTenant(
   if (input.notes !== undefined) {
     data.notes = input.notes;
   }
+  if (input.timeframe !== undefined) {
+    data.timeframe = input.timeframe;
+  }
+  if (input.listingAddress !== undefined) {
+    data.listingAddress = input.listingAddress;
+  }
+  if (input.propertyType !== undefined) {
+    data.propertyType = input.propertyType;
+  }
+  if (input.beds !== undefined) {
+    data.beds = input.beds;
+  }
+  if (input.baths !== undefined) {
+    data.baths = input.baths;
+  }
+  if (input.sqft !== undefined) {
+    data.sqft = input.sqft;
+  }
 
   try {
     const leadRecord = await prisma.lead.findFirst({
@@ -1138,6 +1343,53 @@ export async function updateLeadForTenant(
       data,
     });
     return toCrmLead(lead);
+  } catch {
+    return null;
+  }
+}
+
+export async function updateContactForTenant(
+  tenantId: string,
+  contactId: string,
+  input: UpdateCrmContactInput
+): Promise<CrmContact | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return null;
+  }
+
+  const data: Record<string, unknown> = {
+    updatedAt: new Date(),
+  };
+
+  if (input.fullName !== undefined) {
+    data.fullName = input.fullName?.trim() || null;
+  }
+  if (input.email !== undefined) {
+    const email = input.email?.trim() || null;
+    data.email = email;
+    data.emailNormalized = normalizeEmail(email);
+  }
+  if (input.phone !== undefined) {
+    const phone = input.phone?.trim() || null;
+    data.phone = phone;
+    data.phoneNormalized = normalizePhone(phone);
+  }
+
+  try {
+    const contactRecord = await prisma.contact.findFirst({
+      where: { id: contactId, tenantId },
+      select: { id: true },
+    });
+    if (!contactRecord) {
+      return null;
+    }
+
+    const updated = await prisma.contact.update({
+      where: { id: contactId },
+      data,
+    });
+    return toCrmContact(updated);
   } catch {
     return null;
   }
@@ -1210,6 +1462,25 @@ export async function getContactById(contactId: string): Promise<CrmContact | nu
       where: { id: contactId },
     });
     return contact ? toCrmContact(contact) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getLeadByIdForTenant(tenantId: string, leadId: string): Promise<CrmLead | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return null;
+  }
+
+  try {
+    const lead = await prisma.lead.findFirst({
+      where: {
+        id: leadId,
+        tenantId,
+      },
+    });
+    return lead ? toCrmLead(lead) : null;
   } catch {
     return null;
   }

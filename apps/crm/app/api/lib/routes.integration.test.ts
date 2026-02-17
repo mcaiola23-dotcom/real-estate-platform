@@ -5,7 +5,8 @@ import type { CrmActivity, CrmContact, CrmLead, TenantContext } from '@real-esta
 
 import { createActivitiesGetHandler, createActivitiesPostHandler } from '../activities/route';
 import { createContactsGetHandler, createContactsPostHandler } from '../contacts/route';
-import { createLeadPatchHandler } from '../leads/[leadId]/route';
+import { createContactPatchHandler } from '../contacts/[contactId]/route';
+import { createLeadGetHandler, createLeadPatchHandler } from '../leads/[leadId]/route';
 import { createLeadsGetHandler } from '../leads/route';
 
 const tenantContext: TenantContext = {
@@ -161,7 +162,7 @@ test('contacts POST creates contact with enforced crm_manual source', async () =
     parseContactListQuery: () => ({}),
     listContactsByTenantId: async () => [],
     createContactForTenant: async (_tenantId, input) => {
-      receivedSource = input.source;
+      receivedSource = input.source ?? null;
       return contact;
     },
   });
@@ -175,6 +176,41 @@ test('contacts POST creates contact with enforced crm_manual source', async () =
   );
   assert.equal(response.status, 201);
   assert.equal(receivedSource, 'crm_manual');
+});
+
+test('contact PATCH updates tenant-scoped contact fields', async () => {
+  const contact: CrmContact = {
+    id: 'contact_3',
+    tenantId: tenantContext.tenantId,
+    fullName: 'Updated Name',
+    email: 'updated@example.com',
+    emailNormalized: 'updated@example.com',
+    phone: '2035551234',
+    phoneNormalized: '2035551234',
+    source: 'crm_manual',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const handler = createContactPatchHandler({
+    requireTenantContext: authorizedContext,
+    updateContactForTenant: async (_tenantId, contactId, input) => {
+      assert.equal(contactId, 'contact_3');
+      assert.equal(input.fullName, 'Updated Name');
+      return contact;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/contacts/contact_3', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ fullName: ' Updated Name ' }),
+    }),
+    { params: Promise.resolve({ contactId: 'contact_3' }) }
+  );
+
+  assert.equal(response.status, 200);
 });
 
 test('activities GET returns tenant-scoped list', async () => {
@@ -290,6 +326,7 @@ test('activities POST returns 400 when tenant-scoped contact linkage fails', asy
 test('lead PATCH returns 400 when no updatable fields are provided', async () => {
   const handler = createLeadPatchHandler({
     requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
     updateLeadForTenant: async () => null,
     createActivityForTenant: async () => null,
   });
@@ -329,6 +366,7 @@ test('lead PATCH writes status-change activity when status is updated', async ()
   let activityWrites = 0;
   const handler = createLeadPatchHandler({
     requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => updatedLead,
     updateLeadForTenant: async () => updatedLead,
     createActivityForTenant: async () => {
       activityWrites += 1;
@@ -346,4 +384,42 @@ test('lead PATCH writes status-change activity when status is updated', async ()
   );
   assert.equal(response.status, 200);
   assert.equal(activityWrites, 1);
+});
+
+test('lead GET returns tenant-scoped lead payload', async () => {
+  const lead: CrmLead = {
+    id: 'lead_3',
+    tenantId: tenantContext.tenantId,
+    contactId: null,
+    status: 'new',
+    leadType: 'valuation_request',
+    source: 'website_valuation',
+    timeframe: null,
+    notes: null,
+    listingId: null,
+    listingUrl: null,
+    listingAddress: '10 Main St',
+    propertyType: null,
+    beds: null,
+    baths: null,
+    sqft: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const handler = createLeadGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async (tenantId, leadId) => {
+      assert.equal(tenantId, tenantContext.tenantId);
+      assert.equal(leadId, 'lead_3');
+      return lead;
+    },
+    updateLeadForTenant: async () => null,
+    createActivityForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/leads/lead_3'), {
+    params: Promise.resolve({ leadId: 'lead_3' }),
+  });
+  assert.equal(response.status, 200);
 });

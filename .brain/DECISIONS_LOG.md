@@ -224,3 +224,56 @@
 ### D-055: Treat Prisma temporary engine rename artifacts as operational noise to clean/ignore
 **Decision**: Expand `db-generate-safe` cleanup to remove `query_engine-windows.dll.node.tmp*` files and add the same pattern to `.gitignore`.
 **Reason**: Persistent lock retries can leave temp artifacts that pollute repo status without representing source changes; explicit cleanup/ignore keeps session diffs actionable.
+
+## 2026-02-17
+### D-056: Route direct full-engine Prisma generation through a dedicated mitigation wrapper and sample that path directly
+**Decision**: Add `packages/db/scripts/db-generate-direct.mjs` with Windows rename-lock probe/wait, engine artifact cleanup, and retry/backoff (without `--no-engine` fallback), update `db:generate:direct` to use it, and run `db:generate:sample` via this wrapper for apples-to-apples reliability measurement.
+**Reason**: Prior mitigations improved `db:generate` fallback behavior but did not harden the direct full-engine path; direct-path instrumentation and retries are required to isolate whether lock contention can be recovered before introducing deeper process-level mitigations.
+
+### D-057: Allow direct-generate success under lock only when existing generated client proves runtime-healthy
+**Decision**: Extend `packages/db/scripts/db-generate-direct.mjs` so persistent rename-lock failures can return success only if an existing generated Prisma client passes a runtime health probe (`SELECT 1`) against the configured database; remove no-engine regeneration fallback from direct path to avoid runtime mode regression.
+**Reason**: A no-engine fallback can improve command pass rate while breaking ingestion runtime readiness. Health-checked client reuse preserves runtime correctness and still mitigates lock-holder contention when a valid full-engine client already exists.
+
+### D-058: Standardize CRM UX around a polished two-column operations shell aligned to Matt Caiola brand language
+**Decision**: Rework `apps/crm/app/components/crm-workspace.tsx` and `apps/crm/app/globals.css` into a premium, responsive command-center layout with executive KPIs, status distribution strip, lead-first workflow panel, and structured right-rail modules (contact capture, activity logging, timeline, contact snapshot), plus branded auth entry presentation.
+**Reason**: The initial CRM UI baseline was functionally correct but visually utilitarian; moving to a clearer hierarchy and refined visual system increases operator readability, perceived product quality, and day-to-day usability without changing API/data contracts.
+
+### D-059: Shift CRM lead editing to draft-first workflow with optimistic saves and inline feedback
+**Decision**: Add client-side lead search/filter/status-tab controls, a sticky quick-action draft bar, per-lead unsaved indicators, optimistic lead/contact/activity updates, and lightweight toast feedback in `apps/crm/app/components/crm-workspace.tsx` with matching style primitives in `apps/crm/app/globals.css`.
+**Reason**: CRM operators need faster triage and clearer mutation feedback than direct auto-save interactions provide; draft-first editing with optimistic UI behavior improves perceived responsiveness while preserving tenant-scoped API contracts and existing backend boundaries.
+
+### D-060: Treat Prisma direct-generation stability as restored with health-checked reuse + extended sample evidence
+**Decision**: Keep `db:generate:direct` on `packages/db/scripts/db-generate-direct.mjs` with healthy existing-client reuse checks and continue periodic sampling, after Windows-authoritative runs reached `6/6` and `12/12` pass rates with no `EPERM` failures.
+**Reason**: Current evidence shows mitigation effectiveness while preserving runtime readiness, but lock behavior has historically been intermittent; periodic re-sampling remains necessary to detect regressions quickly.
+
+### D-061: Capture home-search browsing intent via website behavior events and persist as CRM activities
+**Decision**: Introduce new website behavior contracts (`website.search.performed`, `website.listing.viewed`, `website.listing.favorited`, `website.listing.unfavorited`) in `packages/types/src/events.ts`, emit them from home-search UI flows (`apps/web/app/home-search/HomeSearchClient.tsx` and `apps/web/app/home-search/hooks/useSavedListings.ts`) through `apps/web/app/api/website-events/route.ts`, and ingest them in `packages/db/src/crm.ts` as tenant-scoped `Activity` records with metadata and best-effort lead/contact linking by listing identity.
+**Reason**: Lead-intent behavior data is high-value conversion context and must live in CRM persistence (not only client/local or profile-sync surfaces) to support actionable operator workflows and future UI display.
+
+### D-062: Use Lead Profile Modal as the primary CRM behavior-intelligence surface and navigation target
+**Decision**: Implement a reusable Lead Profile Modal in `apps/crm/app/components/crm-workspace.tsx` and treat it as the primary lead-context destination from shell search suggestions and existing lead/contact touchpoints (activity feed, lead cards, pipeline cards, contact list), with inline draft status/notes editing and save/discard controls reused from existing mutation flow.
+**Reason**: Centralizing lead context in one modal shortens operator navigation loops, makes new website behavior signals immediately actionable, and allows incremental rollout across CRM surfaces before dedicated table/shell navigation slices are completed.
+
+### D-063: Complete CRM checklist in a single integrated workspace refactor
+**Decision**: Implement the full CRM checklist in one coordinated pass centered on `apps/crm/app/components/crm-workspace.tsx` + `apps/crm/app/globals.css` instead of splitting by small slices.
+**Reason**: The requested scope was interaction-heavy and cross-cutting (modal/table/pipeline/shell/filter states). Delivering in one cohesive pass avoided drift and inconsistent UX behavior between partial slices.
+
+### D-064: Add tenant-scoped lead detail + contact patch route surfaces for modal/table drill-ins
+**Decision**: Extend CRM API boundaries with `GET /api/leads/[leadId]`, `PATCH /api/leads/[leadId]` expanded update fields, and new `PATCH /api/contacts/[contactId]`, backed by shared db helpers (`getLeadByIdForTenant`, `updateContactForTenant`).
+**Reason**: UI checklist requirements needed authoritative detail drill-in and inline contact/lead editing from the reusable lead profile modal while preserving tenant isolation and shared package boundaries.
+
+### D-065: Centralize CRM operator-facing label mapping
+**Decision**: Introduce `apps/crm/app/lib/crm-display.ts` for canonical source/type/status/activity label mapping and route all UI rendering through these helpers.
+**Reason**: Prevents drift in display semantics across dashboard, pipeline, table, autocomplete, and modal views; explicitly standardizes `website_valuation` display text to `Valuation Request` while keeping stored values unchanged.
+
+### D-066: Make pipeline filters independent from dashboard filters with explicit conflict notice behavior
+**Decision**: Split pipeline filter state from dashboard filter state and add explicit operator notice when status edits move a lead outside active pipeline filters.
+**Reason**: Addresses the "lead disappears" confusion and removes hidden coupling between dashboard pills and pipeline board filtering.
+
+### D-067: Standardize CRM hover states around readable, low-contrast highlight treatments
+**Decision**: Replace dark hover overlays on key CRM interactive surfaces (lead/address inline links, KPI cards, sortable table headers) with subtle shared tokenized hover styles in `apps/crm/app/globals.css`.
+**Reason**: Dark hover states were reducing text readability and degrading usability; subtle highlight treatment preserves affordance without obscuring content.
+
+### D-068: Prioritize typography refinement as the immediate post-checklist UI pass
+**Decision**: Make second-pass typography cleanup the first task for the next session (after `platform-session-bootstrap`), ahead of additional feature expansion.
+**Reason**: Core CRM checklist functionality is complete; the highest-value next step is improving hierarchy legibility and visual consistency to increase day-to-day operator usability and adoption.

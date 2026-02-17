@@ -1,8 +1,12 @@
 import { spawnSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const isWindows = process.platform === 'win32';
-const prismaBin = isWindows ? 'prisma.cmd' : 'prisma';
-const schemaArgs = ['--schema', 'prisma/schema.prisma'];
+const nodeBin = process.execPath;
+const directScriptPath = path.resolve(__dirname, 'db-generate-direct.mjs');
 
 function parseInteger(value, fallback) {
   const parsed = Number.parseInt(String(value ?? ''), 10);
@@ -13,10 +17,10 @@ function parseInteger(value, fallback) {
 }
 
 function runGenerate() {
-  return spawnSync(prismaBin, ['generate', ...schemaArgs], {
+  return spawnSync(nodeBin, [directScriptPath], {
     cwd: process.cwd(),
     env: process.env,
-    shell: isWindows,
+    shell: false,
     encoding: 'utf8',
   });
 }

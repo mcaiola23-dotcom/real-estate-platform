@@ -27,6 +27,19 @@ function normalizeRole(value: unknown): string {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim().toLowerCase() : 'unknown';
 }
 
+function getLocalDevActorFallback(): AdminMutationActor | null {
+  const fallbackRole = normalizeRole(process.env.ADMIN_LOCAL_DEV_ROLE);
+  if (fallbackRole === 'unknown') {
+    return null;
+  }
+
+  const fallbackActorId = process.env.ADMIN_LOCAL_DEV_ACTOR_ID?.trim();
+  return {
+    actorId: fallbackActorId && fallbackActorId.length > 0 ? fallbackActorId : 'local-dev-admin',
+    role: fallbackRole,
+  };
+}
+
 export async function getMutationActorFromRequest(request: Request): Promise<AdminMutationActor> {
   const headerRole = normalizeRole(request.headers.get('x-admin-role'));
   const headerActorId = request.headers.get('x-admin-actor-id');
@@ -43,11 +56,25 @@ export async function getMutationActorFromRequest(request: Request): Promise<Adm
     const claimRole =
       sessionClaims?.metadata?.role ?? sessionClaims?.publicMetadata?.role ?? sessionClaims?.privateMetadata?.role;
 
-    return {
+    const actorFromClaims = {
       actorId: authResult.userId ?? null,
       role: normalizeRole(claimRole),
     };
+    if (actorFromClaims.role !== 'unknown') {
+      return actorFromClaims;
+    }
+
+    const localDevFallback = getLocalDevActorFallback();
+    if (localDevFallback) {
+      return localDevFallback;
+    }
+
+    return actorFromClaims;
   } catch {
+    const localDevFallback = getLocalDevActorFallback();
+    if (localDevFallback) {
+      return localDevFallback;
+    }
     return {
       actorId: null,
       role: 'unknown',

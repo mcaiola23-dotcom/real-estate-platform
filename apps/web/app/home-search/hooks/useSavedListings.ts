@@ -1,7 +1,23 @@
 import { useState, useEffect } from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
+import { trackWebsiteEvent } from "../../lib/analytics/website-events";
 
 const STORAGE_KEY = "fairfield_saved_listings";
+
+interface ListingInteractionContext {
+    id: string;
+    address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zip?: string;
+    };
+    price?: number;
+    beds?: number;
+    baths?: number;
+    sqft?: number;
+    propertyType?: string;
+}
 
 export function useSavedListings() {
     const { isSignedIn } = useUser();
@@ -34,17 +50,43 @@ export function useSavedListings() {
         }
     }, [savedIds, hasLoaded]);
 
-    const toggleSave = (id: string) => {
+    const toggleSave = (listing: string | ListingInteractionContext) => {
         if (!isSignedIn) {
             clerk.openSignIn();
             return;
         }
 
+        const listingId = typeof listing === "string" ? listing : listing.id;
+        const listingContext = typeof listing === "string" ? null : listing;
+
         setSavedIds((prev) => {
-            if (prev.includes(id)) {
-                return prev.filter((savedId) => savedId !== id);
+            const isCurrentlySaved = prev.includes(listingId);
+
+            void trackWebsiteEvent({
+                eventType: isCurrentlySaved ? "website.listing.unfavorited" : "website.listing.favorited",
+                payload: {
+                    source: "home_search",
+                    listing: {
+                        id: listingId,
+                        address: listingContext?.address?.street || null,
+                        city: listingContext?.address?.city || null,
+                        state: listingContext?.address?.state || null,
+                        zip: listingContext?.address?.zip || null,
+                        price: listingContext?.price ?? null,
+                        beds: listingContext?.beds ?? null,
+                        baths: listingContext?.baths ?? null,
+                        sqft: listingContext?.sqft ?? null,
+                        propertyType: listingContext?.propertyType || null,
+                    },
+                    searchContext: null,
+                    actor: null,
+                },
+            });
+
+            if (isCurrentlySaved) {
+                return prev.filter((savedId) => savedId !== listingId);
             } else {
-                return [...prev, id];
+                return [...prev, listingId];
             }
         });
     };

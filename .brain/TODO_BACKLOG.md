@@ -32,6 +32,7 @@
 - [x] Add event ingestion pipeline from website actions to CRM.
 - [x] Mitigate local Prisma engine file-lock issue impacting `db:generate` reliability on Windows dev environment.
 - [x] Build tenant-scoped CRM read/write API routes and dashboard UI modules for leads, contacts, and activity timeline.
+- [x] Elevate CRM UI from baseline scaffold to polished, brand-aligned workspace shell and responsive module layout (`apps/crm/app/components/crm-workspace.tsx`, `apps/crm/app/globals.css`, auth entry pages).
 - [x] Introduce ingestion service boundary (queue/worker contract) so website APIs enqueue events instead of direct CRM writes.
 - [x] Add Prisma config migration (`prisma.config.ts`) and remove deprecated `package.json#prisma` in `@real-estate/db`.
 - [x] Expand CRM API filtering/pagination contracts and add route-level validation tests.
@@ -56,7 +57,43 @@
 - [x] Add explicit retry/failure-rate logging output to Prisma reliability sampling workflow (store pass/fail snapshots in `.brain` per session) so lock regressions are measurable over time. (Implemented 2026-02-16 via `packages/db/scripts/db-generate-reliability-sample.mjs` + `db:generate:sample` workspace/root command.)
 - [x] Add stronger lock retry/backoff handling to safe Prisma generate path before `--no-engine` fallback. (Implemented 2026-02-16 in `packages/db/scripts/db-generate-safe.mjs`: 3 retries with cleanup + progressive backoff.)
 - [x] Add temp-artifact hygiene for Prisma lock failures (`query_engine-windows.dll.node.tmp*`) so sampling/hardening loops do not accumulate stray files. (Implemented 2026-02-16 via safe-generate cleanup + `.gitignore` rule.)
-- [ ] Identify and implement one additional mitigation for persistent Windows Prisma engine rename lock when direct generation repeatedly fails (`query_engine-windows.dll.node` EPERM), then re-run reliability sample to verify improved full-engine success rate.
+- [x] Identify and implement one additional mitigation for persistent Windows Prisma engine rename lock when direct generation repeatedly fails (`query_engine-windows.dll.node` EPERM), then re-run reliability sample to verify improved full-engine success rate. (Implemented 2026-02-17 via new direct wrapper `packages/db/scripts/db-generate-direct.mjs` with rename-lock probe/wait + cleanup + retry/backoff, and re-ran Windows-authoritative sample: still `0/6` pass, so mitigation landed but did not improve success rate yet.)
+- [x] Implement next mitigation targeting lock-holder process/file-handle contention for `packages/db/generated/prisma-client/query_engine-windows.dll.node` (beyond retry/cleanup/wait), then compare Windows sample pass rate before/after. (Implemented 2026-02-17 by adding healthy full-engine client reuse gate in `packages/db/scripts/db-generate-direct.mjs`; Windows-authoritative sample improved from `0/6` to `6/6` pass for the same command.)
+- [x] Run an extended Windows reliability sample (`db:generate:sample -- 10+ --json --exit-zero`) to confirm mitigation stability over a larger attempt window and record results in `.brain/CURRENT_FOCUS.md`. (Validated 2026-02-17 via Windows `cmd.exe`: `db:generate:sample -- 12 --json --exit-zero` passed `12/12` with `0` `EPERM` failures; post-sample `worker:ingestion:drain` also passed.)
+- [ ] Continue periodic Windows reliability sampling (10+ attempts) after restarts/environment changes and track pass/fail trend in `.brain/CURRENT_FOCUS.md`.
+- [x] Add CRM lead-list workflow refinements: quick search/filter controls and pipeline grouping option while preserving tenant-scoped API contracts. (Implemented 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` with status-tab filtering, multi-filter controls, and sticky quick actions for draft saves.)
+- [x] Add CRM micro-interaction polish: optimistic mutation feedback, inline success toasts, and unsaved-change indicators for lead notes/status edits. (Implemented 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` + `apps/crm/app/globals.css` with optimistic lead/contact/activity mutations, toast stack feedback, and per-lead unsaved draft indicators.)
+- [x] Ingest website browsing intent events into CRM pipeline (`search performed`, `listing viewed`, `listing favorited/unfavorited`) so lead-behavior intelligence is persisted tenant-scoped for CRM use. (Implemented 2026-02-17 via `apps/web/app/api/website-events/route.ts`, Home Search/favorites tracking hooks, expanded `packages/types/src/events.ts`, and ingestion handling in `packages/db/src/crm.ts`.)
+- [x] Add CRM UI surfaces for website behavior intelligence (Lead Profile Modal sections + timeline/table widgets for search history, listing views, favorites, and most-recent intent signals). (Completed 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` with modal behavior cards/lists, filter summaries, timeline integration, and dashboard/table intent indicators.)
+- [x] Implement reusable Lead Profile Modal across CRM touchpoints (Recent Activity rows, lead names/addresses/contacts, search/autocomplete, table rows, and pipeline cards) with inline edit + save. (Completed 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx`.)
+- [x] Add dedicated sortable Leads Table view/tab (Name, Lead Type, Status, Price Range, Location, Last Contact, Beds/Baths/Size desired, Source, Updated At). (Completed 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx`.)
+- [x] Make Dashboard KPI cards (`New Leads`, `Need Follow-up`, `Open Pipeline`, `Closed Win Rate`) clickable with clear drill-down/filter behavior. (Completed 2026-02-17.)
+- [x] Fix CRM shell navigation affordances: functional left-sidebar `Settings`, functional top-right user menu (Profile/Settings/Logout), and durable header/footer layout treatment. (Completed 2026-02-17 with settings panel placeholder and shell/footer actions.)
+- [x] Rework Pipeline board lane rendering so headers/cards are visible on initial load, and add visible horizontal lane navigation controls for smaller laptop viewports. (Completed 2026-02-17 with sticky headers, reduced lane minimum height, and arrow controls.)
+- [x] Add Pipeline-local filter controls with explicit `All` option, and make Dashboard-vs-Pipeline filter synchronization explicit/non-surprising. (Completed 2026-02-17 with independent filter state + clear-all control.)
+- [x] Add search autocomplete behavior in CRM shell search input with lead/contact suggestions, status metadata, and click-through into Lead Profile Modal. (Implemented 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` with suggestion dropdown and modal-open actions.)
+- [x] Fix Pipeline card save/status transitions so save buttons are always actionable and status changes move cards predictably without accidental disappearance under active filters. (Completed 2026-02-17 with always-actionable save behavior + filter-state notice.)
+- [x] Normalize source/type display mappings in CRM UI so internal values (e.g. `website_valuation`) consistently render as operator-friendly labels (e.g. `Valuation Request`) without data-model migration. (Completed 2026-02-17 via `apps/crm/app/lib/crm-display.ts`.)
+- [x] Update Activity form linkage UX: lead/contact dropdowns auto-sync in both directions, default most-recent ordering, and optional alphabetical sort toggle. (Completed 2026-02-17 in CRM activity form.)
+- [x] Ensure logged notes are visible in all relevant surfaces (Recent Activity feed, lead modal timeline/history, lead-specific context views). (Completed 2026-02-17 in dashboard activity feed + modal timeline.)
+- [x] Fix overly dark hover highlights across CRM interactive text/card surfaces (lead/address links, KPI cards, sortable table headers) by normalizing to subtle readable hover styles in `apps/crm/app/globals.css`. (Completed 2026-02-17.)
+
+## Next Session Candidate Work
+- [ ] Execute second-pass CRM UI cleanup focused on typography refinement first (heading/body scale, weight/line-height rhythm, spacing consistency, and table/pipeline text legibility) while preserving current tenant-scoped behavior and branding controls.
+- [ ] Execute browser QA sweep for the completed CRM checklist + second-pass visual polish across desktop + smaller laptop viewports and capture regressions with reproducible steps.
+- [ ] Add focused route/UI regression tests for new CRM lead-detail/contact-patch endpoints and key dashboard/pipeline interaction paths beyond current route coverage.
+
+## Control Plane Roadmap (Longer Term)
+- [ ] Improve Admin mutation error transparency: surface actionable backend error messages in UI (RBAC denial, duplicate slug/domain, validation failures) with field-level hints.
+- [ ] Build guided tenant onboarding workflow in Admin (multi-step wizard + completion checklist + next required action state).
+- [ ] Add domain operations automation surface (DNS record guidance, verification status polling/retry, certificate/SSL readiness indicators).
+- [ ] Implement managed plan/feature governance (plan catalog, defaults, guardrails, and feature-flag templates by plan tier).
+- [ ] Add Admin RBAC management surface (role assignment, permission matrix, actor management, and secure support-session workflows).
+- [ ] Add control-plane observability dashboard (mutation failure trends, ingestion/runtime health indicators, and tenant-level readiness score).
+- [ ] Expand audit timeline UX (advanced filters, diff-style change detail, exportable logs, and stronger actor/request attribution).
+- [ ] Add data safety/recovery controls (soft-delete + restore flows for tenants/domains/settings, plus destructive-action confirmations).
+- [ ] Integrate billing/subscription operations into control-plane workflows (plan transitions, entitlement sync, trial/payment status visibility).
+- [ ] Build support diagnostics toolkit per tenant (auth/domain/ingestion checks with one-click operator diagnostics and remediation actions).
 
 ## AI Roadmap
 - [ ] Create prompt registry and versioning.

@@ -4,50 +4,41 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Implement and validate one additional mitigation for persistent Windows Prisma engine rename lock failures (`query_engine-windows.dll.node` `EPERM`) so direct full-engine generation success rate improves over current baseline.
+- Run `platform-session-bootstrap`, then execute second-pass CRM UI cleanup focused on typography refinement in `apps/crm` before any new features.
 
 ## Why This Is Next
-- Reliability sampling is now first-class (`db:generate:sample`) and showed reproducible lock failures in the same session where earlier loops passed, confirming instability rather than a one-time glitch.
-- Safe generation is now more resilient (multi-retry + backoff + cleanup) but still falls back to `engine=none` under sustained lock contention, which keeps runtime-dependent workflows fragile.
-- This is now the primary blocker for deterministic local ingestion/runtime validation in the Windows-authoritative environment.
+- Core CRM checklist scope is complete (dashboard, leads table, pipeline, lead modal, settings shell, behavior intelligence, and required API/model updates).
+- The next highest-impact usability improvement is typography and readability polish across existing views, now explicitly prioritized by the user.
 
 ## Current Snapshot
-- Completed this session: restart integrity validation and reliability instrumentation/hardening.
-  - Added Prisma reliability sampler script: `packages/db/scripts/db-generate-reliability-sample.mjs`.
-  - Added script aliases:
-    - Root: `npm run db:generate:sample`
-    - DB workspace: `npm run db:generate:sample --workspace @real-estate/db`
-  - Hardened safe generate retries in `packages/db/scripts/db-generate-safe.mjs`:
-    - Configurable retry count via `PRISMA_GENERATE_LOCK_RETRIES` (default `3`).
-    - Progressive backoff via `PRISMA_GENERATE_RETRY_BACKOFF_MS` (default `350`).
-    - Optional fallback control via `PRISMA_GENERATE_ALLOW_NO_ENGINE_FALLBACK`.
-    - Cleanup now includes stale temp artifacts `query_engine-windows.dll.node.tmp*`.
-  - Added ignore rule for temp engine artifacts in `.gitignore`.
-- Control plane audit slice remains implemented and validated in this repo state:
-  - Admin mutation RBAC/audit route boundary.
-  - Durable `AdminAuditEvent` persistence.
-  - Admin audit timeline API/UI + route-level tests.
+- Completed in this session:
+  - Softened dark hover highlights in CRM so text remains readable on interactive surfaces (`apps/crm/app/globals.css`).
+  - Added first-wave visual uplift/personalization in CRM (`apps/crm/app/components/crm-workspace.tsx`, `apps/crm/app/globals.css`):
+    - tenant-scoped branding controls (brand name, logo source, accent/surface tint, texture toggle),
+    - stronger shell/header/footer brand presence,
+    - KPI sparklines, weekly momentum strip, and richer empty states.
+  - Updated `.brain` to make typography second pass the explicit first task for next session.
+- In progress / pending:
+  - Typography hierarchy refinement pass (type scale, weights, line-height, spacing rhythm, table/pipeline legibility).
+  - Browser QA sweep after typography polish and follow-up fixes for any high-severity regressions.
 
 ## Validation (Most Recent)
-- Restart integrity checks:
-  - `cmd.exe /c "... && npm run db:generate --workspace @real-estate/db"` passes (full engine in that run).
-  - `cmd.exe /c "... && npm run db:generate:direct --workspace @real-estate/db"` passes (single run).
-  - `cmd.exe /c "... && npm run worker:ingestion:drain"` passes (`totalProcessed: 0`, no failures).
-  - `cmd.exe /c "... && npm run test:routes --workspace @real-estate/admin"` passes (`13/13`).
-- Reliability sampling + hardening checks:
-  - `cmd.exe /v:on /c "... for /l %i in (1,1,15) do npm run db:generate:direct --workspace @real-estate/db"` passes (`15/15`, `0` failures).
-  - `cmd.exe /c "... && npm run db:generate:sample --workspace @real-estate/db -- 6"` fails (`0/6` pass, `6/6` fail, all `EPERM` lock on rename to `query_engine-windows.dll.node`).
-  - `cmd.exe /c "... && npm run db:generate --workspace @real-estate/db"` now shows retry envelope (`3` retries with backoff), then falls back to `engine=none` when locks persist.
-  - `cmd.exe /c "... && npm run db:generate:sample --workspace @real-estate/db -- 2 --json --exit-zero"` exits `0` and emits machine-readable failure samples with full lock path context.
+- `./node_modules/.bin/tsc --noEmit --project apps/crm/tsconfig.json` passes.
+- `npm run lint --workspace @real-estate/crm` passes with pre-existing warnings only in `apps/crm/scripts/seed-mock-data.ts` (unused eslint-disable directives).
+- `npm run test:routes --workspace @real-estate/crm` in this WSL/Linux shell fails due environment mismatch (`@esbuild/win32-x64` installed, linux binary expected).
+- Prior Windows-authoritative route validation from this checklist stream remains passing (`cmd.exe /c ... npm run test:routes --workspace @real-estate/crm`: 18/18).
 
 ## First Actions Next Session
-1. Capture a fresh baseline with `npm run db:generate:sample --workspace @real-estate/db -- 10 --json --exit-zero` in Windows `cmd.exe`.
-2. Apply one new mitigation targeting the rename-lock path (file-handle/process contention on `packages/db/generated/prisma-client/query_engine-windows.dll.node`).
-3. Re-run the same sample command and compare pass/fail rates before/after in `.brain/CURRENT_FOCUS.md`.
-4. Re-run one runtime-dependent check (`worker:ingestion:drain` or ingestion integration) only if full-engine reliability improves.
+1. Run `platform-session-bootstrap` and confirm objective alignment with `.brain/CURRENT_FOCUS.md`.
+2. Perform typography pass in `apps/crm/app/globals.css` + `apps/crm/app/components/crm-workspace.tsx`:
+   - normalize heading/body scale and line-height,
+   - tighten spacing rhythm in dense panels/tables,
+   - ensure visual hierarchy consistency across dashboard, leads table, pipeline, modal, settings.
+3. Run contrast/readability QA for hover/active/focus states and keep highlights subtle/readable.
+4. Re-run CRM checks (`tsc`, `lint`, and route tests in the best available authoritative environment) and record outcomes.
 
 ## Constraints To Keep
-- Maintain tenant isolation in all request/data paths and test fixtures.
-- Keep shared package boundaries strict (no app-to-app private imports).
-- Treat Windows `cmd.exe` results as authoritative for Prisma reliability in this mixed WSL/Windows workspace.
-- Do not interfere with ongoing CRM build-out work being performed by another agent.
+- Preserve tenant isolation for all request/event paths and UI data interactions.
+- Keep shared package boundaries strict: contracts in `packages/types`, persistence/helpers in `packages/db`, app UI in `apps/crm`.
+- Do not edit unrelated files.
+- Treat Windows-authoritative command results as canonical when WSL sandbox limitations are present.

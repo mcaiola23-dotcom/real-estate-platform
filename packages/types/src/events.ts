@@ -44,10 +44,58 @@ export interface WebsiteValuationRequestedPayload {
   sqft: number | null;
 }
 
+export interface WebsiteSearchContext {
+  query: string | null;
+  filtersJson: string | null;
+  sortField: string | null;
+  sortOrder: string | null;
+  page: number | null;
+}
+
+export interface WebsiteActorContext {
+  clerkUserId?: string | null;
+  sessionId?: string | null;
+}
+
+export interface WebsiteListingInteractionPayload {
+  source: string;
+  listing: {
+    id: string;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    price: number | null;
+    beds: number | null;
+    baths: number | null;
+    sqft: number | null;
+    propertyType: string | null;
+  };
+  searchContext: WebsiteSearchContext | null;
+  actor: WebsiteActorContext | null;
+}
+
+export interface WebsiteSearchPerformedPayload {
+  source: string;
+  searchContext: WebsiteSearchContext;
+  resultCount: number | null;
+  actor: WebsiteActorContext | null;
+}
+
 export type WebsiteLeadSubmittedEvent = DomainEvent<'website.lead.submitted', WebsiteLeadSubmittedPayload>;
 export type WebsiteValuationRequestedEvent = DomainEvent<
   'website.valuation.requested',
   WebsiteValuationRequestedPayload
 >;
+export type WebsiteSearchPerformedEvent = DomainEvent<'website.search.performed', WebsiteSearchPerformedPayload>;
+export type WebsiteListingViewedEvent = DomainEvent<'website.listing.viewed', WebsiteListingInteractionPayload>;
+export type WebsiteListingFavoritedEvent = DomainEvent<'website.listing.favorited', WebsiteListingInteractionPayload>;
+export type WebsiteListingUnfavoritedEvent = DomainEvent<'website.listing.unfavorited', WebsiteListingInteractionPayload>;
 
-export type WebsiteEvent = WebsiteLeadSubmittedEvent | WebsiteValuationRequestedEvent;
+export type WebsiteEvent =
+  | WebsiteLeadSubmittedEvent
+  | WebsiteValuationRequestedEvent
+  | WebsiteSearchPerformedEvent
+  | WebsiteListingViewedEvent
+  | WebsiteListingFavoritedEvent
+  | WebsiteListingUnfavoritedEvent;
