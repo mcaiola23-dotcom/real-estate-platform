@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Run second-pass CRM UI cleanup focused on typography hierarchy and interaction polish now that the full checklist implementation is complete, while preserving strict tenant isolation and shared package boundaries.
+Shift active delivery focus to Admin Portal usability: complete high-impact onboarding and operator workflows in `apps/admin` before deeper validation/hardening passes, while preserving tenant isolation and shared package boundaries.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -34,11 +34,12 @@ Run second-pass CRM UI cleanup focused on typography hierarchy and interaction p
 28. Operator-facing control-plane audit timeline read surface is now in place in `apps/admin` with API route `apps/admin/app/api/admin-audit/route.ts` (tenant-filtered feed + recent global feed aggregation) and dashboard UI filters/timeline module in `apps/admin/app/components/control-plane-workspace.tsx`.
 29. Direct full-engine Prisma generation now has a dedicated mitigation wrapper in `packages/db/scripts/db-generate-direct.mjs` (rename-lock probe/wait + cleanup + retry/backoff + healthy full-engine client reuse check), and both `db:generate:direct` plus reliability sampling now run through this path for deterministic lock diagnostics.
 30. Full CRM checklist scope in `apps/crm` is complete (modal/table/pipeline/settings/header-footer/behavior intelligence/API enhancements), and the latest UI pass added tenant-scoped branding controls plus readability-focused hover-state corrections in shared CRM styles.
+31. Second-pass CRM UI refinement is now complete in `apps/crm` with tightened typography hierarchy/line-height rhythm, normalized focus-visible accessibility affordances, improved table/pipeline text legibility, and extracted/tested dashboard-pipeline interaction helpers in `apps/crm/app/lib/workspace-interactions.ts`.
 
 ## Immediate Next Steps
-- Execute second-pass typography refinement in `apps/crm` as the first task next session: tighten heading/body scale, weight/line-height rhythm, spacing consistency, and table/pipeline text legibility while keeping existing behavior intact.
-- Run a full CRM hover/active/focus state contrast audit and normalize any remaining dark overlays to subtle readable treatments using shared style tokens.
-- Perform browser QA across dashboard, leads table, pipeline, settings, and lead modal flows after typography/interaction polish; capture regressions and address high-severity issues.
+- First next-session task: implement Admin Portal mutation error transparency in onboarding/domain flows, with actionable field-level guidance and next-step hints for RBAC/duplicate/validation failures.
+- Extend Domain Operations toward automation: verification polling/retry controls and SSL/certificate readiness indicators (beyond the current manual mark-verified flow).
+- Continue plan/feature governance UX in admin so plan assignment and feature templates are operator-guided and consistent at scale.
 - Keep Prisma reliability sampling periodic (`db:generate:sample -- 10+`) in Windows-authoritative runs after environment restarts, but treat this as maintenance, not the primary implementation objective.
 
 ## Session Validation (2026-02-12)
@@ -303,3 +304,51 @@ Run second-pass CRM UI cleanup focused on typography hierarchy and interaction p
 - `./node_modules/.bin/tsc --noEmit --project apps/crm/tsconfig.json` passes.
 - `npm run lint --workspace @real-estate/crm` passes with pre-existing warnings only in `apps/crm/scripts/seed-mock-data.ts` (unused eslint-disable directives).
 - `npm run test:routes --workspace @real-estate/crm` from this WSL/Linux shell fails due environment mismatch: installed `@esbuild/win32-x64` but runtime expects `@esbuild/linux-x64` for this shell context.
+
+## Session Update (2026-02-18 CRM Typography + QA + Regression Coverage)
+
+### Completed This Session
+1. Completed second-pass CRM typography and readability polish in `apps/crm/app/globals.css`:
+- tightened heading/body line-height rhythm and scale consistency across dashboard, pipeline, table, modal, and settings surfaces,
+- increased dense table/pipeline text legibility,
+- normalized interactive focus-visible states and hover contrast for keyboard/pointer readability.
+2. Added reusable dashboard/pipeline interaction helpers in `apps/crm/app/lib/workspace-interactions.ts` and wired `apps/crm/app/components/crm-workspace.tsx` to consume them for:
+- lead table preset filtering behavior,
+- pipeline move notice behavior under active filters,
+- navigation-to-view resolution,
+- table sort toggle state transitions.
+3. Expanded CRM regression coverage:
+- added new route edge-case tests for lead-detail/contact-patch surfaces in `apps/crm/app/api/lib/routes.integration.test.ts` (invalid JSON, empty updates, not-found behavior, and status-activity side-effect guard),
+- added new interaction-logic tests in `apps/crm/app/lib/workspace-interactions.test.ts`.
+
+### Session Validation (2026-02-18 CRM Typography + QA + Regression Coverage)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/crm"` passes (only pre-existing warnings in `apps/crm/scripts/seed-mock-data.ts`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/crm"` passes (`25/25` tests).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:workspace --workspace @real-estate/crm"` passes (`4/4` tests).
+- `./node_modules/.bin/tsc --noEmit --project apps/crm/tsconfig.json` passes in this shell.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\crm\tsconfig.json"` passes.
+- `npm run build --workspace @real-estate/crm` from this WSL/Linux shell remains non-authoritative/fails due missing Linux SWC binary in mixed Windows/WSL dependency state.
+
+## Session Update (2026-02-18 Admin Onboarding UX)
+
+### Completed This Session
+1. Reworked `apps/admin/app/components/control-plane-workspace.tsx` into a high-usability operator flow:
+- multi-step Guided Tenant Onboarding wizard (Tenant Basics -> Primary Domain -> Plan & Features -> Review & Provision),
+- KPI summary cards and tenant directory with explicit Domain Ops entry,
+- selected-tenant Domain Operations panel with readiness checklist, domain status actions, and settings save flow,
+- preserved existing control-plane API integration boundaries (`/api/tenants`, `/domains`, `/settings`, `/admin-audit`).
+2. Upgraded admin visual polish in `apps/admin/app/globals.css`:
+- cohesive design tokens, elevated card/surface hierarchy, refined spacing/typography,
+- responsive layout behavior for desktop/tablet/mobile,
+- clearer affordances for stepper, plan/feature selection, readiness checks, and status chips.
+3. Updated admin typography stack and auth shells:
+- added `Manrope` + `Fraunces` in `apps/admin/app/layout.tsx`,
+- styled sign-in/sign-up wrappers in `apps/admin/app/sign-in/[[...sign-in]]/page.tsx` and `apps/admin/app/sign-up/[[...sign-up]]/page.tsx`.
+
+### Session Validation (2026-02-18 Admin Onboarding UX)
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`13/13`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+- Workspace-level lint currently reports a pre-existing unrelated error in `apps/admin/app/api/lib/admin-access.ts` (`@typescript-eslint/no-explicit-any` at line 54).
+- Targeted lint for touched admin UX files passes:
+  - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin -- app/components/control-plane-workspace.tsx app/layout.tsx app/sign-in/[[...sign-in]]/page.tsx app/sign-up/[[...sign-up]]/page.tsx"`.

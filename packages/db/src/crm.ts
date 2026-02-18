@@ -339,6 +339,22 @@ export interface CreateCrmActivityInput {
   occurredAt?: string | Date;
 }
 
+export interface CreateCrmLeadInput {
+  contactId?: string | null;
+  status?: CrmLeadStatus;
+  leadType?: CrmLeadType;
+  source?: string;
+  timeframe?: string | null;
+  notes?: string | null;
+  listingId?: string | null;
+  listingUrl?: string | null;
+  listingAddress?: string | null;
+  propertyType?: string | null;
+  beds?: number | null;
+  baths?: number | null;
+  sqft?: number | null;
+}
+
 async function resolveOrCreateContact(tx: any, event: WebsiteLeadSubmittedEvent): Promise<string | null> {
   const emailNormalized = normalizeEmail(event.payload.contact.email);
   const phoneNormalized = normalizePhone(event.payload.contact.phone);
@@ -1183,12 +1199,12 @@ export async function listContactsByTenantId(
         ...(options.source ? { source: options.source } : {}),
         ...(search
           ? {
-              OR: [
-                { fullName: { contains: search } },
-                { email: { contains: search } },
-                { phone: { contains: search } },
-              ],
-            }
+            OR: [
+              { fullName: { contains: search } },
+              { email: { contains: search } },
+              { phone: { contains: search } },
+            ],
+          }
           : {}),
       },
       orderBy: { createdAt: 'desc' },
@@ -1283,6 +1299,42 @@ export async function createContactForTenant(tenantId: string, input: CreateCrmC
     });
 
     return toCrmContact(contact);
+  } catch {
+    return null;
+  }
+}
+
+export async function createLeadForTenant(tenantId: string, input: CreateCrmLeadInput): Promise<CrmLead | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return null;
+  }
+
+  try {
+    const now = new Date();
+    const lead = await prisma.lead.create({
+      data: {
+        id: randomUUID(),
+        tenantId,
+        contactId: input.contactId || null,
+        status: input.status || 'new',
+        leadType: input.leadType || 'buyer',
+        source: input.source || 'crm_manual',
+        timeframe: input.timeframe?.trim() || null,
+        notes: input.notes?.trim() || null,
+        listingId: input.listingId?.trim() || null,
+        listingUrl: input.listingUrl?.trim() || null,
+        listingAddress: input.listingAddress?.trim() || null,
+        propertyType: input.propertyType || null,
+        beds: input.beds ?? null,
+        baths: input.baths ?? null,
+        sqft: input.sqft ?? null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+
+    return toCrmLead(lead);
   } catch {
     return null;
   }

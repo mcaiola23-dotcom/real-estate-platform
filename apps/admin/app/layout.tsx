@@ -1,7 +1,18 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
+import { Fraunces, Manrope } from 'next/font/google';
 
 import './globals.css';
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+});
 
 export const metadata: Metadata = {
   title: 'Real Estate Admin Control Plane',
@@ -13,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   const content = (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${manrope.variable} ${fraunces.variable}`}>{children}</body>
     </html>
   );
 

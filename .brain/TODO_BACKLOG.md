@@ -78,15 +78,17 @@
 - [x] Ensure logged notes are visible in all relevant surfaces (Recent Activity feed, lead modal timeline/history, lead-specific context views). (Completed 2026-02-17 in dashboard activity feed + modal timeline.)
 - [x] Fix overly dark hover highlights across CRM interactive text/card surfaces (lead/address links, KPI cards, sortable table headers) by normalizing to subtle readable hover styles in `apps/crm/app/globals.css`. (Completed 2026-02-17.)
 
-## Next Session Candidate Work
-- [ ] Execute second-pass CRM UI cleanup focused on typography refinement first (heading/body scale, weight/line-height rhythm, spacing consistency, and table/pipeline text legibility) while preserving current tenant-scoped behavior and branding controls.
-- [ ] Execute browser QA sweep for the completed CRM checklist + second-pass visual polish across desktop + smaller laptop viewports and capture regressions with reproducible steps.
-- [ ] Add focused route/UI regression tests for new CRM lead-detail/contact-patch endpoints and key dashboard/pipeline interaction paths beyond current route coverage.
+## Next Session Candidate Work (Admin Priority)
+- [ ] Improve Admin mutation error transparency: surface actionable backend error messages in onboarding/domain/settings UI (RBAC denial, duplicate slug/domain, validation failures) with field-level guidance and operator next steps.
+- [ ] Add domain operations automation surface (verification status polling/retry controls and SSL/certificate readiness indicators) on top of existing manual domain actions.
+- [ ] Implement managed plan/feature governance UX (plan catalog defaults, guardrails, and reusable feature-flag templates by plan tier).
+- [ ] Run a focused manual browser click-through for admin onboarding + domain ops on desktop and smaller laptop viewport to confirm no environment-specific interaction/layout regressions.
+- [ ] Run a final manual local browser click-through for CRM (desktop + smaller laptop viewport) to close the remaining post-polish validation gap after current admin-priority work.
 
 ## Control Plane Roadmap (Longer Term)
 - [ ] Improve Admin mutation error transparency: surface actionable backend error messages in UI (RBAC denial, duplicate slug/domain, validation failures) with field-level hints.
-- [ ] Build guided tenant onboarding workflow in Admin (multi-step wizard + completion checklist + next required action state).
-- [ ] Add domain operations automation surface (DNS record guidance, verification status polling/retry, certificate/SSL readiness indicators).
+- [x] Build guided tenant onboarding workflow in Admin (multi-step wizard + completion checklist + next required action state). (Implemented 2026-02-18 in `apps/admin/app/components/control-plane-workspace.tsx` with 4-step provisioning flow and launch-readiness checks.)
+- [ ] Add domain operations automation surface (DNS record guidance, verification status polling/retry, certificate/SSL readiness indicators). (Partially delivered 2026-02-18: DNS guidance + verification/primary controls + readiness visibility are in place; polling/retry automation and SSL readiness indicators remain.)
 - [ ] Implement managed plan/feature governance (plan catalog, defaults, guardrails, and feature-flag templates by plan tier).
 - [ ] Add Admin RBAC management surface (role assignment, permission matrix, actor management, and secure support-session workflows).
 - [ ] Add control-plane observability dashboard (mutation failure trends, ingestion/runtime health indicators, and tenant-level readiness score).

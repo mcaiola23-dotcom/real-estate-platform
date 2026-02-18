@@ -11,6 +11,17 @@ import {
   formatLeadStatusLabel,
   formatLeadTypeLabel,
 } from '../lib/crm-display';
+import {
+  doesStatusMatchPreset,
+  getPipelineMoveNotice,
+  resolveViewFromNav,
+  toggleTableSortState,
+  type LeadsTableSort,
+  type LeadsTableSortColumn,
+  type TableStatusPreset,
+  type WorkspaceNav,
+  type WorkspaceView,
+} from '../lib/workspace-interactions';
 
 interface CrmWorkspaceProps {
   tenantContext: TenantContext;
@@ -72,26 +83,6 @@ interface LeadSearchSuggestion {
   status: CrmLeadStatus;
 }
 
-type WorkspaceNav = 'dashboard' | 'pipeline' | 'leads' | 'contacts' | 'activity' | 'settings';
-type WorkspaceView = 'dashboard' | 'pipeline' | 'leads' | 'settings';
-type TableStatusPreset = 'all' | 'new' | 'follow_up' | 'open_pipeline' | 'closed';
-
-type LeadsTableSortColumn =
-  | 'name'
-  | 'leadType'
-  | 'status'
-  | 'priceRange'
-  | 'location'
-  | 'lastContact'
-  | 'desired'
-  | 'source'
-  | 'updatedAt';
-
-interface LeadsTableSort {
-  column: LeadsTableSortColumn;
-  direction: 'asc' | 'desc';
-}
-
 interface LeadBehaviorStats {
   viewedCount: number;
   favoritedCount: number;
@@ -108,6 +99,16 @@ interface BrandPreferences {
   customLogoUrl: string;
   useWebsiteFavicon: boolean;
   showTexture: boolean;
+}
+
+interface AgentProfile {
+  fullName: string;
+  email: string;
+  phone: string;
+  brokerage: string;
+  licenseNumber: string;
+  headshotUrl: string;
+  bio: string;
 }
 
 type ThemeStyleVars = CSSProperties & Record<`--${string}`, string>;
@@ -177,18 +178,64 @@ function withHexAlpha(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+function StatusIcon({ status, size = 16 }: { status: CrmLeadStatus; size?: number }) {
+  const props = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg', 'aria-hidden': true as const };
+  switch (status) {
+    case 'new':
+      return (
+        <svg {...props}>
+          <path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14l-6-4.8h7.6z" fill="var(--status-new)" />
+        </svg>
+      );
+    case 'qualified':
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="10" stroke="var(--status-qualified)" strokeWidth="2" />
+          <path d="M8 12.5l2.5 2.5 5.5-5.5" stroke="var(--status-qualified)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'nurturing':
+      return (
+        <svg {...props}>
+          <path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5A8.5 8.5 0 0121 11v.5z" stroke="var(--status-nurturing)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'won':
+      return (
+        <svg {...props}>
+          <path d="M6 9V3h12v6" stroke="var(--status-won)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 9a6 6 0 006 6 6 6 0 006-6" stroke="var(--status-won)" strokeWidth="2" />
+          <path d="M12 15v3M8 21h8M10 18h4" stroke="var(--status-won)" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'lost':
+      return (
+        <svg {...props}>
+          <rect x="3" y="3" width="18" height="18" rx="3" stroke="var(--status-lost)" strokeWidth="2" />
+          <path d="M8 12h8" stroke="var(--status-lost)" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="4" fill="var(--crm-muted)" />
+        </svg>
+      );
+  }
+}
+
 function getStatusGlyph(status: CrmLeadStatus): string {
   switch (status) {
     case 'new':
-      return '•';
+      return '★';
     case 'qualified':
-      return '◆';
+      return '✓';
     case 'nurturing':
-      return '◌';
+      return '◎';
     case 'won':
-      return '▲';
+      return '🏆';
     case 'lost':
-      return '✕';
+      return '—';
     default:
       return '•';
   }
@@ -226,7 +273,7 @@ function buildBrandThemeVars(preferences: BrandPreferences): ThemeStyleVars {
     '--crm-accent': accent,
     '--crm-accent-hover': accentHover,
     '--crm-highlight': highlight,
-    '--crm-highlight-soft': withHexAlpha(accent, 0.11),
+    '--crm-highlight-soft': withHexAlpha(accent, 0.18),
     '--crm-brand-tint': withHexAlpha(surfaceTint, 0.24),
     '--crm-brand-accent-soft': withHexAlpha(accent, 0.08),
   };
@@ -381,6 +428,183 @@ function summarizeFilters(filtersJson: unknown): string | null {
   }
 }
 
+/* ── Lead Scoring ────────────────────────────────────────────── */
+
+function calculateLeadScore(
+  activities: CrmActivity[],
+  searchSignals: LeadSearchSignal[],
+  listingSignals: LeadListingSignal[],
+  lead: CrmLead | null,
+): { score: number; label: string } {
+  if (!lead) {
+    return { score: 0, label: 'No Data' };
+  }
+
+  const now = Date.now();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
+  // Recency (25%): days since last activity
+  let recencyScore = 0;
+  if (activities.length > 0) {
+    const lastActivity = new Date(activities[0]!.occurredAt).getTime();
+    const daysSince = (now - lastActivity) / (24 * 60 * 60 * 1000);
+    recencyScore = Math.max(0, 100 - daysSince * 3.3); // 0 after ~30 days
+  }
+
+  // Frequency (25%): total activities in last 30 days
+  const recentActivities = activities.filter(
+    (a) => now - new Date(a.occurredAt).getTime() < thirtyDays
+  );
+  const frequencyScore = Math.min(100, recentActivities.length * 8);
+
+  // Intent (30%): favorites-to-views ratio + search specificity
+  const views = listingSignals.filter((s) => s.action === 'viewed').length;
+  const favorites = listingSignals.filter((s) => s.action === 'favorited').length;
+  const favRatio = views > 0 ? (favorites / views) * 100 : 0;
+  const searchSpecificity = searchSignals.length > 0 ? Math.min(100, searchSignals.length * 12) : 0;
+  const intentScore = (favRatio * 0.6 + searchSpecificity * 0.4);
+
+  // Profile completeness (20%)
+  let profileScore = 0;
+  if (lead.listingAddress) profileScore += 30;
+  if (lead.propertyType) profileScore += 20;
+  if (lead.timeframe) profileScore += 20;
+  if (lead.contactId) profileScore += 30;
+
+  const total = Math.round(
+    recencyScore * 0.25 +
+    frequencyScore * 0.25 +
+    intentScore * 0.30 +
+    profileScore * 0.20
+  );
+
+  const score = Math.max(0, Math.min(100, total));
+  const label =
+    score >= 80 ? 'Hot' :
+      score >= 60 ? 'Warm' :
+        score >= 40 ? 'Interested' :
+          score >= 20 ? 'Cool' : 'Cold';
+
+  return { score, label };
+}
+
+/* ── SVG Chart Components ─────────────────────────────────── */
+
+function LeadEngagementGauge({ score, label }: { score: number; label: string }) {
+  const radius = 40;
+  const strokeWidth = 8;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (score / 100) * circumference;
+  const color =
+    score >= 80 ? '#16a34a' :
+      score >= 60 ? '#ca8a04' :
+        score >= 40 ? '#ea580c' :
+          score >= 20 ? '#9333ea' : '#6b7280';
+
+  return (
+    <div className="crm-engagement-gauge">
+      <svg viewBox="0 0 100 100" width="100" height="100">
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--crm-border)" strokeWidth={strokeWidth} />
+        <circle
+          cx="50" cy="50" r={radius} fill="none"
+          stroke={color} strokeWidth={strokeWidth}
+          strokeDasharray={`${progress} ${circumference - progress}`}
+          strokeDashoffset={circumference * 0.25}
+          strokeLinecap="round"
+          style={{ transition: 'stroke-dasharray 0.6s ease' }}
+        />
+        <text x="50" y="46" textAnchor="middle" fontSize="18" fontWeight="700" fill="var(--crm-heading)">{score}</text>
+        <text x="50" y="60" textAnchor="middle" fontSize="9" fill="var(--crm-muted-text)">{label}</text>
+      </svg>
+    </div>
+  );
+}
+
+function LeadActivityChart({ activities }: { activities: CrmActivity[] }) {
+  const now = Date.now();
+  const dayMs = 24 * 60 * 60 * 1000;
+  const days = 30;
+  const buckets = new Array<number>(days).fill(0);
+
+  for (const activity of activities) {
+    const ago = now - new Date(activity.occurredAt).getTime();
+    const dayIndex = Math.floor(ago / dayMs);
+    if (dayIndex >= 0 && dayIndex < days) {
+      buckets[days - 1 - dayIndex]!++;
+    }
+  }
+
+  const maxVal = Math.max(1, ...buckets);
+  const barWidth = 8;
+  const gap = 2;
+  const chartWidth = days * (barWidth + gap);
+  const chartHeight = 60;
+
+  return (
+    <div className="crm-activity-chart">
+      <span className="crm-chart-label">Activity (30 days)</span>
+      <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio="none" aria-label="Lead activity chart">
+        {buckets.map((count, i) => {
+          const barH = count > 0 ? Math.max(6, (count / maxVal) * (chartHeight - 4)) : 3;
+          return (
+            <rect
+              key={i}
+              x={i * (barWidth + gap)}
+              y={chartHeight - barH}
+              width={barWidth}
+              height={barH}
+              rx={2}
+              fill={count > 0 ? 'var(--crm-accent)' : 'var(--crm-border)'}
+              opacity={count > 0 ? 0.9 : 0.25}
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function PriceInterestBar({ signals }: { signals: LeadListingSignal[] }) {
+  const prices = signals
+    .map((s) => s.price)
+    .filter((p): p is number => p !== null && p > 0)
+    .sort((a, b) => a - b);
+
+  if (prices.length === 0) {
+    return null;
+  }
+
+  const min = prices[0]!;
+  const max = prices[prices.length - 1]!;
+  const median = prices[Math.floor(prices.length / 2)]!;
+  const range = max - min || 1;
+  const medianPct = ((median - min) / range) * 100;
+
+  const fmt = (n: number) =>
+    n >= 1_000_000
+      ? `$${(n / 1_000_000).toFixed(1)}M`
+      : `$${Math.round(n / 1000)}K`;
+
+  return (
+    <div className="crm-price-bar">
+      <span className="crm-chart-label">Price Interest Range</span>
+      <div className="crm-price-bar-track">
+        <div className="crm-price-bar-fill" style={{ left: '0%', width: '100%' }} />
+        <div
+          className="crm-price-bar-marker"
+          style={{ left: `${Math.max(2, Math.min(98, medianPct))}%` }}
+          title={`Most viewed: ${fmt(median)}`}
+        />
+      </div>
+      <div className="crm-price-bar-labels">
+        <span>{fmt(min)}</span>
+        <span style={{ fontWeight: 600 }}>{fmt(median)}</span>
+        <span>{fmt(max)}</span>
+      </div>
+    </div>
+  );
+}
+
 function extractLeadSearchSignal(activity: CrmActivity): LeadSearchSignal | null {
   if (activity.activityType !== 'website_search_performed') {
     return null;
@@ -529,6 +753,14 @@ export function CrmWorkspace({
   const [newActivityContactId, setNewActivityContactId] = useState('');
   const [activitySortMode, setActivitySortMode] = useState<'recent' | 'alpha'>('recent');
 
+  const [showNewLeadForm, setShowNewLeadForm] = useState(false);
+  const [newLeadAddress, setNewLeadAddress] = useState('');
+  const [newLeadSource, setNewLeadSource] = useState('crm_manual');
+  const [newLeadType, setNewLeadType] = useState<'buyer' | 'seller'>('buyer');
+  const [newLeadNotes, setNewLeadNotes] = useState('');
+  const [newLeadTimeframe, setNewLeadTimeframe] = useState('');
+  const [newLeadPropertyType, setNewLeadPropertyType] = useState('');
+
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSuggestionsOpen, setSearchSuggestionsOpen] = useState(false);
 
@@ -555,6 +787,15 @@ export function CrmWorkspace({
   const [brandPreferences, setBrandPreferences] = useState<BrandPreferences>(() =>
     createDefaultBrandPreferences(tenantContext.tenantSlug)
   );
+  const [agentProfile, setAgentProfile] = useState<AgentProfile>({
+    fullName: '',
+    email: '',
+    phone: '',
+    brokerage: '',
+    licenseNumber: '',
+    headshotUrl: '',
+    bio: '',
+  });
 
   const contactPanelRef = useRef<HTMLElement | null>(null);
   const activityPanelRef = useRef<HTMLElement | null>(null);
@@ -564,6 +805,7 @@ export function CrmWorkspace({
   const pipelineBoardRef = useRef<HTMLDivElement | null>(null);
 
   const brandStorageKey = useMemo(() => `crm.branding.${tenantContext.tenantId}`, [tenantContext.tenantId]);
+  const profileStorageKey = useMemo(() => `crm.profile.${tenantContext.tenantId}`, [tenantContext.tenantId]);
   const websiteFaviconUrl = useMemo(() => `https://${tenantContext.tenantDomain}/favicon.ico`, [tenantContext.tenantDomain]);
   const greetingLabel = useMemo(() => getTimeGreeting(), []);
 
@@ -591,6 +833,26 @@ export function CrmWorkspace({
       // Ignore storage errors for private/incognito browser modes.
     }
   }, [brandPreferences, brandStorageKey]);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(profileStorageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<AgentProfile>;
+        setAgentProfile((prev) => ({ ...prev, ...parsed }));
+      }
+    } catch {
+      // Ignore parse errors.
+    }
+  }, [profileStorageKey]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(profileStorageKey, JSON.stringify(agentProfile));
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [agentProfile, profileStorageKey]);
 
   const resolvedLogoUrl = useMemo(() => {
     if (brandPreferences.useWebsiteFavicon) {
@@ -1042,6 +1304,15 @@ export function CrmWorkspace({
       .filter((signal): signal is LeadListingSignal => Boolean(signal));
   }, [activeLeadProfileActivities]);
 
+  const leadScore = useMemo(() => {
+    return calculateLeadScore(
+      activeLeadProfileActivities,
+      activeLeadSearchSignals,
+      activeLeadListingSignals,
+      activeLeadProfile,
+    );
+  }, [activeLeadProfileActivities, activeLeadSearchSignals, activeLeadListingSignals, activeLeadProfile]);
+
   const activeLeadLastContact = useMemo(() => {
     if (!activeLeadProfile) {
       return null;
@@ -1092,6 +1363,12 @@ export function CrmWorkspace({
       const lastContact = lastContactByLeadId.get(lead.id) ?? null;
       const contactLabel = getLeadContactLabel(lead, contactById);
 
+      // Compute a per-lead score using activities for this lead
+      const leadActivities = activities.filter((a) => a.leadId === lead.id || (lead.contactId && a.contactId === lead.contactId));
+      const leadSearchSigs = leadActivities.map(extractLeadSearchSignal).filter((s): s is LeadSearchSignal => Boolean(s));
+      const leadListingSigs = leadActivities.map(extractLeadListingSignal).filter((s): s is LeadListingSignal => Boolean(s));
+      const score = calculateLeadScore(leadActivities, leadSearchSigs, leadListingSigs, lead);
+
       return {
         lead,
         draft,
@@ -1100,6 +1377,7 @@ export function CrmWorkspace({
         location: draft.listingAddress || '-',
         lastContact,
         desired: `${draft.beds || '-'} / ${draft.baths || '-'} / ${draft.sqft || '-'}`,
+        score,
         intentLabel:
           behavior && (behavior.favoritedCount > 0 || behavior.viewedCount > 0)
             ? `${behavior.favoritedCount > 0 ? 'Favorited' : 'Viewed'} recently`
@@ -1107,21 +1385,7 @@ export function CrmWorkspace({
       };
     });
 
-    rows = rows.filter((row) => {
-      if (tableStatusPreset === 'new') {
-        return row.draft.status === 'new';
-      }
-      if (tableStatusPreset === 'follow_up') {
-        return row.draft.status === 'qualified' || row.draft.status === 'nurturing';
-      }
-      if (tableStatusPreset === 'open_pipeline') {
-        return row.draft.status === 'new' || row.draft.status === 'qualified' || row.draft.status === 'nurturing';
-      }
-      if (tableStatusPreset === 'closed') {
-        return row.draft.status === 'won' || row.draft.status === 'lost';
-      }
-      return true;
-    });
+    rows = rows.filter((row) => doesStatusMatchPreset(row.draft.status, tableStatusPreset));
 
     rows.sort((left, right) => {
       const directionFactor = tableSort.direction === 'asc' ? 1 : -1;
@@ -1147,13 +1411,15 @@ export function CrmWorkspace({
         comparison = left.lead.source.localeCompare(right.lead.source);
       } else if (tableSort.column === 'updatedAt') {
         comparison = new Date(left.lead.updatedAt).getTime() - new Date(right.lead.updatedAt).getTime();
+      } else if (tableSort.column === 'score') {
+        comparison = left.score.score - right.score.score;
       }
 
       return comparison * directionFactor;
     });
 
     return rows;
-  }, [contactById, getLeadDraft, lastContactByLeadId, leadBehaviorByLeadId, leads, tableSort, tableStatusPreset]);
+  }, [activities, contactById, getLeadDraft, lastContactByLeadId, leadBehaviorByLeadId, leads, tableSort, tableStatusPreset]);
 
   const sortedActivityLeads = useMemo(() => {
     const working = [...leads];
@@ -1667,6 +1933,85 @@ export function CrmWorkspace({
     setActiveView('dashboard');
   }, []);
 
+  async function createLead() {
+    if (!newLeadAddress.trim()) {
+      pushToast('error', 'Listing address is required.');
+      return;
+    }
+
+    const optimisticId = `optimistic-${Date.now()}`;
+    const nowIso = new Date().toISOString();
+    const optimisticLead: CrmLead = {
+      id: optimisticId,
+      tenantId: tenantContext.tenantId,
+      contactId: null,
+      status: 'new',
+      leadType: (newLeadType || 'buyer') as CrmLeadType,
+      source: newLeadSource || 'crm_manual',
+      timeframe: newLeadTimeframe.trim() || null,
+      notes: newLeadNotes.trim() || null,
+      listingId: null,
+      listingUrl: null,
+      listingAddress: newLeadAddress.trim(),
+      propertyType: newLeadPropertyType || null,
+      beds: null,
+      baths: null,
+      sqft: null,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+    };
+
+    setLeads((prev) => [optimisticLead, ...prev]);
+    setSummary((prev) => ({ ...prev, leadCount: prev.leadCount + 1 }));
+    beginMutation();
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          listingAddress: newLeadAddress.trim(),
+          source: newLeadSource || 'crm_manual',
+          leadType: newLeadType || 'buyer',
+          notes: newLeadNotes.trim() || null,
+          timeframe: newLeadTimeframe.trim() || null,
+          propertyType: newLeadPropertyType || null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Lead create failed.');
+      }
+
+      const json = (await response.json()) as { lead?: CrmLead };
+
+      setNewLeadAddress('');
+      setNewLeadSource('crm_manual');
+      setNewLeadType('buyer');
+      setNewLeadNotes('');
+      setNewLeadTimeframe('');
+      setNewLeadPropertyType('');
+      setShowNewLeadForm(false);
+
+      if (json.lead) {
+        setLeads((prev) => prev.map((lead) => (lead.id === optimisticId ? json.lead! : lead)));
+      } else {
+        setLeads((prev) => prev.filter((lead) => lead.id !== optimisticId));
+        setSummary((prev) => ({ ...prev, leadCount: Math.max(0, prev.leadCount - 1) }));
+      }
+
+      pushToast('success', 'Lead created successfully.');
+    } catch (mutationError) {
+      setLeads((prev) => prev.filter((lead) => lead.id !== optimisticId));
+      setSummary((prev) => ({ ...prev, leadCount: Math.max(0, prev.leadCount - 1) }));
+      const message = mutationError instanceof Error ? mutationError.message : 'Unknown lead create error.';
+      setError(message);
+      pushToast('error', message);
+    } finally {
+      endMutation();
+    }
+  }
+
   const openPipeline = useCallback(() => {
     setActiveNav('pipeline');
     setActiveView('pipeline');
@@ -1678,26 +2023,20 @@ export function CrmWorkspace({
     setTableStatusPreset(preset);
   }, []);
 
+  const openProfile = useCallback(() => {
+    setActiveNav('profile');
+    setActiveView('profile');
+  }, []);
+
   const handleNav = useCallback(
     (nav: WorkspaceNav) => {
       setActiveNav(nav);
+      const nextView = resolveViewFromNav(nav);
+      setActiveView(nextView);
 
-      if (nav === 'pipeline') {
-        setActiveView('pipeline');
+      if (nextView !== 'dashboard') {
         return;
       }
-
-      if (nav === 'leads') {
-        setActiveView('leads');
-        return;
-      }
-
-      if (nav === 'settings') {
-        setActiveView('settings');
-        return;
-      }
-
-      setActiveView('dashboard');
 
       if (nav === 'contacts') {
         requestAnimationFrame(() => contactPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
@@ -1729,22 +2068,15 @@ export function CrmWorkspace({
   const navItems: Array<{ id: WorkspaceNav; label: string; icon: string }> = [
     { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
     { id: 'pipeline', label: 'Pipeline', icon: '▦' },
-    { id: 'leads', label: 'Leads Table', icon: '☰' },
+    { id: 'leads', label: 'Lead Tracker', icon: '☰' },
     { id: 'contacts', label: 'Contacts', icon: '◉' },
     { id: 'activity', label: 'Activity', icon: '↻' },
+    { id: 'profile', label: 'Profile', icon: '◯' },
     { id: 'settings', label: 'Settings', icon: '⚙' },
   ];
 
   function toggleTableSort(column: LeadsTableSortColumn) {
-    setTableSort((prev) => {
-      if (prev.column !== column) {
-        return { column, direction: 'asc' };
-      }
-      return {
-        column,
-        direction: prev.direction === 'asc' ? 'desc' : 'asc',
-      };
-    });
+    setTableSort((prev) => toggleTableSortState(prev, column));
   }
 
   return (
@@ -1769,7 +2101,7 @@ export function CrmWorkspace({
             </span>
             <div>
               <p className="crm-kicker">{brandPreferences.brandName}</p>
-              <h1>Operations</h1>
+              <h1>CRM</h1>
             </div>
           </div>
           <span className="crm-tenant-domain">{tenantContext.tenantDomain}</span>
@@ -1829,22 +2161,24 @@ export function CrmWorkspace({
               Pipeline
             </button>
             <button type="button" className="crm-shell-link" onClick={() => openLeadsTable('all')}>
-              Leads Table
+              Lead Tracker
             </button>
           </div>
         </header>
 
         <header className="crm-header">
           <div>
-            <p className="crm-kicker">Lead Command Center</p>
+            <p className="crm-kicker">Workspace</p>
             <h2>
               {activeView === 'pipeline'
-                ? 'Pipeline Board'
+                ? 'Deal Pipeline'
                 : activeView === 'leads'
-                  ? 'Leads Table'
+                  ? 'Lead Tracker'
                   : activeView === 'settings'
                     ? 'Settings'
-                    : 'Dashboard Overview'}
+                    : activeView === 'profile'
+                      ? 'My Profile'
+                      : 'Dashboard'}
             </h2>
           </div>
           <div className="crm-header-tools">
@@ -1915,7 +2249,19 @@ export function CrmWorkspace({
                 aria-label="User actions"
                 onClick={() => setAvatarMenuOpen((prev) => !prev)}
               >
-                {brandInitials}
+                {agentProfile.headshotUrl ? (
+                  <Image
+                    loader={passthroughImageLoader}
+                    src={agentProfile.headshotUrl}
+                    alt=""
+                    width={36}
+                    height={36}
+                    unoptimized
+                    style={{ borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  brandInitials
+                )}
               </button>
               {avatarMenuOpen ? (
                 <div className="crm-popover crm-avatar-menu">
@@ -1923,7 +2269,7 @@ export function CrmWorkspace({
                     type="button"
                     className="crm-popover-action"
                     onClick={() => {
-                      openDashboard();
+                      openProfile();
                       setAvatarMenuOpen(false);
                     }}
                   >
@@ -2454,9 +2800,87 @@ export function CrmWorkspace({
         {activeView === 'leads' ? (
           <section className="crm-panel crm-leads-table-panel">
             <div className="crm-panel-head">
-              <h3>Leads Table</h3>
-              <span className="crm-muted">Sortable lead operations view with intent indicators.</span>
+              <div>
+                <h3>Lead Tracker</h3>
+                <span className="crm-muted">Track, sort, and manage all your leads in one place.</span>
+              </div>
+              <button
+                type="button"
+                className="crm-primary-button"
+                onClick={() => setShowNewLeadForm((prev) => !prev)}
+              >
+                {showNewLeadForm ? '✕ Cancel' : '＋ New Lead'}
+              </button>
             </div>
+
+            {showNewLeadForm && (
+              <div className="crm-new-lead-form">
+                <div className="crm-new-lead-fields">
+                  <label className="crm-field">
+                    Listing Address *
+                    <input
+                      type="text"
+                      value={newLeadAddress}
+                      placeholder="123 Main St, Fairfield, CT"
+                      onChange={(event) => setNewLeadAddress(event.target.value)}
+                    />
+                  </label>
+                  <label className="crm-field">
+                    Lead Type
+                    <select value={newLeadType} onChange={(event) => setNewLeadType(event.target.value as 'buyer' | 'seller')}>
+                      <option value="buyer">Buyer</option>
+                      <option value="seller">Seller</option>
+                    </select>
+                  </label>
+                  <label className="crm-field">
+                    Source
+                    <select value={newLeadSource} onChange={(event) => setNewLeadSource(event.target.value)}>
+                      <option value="crm_manual">Manual Entry</option>
+                      <option value="website">Website</option>
+                      <option value="referral">Referral</option>
+                      <option value="social">Social Media</option>
+                      <option value="cold_call">Cold Call</option>
+                      <option value="open_house">Open House</option>
+                    </select>
+                  </label>
+                  <label className="crm-field">
+                    Property Type
+                    <select value={newLeadPropertyType} onChange={(event) => setNewLeadPropertyType(event.target.value)}>
+                      <option value="">Not specified</option>
+                      <option value="single-family">Single Family</option>
+                      <option value="condo">Condo</option>
+                      <option value="multi-family">Multi-Family</option>
+                    </select>
+                  </label>
+                  <label className="crm-field">
+                    Timeframe
+                    <input
+                      type="text"
+                      value={newLeadTimeframe}
+                      placeholder="e.g. 3-6 months"
+                      onChange={(event) => setNewLeadTimeframe(event.target.value)}
+                    />
+                  </label>
+                  <label className="crm-field crm-field-wide">
+                    Notes
+                    <textarea
+                      value={newLeadNotes}
+                      placeholder="Initial notes about this lead..."
+                      rows={2}
+                      onChange={(event) => setNewLeadNotes(event.target.value)}
+                    />
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  className="crm-primary-button"
+                  disabled={!newLeadAddress.trim() || activeMutations > 0}
+                  onClick={() => { void createLead(); }}
+                >
+                  {activeMutations > 0 ? 'Creating...' : 'Create Lead'}
+                </button>
+              </div>
+            )}
 
             <div className="crm-inline-controls crm-table-presets">
               <button
@@ -2519,6 +2943,11 @@ export function CrmWorkspace({
                         </button>
                       </th>
                       <th>
+                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('score')}>
+                          Score
+                        </button>
+                      </th>
+                      <th>
                         <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('priceRange')}>
                           Price Range
                         </button>
@@ -2563,6 +2992,11 @@ export function CrmWorkspace({
                         <td>
                           <span className={`crm-status-badge crm-status-${row.draft.status}`}>
                             {formatLeadStatusLabel(row.draft.status)}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`crm-score-badge crm-score-${row.score.label.toLowerCase()}`}>
+                            {row.score.score} {row.score.label}
                           </span>
                         </td>
                         <td>{row.priceRange}</td>
@@ -2660,7 +3094,7 @@ export function CrmWorkspace({
                 <section key={status} className="crm-pipeline-column">
                   <header className="crm-pipeline-column-head">
                     <h4>
-                      {getStatusGlyph(status)} {formatLeadStatusLabel(status)}
+                      <StatusIcon status={status} size={14} /> {formatLeadStatusLabel(status)}
                     </h4>
                     <span className={`crm-status-badge crm-status-${status}`}>{groupedPipelineLeads[status].length}</span>
                   </header>
@@ -2705,10 +3139,13 @@ export function CrmWorkspace({
                                 onChange={(event) => {
                                   const value = event.target.value as CrmLeadStatus;
                                   setLeadDraftField(lead.id, 'status', value);
-                                  if (pipelineStatusFilter !== ALL_STATUS_FILTER && value !== pipelineStatusFilter) {
-                                    setPipelineFilterNotice(
-                                      `${getLeadContactLabel(lead, contactById)} moved to ${formatLeadStatusLabel(value)}.`
-                                    );
+                                  const notice = getPipelineMoveNotice(
+                                    getLeadContactLabel(lead, contactById),
+                                    value,
+                                    pipelineStatusFilter
+                                  );
+                                  if (notice) {
+                                    setPipelineFilterNotice(notice);
                                   }
                                 }}
                               >
@@ -2744,6 +3181,122 @@ export function CrmWorkspace({
                   </div>
                 </section>
               ))}
+            </div>
+          </section>
+        ) : null}
+
+        {activeView === 'profile' ? (
+          <section className="crm-panel">
+            <div className="crm-panel-head">
+              <h3>My Profile</h3>
+              <span className="crm-muted">Manage your agent profile and see your performance at a glance.</span>
+            </div>
+            <div className="crm-profile-layout">
+              <aside className="crm-profile-card">
+                <div className="crm-profile-headshot-wrap">
+                  {agentProfile.headshotUrl ? (
+                    <Image
+                      loader={passthroughImageLoader}
+                      src={agentProfile.headshotUrl}
+                      alt={agentProfile.fullName || 'Agent headshot'}
+                      width={120}
+                      height={120}
+                      unoptimized
+                      style={{ borderRadius: '50%', objectFit: 'cover', width: 120, height: 120 }}
+                    />
+                  ) : (
+                    <span className="crm-profile-initials">{agentProfile.fullName ? getBrandInitials(agentProfile.fullName) : brandInitials}</span>
+                  )}
+                </div>
+                <h4>{agentProfile.fullName || 'Your Name'}</h4>
+                <p className="crm-muted">{agentProfile.brokerage || 'Your Brokerage'}</p>
+                {agentProfile.licenseNumber && <p className="crm-muted" style={{ fontSize: '0.75rem' }}>License #{agentProfile.licenseNumber}</p>}
+                <div className="crm-profile-stats">
+                  <div className="crm-profile-stat">
+                    <strong>{leads.length}</strong>
+                    <span>Total Leads</span>
+                  </div>
+                  <div className="crm-profile-stat">
+                    <strong>{leads.length > 0 ? `${Math.round((leads.filter((l) => l.status === 'won').length / leads.length) * 100)}%` : '0%'}</strong>
+                    <span>Win Rate</span>
+                  </div>
+                  <div className="crm-profile-stat">
+                    <strong>{leads.filter((l) => l.status === 'new' || l.status === 'qualified' || l.status === 'nurturing').length}</strong>
+                    <span>Active</span>
+                  </div>
+                </div>
+              </aside>
+              <div className="crm-profile-form">
+                <article>
+                  <h4>Agent Information</h4>
+                  <label className="crm-field">
+                    Full Name
+                    <input
+                      type="text"
+                      value={agentProfile.fullName}
+                      placeholder="Jane Doe"
+                      onChange={(event) => setAgentProfile((prev) => ({ ...prev, fullName: event.target.value }))}
+                    />
+                  </label>
+                  <label className="crm-field">
+                    Email
+                    <input
+                      type="email"
+                      value={agentProfile.email}
+                      placeholder="jane@example.com"
+                      onChange={(event) => setAgentProfile((prev) => ({ ...prev, email: event.target.value }))}
+                    />
+                  </label>
+                  <label className="crm-field">
+                    Phone
+                    <input
+                      type="tel"
+                      value={agentProfile.phone}
+                      placeholder="(203) 555-0100"
+                      onChange={(event) => setAgentProfile((prev) => ({ ...prev, phone: event.target.value }))}
+                    />
+                  </label>
+                  <label className="crm-field">
+                    Brokerage
+                    <input
+                      type="text"
+                      value={agentProfile.brokerage}
+                      placeholder="Luxury Properties Group"
+                      onChange={(event) => setAgentProfile((prev) => ({ ...prev, brokerage: event.target.value }))}
+                    />
+                  </label>
+                  <label className="crm-field">
+                    License Number
+                    <input
+                      type="text"
+                      value={agentProfile.licenseNumber}
+                      placeholder="RES.0123456"
+                      onChange={(event) => setAgentProfile((prev) => ({ ...prev, licenseNumber: event.target.value }))}
+                    />
+                  </label>
+                </article>
+                <article>
+                  <h4>Headshot & Bio</h4>
+                  <label className="crm-field">
+                    Headshot URL
+                    <input
+                      type="url"
+                      value={agentProfile.headshotUrl}
+                      placeholder="https://example.com/headshot.jpg"
+                      onChange={(event) => setAgentProfile((prev) => ({ ...prev, headshotUrl: event.target.value }))}
+                    />
+                  </label>
+                  <label className="crm-field">
+                    Bio
+                    <textarea
+                      value={agentProfile.bio}
+                      placeholder="A brief description of your experience and specialties..."
+                      rows={4}
+                      onChange={(event) => setAgentProfile((prev) => ({ ...prev, bio: event.target.value }))}
+                    />
+                  </label>
+                </article>
+              </div>
             </div>
           </section>
         ) : null}
@@ -2910,7 +3463,7 @@ export function CrmWorkspace({
               Settings
             </button>
             <button type="button" className="crm-footer-link" onClick={() => openLeadsTable('all')}>
-              Leads Table
+              Lead Tracker
             </button>
             <button type="button" className="crm-footer-link" onClick={openPipeline}>
               Pipeline
@@ -3198,6 +3751,14 @@ export function CrmWorkspace({
                     <strong>{activeLeadListingSignals.filter((signal) => signal.action === 'unfavorited').length}</strong>
                     <span>Removed listings</span>
                   </article>
+                </div>
+
+                <div className="crm-lead-insights">
+                  <LeadEngagementGauge score={leadScore.score} label={leadScore.label} />
+                  <div className="crm-lead-insights-charts">
+                    <LeadActivityChart activities={activeLeadProfileActivities} />
+                    <PriceInterestBar signals={activeLeadListingSignals} />
+                  </div>
                 </div>
 
                 <ul className="crm-modal-signal-list">

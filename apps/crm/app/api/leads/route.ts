@@ -1,4 +1,5 @@
-import { listLeadsByTenantId } from '@real-estate/db/crm';
+import { listLeadsByTenantId, createLeadForTenant } from '@real-estate/db/crm';
+import type { CreateCrmLeadInput } from '@real-estate/db/crm';
 import type { CrmLeadListQuery, TenantContext } from '@real-estate/types';
 import { NextResponse } from 'next/server';
 
@@ -53,3 +54,28 @@ export function createLeadsGetHandler(deps: LeadsGetDeps = defaultDeps) {
 }
 
 export const GET = createLeadsGetHandler();
+
+export async function POST(request: Request) {
+  const { tenantContext, unauthorizedResponse } = await requireTenantContext(request);
+  if (unauthorizedResponse) {
+    return unauthorizedResponse;
+  }
+
+  if (!tenantContext) {
+    return NextResponse.json({ ok: false, error: 'Tenant resolution failed.' }, { status: 401 });
+  }
+
+  let body: CreateCrmLeadInput;
+  try {
+    body = (await request.json()) as CreateCrmLeadInput;
+  } catch {
+    return NextResponse.json({ ok: false, error: 'Invalid JSON body.' }, { status: 400 });
+  }
+
+  const lead = await createLeadForTenant(tenantContext.tenantId, body);
+  if (!lead) {
+    return NextResponse.json({ ok: false, error: 'Failed to create lead.' }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true, lead }, { status: 201 });
+}

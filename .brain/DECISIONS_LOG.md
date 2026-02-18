@@ -277,3 +277,24 @@
 ### D-068: Prioritize typography refinement as the immediate post-checklist UI pass
 **Decision**: Make second-pass typography cleanup the first task for the next session (after `platform-session-bootstrap`), ahead of additional feature expansion.
 **Reason**: Core CRM checklist functionality is complete; the highest-value next step is improving hierarchy legibility and visual consistency to increase day-to-day operator usability and adoption.
+
+## 2026-02-18
+### D-069: Centralize CRM dashboard/pipeline interaction state transitions into reusable helpers
+**Decision**: Add `apps/crm/app/lib/workspace-interactions.ts` and route `apps/crm/app/components/crm-workspace.tsx` through it for nav-to-view resolution, lead-table preset filtering, pipeline move-notice semantics, and table sort toggle state transitions; add coverage in `apps/crm/app/lib/workspace-interactions.test.ts`.
+**Reason**: Interaction behavior had become spread across inline branches in the large workspace component, increasing regression risk for dashboard/pipeline changes. A shared helper boundary makes behavior deterministic, easier to test, and safer to evolve.
+
+### D-070: Standardize CRM typography rhythm and keyboard-focus affordances as the default readability baseline
+**Decision**: Apply second-pass typography normalization in `apps/crm/app/globals.css` (consistent text scale/line-height across panel/table/pipeline/modal/settings surfaces), reduce heavy hover contrast, and introduce broad `:focus-visible` treatment for interactive controls.
+**Reason**: Checklist functionality was complete but readability/accessibility consistency still lagged across dense operator surfaces; standardizing typographic rhythm and focus visibility improves everyday usability without altering tenant-scoped behavior or API contracts.
+
+### D-071: Make the Admin Portal onboarding flow wizard-first to accelerate operator usability
+**Decision**: Rework `apps/admin/app/components/control-plane-workspace.tsx` around a 4-step guided provisioning wizard (Tenant Basics -> Primary Domain -> Plan & Features -> Review & Provision), followed by selected-tenant Domain Ops and readiness controls.
+**Reason**: Existing admin controls were functional but fragmented. A guided operator workflow reduces cognitive load and speeds tenant launch actions without waiting for deeper hardening phases.
+
+### D-072: Establish a premium visual baseline for admin-facing control-plane surfaces
+**Decision**: Replace utilitarian admin styling with a cohesive visual system in `apps/admin/app/globals.css` (design tokens, richer cards, stepper/plan/feature controls, responsive hierarchy), and align typography via `Manrope` + `Fraunces` in `apps/admin/app/layout.tsx` plus styled auth shells.
+**Reason**: Production readiness requires strong operator trust and clarity. Visual hierarchy and interaction polish materially improve usability and perceived platform quality before additional validation/hardening work.
+
+### D-073: Prioritize admin usability roadmap slices before additional validation/hardening work
+**Decision**: Sequence the next admin roadmap work as: (1) mutation error transparency, (2) domain operations automation, then (3) plan/feature governance UX, while deferring remaining CRM manual click-through to after these admin slices.
+**Reason**: Highest-impact operator usability gains now come from reducing onboarding/domain workflow friction in the admin portal; this ordering improves day-to-day launch velocity before deeper hardening phases.

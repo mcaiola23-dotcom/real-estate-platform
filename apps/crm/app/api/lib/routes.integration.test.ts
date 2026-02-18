@@ -213,6 +213,60 @@ test('contact PATCH updates tenant-scoped contact fields', async () => {
   assert.equal(response.status, 200);
 });
 
+test('contact PATCH returns 400 for invalid json body', async () => {
+  const handler = createContactPatchHandler({
+    requireTenantContext: authorizedContext,
+    updateContactForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/contacts/contact_3', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: '{"fullName":',
+    }),
+    { params: Promise.resolve({ contactId: 'contact_3' }) }
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test('contact PATCH returns 400 when payload has no updatable fields', async () => {
+  const handler = createContactPatchHandler({
+    requireTenantContext: authorizedContext,
+    updateContactForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/contacts/contact_3', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ fullName: 123 }),
+    }),
+    { params: Promise.resolve({ contactId: 'contact_3' }) }
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test('contact PATCH returns 404 when tenant-scoped contact update misses', async () => {
+  const handler = createContactPatchHandler({
+    requireTenantContext: authorizedContext,
+    updateContactForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/contacts/contact_404', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ fullName: 'Missing Contact' }),
+    }),
+    { params: Promise.resolve({ contactId: 'contact_404' }) }
+  );
+
+  assert.equal(response.status, 404);
+});
+
 test('activities GET returns tenant-scoped list', async () => {
   const activity: CrmActivity = {
     id: 'activity_1',
@@ -342,6 +396,26 @@ test('lead PATCH returns 400 when no updatable fields are provided', async () =>
   assert.equal(response.status, 400);
 });
 
+test('lead PATCH returns 400 for invalid json body', async () => {
+  const handler = createLeadPatchHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    updateLeadForTenant: async () => null,
+    createActivityForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/leads/lead_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: '{"status":',
+    }),
+    { params: Promise.resolve({ leadId: 'lead_1' }) }
+  );
+
+  assert.equal(response.status, 400);
+});
+
 test('lead PATCH writes status-change activity when status is updated', async () => {
   const updatedLead: CrmLead = {
     id: 'lead_2',
@@ -386,6 +460,73 @@ test('lead PATCH writes status-change activity when status is updated', async ()
   assert.equal(activityWrites, 1);
 });
 
+test('lead PATCH does not write status-change activity when only notes are updated', async () => {
+  const currentLead: CrmLead = {
+    id: 'lead_4',
+    tenantId: tenantContext.tenantId,
+    contactId: 'contact_2',
+    status: 'qualified',
+    leadType: 'website_lead',
+    source: 'website',
+    timeframe: null,
+    notes: 'existing',
+    listingId: null,
+    listingUrl: null,
+    listingAddress: null,
+    propertyType: null,
+    beds: null,
+    baths: null,
+    sqft: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let activityWrites = 0;
+  const handler = createLeadPatchHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => currentLead,
+    updateLeadForTenant: async (_tenantId, _leadId, payload) => ({
+      ...currentLead,
+      notes: payload.notes ?? currentLead.notes,
+      updatedAt: new Date().toISOString(),
+    }),
+    createActivityForTenant: async () => {
+      activityWrites += 1;
+      return null;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/leads/lead_4', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ notes: 'Updated notes only' }),
+    }),
+    { params: Promise.resolve({ leadId: 'lead_4' }) }
+  );
+  assert.equal(response.status, 200);
+  assert.equal(activityWrites, 0);
+});
+
+test('lead PATCH returns 404 when tenant-scoped lead update misses', async () => {
+  const handler = createLeadPatchHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    updateLeadForTenant: async () => null,
+    createActivityForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/leads/lead_404', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ notes: 'Missing lead' }),
+    }),
+    { params: Promise.resolve({ leadId: 'lead_404' }) }
+  );
+  assert.equal(response.status, 404);
+});
+
 test('lead GET returns tenant-scoped lead payload', async () => {
   const lead: CrmLead = {
     id: 'lead_3',
@@ -422,4 +563,19 @@ test('lead GET returns tenant-scoped lead payload', async () => {
     params: Promise.resolve({ leadId: 'lead_3' }),
   });
   assert.equal(response.status, 200);
+});
+
+test('lead GET returns 404 when tenant-scoped lead is missing', async () => {
+  const handler = createLeadGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    updateLeadForTenant: async () => null,
+    createActivityForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/leads/missing'), {
+    params: Promise.resolve({ leadId: 'missing' }),
+  });
+
+  assert.equal(response.status, 404);
 });
