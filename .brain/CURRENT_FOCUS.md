@@ -35,11 +35,13 @@ Shift active delivery focus to Admin Portal usability: complete high-impact onbo
 29. Direct full-engine Prisma generation now has a dedicated mitigation wrapper in `packages/db/scripts/db-generate-direct.mjs` (rename-lock probe/wait + cleanup + retry/backoff + healthy full-engine client reuse check), and both `db:generate:direct` plus reliability sampling now run through this path for deterministic lock diagnostics.
 30. Full CRM checklist scope in `apps/crm` is complete (modal/table/pipeline/settings/header-footer/behavior intelligence/API enhancements), and the latest UI pass added tenant-scoped branding controls plus readability-focused hover-state corrections in shared CRM styles.
 31. Second-pass CRM UI refinement is now complete in `apps/crm` with tightened typography hierarchy/line-height rhythm, normalized focus-visible accessibility affordances, improved table/pipeline text legibility, and extracted/tested dashboard-pipeline interaction helpers in `apps/crm/app/lib/workspace-interactions.ts`.
+32. Admin mutation error transparency is now in place in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/lib/mutation-error-guidance.ts`, with scoped RBAC/duplicate/validation parsing, inline field-level hints, and actionable next-step guidance across onboarding/domain/settings flows.
+33. Domain operations automation is now in place in `apps/admin/app/components/control-plane-workspace.tsx` with operator polling controls, auto-poll intervals, retry verification checks, and SSL/certificate readiness indicators tied to primary-domain verification state.
+34. Plan/feature governance UX is now in place in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/lib/plan-governance.ts` with per-plan templates, required/allowed feature guardrails, inline governance warnings, override toggles, and enforce-template actions for onboarding + tenant settings.
 
 ## Immediate Next Steps
-- First next-session task: implement Admin Portal mutation error transparency in onboarding/domain flows, with actionable field-level guidance and next-step hints for RBAC/duplicate/validation failures.
-- Extend Domain Operations toward automation: verification polling/retry controls and SSL/certificate readiness indicators (beyond the current manual mark-verified flow).
-- Continue plan/feature governance UX in admin so plan assignment and feature templates are operator-guided and consistent at scale.
+- First next-session task: run a focused admin manual browser click-through (desktop + smaller laptop viewport) in a non-sandboxed environment to validate no interaction/layout regressions after recent UX/error-guidance updates.
+- Add backend-driven domain verification/certificate status probes so polling/retry controls read authoritative external state instead of UI-level refresh semantics.
 - Keep Prisma reliability sampling periodic (`db:generate:sample -- 10+`) in Windows-authoritative runs after environment restarts, but treat this as maintenance, not the primary implementation objective.
 
 ## Session Validation (2026-02-12)
@@ -352,3 +354,46 @@ Shift active delivery focus to Admin Portal usability: complete high-impact onbo
 - Workspace-level lint currently reports a pre-existing unrelated error in `apps/admin/app/api/lib/admin-access.ts` (`@typescript-eslint/no-explicit-any` at line 54).
 - Targeted lint for touched admin UX files passes:
   - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin -- app/components/control-plane-workspace.tsx app/layout.tsx app/sign-in/[[...sign-in]]/page.tsx app/sign-up/[[...sign-up]]/page.tsx"`.
+
+## Session Update (2026-02-18 Admin Mutation Error Transparency)
+
+### Completed This Session
+1. Added centralized admin mutation error interpretation in `apps/admin/app/lib/mutation-error-guidance.ts`:
+- parses mutation scope + HTTP status + backend error text,
+- maps RBAC-denied, duplicate slug/domain collisions, and required/validation failures into operator-friendly guidance,
+- returns field-level hints plus next-step actions and onboarding step focus metadata.
+2. Wired scoped mutation guidance into `apps/admin/app/components/control-plane-workspace.tsx`:
+- replaced global raw error strings with structured error panel (`summary`, `detail`, `next steps`),
+- added inline field-level errors for onboarding (`name`, `slug`, `primaryDomain`), domain attach (`hostname`), and settings (`planCode`, `featureFlags`),
+- auto-focuses wizard step when onboarding failures map to earlier required fields.
+3. Extended admin UI styling in `apps/admin/app/globals.css` for error affordances:
+- highlighted invalid inputs/selects,
+- compact inline error copy treatment,
+- structured top-level error panel styling for operator guidance readability.
+
+### Session Validation (2026-02-18 Admin Mutation Error Transparency)
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`13/13`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+- Targeted `npm run lint --workspace @real-estate/admin -- app/components/control-plane-workspace.tsx app/lib/mutation-error-guidance.ts` is non-authoritative in this sandbox (bash lint process timed out; Windows cmd lint path failed with WSL vsock bridge error).
+
+## Session Update (2026-02-19 Admin Domain Automation + Plan Governance)
+
+### Completed This Session
+1. Delivered domain-operations automation controls in `apps/admin/app/components/control-plane-workspace.tsx`:
+- added `Poll Domain Status Now` and optional auto-polling with interval controls,
+- added per-domain `Retry Verification` controls with retry-count visibility,
+- added explicit DNS + SSL readiness indicator cards for selected-tenant launch posture.
+2. Delivered plan/feature governance UX in admin onboarding + tenant settings:
+- added shared governance helper `apps/admin/app/lib/plan-governance.ts` with per-plan template/required/allowed rule sets,
+- enforced guardrail checks before provisioning/settings save when overrides are not enabled,
+- added operator-facing governance summaries (`missing required`, `outside plan`, `recommended`) and explicit override toggles,
+- added `Enforce Guardrails` action to normalize tenant feature flags to plan policy.
+3. Preserved existing tenant-scoped control-plane boundaries (`/api/tenants`, `/domains`, `/settings`, `/admin-audit`) while improving operator guidance/consistency.
+
+### Session Validation (2026-02-19 Admin Domain Automation + Plan Governance)
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`13/13`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+- Manual browser click-through remains pending/non-authoritative in this sandbox session:
+  - `npm run dev:admin` failed to bind local port in this environment (`listen EPERM 0.0.0.0:3002`), so desktop/laptop viewport interaction checks could not be executed here.

@@ -269,6 +269,137 @@ async function seedMockActivities(tenantId: string): Promise<void> {
   }
 }
 
+const MOCK_LISTINGS = [
+  { address: '99 Waterfront Way, Stamford', price: 875000, beds: 3, baths: 2, sqft: 2100 },
+  { address: '14 Elm Street, Greenwich', price: 1250000, beds: 4, baths: 3, sqft: 3200 },
+  { address: '221 Post Road, Fairfield', price: 649000, beds: 3, baths: 2, sqft: 1800 },
+  { address: '508 Main Street, Westport', price: 1475000, beds: 5, baths: 4, sqft: 3800 },
+  { address: '33 Beach Drive, Norwalk', price: 725000, beds: 3, baths: 2, sqft: 2050 },
+  { address: '77 Ridge Road, Darien', price: 1650000, beds: 5, baths: 4, sqft: 4200 },
+  { address: '162 Valley View, New Canaan', price: 980000, beds: 4, baths: 3, sqft: 2700 },
+  { address: '45 Harbor Lane, Stamford', price: 550000, beds: 2, baths: 2, sqft: 1400 },
+  { address: '310 Meadow Court, Wilton', price: 1125000, beds: 4, baths: 3, sqft: 3100 },
+  { address: '88 Sunset Terrace, Greenwich', price: 2100000, beds: 6, baths: 5, sqft: 5200 },
+];
+
+const MOCK_SEARCHES = [
+  { query: 'Waterfront homes in Stamford', filters: { minPrice: 700000, maxPrice: 1200000, beds: 3 } },
+  { query: 'Condos near Greenwich train station', filters: { minPrice: 400000, maxPrice: 800000, beds: 2 } },
+  { query: 'Single family Fairfield CT', filters: { minPrice: 500000, maxPrice: 900000, beds: 3 } },
+  { query: 'Luxury homes Darien', filters: { minPrice: 1200000, maxPrice: 2500000, beds: 5 } },
+  { query: 'Family homes top school districts', filters: { minPrice: 600000, maxPrice: 1100000, beds: 4 } },
+];
+
+async function seedMockBehaviorActivities(tenantId: string): Promise<void> {
+  const existing = await listActivitiesByTenantId(tenantId, { limit: 500 });
+  const hasBehavior = existing.some((a) => a.activityType === 'website_listing_viewed');
+  if (hasBehavior) {
+    return;
+  }
+
+  const mockLeads = await listLeadsByTenantId(tenantId, { source: MOCK_SOURCE, limit: 200 });
+  if (mockLeads.length === 0) {
+    return;
+  }
+
+  const now = new Date();
+
+  // Listing view / favorite events spread over past 30 days
+  const behaviorActivities: Array<{
+    leadIndex: number;
+    type: 'website_listing_viewed' | 'website_listing_favorited' | 'website_search_performed';
+    listingIndex?: number;
+    searchIndex?: number;
+    daysAgo: number;
+    hoursOffset: number;
+  }> = [
+      // Sarah Mitchell — active buyer, lots of views
+      { leadIndex: 0, type: 'website_listing_viewed', listingIndex: 0, daysAgo: 1, hoursOffset: 2 },
+      { leadIndex: 0, type: 'website_listing_viewed', listingIndex: 1, daysAgo: 2, hoursOffset: 4 },
+      { leadIndex: 0, type: 'website_listing_favorited', listingIndex: 0, daysAgo: 1, hoursOffset: 6 },
+      { leadIndex: 0, type: 'website_listing_viewed', listingIndex: 3, daysAgo: 4, hoursOffset: 1 },
+      { leadIndex: 0, type: 'website_listing_viewed', listingIndex: 4, daysAgo: 5, hoursOffset: 3 },
+      { leadIndex: 0, type: 'website_listing_viewed', listingIndex: 6, daysAgo: 7, hoursOffset: 2 },
+      { leadIndex: 0, type: 'website_listing_favorited', listingIndex: 3, daysAgo: 4, hoursOffset: 5 },
+      { leadIndex: 0, type: 'website_search_performed', searchIndex: 0, daysAgo: 1, hoursOffset: 1 },
+      { leadIndex: 0, type: 'website_search_performed', searchIndex: 4, daysAgo: 3, hoursOffset: 2 },
+      { leadIndex: 0, type: 'website_listing_viewed', listingIndex: 8, daysAgo: 10, hoursOffset: 4 },
+      { leadIndex: 0, type: 'website_listing_viewed', listingIndex: 2, daysAgo: 14, hoursOffset: 6 },
+      { leadIndex: 0, type: 'website_search_performed', searchIndex: 2, daysAgo: 15, hoursOffset: 1 },
+      // David Reynolds — moderate activity
+      { leadIndex: 1, type: 'website_listing_viewed', listingIndex: 1, daysAgo: 3, hoursOffset: 3 },
+      { leadIndex: 1, type: 'website_listing_viewed', listingIndex: 5, daysAgo: 5, hoursOffset: 1 },
+      { leadIndex: 1, type: 'website_listing_favorited', listingIndex: 5, daysAgo: 5, hoursOffset: 4 },
+      { leadIndex: 1, type: 'website_listing_viewed', listingIndex: 9, daysAgo: 8, hoursOffset: 2 },
+      { leadIndex: 1, type: 'website_search_performed', searchIndex: 3, daysAgo: 4, hoursOffset: 3 },
+      { leadIndex: 1, type: 'website_listing_viewed', listingIndex: 7, daysAgo: 12, hoursOffset: 5 },
+      // Jessica Park — some activity
+      { leadIndex: 4, type: 'website_listing_viewed', listingIndex: 2, daysAgo: 2, hoursOffset: 1 },
+      { leadIndex: 4, type: 'website_listing_viewed', listingIndex: 4, daysAgo: 6, hoursOffset: 3 },
+      { leadIndex: 4, type: 'website_listing_favorited', listingIndex: 2, daysAgo: 3, hoursOffset: 2 },
+      { leadIndex: 4, type: 'website_search_performed', searchIndex: 2, daysAgo: 2, hoursOffset: 5 },
+      { leadIndex: 4, type: 'website_listing_viewed', listingIndex: 6, daysAgo: 9, hoursOffset: 4 },
+      // Emily Carter — light activity
+      { leadIndex: 2, type: 'website_listing_viewed', listingIndex: 6, daysAgo: 8, hoursOffset: 2 },
+      { leadIndex: 2, type: 'website_search_performed', searchIndex: 4, daysAgo: 10, hoursOffset: 1 },
+      { leadIndex: 2, type: 'website_listing_viewed', listingIndex: 8, daysAgo: 18, hoursOffset: 6 },
+      // Michael Quinn — recent burst
+      { leadIndex: 3, type: 'website_listing_viewed', listingIndex: 7, daysAgo: 0, hoursOffset: 1 },
+      { leadIndex: 3, type: 'website_listing_viewed', listingIndex: 2, daysAgo: 0, hoursOffset: 3 },
+      { leadIndex: 3, type: 'website_listing_favorited', listingIndex: 7, daysAgo: 0, hoursOffset: 5 },
+      { leadIndex: 3, type: 'website_listing_viewed', listingIndex: 4, daysAgo: 1, hoursOffset: 2 },
+      { leadIndex: 3, type: 'website_search_performed', searchIndex: 1, daysAgo: 0, hoursOffset: 0 },
+    ];
+
+  for (const entry of behaviorActivities) {
+    const lead = mockLeads[entry.leadIndex];
+    if (!lead) continue;
+
+    const minutesAgo = entry.daysAgo * 24 * 60 + entry.hoursOffset * 60;
+
+    if (entry.type === 'website_search_performed') {
+      const search = MOCK_SEARCHES[entry.searchIndex ?? 0];
+      if (!search) continue;
+      await createActivityForTenant(tenantId, {
+        activityType: 'website_search_performed',
+        summary: `Searched: ${search.query}`,
+        leadId: lead.id,
+        contactId: lead.contactId ?? null,
+        occurredAt: buildOccurredAt(now, minutesAgo),
+        metadataJson: JSON.stringify({
+          source: MOCK_SOURCE,
+          searchContext: {
+            query: search.query,
+            filtersJson: JSON.stringify(search.filters),
+          },
+          resultCount: Math.floor(Math.random() * 30) + 5,
+        }),
+      });
+    } else {
+      const listing = MOCK_LISTINGS[entry.listingIndex ?? 0];
+      if (!listing) continue;
+      const action = entry.type === 'website_listing_favorited' ? 'Favorited' : 'Viewed';
+      await createActivityForTenant(tenantId, {
+        activityType: entry.type,
+        summary: `${action} listing: ${listing.address} ($${listing.price.toLocaleString()})`,
+        leadId: lead.id,
+        contactId: lead.contactId ?? null,
+        occurredAt: buildOccurredAt(now, minutesAgo),
+        metadataJson: JSON.stringify({
+          source: MOCK_SOURCE,
+          listing: {
+            address: listing.address,
+            price: listing.price,
+            beds: listing.beds,
+            baths: listing.baths,
+            sqft: listing.sqft,
+          },
+        }),
+      });
+    }
+  }
+}
+
 async function main() {
   const tenantHost = process.env.CRM_MOCK_TENANT_HOST ?? 'fairfield.localhost';
   const tenantRecord = (await getTenantRecordByHostname(tenantHost)) ?? (await getDefaultTenantRecord());
@@ -281,6 +412,7 @@ async function main() {
   await seedMockContacts(tenantRecord.tenantId);
   await updateMockLeadStatuses(tenantRecord.tenantId);
   await seedMockActivities(tenantRecord.tenantId);
+  await seedMockBehaviorActivities(tenantRecord.tenantId);
 
   const [leads, contacts, activities] = await Promise.all([
     listLeadsByTenantId(tenantRecord.tenantId, { limit: 200 }),

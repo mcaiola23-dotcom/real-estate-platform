@@ -79,17 +79,19 @@
 - [x] Fix overly dark hover highlights across CRM interactive text/card surfaces (lead/address links, KPI cards, sortable table headers) by normalizing to subtle readable hover styles in `apps/crm/app/globals.css`. (Completed 2026-02-17.)
 
 ## Next Session Candidate Work (Admin Priority)
-- [ ] Improve Admin mutation error transparency: surface actionable backend error messages in onboarding/domain/settings UI (RBAC denial, duplicate slug/domain, validation failures) with field-level guidance and operator next steps.
-- [ ] Add domain operations automation surface (verification status polling/retry controls and SSL/certificate readiness indicators) on top of existing manual domain actions.
-- [ ] Implement managed plan/feature governance UX (plan catalog defaults, guardrails, and reusable feature-flag templates by plan tier).
-- [ ] Run a focused manual browser click-through for admin onboarding + domain ops on desktop and smaller laptop viewport to confirm no environment-specific interaction/layout regressions.
+- [x] Improve Admin mutation error transparency: surface actionable backend error messages in onboarding/domain/settings UI (RBAC denial, duplicate slug/domain, validation failures) with field-level guidance and operator next steps. (Implemented 2026-02-18 in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/lib/mutation-error-guidance.ts`.)
+- [x] Add domain operations automation surface (verification status polling/retry controls and SSL/certificate readiness indicators) on top of existing manual domain actions. (Implemented 2026-02-19 in `apps/admin/app/components/control-plane-workspace.tsx` with polling/auto-poll/retry controls and readiness cards.)
+- [x] Implement managed plan/feature governance UX (plan catalog defaults, guardrails, and reusable feature-flag templates by plan tier). (Implemented 2026-02-19 in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/lib/plan-governance.ts`.)
+- [ ] Run a focused manual browser click-through for admin onboarding + domain ops on desktop and smaller laptop viewport to confirm no environment-specific interaction/layout regressions. (Blocked in current sandbox on 2026-02-19: `npm run dev:admin` failed local bind with `listen EPERM 0.0.0.0:3002`.)
+- [ ] Add backend-driven domain verification/certificate status probes so admin poll/retry controls use authoritative external status instead of UI-level refresh-only semantics.
 - [ ] Run a final manual local browser click-through for CRM (desktop + smaller laptop viewport) to close the remaining post-polish validation gap after current admin-priority work.
 
 ## Control Plane Roadmap (Longer Term)
-- [ ] Improve Admin mutation error transparency: surface actionable backend error messages in UI (RBAC denial, duplicate slug/domain, validation failures) with field-level hints.
+- [x] Improve Admin mutation error transparency: surface actionable backend error messages in UI (RBAC denial, duplicate slug/domain, validation failures) with field-level hints. (Implemented 2026-02-18 in admin onboarding/domain/settings flows with scoped next-step guidance.)
 - [x] Build guided tenant onboarding workflow in Admin (multi-step wizard + completion checklist + next required action state). (Implemented 2026-02-18 in `apps/admin/app/components/control-plane-workspace.tsx` with 4-step provisioning flow and launch-readiness checks.)
-- [ ] Add domain operations automation surface (DNS record guidance, verification status polling/retry, certificate/SSL readiness indicators). (Partially delivered 2026-02-18: DNS guidance + verification/primary controls + readiness visibility are in place; polling/retry automation and SSL readiness indicators remain.)
-- [ ] Implement managed plan/feature governance (plan catalog, defaults, guardrails, and feature-flag templates by plan tier).
+- [x] Add domain operations automation surface (DNS record guidance, verification status polling/retry, certificate/SSL readiness indicators). (Completed 2026-02-19 with polling/retry controls and readiness indicators in admin Domain Ops.)
+- [x] Implement managed plan/feature governance (plan catalog, defaults, guardrails, and feature-flag templates by plan tier). (Completed 2026-02-19 with shared plan-governance helper + onboarding/settings enforcement/override UX.)
+- [ ] Add authoritative domain/certificate status integrations behind Domain Ops polling controls (provider-backed verification checks + certificate lifecycle signal sync).
 - [ ] Add Admin RBAC management surface (role assignment, permission matrix, actor management, and secure support-session workflows).
 - [ ] Add control-plane observability dashboard (mutation failure trends, ingestion/runtime health indicators, and tenant-level readiness score).
 - [ ] Expand audit timeline UX (advanced filters, diff-style change detail, exportable logs, and stronger actor/request attribution).

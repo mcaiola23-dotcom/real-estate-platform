@@ -1648,7 +1648,8 @@ button:disabled {
 
 .crm-activity-chart svg {
   width: 100%;
-  height: auto;
+  height: 60px;
+  display: block;
 }
 
 .crm-chart-label {
@@ -1699,6 +1700,44 @@ button:disabled {
   justify-content: space-between;
   font-size: var(--crm-body-xs);
   color: var(--crm-muted-text);
+}
+
+/* ── Score Badges ─────────────────────────────────────────── */
+
+.crm-score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: var(--crm-body-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.crm-score-hot {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.crm-score-warm {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+.crm-score-interested {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.crm-score-cool {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.crm-score-cold {
+  background: #f3f4f6;
+  color: #374151;
 }
 
 /* ── New Lead Form ────────────────────────────────────────────── */
@@ -1969,4 +2008,165 @@ button:disabled {
   .crm-behavior-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── 7-Day Heartbeat Chart ─────────────────────────────────── */
+
+.crm-heartbeat-container {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0.5rem 0;
+}
+
+.crm-heartbeat-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.crm-heartbeat-day-label {
+  font-size: 9px;
+  fill: var(--crm-muted-text);
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.crm-heartbeat-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--crm-text);
+  color: var(--crm-surface);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--crm-radius);
+  font-size: var(--crm-body-xs);
+  line-height: 1.5;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: crm-tooltip-in 0.15s ease;
+}
+
+.crm-heartbeat-tooltip strong {
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+
+@keyframes crm-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -90%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+
+@keyframes crm-heartbeat-pulse {
+
+  0%,
+  100% {
+    r: 4;
+    opacity: 1;
+  }
+
+  50% {
+    r: 7;
+    opacity: 0.7;
+  }
+}
+
+.crm-heartbeat-pulse {
+  animation: crm-heartbeat-pulse 2s ease-in-out infinite;
+}
+
+/* ── Expandable Behavior Cards ──────────────────────────────── */
+
+.crm-behavior-card-clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  position: relative;
+}
+
+.crm-behavior-card-clickable::after {
+  content: '▾';
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--crm-muted-text);
+  transition: transform 0.2s ease;
+}
+
+.crm-behavior-card-clickable.is-expanded::after {
+  transform: rotate(180deg);
+}
+
+.crm-behavior-card-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--crm-accent);
+}
+
+.crm-behavior-card-clickable.is-expanded {
+  border-color: var(--crm-accent);
+  background: color-mix(in srgb, var(--crm-accent) 6%, var(--crm-surface));
+}
+
+.crm-behavior-expanded {
+  background: var(--crm-bg-soft);
+  border: 1px solid var(--crm-border);
+  border-radius: var(--crm-radius);
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  animation: crm-expand-in 0.2s ease;
+}
+
+@keyframes crm-expand-in {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    max-height: 600px;
+    transform: translateY(0);
+  }
+}
+
+.crm-behavior-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crm-behavior-detail-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: calc(var(--crm-radius) - 2px);
+  background: var(--crm-surface);
+  border: 1px solid var(--crm-border);
+}
+
+.crm-behavior-detail-list li strong {
+  font-size: var(--crm-body-sm);
+  font-weight: 600;
+}
+
+.crm-behavior-detail-list li span {
+  font-size: var(--crm-body-xs);
+  color: var(--crm-secondary-text);
 }

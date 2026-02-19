@@ -254,6 +254,14 @@ a {
   font: inherit;
 }
 
+.admin-field.has-error input,
+.admin-field.has-error select,
+.admin-field.has-error textarea,
+.admin-inline-field.has-error input {
+  border-color: rgba(155, 35, 35, 0.65);
+  box-shadow: 0 0 0 2px rgba(155, 35, 35, 0.12);
+}
+
 .admin-field input:focus,
 .admin-field select:focus,
 .admin-field textarea:focus,
@@ -262,6 +270,13 @@ button:focus-visible {
   outline: none;
   border-color: var(--admin-accent);
   box-shadow: 0 0 0 3px rgba(143, 63, 43, 0.14);
+}
+
+.admin-field-error {
+  margin: 0;
+  color: var(--admin-danger-text);
+  font-size: 0.74rem;
+  font-weight: 600;
 }
 
 .admin-domain-guide {
@@ -289,6 +304,26 @@ button:focus-visible {
   background: #fff;
   padding: 0.22rem 0.34rem;
   font-size: 0.75rem;
+}
+
+.admin-governance-panel {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.68rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(250, 244, 236, 0.95));
+  padding: 0.55rem 0.62rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.admin-warning {
+  margin: 0;
+  border-radius: 0.56rem;
+  border: 1px solid rgba(154, 90, 18, 0.35);
+  background: var(--admin-warning-bg);
+  color: var(--admin-warning-text);
+  padding: 0.34rem 0.44rem;
+  font-size: 0.76rem;
+  font-weight: 600;
 }
 
 .admin-plan-grid {
@@ -402,6 +437,30 @@ button:focus-visible {
   gap: 0.4rem;
 }
 
+.admin-ops-automation {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.55rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.admin-ssl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.55rem;
+}
+
+.admin-ssl-card {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.56rem;
+  display: grid;
+  gap: 0.34rem;
+}
+
 .admin-readiness-head {
   display: flex;
   justify-content: space-between;
@@ -455,10 +514,25 @@ button:focus-visible {
 
 .admin-inline-field {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
   color: var(--admin-text-soft);
   font-size: 0.8rem;
+}
+
+.admin-inline-field .admin-field-error {
+  flex-basis: 100%;
+}
+
+.admin-inline-field input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-inline-toggle {
+  font-size: 0.76rem;
+  font-weight: 600;
 }
 
 .admin-row {
@@ -554,6 +628,38 @@ button:disabled {
   border-color: rgba(31, 106, 46, 0.4);
   color: var(--admin-success-text);
   background: var(--admin-success-bg);
+}
+
+.admin-error-panel {
+  margin: 0;
+  border-radius: 0.72rem;
+  border: 1px solid rgba(155, 35, 35, 0.42);
+  background: var(--admin-danger-bg);
+  padding: 0.6rem 0.72rem;
+  display: grid;
+  gap: 0.38rem;
+}
+
+.admin-error-title {
+  margin: 0;
+  color: var(--admin-danger-text);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.admin-error-detail {
+  margin: 0;
+  color: var(--admin-danger-text);
+  font-size: 0.8rem;
+}
+
+.admin-next-steps {
+  margin: 0;
+  padding-left: 1rem;
+  color: var(--admin-danger-text);
+  display: grid;
+  gap: 0.22rem;
+  font-size: 0.76rem;
 }
 
 .admin-auth-shell {

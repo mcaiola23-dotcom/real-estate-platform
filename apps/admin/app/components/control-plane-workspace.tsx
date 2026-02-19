@@ -8,6 +8,17 @@ import type {
   ControlPlaneAdminAuditStatus,
   ControlPlaneTenantSnapshot,
 } from '@real-estate/types/control-plane';
+import {
+  createMutationErrorGuidance,
+  type MutationErrorField,
+  type MutationErrorGuidance,
+  type MutationErrorScope,
+} from '../lib/mutation-error-guidance';
+import {
+  enforcePlanGovernance,
+  evaluatePlanGovernance,
+  planFeatureTemplates,
+} from '../lib/plan-governance';
 
 interface ControlPlaneWorkspaceProps {
   initialSnapshots: ControlPlaneTenantSnapshot[];
@@ -79,13 +90,10 @@ const featureOptions: FeatureOption[] = [
   { id: 'behavior_intelligence', label: 'Behavior Intelligence', detail: 'Search/favorite/view signals in CRM context.' },
   { id: 'domain_ops', label: 'Domain Ops Toolkit', detail: 'Domain verification/health operations visibility.' },
 ];
-
-const planFeatureTemplates: Record<string, string[]> = {
-  starter: ['crm_pipeline', 'lead_capture'],
-  growth: ['crm_pipeline', 'lead_capture', 'behavior_intelligence', 'automation_sequences'],
-  pro: ['crm_pipeline', 'lead_capture', 'behavior_intelligence', 'automation_sequences', 'ai_nba', 'domain_ops'],
-  team: ['crm_pipeline', 'lead_capture', 'behavior_intelligence', 'automation_sequences', 'ai_nba', 'domain_ops'],
-};
+const featureLabelById = featureOptions.reduce<Record<string, string>>((result, feature) => {
+  result[feature.id] = feature.label;
+  return result;
+}, {});
 
 const defaultOnboardingDraft: OnboardingDraft = {
   name: '',
@@ -124,6 +132,10 @@ function normalizeHostname(value: string): string {
   return value.trim().toLowerCase();
 }
 
+function formatFeatureLabel(featureId: string): string {
+  return featureLabelById[featureId] ?? featureId;
+}
+
 function formatTimestamp(value: string): string {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) {
@@ -160,20 +172,58 @@ async function readResponseError(response: Response, fallback: string): Promise<
   return fallback;
 }
 
+function buildPlanGovernanceIssue(
+  scope: MutationErrorScope,
+  planCode: string,
+  evaluation: ReturnType<typeof evaluatePlanGovernance>,
+  focusStepIndex?: number
+): MutationErrorGuidance {
+  const missingRequired = evaluation.missingRequired.map(formatFeatureLabel);
+  const disallowed = evaluation.disallowed.map(formatFeatureLabel);
+
+  const detailParts: string[] = [];
+  if (missingRequired.length > 0) {
+    detailParts.push(`Missing required features for ${planCode}: ${missingRequired.join(', ')}.`);
+  }
+  if (disallowed.length > 0) {
+    detailParts.push(`Disallowed for ${planCode}: ${disallowed.join(', ')}.`);
+  }
+
+  return {
+    scope,
+    summary: `Plan guardrails need review (${planCode})`,
+    detail: detailParts.join(' '),
+    fieldHints: {
+      featureFlags: 'Use Apply Plan Template or Enforce Guardrails before saving.',
+    },
+    nextSteps: [
+      'Apply the plan template or use Enforce Guardrails to auto-fix feature flags.',
+      'Enable override only for temporary exceptions that need manual approval.',
+    ],
+    focusStepIndex,
+  };
+}
+
 export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: ControlPlaneWorkspaceProps) {
   const [snapshots, setSnapshots] = useState(initialSnapshots);
   const [selectedTenantId, setSelectedTenantId] = useState<string | null>(initialSnapshots[0]?.tenant.id ?? null);
 
   const [busy, setBusy] = useState(false);
-  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+  const [workspaceIssue, setWorkspaceIssue] = useState<MutationErrorGuidance | null>(null);
   const [workspaceNotice, setWorkspaceNotice] = useState<string | null>(null);
 
   const [wizardStepIndex, setWizardStepIndex] = useState(0);
   const [onboardingDraft, setOnboardingDraft] = useState<OnboardingDraft>(defaultOnboardingDraft);
+  const [onboardingAllowPlanOverride, setOnboardingAllowPlanOverride] = useState(false);
 
   const [domainDraftByTenant, setDomainDraftByTenant] = useState<Record<string, string>>({});
   const [planDraftByTenant, setPlanDraftByTenant] = useState<Record<string, string>>(() => buildPlanDraftMap(initialSnapshots));
   const [flagsDraftByTenant, setFlagsDraftByTenant] = useState<Record<string, string>>(() => buildFlagsDraftMap(initialSnapshots));
+  const [settingsAllowPlanOverrideByTenant, setSettingsAllowPlanOverrideByTenant] = useState<Record<string, boolean>>({});
+  const [domainOpsAutoPollEnabled, setDomainOpsAutoPollEnabled] = useState(false);
+  const [domainOpsPollIntervalSeconds, setDomainOpsPollIntervalSeconds] = useState(20);
+  const [domainOpsLastCheckedAt, setDomainOpsLastCheckedAt] = useState<string | null>(null);
+  const [domainVerificationRetryByDomain, setDomainVerificationRetryByDomain] = useState<Record<string, number>>({});
 
   const [auditEvents, setAuditEvents] = useState<ControlPlaneAdminAuditEvent[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
@@ -189,6 +239,14 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
     return snapshots.find((snapshot) => snapshot.tenant.id === selectedTenantId) ?? null;
   }, [selectedTenantId, snapshots]);
+
+  const selectedPrimaryDomain = useMemo(() => {
+    if (!selectedTenant) {
+      return null;
+    }
+
+    return selectedTenant.domains.find((domain) => domain.isPrimary) ?? null;
+  }, [selectedTenant]);
 
   const totalTenants = snapshots.length;
   const totalDomains = useMemo(() => snapshots.reduce((count, snapshot) => count + snapshot.domains.length, 0), [snapshots]);
@@ -240,6 +298,66 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     return uniqueList([...onboardingDraft.featureFlags, ...fromCsv(onboardingDraft.customFlagsCsv)]);
   }, [onboardingDraft.customFlagsCsv, onboardingDraft.featureFlags]);
 
+  const wizardGovernance = useMemo(() => {
+    return evaluatePlanGovernance(onboardingDraft.planCode, wizardFeatures);
+  }, [onboardingDraft.planCode, wizardFeatures]);
+
+  const selectedTenantDraftFeatureFlags = useMemo(() => {
+    if (!selectedTenant) {
+      return [];
+    }
+
+    const csv = flagsDraftByTenant[selectedTenant.tenant.id] ?? toCsv(selectedTenant.settings.featureFlags);
+    return fromCsv(csv);
+  }, [flagsDraftByTenant, selectedTenant]);
+
+  const selectedTenantPlanCode = useMemo(() => {
+    if (!selectedTenant) {
+      return 'starter';
+    }
+
+    return (planDraftByTenant[selectedTenant.tenant.id] ?? selectedTenant.settings.planCode).trim() || 'starter';
+  }, [planDraftByTenant, selectedTenant]);
+
+  const selectedSettingsGovernance = useMemo(() => {
+    if (!selectedTenant) {
+      return null;
+    }
+
+    return evaluatePlanGovernance(selectedTenantPlanCode, selectedTenantDraftFeatureFlags);
+  }, [selectedTenant, selectedTenantDraftFeatureFlags, selectedTenantPlanCode]);
+
+  const selectedSettingsAllowOverride = selectedTenant
+    ? Boolean(settingsAllowPlanOverrideByTenant[selectedTenant.tenant.id])
+    : false;
+
+  const sslReadiness = useMemo(() => {
+    if (!selectedPrimaryDomain) {
+      return {
+        dnsStatus: 'missing',
+        certificateStatus: 'blocked',
+        dnsMessage: 'No primary domain configured yet.',
+        certificateMessage: 'Certificate cannot be issued until a primary domain is set.',
+      };
+    }
+
+    if (!selectedPrimaryDomain.isVerified) {
+      return {
+        dnsStatus: 'pending',
+        certificateStatus: 'pending',
+        dnsMessage: `Waiting for DNS verification on ${selectedPrimaryDomain.hostname}.`,
+        certificateMessage: 'Certificate readiness is pending DNS verification.',
+      };
+    }
+
+    return {
+      dnsStatus: 'verified',
+      certificateStatus: 'ready',
+      dnsMessage: `${selectedPrimaryDomain.hostname} is verified.`,
+      certificateMessage: 'Certificate readiness checks passed for launch.',
+    };
+  }, [selectedPrimaryDomain]);
+
   const wizardCanContinue = useMemo(() => {
     if (wizardStepIndex === 0) {
       return onboardingDraft.name.trim().length > 1 && normalizeSlug(onboardingDraft.slug).length > 1;
@@ -251,11 +369,21 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     }
 
     if (wizardStepIndex === 2) {
-      return onboardingDraft.planCode.trim().length > 0;
+      const hasGuardrailIssues = wizardGovernance.missingRequired.length > 0 || wizardGovernance.disallowed.length > 0;
+      return onboardingDraft.planCode.trim().length > 0 && (onboardingAllowPlanOverride || !hasGuardrailIssues);
     }
 
     return true;
-  }, [onboardingDraft.name, onboardingDraft.planCode, onboardingDraft.primaryDomain, onboardingDraft.slug, wizardStepIndex]);
+  }, [
+    onboardingAllowPlanOverride,
+    onboardingDraft.name,
+    onboardingDraft.planCode,
+    onboardingDraft.primaryDomain,
+    onboardingDraft.slug,
+    wizardGovernance.disallowed.length,
+    wizardGovernance.missingRequired.length,
+    wizardStepIndex,
+  ]);
 
   const loadAuditEvents = useCallback(
     async (tenantScopeOverride?: string) => {
@@ -331,6 +459,49 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     [loadAuditEvents, selectedAuditTenantId, selectedTenantId]
   );
 
+  const runDomainOpsRefresh = useCallback(
+    async (tenantId: string, reason: 'manual' | 'poll' | 'retry') => {
+      try {
+        await refresh(tenantId);
+        const refreshedAt = new Date().toISOString();
+        setDomainOpsLastCheckedAt(refreshedAt);
+
+        if (reason === 'manual') {
+          setWorkspaceNotice(`Domain operations refreshed at ${formatTimestamp(refreshedAt)}.`);
+        }
+        if (reason === 'retry') {
+          setWorkspaceNotice('Verification retry check complete. Update status when DNS verification succeeds.');
+        }
+      } catch (error) {
+        if (reason !== 'poll') {
+          setWorkspaceIssue(
+            createMutationErrorGuidance({
+              scope: 'domain-update',
+              status: 0,
+              message: error instanceof Error ? error.message : 'Domain operations refresh failed.',
+            })
+          );
+        }
+      }
+    },
+    [refresh]
+  );
+
+  useEffect(() => {
+    if (!domainOpsAutoPollEnabled || !selectedTenantId) {
+      return;
+    }
+
+    const intervalSeconds = Math.min(Math.max(domainOpsPollIntervalSeconds, 10), 120);
+    const intervalId = window.setInterval(() => {
+      void runDomainOpsRefresh(selectedTenantId, 'poll');
+    }, intervalSeconds * 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [domainOpsAutoPollEnabled, domainOpsPollIntervalSeconds, runDomainOpsRefresh, selectedTenantId]);
+
   const applyPlanTemplateToWizard = useCallback((planCode: string) => {
     const template = planFeatureTemplates[planCode] ?? [];
     setOnboardingDraft((prev) => ({
@@ -338,6 +509,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       planCode,
       featureFlags: template,
     }));
+    setOnboardingAllowPlanOverride(false);
   }, []);
 
   const toggleWizardFeature = useCallback((featureId: string) => {
@@ -350,13 +522,56 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     });
   }, []);
 
+  const toggleSettingsFeature = useCallback(
+    (tenantId: string, baseFlags: string[], featureId: string) => {
+      const current = flagsDraftByTenant[tenantId] ? fromCsv(flagsDraftByTenant[tenantId] ?? '') : baseFlags;
+      const exists = current.includes(featureId);
+      const next = exists ? current.filter((entry) => entry !== featureId) : [...current, featureId];
+      setFlagsDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: toCsv(uniqueList(next)),
+      }));
+    },
+    [flagsDraftByTenant]
+  );
+
+  const applyPlanTemplateToTenantSettings = useCallback((tenantId: string, planCode: string) => {
+    const template = planFeatureTemplates[planCode] ?? [];
+    setFlagsDraftByTenant((prev) => ({
+      ...prev,
+      [tenantId]: toCsv(template),
+    }));
+    setSettingsAllowPlanOverrideByTenant((prev) => ({
+      ...prev,
+      [tenantId]: false,
+    }));
+  }, []);
+
+  const enforceGuardrailsForTenant = useCallback(
+    (tenantId: string, planCode: string, baseFlags: string[]) => {
+      const current = flagsDraftByTenant[tenantId] ? fromCsv(flagsDraftByTenant[tenantId] ?? '') : baseFlags;
+      const enforced = enforcePlanGovernance(planCode, current);
+      setFlagsDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: toCsv(enforced),
+      }));
+      setSettingsAllowPlanOverrideByTenant((prev) => ({
+        ...prev,
+        [tenantId]: false,
+      }));
+      setWorkspaceIssue(null);
+      setWorkspaceNotice(`Applied ${planCode} plan guardrails.`);
+    },
+    [flagsDraftByTenant]
+  );
+
   async function createTenantFromWizard() {
     if (!wizardCanContinue || wizardStepIndex < onboardingSteps.length - 1) {
       return;
     }
 
     setBusy(true);
-    setWorkspaceError(null);
+    setWorkspaceIssue(null);
     setWorkspaceNotice(null);
 
     try {
@@ -367,6 +582,12 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         planCode: onboardingDraft.planCode.trim() || 'starter',
         featureFlags: wizardFeatures,
       };
+      const governance = evaluatePlanGovernance(payload.planCode, payload.featureFlags);
+      if (!onboardingAllowPlanOverride && (governance.missingRequired.length > 0 || governance.disallowed.length > 0)) {
+        setWorkspaceIssue(buildPlanGovernanceIssue('onboarding', payload.planCode, governance, 2));
+        setWizardStepIndex(2);
+        return;
+      }
 
       const response = await fetch('/api/tenants', {
         method: 'POST',
@@ -375,17 +596,37 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       });
 
       if (!response.ok) {
-        throw new Error(await readResponseError(response, 'Tenant provisioning failed.'));
+        const message = await readResponseError(response, 'Tenant provisioning failed.');
+        const guidance = createMutationErrorGuidance({
+          scope: 'onboarding',
+          status: response.status,
+          message,
+        });
+        setWorkspaceIssue(guidance);
+        if (guidance.focusStepIndex !== undefined) {
+          setWizardStepIndex(guidance.focusStepIndex);
+        }
+        return;
       }
 
       const json = (await response.json()) as { tenant: ControlPlaneTenantSnapshot };
 
+      setWorkspaceIssue(null);
       setWorkspaceNotice(`${json.tenant.tenant.name} provisioned. Continue with domain verification below.`);
       setOnboardingDraft(defaultOnboardingDraft);
+      setOnboardingAllowPlanOverride(false);
       setWizardStepIndex(0);
       await refresh(json.tenant.tenant.id);
     } catch (error) {
-      setWorkspaceError(error instanceof Error ? error.message : 'Unknown tenant provisioning error.');
+      const guidance = createMutationErrorGuidance({
+        scope: 'onboarding',
+        status: 0,
+        message: error instanceof Error ? error.message : 'Unknown tenant provisioning error.',
+      });
+      setWorkspaceIssue(guidance);
+      if (guidance.focusStepIndex !== undefined) {
+        setWizardStepIndex(guidance.focusStepIndex);
+      }
     } finally {
       setBusy(false);
     }
@@ -398,7 +639,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     }
 
     setBusy(true);
-    setWorkspaceError(null);
+    setWorkspaceIssue(null);
     setWorkspaceNotice(null);
 
     try {
@@ -409,14 +650,45 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       });
 
       if (!response.ok) {
-        throw new Error(await readResponseError(response, 'Domain add failed.'));
+        const message = await readResponseError(response, 'Domain add failed.');
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'domain-add',
+            status: response.status,
+            message,
+          })
+        );
+        return;
       }
 
       setDomainDraftByTenant((prev) => ({ ...prev, [tenantId]: '' }));
+      setWorkspaceIssue(null);
       setWorkspaceNotice(`Domain ${hostname} attached.`);
       await refresh(tenantId);
     } catch (error) {
-      setWorkspaceError(error instanceof Error ? error.message : 'Unknown domain add error.');
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'domain-add',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Unknown domain add error.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function retryDomainVerification(tenantId: string, domainId: string) {
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+    setDomainVerificationRetryByDomain((prev) => ({
+      ...prev,
+      [domainId]: (prev[domainId] ?? 0) + 1,
+    }));
+
+    try {
+      await runDomainOpsRefresh(tenantId, 'retry');
     } finally {
       setBusy(false);
     }
@@ -431,7 +703,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     }
   ) {
     setBusy(true);
-    setWorkspaceError(null);
+    setWorkspaceIssue(null);
     setWorkspaceNotice(null);
 
     try {
@@ -442,9 +714,18 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       });
 
       if (!response.ok) {
-        throw new Error(await readResponseError(response, 'Domain status update failed.'));
+        const message = await readResponseError(response, 'Domain status update failed.');
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'domain-update',
+            status: response.status,
+            message,
+          })
+        );
+        return;
       }
 
+      setWorkspaceIssue(null);
       if (updates.isPrimary) {
         setWorkspaceNotice('Primary domain updated.');
       } else if (updates.isVerified) {
@@ -453,7 +734,13 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
       await refresh(tenantId);
     } catch (error) {
-      setWorkspaceError(error instanceof Error ? error.message : 'Unknown domain update error.');
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'domain-update',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Unknown domain update error.',
+        })
+      );
     } finally {
       setBusy(false);
     }
@@ -462,12 +749,19 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   async function saveSettings(tenantId: string) {
     const nextPlanCode = (planDraftByTenant[tenantId] ?? 'starter').trim() || 'starter';
     const nextFeatureFlags = fromCsv(flagsDraftByTenant[tenantId] ?? '');
+    const allowPlanOverride = Boolean(settingsAllowPlanOverrideByTenant[tenantId]);
+    const governance = evaluatePlanGovernance(nextPlanCode, nextFeatureFlags);
 
     setBusy(true);
-    setWorkspaceError(null);
+    setWorkspaceIssue(null);
     setWorkspaceNotice(null);
 
     try {
+      if (!allowPlanOverride && (governance.missingRequired.length > 0 || governance.disallowed.length > 0)) {
+        setWorkspaceIssue(buildPlanGovernanceIssue('settings', nextPlanCode, governance));
+        return;
+      }
+
       const response = await fetch(`/api/tenants/${tenantId}/settings`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -478,23 +772,43 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       });
 
       if (!response.ok) {
-        throw new Error(await readResponseError(response, 'Settings update failed.'));
+        const message = await readResponseError(response, 'Settings update failed.');
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'settings',
+            status: response.status,
+            message,
+          })
+        );
+        return;
       }
 
+      setWorkspaceIssue(null);
       setWorkspaceNotice('Tenant settings saved.');
       await refresh(tenantId);
     } catch (error) {
-      setWorkspaceError(error instanceof Error ? error.message : 'Unknown settings update error.');
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Unknown settings update error.',
+        })
+      );
     } finally {
       setBusy(false);
     }
   }
 
   function renderWizardBody() {
+    const onboardingNameHint = getFieldHint('onboarding', 'name');
+    const onboardingSlugHint = getFieldHint('onboarding', 'slug');
+    const onboardingPrimaryDomainHint = getFieldHint('onboarding', 'primaryDomain');
+    const onboardingFeatureFlagsHint = getFieldHint('onboarding', 'featureFlags');
+
     if (wizardStepIndex === 0) {
       return (
         <div className="admin-wizard-grid">
-          <label className="admin-field">
+          <label className={`admin-field ${onboardingNameHint ? 'has-error' : ''}`}>
             Tenant Name
             <input
               value={onboardingDraft.name}
@@ -511,8 +825,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               }}
               placeholder="North Shore Realty"
             />
+            {onboardingNameHint ? <p className="admin-field-error">{onboardingNameHint}</p> : null}
           </label>
-          <label className="admin-field">
+          <label className={`admin-field ${onboardingSlugHint ? 'has-error' : ''}`}>
             Tenant Slug
             <input
               value={onboardingDraft.slug}
@@ -525,6 +840,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               }}
               placeholder="north-shore-realty"
             />
+            {onboardingSlugHint ? <p className="admin-field-error">{onboardingSlugHint}</p> : null}
           </label>
           <p className="admin-step-note">
             Slug is used for internal identity and should be short, lowercase, and stable over time.
@@ -536,7 +852,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     if (wizardStepIndex === 1) {
       return (
         <div className="admin-wizard-grid">
-          <label className="admin-field">
+          <label className={`admin-field ${onboardingPrimaryDomainHint ? 'has-error' : ''}`}>
             Primary Domain
             <input
               value={onboardingDraft.primaryDomain}
@@ -549,6 +865,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               }}
               placeholder="northshore.localhost"
             />
+            {onboardingPrimaryDomainHint ? <p className="admin-field-error">{onboardingPrimaryDomainHint}</p> : null}
           </label>
           <div className="admin-domain-guide">
             <strong>Operator DNS Guidance</strong>
@@ -604,7 +921,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             })}
           </div>
 
-          <label className="admin-field">
+          <label className={`admin-field ${onboardingFeatureFlagsHint ? 'has-error' : ''}`}>
             Additional Feature Flags (csv)
             <input
               value={onboardingDraft.customFlagsCsv}
@@ -616,7 +933,46 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               }}
               placeholder="priority_support,white_glove_onboarding"
             />
+            {onboardingFeatureFlagsHint ? <p className="admin-field-error">{onboardingFeatureFlagsHint}</p> : null}
           </label>
+
+          <section className="admin-governance-panel">
+            <div className="admin-row admin-space-between">
+              <strong>Plan Guardrails</strong>
+              <span className="admin-chip">plan: {onboardingDraft.planCode}</span>
+            </div>
+            <p className="admin-muted">
+              Required: {wizardGovernance.requiredFeatures.map(formatFeatureLabel).join(', ') || 'none'}.
+            </p>
+            <p className="admin-muted">
+              Allowed: {wizardGovernance.allowedFeatures.map(formatFeatureLabel).join(', ') || 'no restrictions'}.
+            </p>
+            {wizardGovernance.missingRequired.length > 0 ? (
+              <p className="admin-warning">
+                Missing: {wizardGovernance.missingRequired.map(formatFeatureLabel).join(', ')}.
+              </p>
+            ) : null}
+            {wizardGovernance.disallowed.length > 0 ? (
+              <p className="admin-warning">
+                Outside plan: {wizardGovernance.disallowed.map(formatFeatureLabel).join(', ')}.
+              </p>
+            ) : null}
+            {wizardGovernance.recommendedMissing.length > 0 ? (
+              <p className="admin-muted">
+                Recommended additions: {wizardGovernance.recommendedMissing.map(formatFeatureLabel).join(', ')}.
+              </p>
+            ) : null}
+            <label className="admin-inline-field admin-inline-toggle">
+              <input
+                type="checkbox"
+                checked={onboardingAllowPlanOverride}
+                onChange={(event) => {
+                  setOnboardingAllowPlanOverride(event.target.checked);
+                }}
+              />
+              Allow temporary plan override for provisioning
+            </label>
+          </section>
         </div>
       );
     }
@@ -648,7 +1004,15 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     );
   }
 
-  const selectedPlanTemplate = planFeatureTemplates[planDraftByTenant[selectedTenant?.tenant.id ?? ''] ?? ''] ?? null;
+  const selectedPlanTemplate = planFeatureTemplates[selectedTenantPlanCode] ?? null;
+
+  const getFieldHint = (scope: MutationErrorScope, field: MutationErrorField): string | null => {
+    if (!workspaceIssue || workspaceIssue.scope !== scope) {
+      return null;
+    }
+
+    return workspaceIssue.fieldHints[field] ?? null;
+  };
 
   return (
     <div className="admin-shell">
@@ -684,7 +1048,19 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         </article>
       </section>
 
-      {workspaceError ? <p className="admin-error">{workspaceError}</p> : null}
+      {workspaceIssue ? (
+        <section className="admin-error-panel" aria-live="polite">
+          <p className="admin-error-title">{workspaceIssue.summary}</p>
+          <p className="admin-error-detail">{workspaceIssue.detail}</p>
+          {workspaceIssue.nextSteps.length > 0 ? (
+            <ul className="admin-next-steps">
+              {workspaceIssue.nextSteps.map((step, index) => (
+                <li key={`${step}-${index}`}>{step}</li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
       {workspaceNotice ? <p className="admin-notice">{workspaceNotice}</p> : null}
 
       <section className="admin-layout">
@@ -810,6 +1186,82 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           <p className="admin-muted">Select a tenant from the directory to manage domains and launch settings.</p>
         ) : (
           <>
+            <div className="admin-ops-automation">
+              <div className="admin-row">
+                <button
+                  type="button"
+                  className="admin-secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    void runDomainOpsRefresh(selectedTenant.tenant.id, 'manual');
+                  }}
+                >
+                  Poll Domain Status Now
+                </button>
+                <button
+                  type="button"
+                  className="admin-secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    setDomainOpsAutoPollEnabled((prev) => !prev);
+                  }}
+                >
+                  {domainOpsAutoPollEnabled ? 'Stop Auto Polling' : 'Start Auto Polling'}
+                </button>
+                <label className="admin-inline-field">
+                  Poll Interval (s)
+                  <input
+                    type="number"
+                    min={10}
+                    max={120}
+                    value={domainOpsPollIntervalSeconds}
+                    onChange={(event) => {
+                      const next = Number.parseInt(event.target.value, 10);
+                      if (!Number.isNaN(next)) {
+                        setDomainOpsPollIntervalSeconds(Math.min(Math.max(next, 10), 120));
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              <p className="admin-muted">
+                Last check: {domainOpsLastCheckedAt ? formatTimestamp(domainOpsLastCheckedAt) : 'not yet run this session'}.
+              </p>
+            </div>
+
+            <div className="admin-ssl-grid">
+              <article className="admin-ssl-card">
+                <strong>DNS Verification</strong>
+                <span
+                  className={`admin-chip ${
+                    sslReadiness.dnsStatus === 'verified'
+                      ? 'admin-chip-ok'
+                      : sslReadiness.dnsStatus === 'pending'
+                        ? 'admin-chip-warn'
+                        : 'admin-chip-status-failed'
+                  }`}
+                >
+                  {sslReadiness.dnsStatus}
+                </span>
+                <p className="admin-muted">{sslReadiness.dnsMessage}</p>
+              </article>
+              <article className="admin-ssl-card">
+                <strong>SSL / Certificate Readiness</strong>
+                <span
+                  className={`admin-chip ${
+                    sslReadiness.certificateStatus === 'ready'
+                      ? 'admin-chip-ok'
+                      : sslReadiness.certificateStatus === 'pending'
+                        ? 'admin-chip-warn'
+                        : 'admin-chip-status-failed'
+                  }`}
+                >
+                  {sslReadiness.certificateStatus}
+                </span>
+                <p className="admin-muted">{sslReadiness.certificateMessage}</p>
+              </article>
+            </div>
+
             <div className="admin-readiness">
               <div className="admin-readiness-head">
                 <strong>
@@ -863,13 +1315,26 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                     >
                       Set Primary
                     </button>
+                    <button
+                      type="button"
+                      className="admin-secondary"
+                      disabled={busy || domain.isVerified}
+                      onClick={() => {
+                        void retryDomainVerification(selectedTenant.tenant.id, domain.id);
+                      }}
+                    >
+                      Retry Verification
+                    </button>
                   </div>
+                  <p className="admin-muted">
+                    Retry checks: {domainVerificationRetryByDomain[domain.id] ?? 0}
+                  </p>
                 </article>
               ))}
             </div>
 
             <div className="admin-inline-row">
-              <label className="admin-inline-field">
+              <label className={`admin-inline-field ${getFieldHint('domain-add', 'hostname') ? 'has-error' : ''}`}>
                 Add Domain
                 <input
                   value={domainDraftByTenant[selectedTenant.tenant.id] ?? ''}
@@ -881,6 +1346,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                   }}
                   placeholder="northshore-secondary.localhost"
                 />
+                {getFieldHint('domain-add', 'hostname') ? (
+                  <p className="admin-field-error">{getFieldHint('domain-add', 'hostname')}</p>
+                ) : null}
               </label>
               <button
                 type="button"
@@ -894,10 +1362,10 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             </div>
 
             <div className="admin-settings-grid">
-              <label className="admin-field">
+              <label className={`admin-field ${getFieldHint('settings', 'planCode') ? 'has-error' : ''}`}>
                 Plan Code
                 <select
-                  value={planDraftByTenant[selectedTenant.tenant.id] ?? selectedTenant.settings.planCode}
+                  value={selectedTenantPlanCode}
                   onChange={(event) => {
                     const nextPlan = event.target.value;
                     setPlanDraftByTenant((prev) => ({
@@ -907,10 +1375,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
                     const template = planFeatureTemplates[nextPlan] ?? [];
                     if (template.length > 0) {
-                      setFlagsDraftByTenant((prev) => ({
-                        ...prev,
-                        [selectedTenant.tenant.id]: toCsv(template),
-                      }));
+                      applyPlanTemplateToTenantSettings(selectedTenant.tenant.id, nextPlan);
                     }
                   }}
                 >
@@ -920,12 +1385,76 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                     </option>
                   ))}
                 </select>
+                {getFieldHint('settings', 'planCode') ? (
+                  <p className="admin-field-error">{getFieldHint('settings', 'planCode')}</p>
+                ) : null}
               </label>
 
-              <label className="admin-field">
-                Feature Flags (csv)
+              <section className="admin-governance-panel">
+                <div className="admin-row admin-space-between">
+                  <strong>Plan Governance</strong>
+                  <span className="admin-chip">plan: {selectedTenantPlanCode}</span>
+                </div>
+                <p className="admin-muted">
+                  Required: {selectedSettingsGovernance?.requiredFeatures.map(formatFeatureLabel).join(', ') || 'none'}.
+                </p>
+                <p className="admin-muted">
+                  Allowed: {selectedSettingsGovernance?.allowedFeatures.map(formatFeatureLabel).join(', ') || 'no restrictions'}.
+                </p>
+                {selectedSettingsGovernance && selectedSettingsGovernance.missingRequired.length > 0 ? (
+                  <p className="admin-warning">
+                    Missing: {selectedSettingsGovernance.missingRequired.map(formatFeatureLabel).join(', ')}.
+                  </p>
+                ) : null}
+                {selectedSettingsGovernance && selectedSettingsGovernance.disallowed.length > 0 ? (
+                  <p className="admin-warning">
+                    Outside plan: {selectedSettingsGovernance.disallowed.map(formatFeatureLabel).join(', ')}.
+                  </p>
+                ) : null}
+                {selectedSettingsGovernance && selectedSettingsGovernance.recommendedMissing.length > 0 ? (
+                  <p className="admin-muted">
+                    Recommended additions: {selectedSettingsGovernance.recommendedMissing.map(formatFeatureLabel).join(', ')}.
+                  </p>
+                ) : null}
+                <label className="admin-inline-field admin-inline-toggle">
+                  <input
+                    type="checkbox"
+                    checked={selectedSettingsAllowOverride}
+                    onChange={(event) => {
+                      setSettingsAllowPlanOverrideByTenant((prev) => ({
+                        ...prev,
+                        [selectedTenant.tenant.id]: event.target.checked,
+                      }));
+                    }}
+                  />
+                  Allow temporary override for this tenant
+                </label>
+              </section>
+
+              <div className="admin-feature-grid">
+                {featureOptions.map((feature) => {
+                  const enabled = selectedTenantDraftFeatureFlags.includes(feature.id);
+                  const requiresFeature = Boolean(selectedSettingsGovernance?.requiredFeatures.includes(feature.id));
+                  return (
+                    <button
+                      key={feature.id}
+                      type="button"
+                      className={`admin-feature-chip ${enabled ? 'is-active' : ''}`}
+                      onClick={() => {
+                        toggleSettingsFeature(selectedTenant.tenant.id, selectedTenantDraftFeatureFlags, feature.id);
+                      }}
+                    >
+                      <span>{feature.label}</span>
+                      <small>{requiresFeature ? `${feature.detail} Required for this plan.` : feature.detail}</small>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <label className={`admin-field ${getFieldHint('settings', 'featureFlags') ? 'has-error' : ''}`}>
+                Feature Flags (csv, advanced)
                 <input
-                  value={flagsDraftByTenant[selectedTenant.tenant.id] ?? toCsv(selectedTenant.settings.featureFlags)}
+                  value={toCsv(selectedTenantDraftFeatureFlags)}
                   onChange={(event) => {
                     setFlagsDraftByTenant((prev) => ({
                       ...prev,
@@ -933,6 +1462,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                     }));
                   }}
                 />
+                {getFieldHint('settings', 'featureFlags') ? (
+                  <p className="admin-field-error">{getFieldHint('settings', 'featureFlags')}</p>
+                ) : null}
               </label>
 
               <div className="admin-row">
@@ -941,15 +1473,24 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                   className="admin-secondary"
                   disabled={busy || !selectedPlanTemplate || selectedPlanTemplate.length === 0}
                   onClick={() => {
-                    const planCode = planDraftByTenant[selectedTenant.tenant.id] ?? selectedTenant.settings.planCode;
-                    const template = planFeatureTemplates[planCode] ?? [];
-                    setFlagsDraftByTenant((prev) => ({
-                      ...prev,
-                      [selectedTenant.tenant.id]: toCsv(template),
-                    }));
+                    applyPlanTemplateToTenantSettings(selectedTenant.tenant.id, selectedTenantPlanCode);
                   }}
                 >
                   Apply Plan Template
+                </button>
+                <button
+                  type="button"
+                  className="admin-secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    enforceGuardrailsForTenant(
+                      selectedTenant.tenant.id,
+                      selectedTenantPlanCode,
+                      selectedTenantDraftFeatureFlags
+                    );
+                  }}
+                >
+                  Enforce Guardrails
                 </button>
                 <button
                   type="button"

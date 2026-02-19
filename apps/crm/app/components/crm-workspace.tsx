@@ -290,6 +290,137 @@ function KpiSparkline({ values }: { values: number[] }) {
   );
 }
 
+interface DailyBreakdown {
+  date: Date;
+  label: string;
+  total: number;
+  newLeads: number;
+  statusChanges: number;
+  listingViews: number;
+  searches: number;
+  favorites: number;
+}
+
+function SevenDayHeartbeat({ days }: { days: DailyBreakdown[] }) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const width = 420;
+  const height = 80;
+  const padX = 24;
+  const padY = 10;
+  const chartW = width - padX * 2;
+  const chartH = height - padY * 2;
+  const maxTotal = Math.max(1, ...days.map((d) => d.total));
+
+  const points = days.map((day, i) => {
+    const x = padX + (i / Math.max(1, days.length - 1)) * chartW;
+    const y = padY + chartH - (day.total / maxTotal) * chartH;
+    return { x, y, day };
+  });
+
+  const pathD = points
+    .map((pt, i) => {
+      if (i === 0) return `M ${pt.x} ${pt.y}`;
+      const prev = points[i - 1]!;
+      const cpx1 = prev.x + (pt.x - prev.x) * 0.4;
+      const cpx2 = pt.x - (pt.x - prev.x) * 0.4;
+      return `C ${cpx1} ${prev.y} ${cpx2} ${pt.y} ${pt.x} ${pt.y}`;
+    })
+    .join(' ');
+
+  const areaD = `${pathD} L ${points[points.length - 1]!.x} ${height - padY} L ${points[0]!.x} ${height - padY} Z`;
+
+  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  return (
+    <div className="crm-heartbeat-container">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        width={width}
+        height={height}
+        className="crm-heartbeat-svg"
+        aria-label="7-Day Heartbeat"
+      >
+        <defs>
+          <linearGradient id="hb-glow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--crm-accent)" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="var(--crm-accent)" stopOpacity="0.02" />
+          </linearGradient>
+          <filter id="hb-blur">
+            <feGaussianBlur stdDeviation="2" />
+          </filter>
+        </defs>
+
+        {/* area fill */}
+        <path d={areaD} fill="url(#hb-glow)" />
+
+        {/* glow line behind */}
+        <path d={pathD} fill="none" stroke="var(--crm-accent)" strokeWidth="4" strokeLinecap="round" filter="url(#hb-blur)" opacity={0.4} />
+
+        {/* main line */}
+        <path d={pathD} fill="none" stroke="var(--crm-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+        {/* data points */}
+        {points.map((pt, i) => (
+          <g key={i}>
+            <circle
+              cx={pt.x}
+              cy={pt.y}
+              r={hoveredIndex === i ? 6 : 4}
+              fill="var(--crm-surface)"
+              stroke="var(--crm-accent)"
+              strokeWidth={2}
+              className={i === points.length - 1 ? 'crm-heartbeat-pulse' : ''}
+              style={{ transition: 'r 0.15s ease' }}
+            />
+            {/* invisible hover target */}
+            <rect
+              x={pt.x - chartW / days.length / 2}
+              y={0}
+              width={chartW / days.length}
+              height={height}
+              fill="transparent"
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            />
+          </g>
+        ))}
+
+        {/* day labels */}
+        {points.map((pt, i) => (
+          <text
+            key={`label-${i}`}
+            x={pt.x}
+            y={height - 1}
+            textAnchor="middle"
+            className="crm-heartbeat-day-label"
+          >
+            {dayLabels[days[i]!.date.getDay() === 0 ? 6 : days[i]!.date.getDay() - 1] ?? ''}
+          </text>
+        ))}
+      </svg>
+
+      {/* tooltip */}
+      {hoveredIndex !== null && points[hoveredIndex] ? (
+        <div
+          className="crm-heartbeat-tooltip"
+          style={{
+            left: `${(points[hoveredIndex]!.x / width) * 100}%`,
+            top: `${points[hoveredIndex]!.y - 8}px`,
+          }}
+        >
+          <strong>{days[hoveredIndex]!.label}</strong>
+          <span>{days[hoveredIndex]!.total} total events</span>
+          {days[hoveredIndex]!.newLeads > 0 && <span>🟢 {days[hoveredIndex]!.newLeads} new leads</span>}
+          {days[hoveredIndex]!.statusChanges > 0 && <span>🔄 {days[hoveredIndex]!.statusChanges} status changes</span>}
+          {days[hoveredIndex]!.listingViews > 0 && <span>👁 {days[hoveredIndex]!.listingViews} listing views</span>}
+          {days[hoveredIndex]!.searches > 0 && <span>🔍 {days[hoveredIndex]!.searches} searches</span>}
+          {days[hoveredIndex]!.favorites > 0 && <span>⭐ {days[hoveredIndex]!.favorites} favorites</span>}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function EmptyState({ title, detail }: { title: string; detail: string }) {
   return (
     <div className="crm-empty-state">
@@ -784,6 +915,7 @@ export function CrmWorkspace({
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [logoLoadErrored, setLogoLoadErrored] = useState(false);
+  const [expandedBehaviorCard, setExpandedBehaviorCard] = useState<string | null>(null);
   const [brandPreferences, setBrandPreferences] = useState<BrandPreferences>(() =>
     createDefaultBrandPreferences(tenantContext.tenantSlug)
   );
@@ -990,6 +1122,37 @@ export function CrmWorkspace({
     }
 
     return buckets.map((entry) => entry.count);
+  }, [activities]);
+
+  const heartbeatDays: DailyBreakdown[] = useMemo(() => {
+    const dayFmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() - (6 - index));
+      const nextDay = new Date(date);
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      let total = 0;
+      let newLeads = 0;
+      let statusChanges = 0;
+      let listingViews = 0;
+      let searches = 0;
+      let favorites = 0;
+
+      for (const activity of activities) {
+        const ts = new Date(activity.occurredAt).getTime();
+        if (ts < date.getTime() || ts >= nextDay.getTime()) continue;
+        total += 1;
+        if (activity.activityType === 'lead_created') newLeads += 1;
+        else if (activity.activityType === 'lead_status_changed') statusChanges += 1;
+        else if (activity.activityType === 'website_listing_viewed') listingViews += 1;
+        else if (activity.activityType === 'website_search_performed') searches += 1;
+        else if (activity.activityType === 'website_listing_favorited') favorites += 1;
+      }
+
+      return { date, label: dayFmt.format(date), total, newLeads, statusChanges, listingViews, searches, favorites };
+    });
   }, [activities]);
 
   const kpiSeries = useMemo(() => {
@@ -1946,7 +2109,7 @@ export function CrmWorkspace({
       tenantId: tenantContext.tenantId,
       contactId: null,
       status: 'new',
-      leadType: (newLeadType || 'buyer') as CrmLeadType,
+      leadType: (newLeadType || 'buyer') as CrmLead['leadType'],
       source: newLeadSource || 'crm_manual',
       timeframe: newLeadTimeframe.trim() || null,
       notes: newLeadNotes.trim() || null,
@@ -2354,20 +2517,11 @@ export function CrmWorkspace({
               ))}
             </section>
 
-            <section className="crm-momentum-strip" aria-label="7 day activity rhythm">
-              <p className="crm-kicker">7-Day Rhythm</p>
-              <div className="crm-momentum-bars">
-                {activityVolumeLast7Days.map((count, index) => (
-                  <span
-                    key={`momentum-${index}-${count}`}
-                    className="crm-momentum-bar"
-                    style={{ height: `${Math.max(8, count * 6)}px` }}
-                    title={`Day ${index + 1}: ${count} activities`}
-                  />
-                ))}
-              </div>
+            <section className="crm-momentum-strip" aria-label="7 day activity heartbeat">
+              <p className="crm-kicker">7-Day Heartbeat</p>
+              <SevenDayHeartbeat days={heartbeatDays} />
               <span className="crm-muted">
-                Activity trend across the last week: {activityVolumeLast7Days.reduce((sum, count) => sum + count, 0)} total events.
+                Activity pulse across the last week: {heartbeatDays.reduce((sum, d) => sum + d.total, 0)} total events.
               </span>
             </section>
 
@@ -3731,27 +3885,131 @@ export function CrmWorkspace({
               <section className="crm-modal-section">
                 <h4>Website Behavior Intelligence</h4>
                 <div className="crm-behavior-grid">
-                  <article className="crm-behavior-card">
+                  <article
+                    className={`crm-behavior-card crm-behavior-card-clickable ${expandedBehaviorCard === 'searches' ? 'is-expanded' : ''}`}
+                    onClick={() => setExpandedBehaviorCard(expandedBehaviorCard === 'searches' ? null : 'searches')}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <p>Searches</p>
                     <strong>{activeLeadSearchSignals.length}</strong>
                     <span>{activeLeadSearchSignals[0] ? formatTimeAgo(activeLeadSearchSignals[0].occurredAt) : 'No recent searches'}</span>
                   </article>
-                  <article className="crm-behavior-card">
+                  <article
+                    className={`crm-behavior-card crm-behavior-card-clickable ${expandedBehaviorCard === 'views' ? 'is-expanded' : ''}`}
+                    onClick={() => setExpandedBehaviorCard(expandedBehaviorCard === 'views' ? null : 'views')}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <p>Listing Views</p>
                     <strong>{activeLeadListingSignals.filter((signal) => signal.action === 'viewed').length}</strong>
                     <span>Viewed listings</span>
                   </article>
-                  <article className="crm-behavior-card">
+                  <article
+                    className={`crm-behavior-card crm-behavior-card-clickable ${expandedBehaviorCard === 'favorites' ? 'is-expanded' : ''}`}
+                    onClick={() => setExpandedBehaviorCard(expandedBehaviorCard === 'favorites' ? null : 'favorites')}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <p>Favorites</p>
                     <strong>{activeLeadListingSignals.filter((signal) => signal.action === 'favorited').length}</strong>
                     <span>Saved listings</span>
                   </article>
-                  <article className="crm-behavior-card">
+                  <article
+                    className={`crm-behavior-card crm-behavior-card-clickable ${expandedBehaviorCard === 'unfavorites' ? 'is-expanded' : ''}`}
+                    onClick={() => setExpandedBehaviorCard(expandedBehaviorCard === 'unfavorites' ? null : 'unfavorites')}
+                    role="button"
+                    tabIndex={0}
+                  >
                     <p>Unfavorites</p>
                     <strong>{activeLeadListingSignals.filter((signal) => signal.action === 'unfavorited').length}</strong>
                     <span>Removed listings</span>
                   </article>
                 </div>
+
+                {/* Expanded detail panel */}
+                {expandedBehaviorCard === 'searches' && activeLeadSearchSignals.length > 0 ? (
+                  <div className="crm-behavior-expanded">
+                    <p className="crm-kicker">Search Activity</p>
+                    <ul className="crm-behavior-detail-list">
+                      {activeLeadSearchSignals.map((signal) => (
+                        <li key={signal.id}>
+                          <strong>{signal.query || 'General search'}</strong>
+                          <span>{signal.filterSummary || 'No filters'} • {signal.resultCount ?? 0} results</span>
+                          <span className="crm-muted">{formatDateTime(signal.occurredAt)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+
+                {expandedBehaviorCard === 'views' ? (
+                  <div className="crm-behavior-expanded">
+                    <p className="crm-kicker">Viewed Listings</p>
+                    <ul className="crm-behavior-detail-list">
+                      {activeLeadListingSignals
+                        .filter((s) => s.action === 'viewed')
+                        .map((signal) => (
+                          <li key={signal.id}>
+                            <strong>{signal.address || 'Unknown address'}</strong>
+                            <span>
+                              {signal.price ? `$${signal.price.toLocaleString()}` : 'No price'}
+                              {signal.beds ? ` • ${signal.beds} bed` : ''}
+                              {signal.baths ? ` / ${signal.baths} bath` : ''}
+                              {signal.sqft ? ` • ${signal.sqft.toLocaleString()} sqft` : ''}
+                            </span>
+                            <span className="crm-muted">{formatDateTime(signal.occurredAt)}</span>
+                          </li>
+                        ))}
+                      {activeLeadListingSignals.filter((s) => s.action === 'viewed').length === 0 ? (
+                        <li><span className="crm-muted">No viewed listings</span></li>
+                      ) : null}
+                    </ul>
+                  </div>
+                ) : null}
+
+                {expandedBehaviorCard === 'favorites' ? (
+                  <div className="crm-behavior-expanded">
+                    <p className="crm-kicker">Favorited Listings</p>
+                    <ul className="crm-behavior-detail-list">
+                      {activeLeadListingSignals
+                        .filter((s) => s.action === 'favorited')
+                        .map((signal) => (
+                          <li key={signal.id}>
+                            <strong>{signal.address || 'Unknown address'}</strong>
+                            <span>
+                              {signal.price ? `$${signal.price.toLocaleString()}` : 'No price'}
+                              {signal.beds ? ` • ${signal.beds} bed` : ''}
+                              {signal.baths ? ` / ${signal.baths} bath` : ''}
+                            </span>
+                            <span className="crm-muted">{formatDateTime(signal.occurredAt)}</span>
+                          </li>
+                        ))}
+                      {activeLeadListingSignals.filter((s) => s.action === 'favorited').length === 0 ? (
+                        <li><span className="crm-muted">No favorited listings</span></li>
+                      ) : null}
+                    </ul>
+                  </div>
+                ) : null}
+
+                {expandedBehaviorCard === 'unfavorites' ? (
+                  <div className="crm-behavior-expanded">
+                    <p className="crm-kicker">Removed Favorites</p>
+                    <ul className="crm-behavior-detail-list">
+                      {activeLeadListingSignals
+                        .filter((s) => s.action === 'unfavorited')
+                        .map((signal) => (
+                          <li key={signal.id}>
+                            <strong>{signal.address || 'Unknown address'}</strong>
+                            <span className="crm-muted">{formatDateTime(signal.occurredAt)}</span>
+                          </li>
+                        ))}
+                      {activeLeadListingSignals.filter((s) => s.action === 'unfavorited').length === 0 ? (
+                        <li><span className="crm-muted">No removed favorites</span></li>
+                      ) : null}
+                    </ul>
+                  </div>
+                ) : null}
 
                 <div className="crm-lead-insights">
                   <LeadEngagementGauge score={leadScore.score} label={leadScore.label} />

@@ -10,6 +10,7 @@ export type LeadsTableSortColumn =
   | 'name'
   | 'leadType'
   | 'status'
+  | 'score'
   | 'priceRange'
   | 'location'
   | 'lastContact'

@@ -298,3 +298,19 @@
 ### D-073: Prioritize admin usability roadmap slices before additional validation/hardening work
 **Decision**: Sequence the next admin roadmap work as: (1) mutation error transparency, (2) domain operations automation, then (3) plan/feature governance UX, while deferring remaining CRM manual click-through to after these admin slices.
 **Reason**: Highest-impact operator usability gains now come from reducing onboarding/domain workflow friction in the admin portal; this ordering improves day-to-day launch velocity before deeper hardening phases.
+
+### D-074: Normalize admin mutation failures into scoped operator guidance with inline field hints
+**Decision**: Add shared UI-side mutation error parsing in `apps/admin/app/lib/mutation-error-guidance.ts` and wire `apps/admin/app/components/control-plane-workspace.tsx` to use scoped guidance objects (summary/detail/next-steps/field-hints/focus-step) for onboarding, domain attach/update, and settings mutations.
+**Reason**: Raw backend error strings were not actionable during operator workflows. Structured guidance reduces onboarding/domain stalls by mapping RBAC, duplicate slug/domain, and validation failures directly to the fields and next actions operators need.
+
+### D-075: Add operator-facing domain automation controls with polling/retry and SSL readiness indicators
+**Decision**: Extend `apps/admin/app/components/control-plane-workspace.tsx` with Domain Ops automation controls (`poll now`, auto-poll interval, per-domain retry verification checks) plus readiness cards that expose DNS verification and SSL/certificate status based on selected primary-domain state.
+**Reason**: Manual one-off domain status actions were insufficient for launch operations. Polling/retry controls and explicit readiness indicators reduce operator uncertainty and make domain go-live state more actionable during onboarding.
+
+### D-076: Enforce plan governance guardrails in admin onboarding/settings with override-aware workflow
+**Decision**: Introduce shared helper `apps/admin/app/lib/plan-governance.ts` to define plan templates + required/allowed feature sets, then apply it in `apps/admin/app/components/control-plane-workspace.tsx` for onboarding/settings validation, governance summaries, `Enforce Guardrails`, and explicit temporary override toggles.
+**Reason**: Free-form feature-flag editing created inconsistent tenant entitlements. Centralized guardrails keep plan assignments consistent at scale while still permitting explicit, operator-visible exceptions when needed.
+
+### D-077: Keep admin manual click-through as a required next-step when sandbox cannot host local UI runtime
+**Decision**: Treat manual admin onboarding/domain browser validation as pending when this sandbox cannot bind local dev ports (`listen EPERM 0.0.0.0:3002`), and carry it forward as the first task in `.brain/PICKUP.md` for a non-sandboxed environment.
+**Reason**: UI automation substitutes in this environment are insufficient for full interaction/layout validation across desktop/smaller-laptop workflows; deferring this specific check preserves validation quality without inventing false confidence.
