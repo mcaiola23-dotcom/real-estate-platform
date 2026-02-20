@@ -21,6 +21,7 @@ export interface AdminMutationAuditEvent extends AdminMutationContext {
   actor: AdminMutationActor;
   status: AdminMutationStatus;
   error?: string;
+  metadata?: Record<string, unknown>;
 }
 
 function normalizeRole(value: unknown): string {
@@ -51,7 +52,14 @@ export async function getMutationActorFromRequest(request: Request): Promise<Adm
   }
 
   try {
-    const authResult = auth() as unknown as { userId?: string | null; sessionClaims?: any };
+    const authResult = auth() as unknown as {
+      userId?: string | null;
+      sessionClaims?: {
+        metadata?: { role?: unknown };
+        publicMetadata?: { role?: unknown };
+        privateMetadata?: { role?: unknown };
+      };
+    };
     const sessionClaims = authResult.sessionClaims ?? {};
     const claimRole =
       sessionClaims?.metadata?.role ?? sessionClaims?.publicMetadata?.role ?? sessionClaims?.privateMetadata?.role;
@@ -91,6 +99,7 @@ export async function writeAdminAuditLog(event: AdminMutationAuditEvent): Promis
     tenantId: event.tenantId,
     domainId: event.domainId,
     error: event.error,
+    metadata: event.metadata,
   } as const;
 
   const persisted = await createControlPlaneAdminAuditEvent(payload);
@@ -119,6 +128,21 @@ export async function safeWriteAdminAuditLog(
   }
 }
 
+export function buildAuditRequestMetadata(
+  request: Request,
+  details: Record<string, unknown> = {}
+): Record<string, unknown> {
+  const requestUrl = new URL(request.url);
+  const requestId = request.headers.get('x-request-id') ?? request.headers.get('x-vercel-id');
+
+  return {
+    requestId: requestId?.trim() || null,
+    requestMethod: request.method,
+    requestPath: requestUrl.pathname,
+    ...details,
+  };
+}
+
 export function canPerformMutation(role: string): boolean {
   return role === 'admin';
 }
@@ -139,6 +163,7 @@ export async function enforceAdminMutationAccess(
         actor,
         status: 'denied',
         error: `Mutation requires admin role. Received role: ${actor.role}.`,
+        metadata: buildAuditRequestMetadata(request),
       },
       dependencies.writeAdminAuditLog
     );
@@ -153,6 +178,7 @@ export async function enforceAdminMutationAccess(
       ...context,
       actor,
       status: 'allowed',
+      metadata: buildAuditRequestMetadata(request),
     },
     dependencies.writeAdminAuditLog
   );

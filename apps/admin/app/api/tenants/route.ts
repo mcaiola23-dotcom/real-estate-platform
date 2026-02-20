@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { listTenantSnapshotsForAdmin, provisionTenant } from '@real-estate/db/control-plane';
 import {
+  buildAuditRequestMetadata,
   enforceAdminMutationAccess,
   getMutationActorFromRequest,
   safeWriteAdminAuditLog,
@@ -39,8 +40,18 @@ export function createTenantsPostHandler(dependencies: TenantsRouteDependencies 
       return access.response;
     }
 
+    let body:
+      | {
+          name?: string;
+          slug?: string;
+          primaryDomain?: string;
+          planCode?: string;
+          featureFlags?: string[];
+        }
+      | null = null;
+
     try {
-      const body = (await request.json()) as {
+      body = (await request.json()) as {
         name?: string;
         slug?: string;
         primaryDomain?: string;
@@ -66,6 +77,15 @@ export function createTenantsPostHandler(dependencies: TenantsRouteDependencies 
           actor: access.actor,
           status: 'succeeded',
           tenantId: snapshot.tenant.id,
+          metadata: buildAuditRequestMetadata(request, {
+            changes: {
+              name: { after: body.name },
+              slug: { after: body.slug },
+              primaryDomain: { after: body.primaryDomain },
+              planCode: { after: body.planCode ?? null },
+              featureFlags: { after: Array.isArray(body.featureFlags) ? body.featureFlags : [] },
+            },
+          }),
         },
         accessDependencies.writeAdminAuditLog
       );
@@ -78,6 +98,13 @@ export function createTenantsPostHandler(dependencies: TenantsRouteDependencies 
           actor: access.actor,
           status: 'failed',
           error: error instanceof Error ? error.message : 'Tenant provisioning failed.',
+          metadata: buildAuditRequestMetadata(request, {
+            changes: {
+              name: { after: body?.name ?? null },
+              slug: { after: body?.slug ?? null },
+              primaryDomain: { after: body?.primaryDomain ?? null },
+            },
+          }),
         },
         accessDependencies.writeAdminAuditLog
       );

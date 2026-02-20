@@ -299,14 +299,15 @@ interface DailyBreakdown {
   listingViews: number;
   searches: number;
   favorites: number;
+  notes: number;
 }
 
-function SevenDayHeartbeat({ days }: { days: DailyBreakdown[] }) {
+function SevenDayPulse({ days }: { days: DailyBreakdown[] }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const width = 420;
-  const height = 80;
-  const padX = 24;
-  const padY = 10;
+  const width = 800;
+  const height = 100;
+  const padX = 32;
+  const padY = 14;
   const chartW = width - padX * 2;
   const chartH = height - padY * 2;
   const maxTotal = Math.max(1, ...days.map((d) => d.total));
@@ -330,91 +331,87 @@ function SevenDayHeartbeat({ days }: { days: DailyBreakdown[] }) {
   const areaD = `${pathD} L ${points[points.length - 1]!.x} ${height - padY} L ${points[0]!.x} ${height - padY} Z`;
 
   const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const getDayLabel = (d: Date) => dayLabels[d.getDay() === 0 ? 6 : d.getDay() - 1] ?? '';
 
   return (
-    <div className="crm-heartbeat-container">
+    <div className="crm-pulse-container">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        width={width}
-        height={height}
-        className="crm-heartbeat-svg"
-        aria-label="7-Day Heartbeat"
+        className="crm-pulse-svg"
+        aria-label="7-day Pulse"
+        preserveAspectRatio="none"
       >
         <defs>
-          <linearGradient id="hb-glow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--crm-accent)" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="var(--crm-accent)" stopOpacity="0.02" />
+          <linearGradient id="pulse-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--crm-accent)" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="var(--crm-accent)" stopOpacity="0.01" />
           </linearGradient>
-          <filter id="hb-blur">
-            <feGaussianBlur stdDeviation="2" />
+          <filter id="pulse-glow">
+            <feGaussianBlur stdDeviation="3" />
           </filter>
         </defs>
 
-        {/* area fill */}
-        <path d={areaD} fill="url(#hb-glow)" />
+        <path d={areaD} fill="url(#pulse-fill)" />
+        <path d={pathD} fill="none" stroke="var(--crm-accent)" strokeWidth="5" strokeLinecap="round" filter="url(#pulse-glow)" opacity={0.35} />
+        <path d={pathD} fill="none" stroke="var(--crm-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
-        {/* glow line behind */}
-        <path d={pathD} fill="none" stroke="var(--crm-accent)" strokeWidth="4" strokeLinecap="round" filter="url(#hb-blur)" opacity={0.4} />
-
-        {/* main line */}
-        <path d={pathD} fill="none" stroke="var(--crm-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        {/* hover columns */}
+        {points.map((pt, i) => (
+          <rect
+            key={`hover-${i}`}
+            x={pt.x - chartW / days.length / 2}
+            y={0}
+            width={chartW / days.length}
+            height={height}
+            fill={hoveredIndex === i ? 'rgba(0,0,0,0.04)' : 'transparent'}
+            onMouseEnter={() => setHoveredIndex(i)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            style={{ cursor: 'crosshair' }}
+          />
+        ))}
 
         {/* data points */}
         {points.map((pt, i) => (
-          <g key={i}>
-            <circle
-              cx={pt.x}
-              cy={pt.y}
-              r={hoveredIndex === i ? 6 : 4}
-              fill="var(--crm-surface)"
-              stroke="var(--crm-accent)"
-              strokeWidth={2}
-              className={i === points.length - 1 ? 'crm-heartbeat-pulse' : ''}
-              style={{ transition: 'r 0.15s ease' }}
-            />
-            {/* invisible hover target */}
-            <rect
-              x={pt.x - chartW / days.length / 2}
-              y={0}
-              width={chartW / days.length}
-              height={height}
-              fill="transparent"
-              onMouseEnter={() => setHoveredIndex(i)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            />
-          </g>
+          <circle
+            key={`dot-${i}`}
+            cx={pt.x}
+            cy={pt.y}
+            r={hoveredIndex === i ? 6 : 3.5}
+            fill="var(--crm-surface)"
+            stroke="var(--crm-accent)"
+            strokeWidth={hoveredIndex === i ? 2.5 : 2}
+            className={i === points.length - 1 ? 'crm-pulse-dot-live' : ''}
+            style={{ transition: 'all 0.15s ease', pointerEvents: 'none' }}
+          />
         ))}
 
         {/* day labels */}
         {points.map((pt, i) => (
-          <text
-            key={`label-${i}`}
-            x={pt.x}
-            y={height - 1}
-            textAnchor="middle"
-            className="crm-heartbeat-day-label"
-          >
-            {dayLabels[days[i]!.date.getDay() === 0 ? 6 : days[i]!.date.getDay() - 1] ?? ''}
+          <text key={`lbl-${i}`} x={pt.x} y={height - 2} textAnchor="middle" className="crm-pulse-day-label">
+            {getDayLabel(days[i]!.date)}
           </text>
         ))}
       </svg>
 
-      {/* tooltip */}
       {hoveredIndex !== null && points[hoveredIndex] ? (
         <div
-          className="crm-heartbeat-tooltip"
+          className="crm-pulse-tooltip"
           style={{
             left: `${(points[hoveredIndex]!.x / width) * 100}%`,
-            top: `${points[hoveredIndex]!.y - 8}px`,
           }}
         >
-          <strong>{days[hoveredIndex]!.label}</strong>
-          <span>{days[hoveredIndex]!.total} total events</span>
-          {days[hoveredIndex]!.newLeads > 0 && <span>🟢 {days[hoveredIndex]!.newLeads} new leads</span>}
-          {days[hoveredIndex]!.statusChanges > 0 && <span>🔄 {days[hoveredIndex]!.statusChanges} status changes</span>}
-          {days[hoveredIndex]!.listingViews > 0 && <span>👁 {days[hoveredIndex]!.listingViews} listing views</span>}
-          {days[hoveredIndex]!.searches > 0 && <span>🔍 {days[hoveredIndex]!.searches} searches</span>}
-          {days[hoveredIndex]!.favorites > 0 && <span>⭐ {days[hoveredIndex]!.favorites} favorites</span>}
+          <div className="crm-pulse-tooltip-header">
+            <span>{days[hoveredIndex]!.label}</span>
+            <strong>{days[hoveredIndex]!.total} events</strong>
+          </div>
+          <div className="crm-pulse-tooltip-grid">
+            <span className="crm-pulse-tooltip-row"><span className="crm-pulse-icon crm-pulse-icon-leads" />{days[hoveredIndex]!.newLeads} New Leads</span>
+            <span className="crm-pulse-tooltip-row"><span className="crm-pulse-icon crm-pulse-icon-status" />{days[hoveredIndex]!.statusChanges} Status Changes</span>
+            <span className="crm-pulse-tooltip-row"><span className="crm-pulse-icon crm-pulse-icon-views" />{days[hoveredIndex]!.listingViews} Listings Viewed</span>
+            <span className="crm-pulse-tooltip-row"><span className="crm-pulse-icon crm-pulse-icon-search" />{days[hoveredIndex]!.searches} Searches</span>
+            <span className="crm-pulse-tooltip-row"><span className="crm-pulse-icon crm-pulse-icon-fav" />{days[hoveredIndex]!.favorites} Favorites</span>
+            <span className="crm-pulse-tooltip-row"><span className="crm-pulse-icon crm-pulse-icon-notes" />{days[hoveredIndex]!.notes} Notes</span>
+          </div>
         </div>
       ) : null}
     </div>
@@ -652,45 +649,90 @@ function LeadEngagementGauge({ score, label }: { score: number; label: string })
 }
 
 function LeadActivityChart({ activities }: { activities: CrmActivity[] }) {
+  const [hoveredBar, setHoveredBar] = useState<number | null>(null);
   const now = Date.now();
   const dayMs = 24 * 60 * 60 * 1000;
   const days = 30;
-  const buckets = new Array<number>(days).fill(0);
 
-  for (const activity of activities) {
-    const ago = now - new Date(activity.occurredAt).getTime();
-    const dayIndex = Math.floor(ago / dayMs);
-    if (dayIndex >= 0 && dayIndex < days) {
-      buckets[days - 1 - dayIndex]!++;
+  const buckets = useMemo(() => {
+    const b = Array.from({ length: days }, (_, i) => {
+      const dayStart = new Date();
+      dayStart.setHours(0, 0, 0, 0);
+      dayStart.setDate(dayStart.getDate() - (days - 1 - i));
+      return {
+        date: dayStart,
+        total: 0,
+        notes: 0,
+        statusChanges: 0,
+        listingViews: 0,
+        searches: 0,
+        favorites: 0,
+      };
+    });
+
+    for (const activity of activities) {
+      const ago = now - new Date(activity.occurredAt).getTime();
+      const dayIndex = Math.floor(ago / dayMs);
+      if (dayIndex >= 0 && dayIndex < days) {
+        const bucket = b[days - 1 - dayIndex]!;
+        bucket.total++;
+        if (activity.activityType === 'note') bucket.notes++;
+        else if (activity.activityType === 'lead_status_changed') bucket.statusChanges++;
+        else if (activity.activityType === 'website_listing_viewed') bucket.listingViews++;
+        else if (activity.activityType === 'website_search_performed') bucket.searches++;
+        else if (activity.activityType === 'website_listing_favorited') bucket.favorites++;
+      }
     }
-  }
+    return b;
+  }, [activities, now]);
 
-  const maxVal = Math.max(1, ...buckets);
+  const maxVal = Math.max(1, ...buckets.map((b) => b.total));
   const barWidth = 8;
   const gap = 2;
   const chartWidth = days * (barWidth + gap);
   const chartHeight = 60;
 
+  const dateFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+
   return (
     <div className="crm-activity-chart">
       <span className="crm-chart-label">Activity (30 days)</span>
-      <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio="none" aria-label="Lead activity chart">
-        {buckets.map((count, i) => {
-          const barH = count > 0 ? Math.max(6, (count / maxVal) * (chartHeight - 4)) : 3;
-          return (
-            <rect
-              key={i}
-              x={i * (barWidth + gap)}
-              y={chartHeight - barH}
-              width={barWidth}
-              height={barH}
-              rx={2}
-              fill={count > 0 ? 'var(--crm-accent)' : 'var(--crm-border)'}
-              opacity={count > 0 ? 0.9 : 0.25}
-            />
-          );
-        })}
-      </svg>
+      <div className="crm-activity-chart-wrap">
+        <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio="none" aria-label="Lead activity chart">
+          {buckets.map((bucket, i) => {
+            const barH = bucket.total > 0 ? Math.max(6, (bucket.total / maxVal) * (chartHeight - 4)) : 3;
+            return (
+              <rect
+                key={i}
+                x={i * (barWidth + gap)}
+                y={chartHeight - barH}
+                width={barWidth}
+                height={barH}
+                rx={2}
+                fill={hoveredBar === i ? 'var(--crm-accent)' : bucket.total > 0 ? 'var(--crm-accent)' : 'var(--crm-border)'}
+                opacity={hoveredBar === i ? 1 : bucket.total > 0 ? 0.7 : 0.25}
+                onMouseEnter={() => setHoveredBar(i)}
+                onMouseLeave={() => setHoveredBar(null)}
+                style={{ cursor: bucket.total > 0 ? 'crosshair' : 'default', transition: 'opacity 0.1s ease' }}
+              />
+            );
+          })}
+        </svg>
+        {hoveredBar !== null && buckets[hoveredBar] ? (
+          <div
+            className="crm-activity-chart-tooltip"
+            style={{ left: `${((hoveredBar * (barWidth + gap) + barWidth / 2) / chartWidth) * 100}%` }}
+          >
+            <strong>{dateFmt.format(buckets[hoveredBar]!.date)}</strong>
+            <span>{buckets[hoveredBar]!.total} total</span>
+            {buckets[hoveredBar]!.notes > 0 && <span>📝 {buckets[hoveredBar]!.notes} notes</span>}
+            {buckets[hoveredBar]!.statusChanges > 0 && <span>🔄 {buckets[hoveredBar]!.statusChanges} status</span>}
+            {buckets[hoveredBar]!.listingViews > 0 && <span>🏠 {buckets[hoveredBar]!.listingViews} views</span>}
+            {buckets[hoveredBar]!.searches > 0 && <span>🔎 {buckets[hoveredBar]!.searches} search</span>}
+            {buckets[hoveredBar]!.favorites > 0 && <span>⭐ {buckets[hoveredBar]!.favorites} favs</span>}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -1139,6 +1181,7 @@ export function CrmWorkspace({
       let listingViews = 0;
       let searches = 0;
       let favorites = 0;
+      let notes = 0;
 
       for (const activity of activities) {
         const ts = new Date(activity.occurredAt).getTime();
@@ -1149,9 +1192,10 @@ export function CrmWorkspace({
         else if (activity.activityType === 'website_listing_viewed') listingViews += 1;
         else if (activity.activityType === 'website_search_performed') searches += 1;
         else if (activity.activityType === 'website_listing_favorited') favorites += 1;
+        else if (activity.activityType === 'note') notes += 1;
       }
 
-      return { date, label: dayFmt.format(date), total, newLeads, statusChanges, listingViews, searches, favorites };
+      return { date, label: dayFmt.format(date), total, newLeads, statusChanges, listingViews, searches, favorites, notes };
     });
   }, [activities]);
 
@@ -2517,11 +2561,11 @@ export function CrmWorkspace({
               ))}
             </section>
 
-            <section className="crm-momentum-strip" aria-label="7 day activity heartbeat">
-              <p className="crm-kicker">7-Day Heartbeat</p>
-              <SevenDayHeartbeat days={heartbeatDays} />
+            <section className="crm-momentum-strip" aria-label="7 day activity pulse">
+              <p className="crm-kicker">7-day Pulse</p>
+              <SevenDayPulse days={heartbeatDays} />
               <span className="crm-muted">
-                Activity pulse across the last week: {heartbeatDays.reduce((sum, d) => sum + d.total, 0)} total events.
+                Activity across the last week: {heartbeatDays.reduce((sum, d) => sum + d.total, 0)} total events.
               </span>
             </section>
 

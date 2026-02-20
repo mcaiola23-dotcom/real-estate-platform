@@ -19,7 +19,9 @@ function toTenantRecord(tenant: TenantIdentity, domain: DomainIdentity): TenantR
 }
 
 function getPrimaryDomainForSeedTenant(tenantId: string): TenantDomain | undefined {
-  return SEED_TENANT_DOMAINS.find((domain) => domain.tenantId === tenantId && domain.isPrimary && domain.isVerified);
+  return SEED_TENANT_DOMAINS.find(
+    (domain) => domain.tenantId === tenantId && domain.status === 'active' && domain.isPrimary && domain.isVerified
+  );
 }
 
 function resolveSeedDefaultTenantRecord(): TenantRecord {
@@ -38,7 +40,7 @@ function resolveSeedDefaultTenantRecord(): TenantRecord {
 
 function resolveSeedTenantRecordByHostname(hostname: string): TenantRecord | null {
   const domain = SEED_TENANT_DOMAINS.find(
-    (entry) => normalizeHostname(entry.hostname) === hostname && entry.isVerified
+    (entry) => normalizeHostname(entry.hostname) === hostname && entry.status === 'active' && entry.isVerified
   );
   if (!domain) {
     return null;
@@ -57,9 +59,10 @@ export async function getDefaultTenantRecord(): Promise<TenantRecord> {
   if (!prisma) {
     return resolveSeedDefaultTenantRecord();
   }
+  const prismaAny = prisma as any;
 
   try {
-    const byDefaultId = await prisma.tenant.findUnique({
+    const byDefaultId = await prismaAny.tenant.findUnique({
       where: { id: DEFAULT_TENANT_ID },
       include: {
         domains: {
@@ -77,7 +80,7 @@ export async function getDefaultTenantRecord(): Promise<TenantRecord> {
       return toTenantRecord(byDefaultId, byDefaultId.domains[0]);
     }
 
-    const firstActiveTenant = await prisma.tenant.findFirst({
+    const firstActiveTenant = await prismaAny.tenant.findFirst({
       where: { status: 'active' },
       include: {
         domains: {
@@ -106,10 +109,12 @@ export async function getTenantRecordByHostname(hostname: string): Promise<Tenan
   const normalized = normalizeHostname(hostname);
   const prisma = await getPrismaClient();
   if (prisma) {
+    const prismaAny = prisma as any;
     try {
-      const domain = await prisma.tenantDomain.findFirst({
+      const domain = await prismaAny.tenantDomain.findFirst({
         where: {
           hostnameNormalized: normalized,
+          status: 'active',
           isVerified: true,
           tenant: {
             status: 'active',

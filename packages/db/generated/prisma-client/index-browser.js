@@ -132,6 +132,7 @@ exports.Prisma.TenantDomainScalarFieldEnum = {
   tenantId: 'tenantId',
   hostname: 'hostname',
   hostnameNormalized: 'hostnameNormalized',
+  status: 'status',
   isPrimary: 'isPrimary',
   isVerified: 'isVerified',
   verifiedAt: 'verifiedAt',
@@ -149,8 +150,24 @@ exports.Prisma.WebsiteConfigScalarFieldEnum = {
 exports.Prisma.TenantControlSettingsScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  status: 'status',
   planCode: 'planCode',
   featureFlagsJson: 'featureFlagsJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TenantControlActorScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  actorId: 'actorId',
+  displayName: 'displayName',
+  email: 'email',
+  role: 'role',
+  permissionsJson: 'permissionsJson',
+  supportSessionActive: 'supportSessionActive',
+  supportSessionStartedAt: 'supportSessionStartedAt',
+  supportSessionExpiresAt: 'supportSessionExpiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -268,6 +285,7 @@ exports.Prisma.ModelName = {
   TenantDomain: 'TenantDomain',
   WebsiteConfig: 'WebsiteConfig',
   TenantControlSettings: 'TenantControlSettings',
+  TenantControlActor: 'TenantControlActor',
   ModuleConfig: 'ModuleConfig',
   Contact: 'Contact',
   Lead: 'Lead',

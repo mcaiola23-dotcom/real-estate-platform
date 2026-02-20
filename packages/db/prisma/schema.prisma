@@ -18,6 +18,7 @@ model Tenant {
   domains            TenantDomain[]
   websiteConfig      WebsiteConfig?
   controlSettings    TenantControlSettings?
+  controlActors      TenantControlActor[]
   contacts           Contact[]
   leads              Lead[]
   activities         Activity[]
@@ -30,6 +31,7 @@ model TenantDomain {
   tenantId           String
   hostname           String
   hostnameNormalized String   @unique
+  status             String   @default("active")
   isPrimary          Boolean  @default(false)
   isVerified         Boolean  @default(false)
   verifiedAt         DateTime?
@@ -52,11 +54,31 @@ model WebsiteConfig {
 model TenantControlSettings {
   id               String   @id
   tenantId         String   @unique
+  status           String   @default("active")
   planCode         String   @default("starter")
   featureFlagsJson String   @default("[]")
   createdAt        DateTime
   updatedAt        DateTime
   tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantControlActor {
+  id                     String   @id
+  tenantId               String
+  actorId                String
+  displayName            String?
+  email                  String?
+  role                   String
+  permissionsJson        String   @default("[]")
+  supportSessionActive   Boolean  @default(false)
+  supportSessionStartedAt DateTime?
+  supportSessionExpiresAt DateTime?
+  createdAt              DateTime
+  updatedAt              DateTime
+  tenant                 Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, actorId])
+  @@index([tenantId, role])
 }
 
 model ModuleConfig {

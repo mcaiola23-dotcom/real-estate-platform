@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { updateTenantDomainStatus } from '@real-estate/db/control-plane';
 import {
+  buildAuditRequestMetadata,
   enforceAdminMutationAccess,
   getMutationActorFromRequest,
   safeWriteAdminAuditLog,
@@ -38,11 +39,13 @@ export function createDomainPatchHandler(dependencies: DomainPatchDependencies =
     }
 
     const body = (await request.json()) as {
+      status?: 'active' | 'archived';
       isPrimary?: boolean;
       isVerified?: boolean;
     };
 
     const updated = await dependencies.updateTenantDomainStatus(tenantId, domainId, {
+      status: body.status === 'active' || body.status === 'archived' ? body.status : undefined,
       isPrimary: body.isPrimary,
       isVerified: body.isVerified,
     });
@@ -56,6 +59,13 @@ export function createDomainPatchHandler(dependencies: DomainPatchDependencies =
           tenantId,
           domainId,
           error: 'Domain not found for tenant.',
+          metadata: buildAuditRequestMetadata(request, {
+            changes: {
+              isPrimary: { after: body.isPrimary ?? null },
+              isVerified: { after: body.isVerified ?? null },
+              status: { after: body.status ?? null },
+            },
+          }),
         },
         accessDependencies.writeAdminAuditLog
       );
@@ -69,6 +79,13 @@ export function createDomainPatchHandler(dependencies: DomainPatchDependencies =
         status: 'succeeded',
         tenantId,
         domainId,
+        metadata: buildAuditRequestMetadata(request, {
+          changes: {
+            isPrimary: { after: body.isPrimary ?? null },
+            isVerified: { after: body.isVerified ?? null },
+            status: { after: body.status ?? null },
+          },
+        }),
       },
       accessDependencies.writeAdminAuditLog
     );

@@ -38,11 +38,17 @@ Shift active delivery focus to Admin Portal usability: complete high-impact onbo
 32. Admin mutation error transparency is now in place in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/lib/mutation-error-guidance.ts`, with scoped RBAC/duplicate/validation parsing, inline field-level hints, and actionable next-step guidance across onboarding/domain/settings flows.
 33. Domain operations automation is now in place in `apps/admin/app/components/control-plane-workspace.tsx` with operator polling controls, auto-poll intervals, retry verification checks, and SSL/certificate readiness indicators tied to primary-domain verification state.
 34. Plan/feature governance UX is now in place in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/lib/plan-governance.ts` with per-plan templates, required/allowed feature guardrails, inline governance warnings, override toggles, and enforce-template actions for onboarding + tenant settings.
+35. Backend-driven domain verification/certificate probe flow is now in place via `apps/admin/app/api/lib/domain-probe.ts` and `apps/admin/app/api/tenants/[tenantId]/domains/probe/route.ts` (DNS + TLS checks) with `apps/admin/app/components/control-plane-workspace.tsx` Domain Ops polling/retry/readiness wired to authoritative probe payloads.
+36. Prisma direct-generation lock mitigation is now expanded in `packages/db/scripts/db-generate-direct.mjs` with preflight rename-lock reuse, default `DATABASE_URL` resolution, existing-engine preservation during cleanup, and load-probe fallback so persistent `EPERM` lock contention can reuse a verified full-engine client.
+37. Admin RBAC management + support-session workflows are now in place via new actor routes (`apps/admin/app/api/tenants/[tenantId]/actors/route.ts`, `apps/admin/app/api/tenants/[tenantId]/actors/[actorId]/route.ts`, `apps/admin/app/api/tenants/[tenantId]/actors/[actorId]/support-session/route.ts`), shared persistence helpers in `packages/db/src/control-plane.ts`, schema/migration updates for `TenantControlActor`, and operator UI controls in `apps/admin/app/components/control-plane-workspace.tsx`.
+38. Control-plane observability dashboard is now in place via `apps/admin/app/api/observability/route.ts`, shared summary helper `getControlPlaneObservabilitySummary` in `packages/db/src/control-plane.ts`, and new Admin workspace observability surfaces for mutation trends, ingestion runtime/queue health, and tenant readiness scoring.
+39. Advanced Admin audit timeline UX is now in place via expanded filter/query surface in `apps/admin/app/api/admin-audit/route.ts`, richer request/change metadata capture in `apps/admin/app/api/lib/admin-access.ts` + mutation routes, and timeline/export UX updates in `apps/admin/app/components/control-plane-workspace.tsx` with supporting route tests in `apps/admin/app/api/lib/routes.integration.test.ts`.
+40. Data safety/recovery controls are now in place in Admin via status-based soft-delete/restore flows for tenant/domain/settings (`apps/admin/app/api/tenants/[tenantId]/status/route.ts`, status-aware updates in settings/domain routes, and lifecycle persistence in `packages/db/src/control-plane.ts`) plus destructive confirmation UX in `apps/admin/app/components/control-plane-workspace.tsx`.
 
 ## Immediate Next Steps
-- First next-session task: run a focused admin manual browser click-through (desktop + smaller laptop viewport) in a non-sandboxed environment to validate no interaction/layout regressions after recent UX/error-guidance updates.
-- Add backend-driven domain verification/certificate status probes so polling/retry controls read authoritative external state instead of UI-level refresh semantics.
-- Keep Prisma reliability sampling periodic (`db:generate:sample -- 10+`) in Windows-authoritative runs after environment restarts, but treat this as maintenance, not the primary implementation objective.
+- Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes and record trend deltas in this file.
+- Defer full manual browser click-through for Admin and CRM until the next planned UI/UX improvement pass is complete (per current product-direction override).
+- Execute the next control-plane roadmap slice: tenant support diagnostics toolkit (auth/domain/ingestion health checks with operator remediation actions).
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -397,3 +403,130 @@ Shift active delivery focus to Admin Portal usability: complete high-impact onbo
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
 - Manual browser click-through remains pending/non-authoritative in this sandbox session:
   - `npm run dev:admin` failed to bind local port in this environment (`listen EPERM 0.0.0.0:3002`), so desktop/laptop viewport interaction checks could not be executed here.
+
+## Session Update (2026-02-19 Admin Backend Domain Probe Integration)
+
+### Completed This Session
+1. Added backend-driven domain probe surface in admin API:
+- new shared probe helper `apps/admin/app/api/lib/domain-probe.ts` now performs DNS checks (`A`, `AAAA`, `CNAME`) plus TLS certificate probes for domain readiness,
+- new route `apps/admin/app/api/tenants/[tenantId]/domains/probe/route.ts` returns tenant-scoped authoritative probe payloads (`dnsStatus`, `certificateStatus`, messages, cert validity, observed records),
+- `.localhost` domains are handled with explicit development-safe probe semantics.
+2. Wired Domain Ops UI to authoritative probe results in `apps/admin/app/components/control-plane-workspace.tsx`:
+- `Poll Domain Status Now` and `Retry Verification` now call backend probes (not refresh-only),
+- readiness checks and DNS/SSL cards now prefer probe statuses/messages when available,
+- per-domain cards now show DNS/TLS states, probe guidance, observed DNS records, and certificate expiry when present.
+3. Added route-level regression coverage for domain probe endpoint in `apps/admin/app/api/lib/routes.integration.test.ts`:
+- tenant-missing 404 behavior,
+- domain-filtered probe behavior + payload shape assertions.
+
+### Session Validation (2026-02-19 Admin Backend Domain Probe Integration)
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `npm run test:routes --workspace @real-estate/admin` in this WSL sandbox remains non-authoritative/fails due `tsx` IPC pipe permissions (`listen EPERM /tmp/tsx-1000/*.pipe`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`15/15`, includes new domain probe route tests).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes new route `/api/tenants/[tenantId]/domains/probe`.
+- Manual browser validation tasks remain blocked in this sandbox:
+  - `npm run dev:admin` fails bind with `listen EPERM 0.0.0.0:3002`,
+  - `npm run dev:crm` fails bind with `listen EPERM 0.0.0.0:3001` (and non-authoritative Linux SWC mismatch in this mixed Windows/WSL dependency state).
+
+## Session Update (2026-02-20 Prisma Reliability Sampling + Priority Reset)
+
+### Completed This Session
+1. Ran Windows-authoritative Prisma reliability sampling per open maintenance task using 12 attempts.
+2. Recorded a sharp reliability regression (`0/12` pass, all failures `EPERM` lock) and elevated Prisma stability work back to active priority.
+3. Deferred both manual full-browser review tasks (Admin + CRM) until post-improvement UI/UX passes are complete per current product direction.
+
+### Session Validation (2026-02-20 Prisma Reliability Sampling + Priority Reset)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run db:generate:sample --workspace @real-estate/db -- 12 --json --exit-zero"` returns JSON summary with `passed: 0`, `failed: 12`, `passRate: 0`, `failureRate: 100`, and `epermLockFailures: 12`.
+- All 12 attempts reported Prisma engine rename-lock failure (`EPERM: operation not permitted, rename ... query_engine-windows.dll.node`), including after built-in direct-wrapper retries.
+
+## Session Update (2026-02-20 Prisma Recovery + RBAC + Observability Delivery)
+
+### Completed This Session
+1. Implemented next Prisma Windows lock mitigation in `packages/db/scripts/db-generate-direct.mjs`:
+- preflight rename-lock detection with existing-client reuse checks,
+- default `DATABASE_URL` resolution when unset,
+- preservation of current generated engine artifact during cleanup to avoid destroying reusable healthy client,
+- runtime load-probe fallback when query probe cannot be established.
+2. Implemented Admin RBAC management and support-session workflows:
+- added persistence model/migration `TenantControlActor` (`packages/db/prisma/schema.prisma`, `packages/db/prisma/migrations/202602200001_add_tenant_control_actors/migration.sql`),
+- added shared db helper surface in `packages/db/src/control-plane.ts` for actor list/upsert/update/remove and support session state transitions,
+- added Admin API routes for actor lifecycle and support sessions in `apps/admin/app/api/tenants/[tenantId]/actors/*`,
+- added full operator UI in `apps/admin/app/components/control-plane-workspace.tsx` for actor onboarding, role/permission matrix controls, and support-session start/end actions.
+3. Implemented control-plane observability dashboard:
+- added shared summary helper `getControlPlaneObservabilitySummary` in `packages/db/src/control-plane.ts`,
+- added API route `apps/admin/app/api/observability/route.ts`,
+- added Admin UI surfaces for mutation trend counts, ingestion runtime/queue health, and tenant readiness scoreboards in `apps/admin/app/components/control-plane-workspace.tsx`.
+4. Extended admin route integration coverage in `apps/admin/app/api/lib/routes.integration.test.ts` for actors, support sessions, and observability endpoint behavior.
+
+### Session Validation (2026-02-20 Prisma Recovery + RBAC + Observability Delivery)
+- `node --check packages/db/scripts/db-generate-direct.mjs` passes.
+- `./node_modules/.bin/tsc --noEmit --project packages/types/tsconfig.json` passes.
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`22/22`, includes new actor/support-session/observability route tests).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes new routes:
+  - `/api/observability`
+  - `/api/tenants/[tenantId]/actors`
+  - `/api/tenants/[tenantId]/actors/[actorId]`
+  - `/api/tenants/[tenantId]/actors/[actorId]/support-session`
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:migrate:deploy --workspace @real-estate/db"` passes and applies migration `202602200001_add_tenant_control_actors`.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run db:generate:sample --workspace @real-estate/db -- 12 --json --exit-zero"` now passes with `12/12` success (`passRate: 100`, `epermLockFailures: 0`).
+
+## Session Update (2026-02-20 Admin Audit Timeline UX Expansion)
+
+### Completed This Session
+1. Expanded audit read/filter API in `apps/admin/app/api/admin-audit/route.ts`:
+- added richer query filters (`actorRole`, `actorId`, `requestId`, `changedField`, `search`, `from`, `to`, `errorsOnly`) while preserving tenant/global scope behavior.
+- improved global feed retrieval depth by increasing per-tenant upstream fetch window before filter/slice.
+2. Added stronger actor/request attribution metadata capture across admin mutation paths:
+- added `buildAuditRequestMetadata` + metadata pass-through in `apps/admin/app/api/lib/admin-access.ts`,
+- wired mutation route success/failure logs to include request attribution and structured `changes` metadata in:
+  - `apps/admin/app/api/tenants/route.ts`
+  - `apps/admin/app/api/tenants/[tenantId]/domains/route.ts`
+  - `apps/admin/app/api/tenants/[tenantId]/domains/[domainId]/route.ts`
+  - `apps/admin/app/api/tenants/[tenantId]/settings/route.ts`
+  - `apps/admin/app/api/tenants/[tenantId]/actors/route.ts`
+  - `apps/admin/app/api/tenants/[tenantId]/actors/[actorId]/route.ts`
+  - `apps/admin/app/api/tenants/[tenantId]/actors/[actorId]/support-session/route.ts`
+3. Delivered advanced audit timeline UX in `apps/admin/app/components/control-plane-workspace.tsx` and `apps/admin/app/globals.css`:
+- new filter controls for actor/request/date/change-field/search/error-only plus adjustable result limit,
+- stronger attribution chips (request id/method/path),
+- diff-style change detail rendering from audit metadata,
+- operator export controls for filtered CSV and JSON output.
+4. Extended admin route integration tests in `apps/admin/app/api/lib/routes.integration.test.ts`:
+- updated global aggregation expectation for deeper upstream fetch window,
+- added coverage for combined advanced filter behavior (actor/request/date/change-field/error/search).
+
+### Session Validation (2026-02-20 Admin Audit Timeline UX Expansion)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`23/23`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+
+## Session Update (2026-02-20 Admin Data Safety/Recovery Controls)
+
+### Completed This Session
+1. Added status-based soft-delete/restore persistence for control-plane entities:
+- schema/migration updates in `packages/db/prisma/schema.prisma` and `packages/db/prisma/migrations/202602200002_add_control_plane_soft_delete_status/migration.sql` add `status` to `TenantDomain` and `TenantControlSettings`,
+- shared lifecycle support in `packages/db/src/control-plane.ts` (`updateTenantLifecycleStatus`, status-aware domain/settings updates, readiness logic updates),
+- tenant resolution guard updated in `packages/db/src/tenants.ts` to ignore archived domains in hostname resolution.
+2. Added Admin API lifecycle control-plane endpoints/behavior:
+- new tenant lifecycle route `apps/admin/app/api/tenants/[tenantId]/status/route.ts`,
+- extended `apps/admin/app/api/tenants/[tenantId]/domains/[domainId]/route.ts` and `apps/admin/app/api/tenants/[tenantId]/settings/route.ts` to accept status updates,
+- updated `apps/admin/app/api/tenants/[tenantId]/domains/probe/route.ts` to probe only active domains,
+- audit action support extended for `tenant.status.update` in `apps/admin/app/api/admin-audit/route.ts`.
+3. Delivered Admin UI safety/recovery controls and destructive confirmations in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/globals.css`:
+- archive/restore tenant actions in Tenant Directory,
+- archive/restore domain actions in Domain Ops cards,
+- archive/restore settings actions and edit-lock behavior while archived,
+- stronger status visibility across tenant/domain/settings chips and readiness gating,
+- confirmation prompts for destructive lifecycle actions.
+4. Expanded route integration coverage in `apps/admin/app/api/lib/routes.integration.test.ts`:
+- added tenant status route tests,
+- added domain/settings lifecycle status mutation tests,
+- updated fixtures for new status fields.
+
+### Session Validation (2026-02-20 Admin Data Safety/Recovery Controls)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:migrate:deploy --workspace @real-estate/db"` passes and applies migration `202602200002_add_control_plane_soft_delete_status`.
+- `npm run db:generate:direct --workspace @real-estate/db` required a forced non-reuse regeneration path in this shell to refresh generated client metadata for the new schema fields.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`27/27`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes route `/api/tenants/[tenantId]/status`.

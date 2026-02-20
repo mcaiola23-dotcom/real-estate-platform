@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { addTenantDomain } from '@real-estate/db/control-plane';
 import {
+  buildAuditRequestMetadata,
   enforceAdminMutationAccess,
   getMutationActorFromRequest,
   safeWriteAdminAuditLog,
@@ -31,8 +32,16 @@ export function createDomainsPostHandler(dependencies: DomainsPostDependencies =
       return access.response;
     }
 
+    let body:
+      | {
+          hostname?: string;
+          isPrimary?: boolean;
+          isVerified?: boolean;
+        }
+      | null = null;
+
     try {
-      const body = (await request.json()) as {
+      body = (await request.json()) as {
         hostname?: string;
         isPrimary?: boolean;
         isVerified?: boolean;
@@ -55,6 +64,13 @@ export function createDomainsPostHandler(dependencies: DomainsPostDependencies =
           status: 'succeeded',
           tenantId,
           domainId: domain.id,
+          metadata: buildAuditRequestMetadata(request, {
+            changes: {
+              hostname: { after: body.hostname },
+              isPrimary: { after: body.isPrimary ?? false },
+              isVerified: { after: body.isVerified ?? false },
+            },
+          }),
         },
         accessDependencies.writeAdminAuditLog
       );
@@ -68,6 +84,13 @@ export function createDomainsPostHandler(dependencies: DomainsPostDependencies =
           status: 'failed',
           tenantId,
           error: error instanceof Error ? error.message : 'Domain add failed.',
+          metadata: buildAuditRequestMetadata(request, {
+            changes: {
+              hostname: { after: body?.hostname ?? null },
+              isPrimary: { after: body?.isPrimary ?? null },
+              isVerified: { after: body?.isVerified ?? null },
+            },
+          }),
         },
         accessDependencies.writeAdminAuditLog
       );

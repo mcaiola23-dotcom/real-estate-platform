@@ -20,6 +20,7 @@ export const SEED_TENANT_DOMAINS: TenantDomain[] = [
     id: 'tenant_domain_fairfield_localhost',
     tenantId: 'tenant_fairfield',
     hostname: 'fairfield.localhost',
+    status: 'active',
     isPrimary: true,
     isVerified: true,
     verifiedAt: SEED_TIMESTAMP,

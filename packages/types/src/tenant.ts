@@ -22,6 +22,7 @@ export interface TenantDomain {
   id: string;
   tenantId: string;
   hostname: string;
+  status: 'active' | 'archived';
   isPrimary: boolean;
   isVerified: boolean;
   verifiedAt: string | null;

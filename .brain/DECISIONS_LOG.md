@@ -314,3 +314,53 @@
 ### D-077: Keep admin manual click-through as a required next-step when sandbox cannot host local UI runtime
 **Decision**: Treat manual admin onboarding/domain browser validation as pending when this sandbox cannot bind local dev ports (`listen EPERM 0.0.0.0:3002`), and carry it forward as the first task in `.brain/PICKUP.md` for a non-sandboxed environment.
 **Reason**: UI automation substitutes in this environment are insufficient for full interaction/layout validation across desktop/smaller-laptop workflows; deferring this specific check preserves validation quality without inventing false confidence.
+
+## 2026-02-19
+### D-078: Drive Domain Ops polling/retry from backend DNS/TLS probes instead of refresh-only UI semantics
+**Decision**: Add backend probe helper `apps/admin/app/api/lib/domain-probe.ts` plus route `apps/admin/app/api/tenants/[tenantId]/domains/probe/route.ts`, and wire `apps/admin/app/components/control-plane-workspace.tsx` Domain Ops polling/retry/readiness cards to consume probe payloads (`dnsStatus`, `certificateStatus`, messages, observed records, certificate validity).
+**Reason**: UI refresh-only polling did not provide authoritative verification/certificate signal. Backend probe execution gives operator actions actionable infrastructure state without adding cross-app coupling or breaking tenant-scoped boundaries.
+
+### D-079: Keep probe results read-only and separate from persisted `isVerified` mutation flow
+**Decision**: Return probe findings as authoritative operational status in Domain Ops UI while preserving existing explicit domain mutation actions (`Mark Verified`, `Set Primary`) and not auto-writing probe outcomes into tenant domain persistence.
+**Reason**: Avoids implicit side-effect writes during polling, prevents audit-noise inflation, and keeps control-plane mutation semantics explicit while still delivering provider-backed launch readiness visibility.
+
+## 2026-02-20
+### D-080: Defer full Admin/CRM manual browser reviews until next UI/UX improvement passes complete
+**Decision**: Defer both pending manual click-through tasks (Admin onboarding/domain ops and CRM post-polish validation) until additional planned UI/UX improvements are implemented, rather than running full validation now.
+**Reason**: Running full manual QA before upcoming UI/UX changes would create duplicate validation effort with low decision value; deferral keeps review effort aligned to a more stable UI baseline.
+
+### D-081: Elevate Prisma Windows lock regression back to active stabilization priority
+**Decision**: Treat the latest Windows-authoritative reliability sample result (`db:generate:sample -- 12 --json --exit-zero` => `0/12` pass, `12/12` `EPERM`) as an active reliability regression and prioritize another direct-generation lock mitigation pass before resuming lower-priority validation work.
+**Reason**: Reliability trend reversed from prior stable samples, indicating current mitigation is not consistently effective; continued failures risk blocking local runtime/tooling workflows that depend on full-engine Prisma generation.
+
+### D-082: Preserve reusable full-engine client artifacts and add preflight lock-reuse in direct Prisma generation
+**Decision**: Update `packages/db/scripts/db-generate-direct.mjs` to (a) resolve a default local `DATABASE_URL` when unset, (b) preflight-check rename-lock state and short-circuit to existing-client reuse when healthy, (c) preserve current generated engine artifacts during cleanup retries, and (d) allow load-probe reuse fallback when query probe cannot be established under lock contention.
+**Reason**: Prior retry/cleanup logic still produced `0/12` sample reliability under recurring Windows rename locks; preserving and validating an existing full-engine client is safer and more reliable than repeatedly destroying/regenerating artifacts under active lock-holder contention.
+
+### D-083: Model tenant-scoped operator RBAC + support session state in a dedicated control-plane table
+**Decision**: Add Prisma model/migration `TenantControlActor` with tenant-scoped actor identity, role, permissions JSON, and support-session lifecycle fields, plus shared helper APIs in `packages/db/src/control-plane.ts` for actor list/upsert/update/remove and support-session start/end.
+**Reason**: Admin RBAC management requirements need durable, tenant-isolated actor state with auditable support-session controls; this cannot be represented cleanly as transient UI state or overloaded plan/feature settings.
+
+### D-084: Deliver RBAC and observability through explicit admin API boundaries and route-tested handlers
+**Decision**: Add Admin API routes for actor lifecycle and support-session workflows under `apps/admin/app/api/tenants/[tenantId]/actors/*`, add `apps/admin/app/api/observability/route.ts` for monitoring summaries, and extend `apps/admin/app/api/lib/routes.integration.test.ts` coverage for all new handlers.
+**Reason**: Keeps control-plane mutation/read surfaces explicit and testable, preserves tenant-scoped boundaries, and ensures new operator tooling can evolve without coupling UI directly to persistence internals.
+
+### D-085: Treat control-plane observability as a first-class operator surface in the Admin workspace
+**Decision**: Extend `apps/admin/app/components/control-plane-workspace.tsx` with an observability section (mutation trends, ingestion runtime/queue health, tenant readiness scoreboard) backed by shared summary helper `getControlPlaneObservabilitySummary`.
+**Reason**: Operational reliability is now a primary delivery risk area (Prisma lock behavior + ingestion readiness); putting these signals directly in Admin improves operator response time and makes launch-readiness status actionable without separate tooling.
+
+### D-086: Expand Admin audit timeline around server-side advanced filtering with request/change attribution
+**Decision**: Extend `apps/admin/app/api/admin-audit/route.ts` with richer query filters (`actorRole`, `actorId`, `requestId`, `changedField`, `search`, `from`, `to`, `errorsOnly`) and increase global-feed upstream fetch depth before final filtered slicing; add request/change metadata emission via `buildAuditRequestMetadata` in `apps/admin/app/api/lib/admin-access.ts` and all admin mutation routes.
+**Reason**: Basic tenant/status/action filtering was insufficient for operator troubleshooting; server-side attribution-aware filtering makes audit investigations faster and more reliable at control-plane scale.
+
+### D-087: Provide exportable audit output directly from Admin timeline using filtered in-memory event set
+**Decision**: Add CSV/JSON export actions in `apps/admin/app/components/control-plane-workspace.tsx` that export the currently filtered audit event set, including request attribution and changed-field summaries.
+**Reason**: Operators need to share and archive incident timelines without manual copy/paste or ad-hoc scripts; in-UI export keeps workflows fast while preserving tenant-scoped query context.
+
+### D-088: Model domain/settings soft-delete as explicit lifecycle status and expose tenant lifecycle controls
+**Decision**: Add `status` lifecycle columns (`active`/`archived`) to `TenantDomain` and `TenantControlSettings`, add shared lifecycle helpers in `packages/db/src/control-plane.ts`, and add tenant lifecycle route `apps/admin/app/api/tenants/[tenantId]/status/route.ts` with status-aware domain/settings route updates.
+**Reason**: Data safety/recovery requirements need reversible soft-delete semantics without destructive row deletes, while keeping tenant isolation and auditable operator flows explicit at shared package boundaries.
+
+### D-089: Enforce destructive lifecycle confirmations and archived-state edit locks in Admin UI
+**Decision**: Add confirmation-gated archive/restore actions for tenant/domain/settings in `apps/admin/app/components/control-plane-workspace.tsx`, disable settings edits while tenant/settings are archived, and restrict active domain operations to active domains/tenants.
+**Reason**: Control-plane destructive actions should require explicit operator intent and safe defaults; archived-state locks reduce accidental mutations and make recovery posture predictable.

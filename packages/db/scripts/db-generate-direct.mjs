@@ -10,6 +10,32 @@ const retryBackoffMs = Number.parseInt(process.env.PRISMA_GENERATE_DIRECT_RETRY_
 const lockWaitMs = Number.parseInt(process.env.PRISMA_GENERATE_DIRECT_LOCK_WAIT_MS ?? '2500', 10);
 const lockPollMs = Number.parseInt(process.env.PRISMA_GENERATE_DIRECT_LOCK_POLL_MS ?? '125', 10);
 const allowHealthyClientReuse = process.env.PRISMA_GENERATE_DIRECT_ALLOW_HEALTHY_CLIENT_REUSE !== '0';
+const preserveCurrentEngine = process.env.PRISMA_GENERATE_DIRECT_PRESERVE_EXISTING_ENGINE !== '0';
+
+function toFileDatasourcePath(value) {
+  return `file:${value.replace(/\\/g, '/')}`;
+}
+
+function ensureDatabaseUrl() {
+  if (process.env.DATABASE_URL) {
+    return;
+  }
+
+  const cwd = process.cwd();
+  const candidates = [
+    path.resolve(cwd, 'prisma', 'dev.db'),
+    path.resolve(cwd, 'packages', 'db', 'prisma', 'dev.db'),
+    path.resolve(cwd, '..', 'packages', 'db', 'prisma', 'dev.db'),
+    path.resolve(cwd, '..', '..', 'packages', 'db', 'prisma', 'dev.db'),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      process.env.DATABASE_URL = toFileDatasourcePath(candidate);
+      return;
+    }
+  }
+}
 
 function runPrisma(args) {
   return spawnSync(prismaBin, args, {
@@ -46,10 +72,24 @@ function hasExistingEngineArtifact() {
   return existsSync(engineTargetPath());
 }
 
+function runNodeProbe(script) {
+  const probe = spawnSync(process.execPath, ['-e', script], {
+    cwd: process.cwd(),
+    env: process.env,
+    shell: false,
+    encoding: 'utf8',
+  });
+
+  return {
+    ok: probe.status === 0,
+    output: `${probe.stdout || ''}\n${probe.stderr || ''}`.trim(),
+  };
+}
+
 function hasHealthyGeneratedClientRuntime() {
   const generatedClientEntry = path.resolve(process.cwd(), 'generated/prisma-client/index.js');
   if (!existsSync(generatedClientEntry)) {
-    return false;
+    return { ok: false, output: 'Generated Prisma client entry is missing.' };
   }
 
   const probeScript = `
@@ -73,14 +113,33 @@ const { pathToFileURL } = require('node:url');
 });
   `.trim();
 
-  const probe = spawnSync(process.execPath, ['-e', probeScript], {
-    cwd: process.cwd(),
-    env: process.env,
-    shell: false,
-    encoding: 'utf8',
-  });
+  return runNodeProbe(probeScript);
+}
 
-  return probe.status === 0;
+function hasLoadableGeneratedClientRuntime() {
+  const generatedClientEntry = path.resolve(process.cwd(), 'generated/prisma-client/index.js');
+  if (!existsSync(generatedClientEntry)) {
+    return { ok: false, output: 'Generated Prisma client entry is missing.' };
+  }
+
+  const probeScript = `
+const path = require('node:path');
+const { pathToFileURL } = require('node:url');
+(async () => {
+  const entry = path.resolve(process.cwd(), 'generated/prisma-client/index.js');
+  const prismaModule = await import(pathToFileURL(entry).href);
+  if (!prismaModule.PrismaClient) {
+    throw new Error('PrismaClient export missing.');
+  }
+  const client = new prismaModule.PrismaClient();
+  await client.$disconnect();
+})().catch((error) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+});
+  `.trim();
+
+  return runNodeProbe(probeScript);
 }
 
 function hasRenameLock(filepath) {
@@ -119,8 +178,9 @@ function waitForRenameUnlock(filepath, maxWait, pollMs) {
 }
 
 function cleanupEngineArtifacts() {
+  const currentGeneratedDir = path.resolve(process.cwd(), 'generated/prisma-client');
   const candidateDirs = [
-    path.resolve(process.cwd(), 'generated/prisma-client'),
+    currentGeneratedDir,
     path.resolve(process.cwd(), '../generated/prisma-client'),
     path.resolve(process.cwd(), 'node_modules/.prisma/client'),
     path.resolve(process.cwd(), '../../node_modules/.prisma/client'),
@@ -134,17 +194,20 @@ function cleanupEngineArtifacts() {
       continue;
     }
 
-    for (const filename of [
-      'query_engine-windows.dll.node',
-      'query_engine-windows.exe',
-      'libquery_engine-windows.dll.node',
-    ]) {
-      const candidate = path.resolve(directory, filename);
-      if (existsSync(candidate)) {
-        try {
-          rmSync(candidate, { force: true });
-        } catch {
-          // Ignore and continue cleanup attempts.
+    const allowEngineRemoval = !(preserveCurrentEngine && directory === currentGeneratedDir);
+    if (allowEngineRemoval) {
+      for (const filename of [
+        'query_engine-windows.dll.node',
+        'query_engine-windows.exe',
+        'libquery_engine-windows.dll.node',
+      ]) {
+        const candidate = path.resolve(directory, filename);
+        if (existsSync(candidate)) {
+          try {
+            rmSync(candidate, { force: true });
+          } catch {
+            // Ignore and continue cleanup attempts.
+          }
         }
       }
     }
@@ -173,6 +236,29 @@ function printResult(result) {
   }
   if (result.stderr) {
     process.stderr.write(result.stderr);
+  }
+}
+
+ensureDatabaseUrl();
+
+if (isWindows && allowHealthyClientReuse && hasExistingEngineArtifact()) {
+  const targetPath = engineTargetPath();
+  if (hasRenameLock(targetPath)) {
+    const runtimeProbe = hasHealthyGeneratedClientRuntime();
+    if (runtimeProbe.ok) {
+      console.warn(
+        '[db:generate:direct] Preflight lock detected; existing generated client passed runtime query probe. Reusing current full-engine client.'
+      );
+      process.exit(0);
+    }
+
+    const loadableProbe = hasLoadableGeneratedClientRuntime();
+    if (loadableProbe.ok) {
+      console.warn(
+        '[db:generate:direct] Preflight lock detected; existing generated client passed load probe. Reusing current full-engine client.'
+      );
+      process.exit(0);
+    }
   }
 }
 
@@ -211,9 +297,18 @@ for (let retry = 1; retry <= maxLockRetries; retry += 1) {
 printResult(result);
 const finalOutput = outputText(result);
 if (allowHealthyClientReuse && hasWindowsEngineLockFailure(finalOutput) && hasExistingEngineArtifact()) {
-  if (hasHealthyGeneratedClientRuntime()) {
+  const runtimeProbe = hasHealthyGeneratedClientRuntime();
+  if (runtimeProbe.ok) {
     console.warn(
       '[db:generate:direct] Lock persists, but existing generated client is healthy; reusing current full-engine client.'
+    );
+    process.exit(0);
+  }
+
+  const loadableProbe = hasLoadableGeneratedClientRuntime();
+  if (loadableProbe.ok) {
+    console.warn(
+      '[db:generate:direct] Lock persists, but existing generated client passed load probe; reusing current full-engine client.'
     );
     process.exit(0);
   }

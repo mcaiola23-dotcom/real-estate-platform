@@ -34,6 +34,11 @@ export type WebsiteConfig = $Result.DefaultSelection<Prisma.$WebsiteConfigPayloa
  */
 export type TenantControlSettings = $Result.DefaultSelection<Prisma.$TenantControlSettingsPayload>
 /**
+ * Model TenantControlActor
+ * 
+ */
+export type TenantControlActor = $Result.DefaultSelection<Prisma.$TenantControlActorPayload>
+/**
  * Model ModuleConfig
  * 
  */
@@ -226,6 +231,16 @@ export class PrismaClient<
     * ```
     */
   get tenantControlSettings(): Prisma.TenantControlSettingsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tenantControlActor`: Exposes CRUD operations for the **TenantControlActor** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TenantControlActors
+    * const tenantControlActors = await prisma.tenantControlActor.findMany()
+    * ```
+    */
+  get tenantControlActor(): Prisma.TenantControlActorDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.moduleConfig`: Exposes CRUD operations for the **ModuleConfig** model.
@@ -741,6 +756,7 @@ export namespace Prisma {
     TenantDomain: 'TenantDomain',
     WebsiteConfig: 'WebsiteConfig',
     TenantControlSettings: 'TenantControlSettings',
+    TenantControlActor: 'TenantControlActor',
     ModuleConfig: 'ModuleConfig',
     Contact: 'Contact',
     Lead: 'Lead',
@@ -766,7 +782,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "moduleConfig" | "contact" | "lead" | "activity" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent"
+      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "tenantControlActor" | "moduleConfig" | "contact" | "lead" | "activity" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1063,6 +1079,80 @@ export namespace Prisma {
           count: {
             args: Prisma.TenantControlSettingsCountArgs<ExtArgs>
             result: $Utils.Optional<TenantControlSettingsCountAggregateOutputType> | number
+          }
+        }
+      }
+      TenantControlActor: {
+        payload: Prisma.$TenantControlActorPayload<ExtArgs>
+        fields: Prisma.TenantControlActorFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TenantControlActorFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TenantControlActorFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>
+          }
+          findFirst: {
+            args: Prisma.TenantControlActorFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TenantControlActorFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>
+          }
+          findMany: {
+            args: Prisma.TenantControlActorFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>[]
+          }
+          create: {
+            args: Prisma.TenantControlActorCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>
+          }
+          createMany: {
+            args: Prisma.TenantControlActorCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TenantControlActorCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>[]
+          }
+          delete: {
+            args: Prisma.TenantControlActorDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>
+          }
+          update: {
+            args: Prisma.TenantControlActorUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>
+          }
+          deleteMany: {
+            args: Prisma.TenantControlActorDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TenantControlActorUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TenantControlActorUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>[]
+          }
+          upsert: {
+            args: Prisma.TenantControlActorUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantControlActorPayload>
+          }
+          aggregate: {
+            args: Prisma.TenantControlActorAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTenantControlActor>
+          }
+          groupBy: {
+            args: Prisma.TenantControlActorGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TenantControlActorGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TenantControlActorCountArgs<ExtArgs>
+            result: $Utils.Optional<TenantControlActorCountAggregateOutputType> | number
           }
         }
       }
@@ -1684,6 +1774,7 @@ export namespace Prisma {
     tenantDomain?: TenantDomainOmit
     websiteConfig?: WebsiteConfigOmit
     tenantControlSettings?: TenantControlSettingsOmit
+    tenantControlActor?: TenantControlActorOmit
     moduleConfig?: ModuleConfigOmit
     contact?: ContactOmit
     lead?: LeadOmit
@@ -1772,6 +1863,7 @@ export namespace Prisma {
 
   export type TenantCountOutputType = {
     domains: number
+    controlActors: number
     contacts: number
     leads: number
     activities: number
@@ -1781,6 +1873,7 @@ export namespace Prisma {
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     domains?: boolean | TenantCountOutputTypeCountDomainsArgs
+    controlActors?: boolean | TenantCountOutputTypeCountControlActorsArgs
     contacts?: boolean | TenantCountOutputTypeCountContactsArgs
     leads?: boolean | TenantCountOutputTypeCountLeadsArgs
     activities?: boolean | TenantCountOutputTypeCountActivitiesArgs
@@ -1804,6 +1897,13 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountDomainsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TenantDomainWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountControlActorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantControlActorWhereInput
   }
 
   /**
@@ -2123,6 +2223,7 @@ export namespace Prisma {
     domains?: boolean | Tenant$domainsArgs<ExtArgs>
     websiteConfig?: boolean | Tenant$websiteConfigArgs<ExtArgs>
     controlSettings?: boolean | Tenant$controlSettingsArgs<ExtArgs>
+    controlActors?: boolean | Tenant$controlActorsArgs<ExtArgs>
     contacts?: boolean | Tenant$contactsArgs<ExtArgs>
     leads?: boolean | Tenant$leadsArgs<ExtArgs>
     activities?: boolean | Tenant$activitiesArgs<ExtArgs>
@@ -2163,6 +2264,7 @@ export namespace Prisma {
     domains?: boolean | Tenant$domainsArgs<ExtArgs>
     websiteConfig?: boolean | Tenant$websiteConfigArgs<ExtArgs>
     controlSettings?: boolean | Tenant$controlSettingsArgs<ExtArgs>
+    controlActors?: boolean | Tenant$controlActorsArgs<ExtArgs>
     contacts?: boolean | Tenant$contactsArgs<ExtArgs>
     leads?: boolean | Tenant$leadsArgs<ExtArgs>
     activities?: boolean | Tenant$activitiesArgs<ExtArgs>
@@ -2179,6 +2281,7 @@ export namespace Prisma {
       domains: Prisma.$TenantDomainPayload<ExtArgs>[]
       websiteConfig: Prisma.$WebsiteConfigPayload<ExtArgs> | null
       controlSettings: Prisma.$TenantControlSettingsPayload<ExtArgs> | null
+      controlActors: Prisma.$TenantControlActorPayload<ExtArgs>[]
       contacts: Prisma.$ContactPayload<ExtArgs>[]
       leads: Prisma.$LeadPayload<ExtArgs>[]
       activities: Prisma.$ActivityPayload<ExtArgs>[]
@@ -2589,6 +2692,7 @@ export namespace Prisma {
     domains<T extends Tenant$domainsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantDomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     websiteConfig<T extends Tenant$websiteConfigArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$websiteConfigArgs<ExtArgs>>): Prisma__WebsiteConfigClient<$Result.GetResult<Prisma.$WebsiteConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     controlSettings<T extends Tenant$controlSettingsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$controlSettingsArgs<ExtArgs>>): Prisma__TenantControlSettingsClient<$Result.GetResult<Prisma.$TenantControlSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    controlActors<T extends Tenant$controlActorsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$controlActorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     contacts<T extends Tenant$contactsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     leads<T extends Tenant$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activities<T extends Tenant$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3077,6 +3181,30 @@ export namespace Prisma {
   }
 
   /**
+   * Tenant.controlActors
+   */
+  export type Tenant$controlActorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    where?: TenantControlActorWhereInput
+    orderBy?: TenantControlActorOrderByWithRelationInput | TenantControlActorOrderByWithRelationInput[]
+    cursor?: TenantControlActorWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TenantControlActorScalarFieldEnum | TenantControlActorScalarFieldEnum[]
+  }
+
+  /**
    * Tenant.contacts
    */
   export type Tenant$contactsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3230,6 +3358,7 @@ export namespace Prisma {
     tenantId: string | null
     hostname: string | null
     hostnameNormalized: string | null
+    status: string | null
     isPrimary: boolean | null
     isVerified: boolean | null
     verifiedAt: Date | null
@@ -3242,6 +3371,7 @@ export namespace Prisma {
     tenantId: string | null
     hostname: string | null
     hostnameNormalized: string | null
+    status: string | null
     isPrimary: boolean | null
     isVerified: boolean | null
     verifiedAt: Date | null
@@ -3254,6 +3384,7 @@ export namespace Prisma {
     tenantId: number
     hostname: number
     hostnameNormalized: number
+    status: number
     isPrimary: number
     isVerified: number
     verifiedAt: number
@@ -3268,6 +3399,7 @@ export namespace Prisma {
     tenantId?: true
     hostname?: true
     hostnameNormalized?: true
+    status?: true
     isPrimary?: true
     isVerified?: true
     verifiedAt?: true
@@ -3280,6 +3412,7 @@ export namespace Prisma {
     tenantId?: true
     hostname?: true
     hostnameNormalized?: true
+    status?: true
     isPrimary?: true
     isVerified?: true
     verifiedAt?: true
@@ -3292,6 +3425,7 @@ export namespace Prisma {
     tenantId?: true
     hostname?: true
     hostnameNormalized?: true
+    status?: true
     isPrimary?: true
     isVerified?: true
     verifiedAt?: true
@@ -3377,6 +3511,7 @@ export namespace Prisma {
     tenantId: string
     hostname: string
     hostnameNormalized: string
+    status: string
     isPrimary: boolean
     isVerified: boolean
     verifiedAt: Date | null
@@ -3406,6 +3541,7 @@ export namespace Prisma {
     tenantId?: boolean
     hostname?: boolean
     hostnameNormalized?: boolean
+    status?: boolean
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: boolean
@@ -3419,6 +3555,7 @@ export namespace Prisma {
     tenantId?: boolean
     hostname?: boolean
     hostnameNormalized?: boolean
+    status?: boolean
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: boolean
@@ -3432,6 +3569,7 @@ export namespace Prisma {
     tenantId?: boolean
     hostname?: boolean
     hostnameNormalized?: boolean
+    status?: boolean
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: boolean
@@ -3445,6 +3583,7 @@ export namespace Prisma {
     tenantId?: boolean
     hostname?: boolean
     hostnameNormalized?: boolean
+    status?: boolean
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: boolean
@@ -3452,7 +3591,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type TenantDomainOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "hostname" | "hostnameNormalized" | "isPrimary" | "isVerified" | "verifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantDomain"]>
+  export type TenantDomainOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "hostname" | "hostnameNormalized" | "status" | "isPrimary" | "isVerified" | "verifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantDomain"]>
   export type TenantDomainInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }
@@ -3473,6 +3612,7 @@ export namespace Prisma {
       tenantId: string
       hostname: string
       hostnameNormalized: string
+      status: string
       isPrimary: boolean
       isVerified: boolean
       verifiedAt: Date | null
@@ -3906,6 +4046,7 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"TenantDomain", 'String'>
     readonly hostname: FieldRef<"TenantDomain", 'String'>
     readonly hostnameNormalized: FieldRef<"TenantDomain", 'String'>
+    readonly status: FieldRef<"TenantDomain", 'String'>
     readonly isPrimary: FieldRef<"TenantDomain", 'Boolean'>
     readonly isVerified: FieldRef<"TenantDomain", 'Boolean'>
     readonly verifiedAt: FieldRef<"TenantDomain", 'DateTime'>
@@ -5409,6 +5550,7 @@ export namespace Prisma {
   export type TenantControlSettingsMinAggregateOutputType = {
     id: string | null
     tenantId: string | null
+    status: string | null
     planCode: string | null
     featureFlagsJson: string | null
     createdAt: Date | null
@@ -5418,6 +5560,7 @@ export namespace Prisma {
   export type TenantControlSettingsMaxAggregateOutputType = {
     id: string | null
     tenantId: string | null
+    status: string | null
     planCode: string | null
     featureFlagsJson: string | null
     createdAt: Date | null
@@ -5427,6 +5570,7 @@ export namespace Prisma {
   export type TenantControlSettingsCountAggregateOutputType = {
     id: number
     tenantId: number
+    status: number
     planCode: number
     featureFlagsJson: number
     createdAt: number
@@ -5438,6 +5582,7 @@ export namespace Prisma {
   export type TenantControlSettingsMinAggregateInputType = {
     id?: true
     tenantId?: true
+    status?: true
     planCode?: true
     featureFlagsJson?: true
     createdAt?: true
@@ -5447,6 +5592,7 @@ export namespace Prisma {
   export type TenantControlSettingsMaxAggregateInputType = {
     id?: true
     tenantId?: true
+    status?: true
     planCode?: true
     featureFlagsJson?: true
     createdAt?: true
@@ -5456,6 +5602,7 @@ export namespace Prisma {
   export type TenantControlSettingsCountAggregateInputType = {
     id?: true
     tenantId?: true
+    status?: true
     planCode?: true
     featureFlagsJson?: true
     createdAt?: true
@@ -5538,6 +5685,7 @@ export namespace Prisma {
   export type TenantControlSettingsGroupByOutputType = {
     id: string
     tenantId: string
+    status: string
     planCode: string
     featureFlagsJson: string
     createdAt: Date
@@ -5564,6 +5712,7 @@ export namespace Prisma {
   export type TenantControlSettingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     tenantId?: boolean
+    status?: boolean
     planCode?: boolean
     featureFlagsJson?: boolean
     createdAt?: boolean
@@ -5574,6 +5723,7 @@ export namespace Prisma {
   export type TenantControlSettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     tenantId?: boolean
+    status?: boolean
     planCode?: boolean
     featureFlagsJson?: boolean
     createdAt?: boolean
@@ -5584,6 +5734,7 @@ export namespace Prisma {
   export type TenantControlSettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     tenantId?: boolean
+    status?: boolean
     planCode?: boolean
     featureFlagsJson?: boolean
     createdAt?: boolean
@@ -5594,13 +5745,14 @@ export namespace Prisma {
   export type TenantControlSettingsSelectScalar = {
     id?: boolean
     tenantId?: boolean
+    status?: boolean
     planCode?: boolean
     featureFlagsJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TenantControlSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "planCode" | "featureFlagsJson" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantControlSettings"]>
+  export type TenantControlSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "status" | "planCode" | "featureFlagsJson" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantControlSettings"]>
   export type TenantControlSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }
@@ -5619,6 +5771,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       tenantId: string
+      status: string
       planCode: string
       featureFlagsJson: string
       createdAt: Date
@@ -6049,6 +6202,7 @@ export namespace Prisma {
   interface TenantControlSettingsFieldRefs {
     readonly id: FieldRef<"TenantControlSettings", 'String'>
     readonly tenantId: FieldRef<"TenantControlSettings", 'String'>
+    readonly status: FieldRef<"TenantControlSettings", 'String'>
     readonly planCode: FieldRef<"TenantControlSettings", 'String'>
     readonly featureFlagsJson: FieldRef<"TenantControlSettings", 'String'>
     readonly createdAt: FieldRef<"TenantControlSettings", 'DateTime'>
@@ -6462,6 +6616,1153 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: TenantControlSettingsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TenantControlActor
+   */
+
+  export type AggregateTenantControlActor = {
+    _count: TenantControlActorCountAggregateOutputType | null
+    _min: TenantControlActorMinAggregateOutputType | null
+    _max: TenantControlActorMaxAggregateOutputType | null
+  }
+
+  export type TenantControlActorMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    actorId: string | null
+    displayName: string | null
+    email: string | null
+    role: string | null
+    permissionsJson: string | null
+    supportSessionActive: boolean | null
+    supportSessionStartedAt: Date | null
+    supportSessionExpiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantControlActorMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    actorId: string | null
+    displayName: string | null
+    email: string | null
+    role: string | null
+    permissionsJson: string | null
+    supportSessionActive: boolean | null
+    supportSessionStartedAt: Date | null
+    supportSessionExpiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantControlActorCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    actorId: number
+    displayName: number
+    email: number
+    role: number
+    permissionsJson: number
+    supportSessionActive: number
+    supportSessionStartedAt: number
+    supportSessionExpiresAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TenantControlActorMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    actorId?: true
+    displayName?: true
+    email?: true
+    role?: true
+    permissionsJson?: true
+    supportSessionActive?: true
+    supportSessionStartedAt?: true
+    supportSessionExpiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantControlActorMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    actorId?: true
+    displayName?: true
+    email?: true
+    role?: true
+    permissionsJson?: true
+    supportSessionActive?: true
+    supportSessionStartedAt?: true
+    supportSessionExpiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantControlActorCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    actorId?: true
+    displayName?: true
+    email?: true
+    role?: true
+    permissionsJson?: true
+    supportSessionActive?: true
+    supportSessionStartedAt?: true
+    supportSessionExpiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TenantControlActorAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantControlActor to aggregate.
+     */
+    where?: TenantControlActorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantControlActors to fetch.
+     */
+    orderBy?: TenantControlActorOrderByWithRelationInput | TenantControlActorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TenantControlActorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantControlActors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantControlActors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TenantControlActors
+    **/
+    _count?: true | TenantControlActorCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TenantControlActorMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TenantControlActorMaxAggregateInputType
+  }
+
+  export type GetTenantControlActorAggregateType<T extends TenantControlActorAggregateArgs> = {
+        [P in keyof T & keyof AggregateTenantControlActor]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTenantControlActor[P]>
+      : GetScalarType<T[P], AggregateTenantControlActor[P]>
+  }
+
+
+
+
+  export type TenantControlActorGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantControlActorWhereInput
+    orderBy?: TenantControlActorOrderByWithAggregationInput | TenantControlActorOrderByWithAggregationInput[]
+    by: TenantControlActorScalarFieldEnum[] | TenantControlActorScalarFieldEnum
+    having?: TenantControlActorScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TenantControlActorCountAggregateInputType | true
+    _min?: TenantControlActorMinAggregateInputType
+    _max?: TenantControlActorMaxAggregateInputType
+  }
+
+  export type TenantControlActorGroupByOutputType = {
+    id: string
+    tenantId: string
+    actorId: string
+    displayName: string | null
+    email: string | null
+    role: string
+    permissionsJson: string
+    supportSessionActive: boolean
+    supportSessionStartedAt: Date | null
+    supportSessionExpiresAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TenantControlActorCountAggregateOutputType | null
+    _min: TenantControlActorMinAggregateOutputType | null
+    _max: TenantControlActorMaxAggregateOutputType | null
+  }
+
+  type GetTenantControlActorGroupByPayload<T extends TenantControlActorGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TenantControlActorGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TenantControlActorGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TenantControlActorGroupByOutputType[P]>
+            : GetScalarType<T[P], TenantControlActorGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TenantControlActorSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    actorId?: boolean
+    displayName?: boolean
+    email?: boolean
+    role?: boolean
+    permissionsJson?: boolean
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: boolean
+    supportSessionExpiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantControlActor"]>
+
+  export type TenantControlActorSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    actorId?: boolean
+    displayName?: boolean
+    email?: boolean
+    role?: boolean
+    permissionsJson?: boolean
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: boolean
+    supportSessionExpiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantControlActor"]>
+
+  export type TenantControlActorSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    actorId?: boolean
+    displayName?: boolean
+    email?: boolean
+    role?: boolean
+    permissionsJson?: boolean
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: boolean
+    supportSessionExpiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantControlActor"]>
+
+  export type TenantControlActorSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    actorId?: boolean
+    displayName?: boolean
+    email?: boolean
+    role?: boolean
+    permissionsJson?: boolean
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: boolean
+    supportSessionExpiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TenantControlActorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "actorId" | "displayName" | "email" | "role" | "permissionsJson" | "supportSessionActive" | "supportSessionStartedAt" | "supportSessionExpiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantControlActor"]>
+  export type TenantControlActorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type TenantControlActorIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type TenantControlActorIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $TenantControlActorPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TenantControlActor"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      actorId: string
+      displayName: string | null
+      email: string | null
+      role: string
+      permissionsJson: string
+      supportSessionActive: boolean
+      supportSessionStartedAt: Date | null
+      supportSessionExpiresAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["tenantControlActor"]>
+    composites: {}
+  }
+
+  type TenantControlActorGetPayload<S extends boolean | null | undefined | TenantControlActorDefaultArgs> = $Result.GetResult<Prisma.$TenantControlActorPayload, S>
+
+  type TenantControlActorCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TenantControlActorFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TenantControlActorCountAggregateInputType | true
+    }
+
+  export interface TenantControlActorDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TenantControlActor'], meta: { name: 'TenantControlActor' } }
+    /**
+     * Find zero or one TenantControlActor that matches the filter.
+     * @param {TenantControlActorFindUniqueArgs} args - Arguments to find a TenantControlActor
+     * @example
+     * // Get one TenantControlActor
+     * const tenantControlActor = await prisma.tenantControlActor.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TenantControlActorFindUniqueArgs>(args: SelectSubset<T, TenantControlActorFindUniqueArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TenantControlActor that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TenantControlActorFindUniqueOrThrowArgs} args - Arguments to find a TenantControlActor
+     * @example
+     * // Get one TenantControlActor
+     * const tenantControlActor = await prisma.tenantControlActor.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TenantControlActorFindUniqueOrThrowArgs>(args: SelectSubset<T, TenantControlActorFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantControlActor that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantControlActorFindFirstArgs} args - Arguments to find a TenantControlActor
+     * @example
+     * // Get one TenantControlActor
+     * const tenantControlActor = await prisma.tenantControlActor.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TenantControlActorFindFirstArgs>(args?: SelectSubset<T, TenantControlActorFindFirstArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantControlActor that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantControlActorFindFirstOrThrowArgs} args - Arguments to find a TenantControlActor
+     * @example
+     * // Get one TenantControlActor
+     * const tenantControlActor = await prisma.tenantControlActor.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TenantControlActorFindFirstOrThrowArgs>(args?: SelectSubset<T, TenantControlActorFindFirstOrThrowArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TenantControlActors that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantControlActorFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TenantControlActors
+     * const tenantControlActors = await prisma.tenantControlActor.findMany()
+     * 
+     * // Get first 10 TenantControlActors
+     * const tenantControlActors = await prisma.tenantControlActor.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tenantControlActorWithIdOnly = await prisma.tenantControlActor.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TenantControlActorFindManyArgs>(args?: SelectSubset<T, TenantControlActorFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TenantControlActor.
+     * @param {TenantControlActorCreateArgs} args - Arguments to create a TenantControlActor.
+     * @example
+     * // Create one TenantControlActor
+     * const TenantControlActor = await prisma.tenantControlActor.create({
+     *   data: {
+     *     // ... data to create a TenantControlActor
+     *   }
+     * })
+     * 
+     */
+    create<T extends TenantControlActorCreateArgs>(args: SelectSubset<T, TenantControlActorCreateArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TenantControlActors.
+     * @param {TenantControlActorCreateManyArgs} args - Arguments to create many TenantControlActors.
+     * @example
+     * // Create many TenantControlActors
+     * const tenantControlActor = await prisma.tenantControlActor.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TenantControlActorCreateManyArgs>(args?: SelectSubset<T, TenantControlActorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TenantControlActors and returns the data saved in the database.
+     * @param {TenantControlActorCreateManyAndReturnArgs} args - Arguments to create many TenantControlActors.
+     * @example
+     * // Create many TenantControlActors
+     * const tenantControlActor = await prisma.tenantControlActor.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TenantControlActors and only return the `id`
+     * const tenantControlActorWithIdOnly = await prisma.tenantControlActor.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TenantControlActorCreateManyAndReturnArgs>(args?: SelectSubset<T, TenantControlActorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TenantControlActor.
+     * @param {TenantControlActorDeleteArgs} args - Arguments to delete one TenantControlActor.
+     * @example
+     * // Delete one TenantControlActor
+     * const TenantControlActor = await prisma.tenantControlActor.delete({
+     *   where: {
+     *     // ... filter to delete one TenantControlActor
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TenantControlActorDeleteArgs>(args: SelectSubset<T, TenantControlActorDeleteArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TenantControlActor.
+     * @param {TenantControlActorUpdateArgs} args - Arguments to update one TenantControlActor.
+     * @example
+     * // Update one TenantControlActor
+     * const tenantControlActor = await prisma.tenantControlActor.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TenantControlActorUpdateArgs>(args: SelectSubset<T, TenantControlActorUpdateArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TenantControlActors.
+     * @param {TenantControlActorDeleteManyArgs} args - Arguments to filter TenantControlActors to delete.
+     * @example
+     * // Delete a few TenantControlActors
+     * const { count } = await prisma.tenantControlActor.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TenantControlActorDeleteManyArgs>(args?: SelectSubset<T, TenantControlActorDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantControlActors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantControlActorUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TenantControlActors
+     * const tenantControlActor = await prisma.tenantControlActor.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TenantControlActorUpdateManyArgs>(args: SelectSubset<T, TenantControlActorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantControlActors and returns the data updated in the database.
+     * @param {TenantControlActorUpdateManyAndReturnArgs} args - Arguments to update many TenantControlActors.
+     * @example
+     * // Update many TenantControlActors
+     * const tenantControlActor = await prisma.tenantControlActor.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TenantControlActors and only return the `id`
+     * const tenantControlActorWithIdOnly = await prisma.tenantControlActor.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TenantControlActorUpdateManyAndReturnArgs>(args: SelectSubset<T, TenantControlActorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TenantControlActor.
+     * @param {TenantControlActorUpsertArgs} args - Arguments to update or create a TenantControlActor.
+     * @example
+     * // Update or create a TenantControlActor
+     * const tenantControlActor = await prisma.tenantControlActor.upsert({
+     *   create: {
+     *     // ... data to create a TenantControlActor
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TenantControlActor we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TenantControlActorUpsertArgs>(args: SelectSubset<T, TenantControlActorUpsertArgs<ExtArgs>>): Prisma__TenantControlActorClient<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TenantControlActors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantControlActorCountArgs} args - Arguments to filter TenantControlActors to count.
+     * @example
+     * // Count the number of TenantControlActors
+     * const count = await prisma.tenantControlActor.count({
+     *   where: {
+     *     // ... the filter for the TenantControlActors we want to count
+     *   }
+     * })
+    **/
+    count<T extends TenantControlActorCountArgs>(
+      args?: Subset<T, TenantControlActorCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TenantControlActorCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TenantControlActor.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantControlActorAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TenantControlActorAggregateArgs>(args: Subset<T, TenantControlActorAggregateArgs>): Prisma.PrismaPromise<GetTenantControlActorAggregateType<T>>
+
+    /**
+     * Group by TenantControlActor.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantControlActorGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TenantControlActorGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TenantControlActorGroupByArgs['orderBy'] }
+        : { orderBy?: TenantControlActorGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TenantControlActorGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTenantControlActorGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TenantControlActor model
+   */
+  readonly fields: TenantControlActorFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TenantControlActor.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TenantControlActorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TenantControlActor model
+   */
+  interface TenantControlActorFieldRefs {
+    readonly id: FieldRef<"TenantControlActor", 'String'>
+    readonly tenantId: FieldRef<"TenantControlActor", 'String'>
+    readonly actorId: FieldRef<"TenantControlActor", 'String'>
+    readonly displayName: FieldRef<"TenantControlActor", 'String'>
+    readonly email: FieldRef<"TenantControlActor", 'String'>
+    readonly role: FieldRef<"TenantControlActor", 'String'>
+    readonly permissionsJson: FieldRef<"TenantControlActor", 'String'>
+    readonly supportSessionActive: FieldRef<"TenantControlActor", 'Boolean'>
+    readonly supportSessionStartedAt: FieldRef<"TenantControlActor", 'DateTime'>
+    readonly supportSessionExpiresAt: FieldRef<"TenantControlActor", 'DateTime'>
+    readonly createdAt: FieldRef<"TenantControlActor", 'DateTime'>
+    readonly updatedAt: FieldRef<"TenantControlActor", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TenantControlActor findUnique
+   */
+  export type TenantControlActorFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantControlActor to fetch.
+     */
+    where: TenantControlActorWhereUniqueInput
+  }
+
+  /**
+   * TenantControlActor findUniqueOrThrow
+   */
+  export type TenantControlActorFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantControlActor to fetch.
+     */
+    where: TenantControlActorWhereUniqueInput
+  }
+
+  /**
+   * TenantControlActor findFirst
+   */
+  export type TenantControlActorFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantControlActor to fetch.
+     */
+    where?: TenantControlActorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantControlActors to fetch.
+     */
+    orderBy?: TenantControlActorOrderByWithRelationInput | TenantControlActorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantControlActors.
+     */
+    cursor?: TenantControlActorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantControlActors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantControlActors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantControlActors.
+     */
+    distinct?: TenantControlActorScalarFieldEnum | TenantControlActorScalarFieldEnum[]
+  }
+
+  /**
+   * TenantControlActor findFirstOrThrow
+   */
+  export type TenantControlActorFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantControlActor to fetch.
+     */
+    where?: TenantControlActorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantControlActors to fetch.
+     */
+    orderBy?: TenantControlActorOrderByWithRelationInput | TenantControlActorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantControlActors.
+     */
+    cursor?: TenantControlActorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantControlActors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantControlActors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantControlActors.
+     */
+    distinct?: TenantControlActorScalarFieldEnum | TenantControlActorScalarFieldEnum[]
+  }
+
+  /**
+   * TenantControlActor findMany
+   */
+  export type TenantControlActorFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantControlActors to fetch.
+     */
+    where?: TenantControlActorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantControlActors to fetch.
+     */
+    orderBy?: TenantControlActorOrderByWithRelationInput | TenantControlActorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TenantControlActors.
+     */
+    cursor?: TenantControlActorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantControlActors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantControlActors.
+     */
+    skip?: number
+    distinct?: TenantControlActorScalarFieldEnum | TenantControlActorScalarFieldEnum[]
+  }
+
+  /**
+   * TenantControlActor create
+   */
+  export type TenantControlActorCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TenantControlActor.
+     */
+    data: XOR<TenantControlActorCreateInput, TenantControlActorUncheckedCreateInput>
+  }
+
+  /**
+   * TenantControlActor createMany
+   */
+  export type TenantControlActorCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TenantControlActors.
+     */
+    data: TenantControlActorCreateManyInput | TenantControlActorCreateManyInput[]
+  }
+
+  /**
+   * TenantControlActor createManyAndReturn
+   */
+  export type TenantControlActorCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * The data used to create many TenantControlActors.
+     */
+    data: TenantControlActorCreateManyInput | TenantControlActorCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantControlActor update
+   */
+  export type TenantControlActorUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TenantControlActor.
+     */
+    data: XOR<TenantControlActorUpdateInput, TenantControlActorUncheckedUpdateInput>
+    /**
+     * Choose, which TenantControlActor to update.
+     */
+    where: TenantControlActorWhereUniqueInput
+  }
+
+  /**
+   * TenantControlActor updateMany
+   */
+  export type TenantControlActorUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TenantControlActors.
+     */
+    data: XOR<TenantControlActorUpdateManyMutationInput, TenantControlActorUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantControlActors to update
+     */
+    where?: TenantControlActorWhereInput
+    /**
+     * Limit how many TenantControlActors to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantControlActor updateManyAndReturn
+   */
+  export type TenantControlActorUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * The data used to update TenantControlActors.
+     */
+    data: XOR<TenantControlActorUpdateManyMutationInput, TenantControlActorUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantControlActors to update
+     */
+    where?: TenantControlActorWhereInput
+    /**
+     * Limit how many TenantControlActors to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantControlActor upsert
+   */
+  export type TenantControlActorUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TenantControlActor to update in case it exists.
+     */
+    where: TenantControlActorWhereUniqueInput
+    /**
+     * In case the TenantControlActor found by the `where` argument doesn't exist, create a new TenantControlActor with this data.
+     */
+    create: XOR<TenantControlActorCreateInput, TenantControlActorUncheckedCreateInput>
+    /**
+     * In case the TenantControlActor was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TenantControlActorUpdateInput, TenantControlActorUncheckedUpdateInput>
+  }
+
+  /**
+   * TenantControlActor delete
+   */
+  export type TenantControlActorDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
+    /**
+     * Filter which TenantControlActor to delete.
+     */
+    where: TenantControlActorWhereUniqueInput
+  }
+
+  /**
+   * TenantControlActor deleteMany
+   */
+  export type TenantControlActorDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantControlActors to delete
+     */
+    where?: TenantControlActorWhereInput
+    /**
+     * Limit how many TenantControlActors to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantControlActor without action
+   */
+  export type TenantControlActorDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantControlActor
+     */
+    select?: TenantControlActorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantControlActor
+     */
+    omit?: TenantControlActorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantControlActorInclude<ExtArgs> | null
   }
 
 
@@ -14634,6 +15935,7 @@ export namespace Prisma {
     tenantId: 'tenantId',
     hostname: 'hostname',
     hostnameNormalized: 'hostnameNormalized',
+    status: 'status',
     isPrimary: 'isPrimary',
     isVerified: 'isVerified',
     verifiedAt: 'verifiedAt',
@@ -14657,6 +15959,7 @@ export namespace Prisma {
   export const TenantControlSettingsScalarFieldEnum: {
     id: 'id',
     tenantId: 'tenantId',
+    status: 'status',
     planCode: 'planCode',
     featureFlagsJson: 'featureFlagsJson',
     createdAt: 'createdAt',
@@ -14664,6 +15967,24 @@ export namespace Prisma {
   };
 
   export type TenantControlSettingsScalarFieldEnum = (typeof TenantControlSettingsScalarFieldEnum)[keyof typeof TenantControlSettingsScalarFieldEnum]
+
+
+  export const TenantControlActorScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    actorId: 'actorId',
+    displayName: 'displayName',
+    email: 'email',
+    role: 'role',
+    permissionsJson: 'permissionsJson',
+    supportSessionActive: 'supportSessionActive',
+    supportSessionStartedAt: 'supportSessionStartedAt',
+    supportSessionExpiresAt: 'supportSessionExpiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TenantControlActorScalarFieldEnum = (typeof TenantControlActorScalarFieldEnum)[keyof typeof TenantControlActorScalarFieldEnum]
 
 
   export const ModuleConfigScalarFieldEnum: {
@@ -14856,6 +16177,7 @@ export namespace Prisma {
     domains?: TenantDomainListRelationFilter
     websiteConfig?: XOR<WebsiteConfigNullableScalarRelationFilter, WebsiteConfigWhereInput> | null
     controlSettings?: XOR<TenantControlSettingsNullableScalarRelationFilter, TenantControlSettingsWhereInput> | null
+    controlActors?: TenantControlActorListRelationFilter
     contacts?: ContactListRelationFilter
     leads?: LeadListRelationFilter
     activities?: ActivityListRelationFilter
@@ -14873,6 +16195,7 @@ export namespace Prisma {
     domains?: TenantDomainOrderByRelationAggregateInput
     websiteConfig?: WebsiteConfigOrderByWithRelationInput
     controlSettings?: TenantControlSettingsOrderByWithRelationInput
+    controlActors?: TenantControlActorOrderByRelationAggregateInput
     contacts?: ContactOrderByRelationAggregateInput
     leads?: LeadOrderByRelationAggregateInput
     activities?: ActivityOrderByRelationAggregateInput
@@ -14893,6 +16216,7 @@ export namespace Prisma {
     domains?: TenantDomainListRelationFilter
     websiteConfig?: XOR<WebsiteConfigNullableScalarRelationFilter, WebsiteConfigWhereInput> | null
     controlSettings?: XOR<TenantControlSettingsNullableScalarRelationFilter, TenantControlSettingsWhereInput> | null
+    controlActors?: TenantControlActorListRelationFilter
     contacts?: ContactListRelationFilter
     leads?: LeadListRelationFilter
     activities?: ActivityListRelationFilter
@@ -14932,6 +16256,7 @@ export namespace Prisma {
     tenantId?: StringFilter<"TenantDomain"> | string
     hostname?: StringFilter<"TenantDomain"> | string
     hostnameNormalized?: StringFilter<"TenantDomain"> | string
+    status?: StringFilter<"TenantDomain"> | string
     isPrimary?: BoolFilter<"TenantDomain"> | boolean
     isVerified?: BoolFilter<"TenantDomain"> | boolean
     verifiedAt?: DateTimeNullableFilter<"TenantDomain"> | Date | string | null
@@ -14945,6 +16270,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     hostname?: SortOrder
     hostnameNormalized?: SortOrder
+    status?: SortOrder
     isPrimary?: SortOrder
     isVerified?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
@@ -14961,6 +16287,7 @@ export namespace Prisma {
     NOT?: TenantDomainWhereInput | TenantDomainWhereInput[]
     tenantId?: StringFilter<"TenantDomain"> | string
     hostname?: StringFilter<"TenantDomain"> | string
+    status?: StringFilter<"TenantDomain"> | string
     isPrimary?: BoolFilter<"TenantDomain"> | boolean
     isVerified?: BoolFilter<"TenantDomain"> | boolean
     verifiedAt?: DateTimeNullableFilter<"TenantDomain"> | Date | string | null
@@ -14974,6 +16301,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     hostname?: SortOrder
     hostnameNormalized?: SortOrder
+    status?: SortOrder
     isPrimary?: SortOrder
     isVerified?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
@@ -14992,6 +16320,7 @@ export namespace Prisma {
     tenantId?: StringWithAggregatesFilter<"TenantDomain"> | string
     hostname?: StringWithAggregatesFilter<"TenantDomain"> | string
     hostnameNormalized?: StringWithAggregatesFilter<"TenantDomain"> | string
+    status?: StringWithAggregatesFilter<"TenantDomain"> | string
     isPrimary?: BoolWithAggregatesFilter<"TenantDomain"> | boolean
     isVerified?: BoolWithAggregatesFilter<"TenantDomain"> | boolean
     verifiedAt?: DateTimeNullableWithAggregatesFilter<"TenantDomain"> | Date | string | null
@@ -15058,6 +16387,7 @@ export namespace Prisma {
     NOT?: TenantControlSettingsWhereInput | TenantControlSettingsWhereInput[]
     id?: StringFilter<"TenantControlSettings"> | string
     tenantId?: StringFilter<"TenantControlSettings"> | string
+    status?: StringFilter<"TenantControlSettings"> | string
     planCode?: StringFilter<"TenantControlSettings"> | string
     featureFlagsJson?: StringFilter<"TenantControlSettings"> | string
     createdAt?: DateTimeFilter<"TenantControlSettings"> | Date | string
@@ -15068,6 +16398,7 @@ export namespace Prisma {
   export type TenantControlSettingsOrderByWithRelationInput = {
     id?: SortOrder
     tenantId?: SortOrder
+    status?: SortOrder
     planCode?: SortOrder
     featureFlagsJson?: SortOrder
     createdAt?: SortOrder
@@ -15081,6 +16412,7 @@ export namespace Prisma {
     AND?: TenantControlSettingsWhereInput | TenantControlSettingsWhereInput[]
     OR?: TenantControlSettingsWhereInput[]
     NOT?: TenantControlSettingsWhereInput | TenantControlSettingsWhereInput[]
+    status?: StringFilter<"TenantControlSettings"> | string
     planCode?: StringFilter<"TenantControlSettings"> | string
     featureFlagsJson?: StringFilter<"TenantControlSettings"> | string
     createdAt?: DateTimeFilter<"TenantControlSettings"> | Date | string
@@ -15091,6 +16423,7 @@ export namespace Prisma {
   export type TenantControlSettingsOrderByWithAggregationInput = {
     id?: SortOrder
     tenantId?: SortOrder
+    status?: SortOrder
     planCode?: SortOrder
     featureFlagsJson?: SortOrder
     createdAt?: SortOrder
@@ -15106,10 +16439,102 @@ export namespace Prisma {
     NOT?: TenantControlSettingsScalarWhereWithAggregatesInput | TenantControlSettingsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"TenantControlSettings"> | string
     tenantId?: StringWithAggregatesFilter<"TenantControlSettings"> | string
+    status?: StringWithAggregatesFilter<"TenantControlSettings"> | string
     planCode?: StringWithAggregatesFilter<"TenantControlSettings"> | string
     featureFlagsJson?: StringWithAggregatesFilter<"TenantControlSettings"> | string
     createdAt?: DateTimeWithAggregatesFilter<"TenantControlSettings"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TenantControlSettings"> | Date | string
+  }
+
+  export type TenantControlActorWhereInput = {
+    AND?: TenantControlActorWhereInput | TenantControlActorWhereInput[]
+    OR?: TenantControlActorWhereInput[]
+    NOT?: TenantControlActorWhereInput | TenantControlActorWhereInput[]
+    id?: StringFilter<"TenantControlActor"> | string
+    tenantId?: StringFilter<"TenantControlActor"> | string
+    actorId?: StringFilter<"TenantControlActor"> | string
+    displayName?: StringNullableFilter<"TenantControlActor"> | string | null
+    email?: StringNullableFilter<"TenantControlActor"> | string | null
+    role?: StringFilter<"TenantControlActor"> | string
+    permissionsJson?: StringFilter<"TenantControlActor"> | string
+    supportSessionActive?: BoolFilter<"TenantControlActor"> | boolean
+    supportSessionStartedAt?: DateTimeNullableFilter<"TenantControlActor"> | Date | string | null
+    supportSessionExpiresAt?: DateTimeNullableFilter<"TenantControlActor"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantControlActor"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantControlActor"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }
+
+  export type TenantControlActorOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    displayName?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    role?: SortOrder
+    permissionsJson?: SortOrder
+    supportSessionActive?: SortOrder
+    supportSessionStartedAt?: SortOrderInput | SortOrder
+    supportSessionExpiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+  }
+
+  export type TenantControlActorWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId_actorId?: TenantControlActorTenantIdActorIdCompoundUniqueInput
+    AND?: TenantControlActorWhereInput | TenantControlActorWhereInput[]
+    OR?: TenantControlActorWhereInput[]
+    NOT?: TenantControlActorWhereInput | TenantControlActorWhereInput[]
+    tenantId?: StringFilter<"TenantControlActor"> | string
+    actorId?: StringFilter<"TenantControlActor"> | string
+    displayName?: StringNullableFilter<"TenantControlActor"> | string | null
+    email?: StringNullableFilter<"TenantControlActor"> | string | null
+    role?: StringFilter<"TenantControlActor"> | string
+    permissionsJson?: StringFilter<"TenantControlActor"> | string
+    supportSessionActive?: BoolFilter<"TenantControlActor"> | boolean
+    supportSessionStartedAt?: DateTimeNullableFilter<"TenantControlActor"> | Date | string | null
+    supportSessionExpiresAt?: DateTimeNullableFilter<"TenantControlActor"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantControlActor"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantControlActor"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }, "id" | "tenantId_actorId">
+
+  export type TenantControlActorOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    displayName?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    role?: SortOrder
+    permissionsJson?: SortOrder
+    supportSessionActive?: SortOrder
+    supportSessionStartedAt?: SortOrderInput | SortOrder
+    supportSessionExpiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TenantControlActorCountOrderByAggregateInput
+    _max?: TenantControlActorMaxOrderByAggregateInput
+    _min?: TenantControlActorMinOrderByAggregateInput
+  }
+
+  export type TenantControlActorScalarWhereWithAggregatesInput = {
+    AND?: TenantControlActorScalarWhereWithAggregatesInput | TenantControlActorScalarWhereWithAggregatesInput[]
+    OR?: TenantControlActorScalarWhereWithAggregatesInput[]
+    NOT?: TenantControlActorScalarWhereWithAggregatesInput | TenantControlActorScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TenantControlActor"> | string
+    tenantId?: StringWithAggregatesFilter<"TenantControlActor"> | string
+    actorId?: StringWithAggregatesFilter<"TenantControlActor"> | string
+    displayName?: StringNullableWithAggregatesFilter<"TenantControlActor"> | string | null
+    email?: StringNullableWithAggregatesFilter<"TenantControlActor"> | string | null
+    role?: StringWithAggregatesFilter<"TenantControlActor"> | string
+    permissionsJson?: StringWithAggregatesFilter<"TenantControlActor"> | string
+    supportSessionActive?: BoolWithAggregatesFilter<"TenantControlActor"> | boolean
+    supportSessionStartedAt?: DateTimeNullableWithAggregatesFilter<"TenantControlActor"> | Date | string | null
+    supportSessionExpiresAt?: DateTimeNullableWithAggregatesFilter<"TenantControlActor"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TenantControlActor"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TenantControlActor"> | Date | string
   }
 
   export type ModuleConfigWhereInput = {
@@ -15738,6 +17163,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -15755,6 +17181,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -15772,6 +17199,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -15789,6 +17217,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -15827,6 +17256,7 @@ export namespace Prisma {
     id: string
     hostname: string
     hostnameNormalized: string
+    status?: string
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: Date | string | null
@@ -15840,6 +17270,7 @@ export namespace Prisma {
     tenantId: string
     hostname: string
     hostnameNormalized: string
+    status?: string
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: Date | string | null
@@ -15851,6 +17282,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     hostname?: StringFieldUpdateOperationsInput | string
     hostnameNormalized?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15864,6 +17296,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     hostname?: StringFieldUpdateOperationsInput | string
     hostnameNormalized?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15876,6 +17309,7 @@ export namespace Prisma {
     tenantId: string
     hostname: string
     hostnameNormalized: string
+    status?: string
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: Date | string | null
@@ -15887,6 +17321,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     hostname?: StringFieldUpdateOperationsInput | string
     hostnameNormalized?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15899,6 +17334,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     hostname?: StringFieldUpdateOperationsInput | string
     hostnameNormalized?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15960,6 +17396,7 @@ export namespace Prisma {
 
   export type TenantControlSettingsCreateInput = {
     id: string
+    status?: string
     planCode?: string
     featureFlagsJson?: string
     createdAt: Date | string
@@ -15970,6 +17407,7 @@ export namespace Prisma {
   export type TenantControlSettingsUncheckedCreateInput = {
     id: string
     tenantId: string
+    status?: string
     planCode?: string
     featureFlagsJson?: string
     createdAt: Date | string
@@ -15978,6 +17416,7 @@ export namespace Prisma {
 
   export type TenantControlSettingsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     featureFlagsJson?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15988,6 +17427,7 @@ export namespace Prisma {
   export type TenantControlSettingsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     featureFlagsJson?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15997,6 +17437,7 @@ export namespace Prisma {
   export type TenantControlSettingsCreateManyInput = {
     id: string
     tenantId: string
+    status?: string
     planCode?: string
     featureFlagsJson?: string
     createdAt: Date | string
@@ -16005,6 +17446,7 @@ export namespace Prisma {
 
   export type TenantControlSettingsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     featureFlagsJson?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16014,8 +17456,113 @@ export namespace Prisma {
   export type TenantControlSettingsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     featureFlagsJson?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantControlActorCreateInput = {
+    id: string
+    actorId: string
+    displayName?: string | null
+    email?: string | null
+    role: string
+    permissionsJson?: string
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: Date | string | null
+    supportSessionExpiresAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tenant: TenantCreateNestedOneWithoutControlActorsInput
+  }
+
+  export type TenantControlActorUncheckedCreateInput = {
+    id: string
+    tenantId: string
+    actorId: string
+    displayName?: string | null
+    email?: string | null
+    role: string
+    permissionsJson?: string
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: Date | string | null
+    supportSessionExpiresAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantControlActorUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    permissionsJson?: StringFieldUpdateOperationsInput | string
+    supportSessionActive?: BoolFieldUpdateOperationsInput | boolean
+    supportSessionStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    supportSessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutControlActorsNestedInput
+  }
+
+  export type TenantControlActorUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    permissionsJson?: StringFieldUpdateOperationsInput | string
+    supportSessionActive?: BoolFieldUpdateOperationsInput | boolean
+    supportSessionStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    supportSessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantControlActorCreateManyInput = {
+    id: string
+    tenantId: string
+    actorId: string
+    displayName?: string | null
+    email?: string | null
+    role: string
+    permissionsJson?: string
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: Date | string | null
+    supportSessionExpiresAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantControlActorUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    permissionsJson?: StringFieldUpdateOperationsInput | string
+    supportSessionActive?: BoolFieldUpdateOperationsInput | boolean
+    supportSessionStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    supportSessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantControlActorUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    permissionsJson?: StringFieldUpdateOperationsInput | string
+    supportSessionActive?: BoolFieldUpdateOperationsInput | boolean
+    supportSessionStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    supportSessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16743,6 +18290,12 @@ export namespace Prisma {
     isNot?: TenantControlSettingsWhereInput | null
   }
 
+  export type TenantControlActorListRelationFilter = {
+    every?: TenantControlActorWhereInput
+    some?: TenantControlActorWhereInput
+    none?: TenantControlActorWhereInput
+  }
+
   export type ContactListRelationFilter = {
     every?: ContactWhereInput
     some?: ContactWhereInput
@@ -16774,6 +18327,10 @@ export namespace Prisma {
   }
 
   export type TenantDomainOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TenantControlActorOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -16886,6 +18443,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     hostname?: SortOrder
     hostnameNormalized?: SortOrder
+    status?: SortOrder
     isPrimary?: SortOrder
     isVerified?: SortOrder
     verifiedAt?: SortOrder
@@ -16898,6 +18456,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     hostname?: SortOrder
     hostnameNormalized?: SortOrder
+    status?: SortOrder
     isPrimary?: SortOrder
     isVerified?: SortOrder
     verifiedAt?: SortOrder
@@ -16910,6 +18469,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     hostname?: SortOrder
     hostnameNormalized?: SortOrder
+    status?: SortOrder
     isPrimary?: SortOrder
     isVerified?: SortOrder
     verifiedAt?: SortOrder
@@ -16973,6 +18533,7 @@ export namespace Prisma {
   export type TenantControlSettingsCountOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
+    status?: SortOrder
     planCode?: SortOrder
     featureFlagsJson?: SortOrder
     createdAt?: SortOrder
@@ -16982,6 +18543,7 @@ export namespace Prisma {
   export type TenantControlSettingsMaxOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
+    status?: SortOrder
     planCode?: SortOrder
     featureFlagsJson?: SortOrder
     createdAt?: SortOrder
@@ -16991,10 +18553,92 @@ export namespace Prisma {
   export type TenantControlSettingsMinOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
+    status?: SortOrder
     planCode?: SortOrder
     featureFlagsJson?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type TenantControlActorTenantIdActorIdCompoundUniqueInput = {
+    tenantId: string
+    actorId: string
+  }
+
+  export type TenantControlActorCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrder
+    role?: SortOrder
+    permissionsJson?: SortOrder
+    supportSessionActive?: SortOrder
+    supportSessionStartedAt?: SortOrder
+    supportSessionExpiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantControlActorMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrder
+    role?: SortOrder
+    permissionsJson?: SortOrder
+    supportSessionActive?: SortOrder
+    supportSessionStartedAt?: SortOrder
+    supportSessionExpiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantControlActorMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    actorId?: SortOrder
+    displayName?: SortOrder
+    email?: SortOrder
+    role?: SortOrder
+    permissionsJson?: SortOrder
+    supportSessionActive?: SortOrder
+    supportSessionStartedAt?: SortOrder
+    supportSessionExpiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -17075,20 +18719,6 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type ContactTenantIdEmailNormalizedCompoundUniqueInput = {
     tenantId: string
     emailNormalized: string
@@ -17136,23 +18766,6 @@ export namespace Prisma {
     source?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -17460,6 +19073,13 @@ export namespace Prisma {
     connect?: TenantControlSettingsWhereUniqueInput
   }
 
+  export type TenantControlActorCreateNestedManyWithoutTenantInput = {
+    create?: XOR<TenantControlActorCreateWithoutTenantInput, TenantControlActorUncheckedCreateWithoutTenantInput> | TenantControlActorCreateWithoutTenantInput[] | TenantControlActorUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantControlActorCreateOrConnectWithoutTenantInput | TenantControlActorCreateOrConnectWithoutTenantInput[]
+    createMany?: TenantControlActorCreateManyTenantInputEnvelope
+    connect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+  }
+
   export type ContactCreateNestedManyWithoutTenantInput = {
     create?: XOR<ContactCreateWithoutTenantInput, ContactUncheckedCreateWithoutTenantInput> | ContactCreateWithoutTenantInput[] | ContactUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: ContactCreateOrConnectWithoutTenantInput | ContactCreateOrConnectWithoutTenantInput[]
@@ -17512,6 +19132,13 @@ export namespace Prisma {
     create?: XOR<TenantControlSettingsCreateWithoutTenantInput, TenantControlSettingsUncheckedCreateWithoutTenantInput>
     connectOrCreate?: TenantControlSettingsCreateOrConnectWithoutTenantInput
     connect?: TenantControlSettingsWhereUniqueInput
+  }
+
+  export type TenantControlActorUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<TenantControlActorCreateWithoutTenantInput, TenantControlActorUncheckedCreateWithoutTenantInput> | TenantControlActorCreateWithoutTenantInput[] | TenantControlActorUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantControlActorCreateOrConnectWithoutTenantInput | TenantControlActorCreateOrConnectWithoutTenantInput[]
+    createMany?: TenantControlActorCreateManyTenantInputEnvelope
+    connect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
   }
 
   export type ContactUncheckedCreateNestedManyWithoutTenantInput = {
@@ -17589,6 +19216,20 @@ export namespace Prisma {
     delete?: TenantControlSettingsWhereInput | boolean
     connect?: TenantControlSettingsWhereUniqueInput
     update?: XOR<XOR<TenantControlSettingsUpdateToOneWithWhereWithoutTenantInput, TenantControlSettingsUpdateWithoutTenantInput>, TenantControlSettingsUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantControlActorUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<TenantControlActorCreateWithoutTenantInput, TenantControlActorUncheckedCreateWithoutTenantInput> | TenantControlActorCreateWithoutTenantInput[] | TenantControlActorUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantControlActorCreateOrConnectWithoutTenantInput | TenantControlActorCreateOrConnectWithoutTenantInput[]
+    upsert?: TenantControlActorUpsertWithWhereUniqueWithoutTenantInput | TenantControlActorUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: TenantControlActorCreateManyTenantInputEnvelope
+    set?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    disconnect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    delete?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    connect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    update?: TenantControlActorUpdateWithWhereUniqueWithoutTenantInput | TenantControlActorUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: TenantControlActorUpdateManyWithWhereWithoutTenantInput | TenantControlActorUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: TenantControlActorScalarWhereInput | TenantControlActorScalarWhereInput[]
   }
 
   export type ContactUpdateManyWithoutTenantNestedInput = {
@@ -17693,6 +19334,20 @@ export namespace Prisma {
     delete?: TenantControlSettingsWhereInput | boolean
     connect?: TenantControlSettingsWhereUniqueInput
     update?: XOR<XOR<TenantControlSettingsUpdateToOneWithWhereWithoutTenantInput, TenantControlSettingsUpdateWithoutTenantInput>, TenantControlSettingsUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<TenantControlActorCreateWithoutTenantInput, TenantControlActorUncheckedCreateWithoutTenantInput> | TenantControlActorCreateWithoutTenantInput[] | TenantControlActorUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantControlActorCreateOrConnectWithoutTenantInput | TenantControlActorCreateOrConnectWithoutTenantInput[]
+    upsert?: TenantControlActorUpsertWithWhereUniqueWithoutTenantInput | TenantControlActorUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: TenantControlActorCreateManyTenantInputEnvelope
+    set?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    disconnect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    delete?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    connect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+    update?: TenantControlActorUpdateWithWhereUniqueWithoutTenantInput | TenantControlActorUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: TenantControlActorUpdateManyWithWhereWithoutTenantInput | TenantControlActorUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: TenantControlActorScalarWhereInput | TenantControlActorScalarWhereInput[]
   }
 
   export type ContactUncheckedUpdateManyWithoutTenantNestedInput = {
@@ -17857,6 +19512,24 @@ export namespace Prisma {
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutControlSettingsInput, TenantUpdateWithoutControlSettingsInput>, TenantUncheckedUpdateWithoutControlSettingsInput>
   }
 
+  export type TenantCreateNestedOneWithoutControlActorsInput = {
+    create?: XOR<TenantCreateWithoutControlActorsInput, TenantUncheckedCreateWithoutControlActorsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutControlActorsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type TenantUpdateOneRequiredWithoutControlActorsNestedInput = {
+    create?: XOR<TenantCreateWithoutControlActorsInput, TenantUncheckedCreateWithoutControlActorsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutControlActorsInput
+    upsert?: TenantUpsertWithoutControlActorsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutControlActorsInput, TenantUpdateWithoutControlActorsInput>, TenantUncheckedUpdateWithoutControlActorsInput>
+  }
+
   export type WebsiteConfigCreateNestedOneWithoutModulesInput = {
     create?: XOR<WebsiteConfigCreateWithoutModulesInput, WebsiteConfigUncheckedCreateWithoutModulesInput>
     connectOrCreate?: WebsiteConfigCreateOrConnectWithoutModulesInput
@@ -17911,10 +19584,6 @@ export namespace Prisma {
     connectOrCreate?: ActivityCreateOrConnectWithoutContactInput | ActivityCreateOrConnectWithoutContactInput[]
     createMany?: ActivityCreateManyContactInputEnvelope
     connect?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type TenantUpdateOneRequiredWithoutContactsNestedInput = {
@@ -18251,33 +19920,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -18307,6 +19949,33 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -18340,6 +20009,7 @@ export namespace Prisma {
     id: string
     hostname: string
     hostnameNormalized: string
+    status?: string
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: Date | string | null
@@ -18351,6 +20021,7 @@ export namespace Prisma {
     id: string
     hostname: string
     hostnameNormalized: string
+    status?: string
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: Date | string | null
@@ -18388,6 +20059,7 @@ export namespace Prisma {
 
   export type TenantControlSettingsCreateWithoutTenantInput = {
     id: string
+    status?: string
     planCode?: string
     featureFlagsJson?: string
     createdAt: Date | string
@@ -18396,6 +20068,7 @@ export namespace Prisma {
 
   export type TenantControlSettingsUncheckedCreateWithoutTenantInput = {
     id: string
+    status?: string
     planCode?: string
     featureFlagsJson?: string
     createdAt: Date | string
@@ -18405,6 +20078,43 @@ export namespace Prisma {
   export type TenantControlSettingsCreateOrConnectWithoutTenantInput = {
     where: TenantControlSettingsWhereUniqueInput
     create: XOR<TenantControlSettingsCreateWithoutTenantInput, TenantControlSettingsUncheckedCreateWithoutTenantInput>
+  }
+
+  export type TenantControlActorCreateWithoutTenantInput = {
+    id: string
+    actorId: string
+    displayName?: string | null
+    email?: string | null
+    role: string
+    permissionsJson?: string
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: Date | string | null
+    supportSessionExpiresAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantControlActorUncheckedCreateWithoutTenantInput = {
+    id: string
+    actorId: string
+    displayName?: string | null
+    email?: string | null
+    role: string
+    permissionsJson?: string
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: Date | string | null
+    supportSessionExpiresAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantControlActorCreateOrConnectWithoutTenantInput = {
+    where: TenantControlActorWhereUniqueInput
+    create: XOR<TenantControlActorCreateWithoutTenantInput, TenantControlActorUncheckedCreateWithoutTenantInput>
+  }
+
+  export type TenantControlActorCreateManyTenantInputEnvelope = {
+    data: TenantControlActorCreateManyTenantInput | TenantControlActorCreateManyTenantInput[]
   }
 
   export type ContactCreateWithoutTenantInput = {
@@ -18618,6 +20328,7 @@ export namespace Prisma {
     tenantId?: StringFilter<"TenantDomain"> | string
     hostname?: StringFilter<"TenantDomain"> | string
     hostnameNormalized?: StringFilter<"TenantDomain"> | string
+    status?: StringFilter<"TenantDomain"> | string
     isPrimary?: BoolFilter<"TenantDomain"> | boolean
     isVerified?: BoolFilter<"TenantDomain"> | boolean
     verifiedAt?: DateTimeNullableFilter<"TenantDomain"> | Date | string | null
@@ -18663,6 +20374,7 @@ export namespace Prisma {
 
   export type TenantControlSettingsUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     featureFlagsJson?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18671,10 +20383,45 @@ export namespace Prisma {
 
   export type TenantControlSettingsUncheckedUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     featureFlagsJson?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantControlActorUpsertWithWhereUniqueWithoutTenantInput = {
+    where: TenantControlActorWhereUniqueInput
+    update: XOR<TenantControlActorUpdateWithoutTenantInput, TenantControlActorUncheckedUpdateWithoutTenantInput>
+    create: XOR<TenantControlActorCreateWithoutTenantInput, TenantControlActorUncheckedCreateWithoutTenantInput>
+  }
+
+  export type TenantControlActorUpdateWithWhereUniqueWithoutTenantInput = {
+    where: TenantControlActorWhereUniqueInput
+    data: XOR<TenantControlActorUpdateWithoutTenantInput, TenantControlActorUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantControlActorUpdateManyWithWhereWithoutTenantInput = {
+    where: TenantControlActorScalarWhereInput
+    data: XOR<TenantControlActorUpdateManyMutationInput, TenantControlActorUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type TenantControlActorScalarWhereInput = {
+    AND?: TenantControlActorScalarWhereInput | TenantControlActorScalarWhereInput[]
+    OR?: TenantControlActorScalarWhereInput[]
+    NOT?: TenantControlActorScalarWhereInput | TenantControlActorScalarWhereInput[]
+    id?: StringFilter<"TenantControlActor"> | string
+    tenantId?: StringFilter<"TenantControlActor"> | string
+    actorId?: StringFilter<"TenantControlActor"> | string
+    displayName?: StringNullableFilter<"TenantControlActor"> | string | null
+    email?: StringNullableFilter<"TenantControlActor"> | string | null
+    role?: StringFilter<"TenantControlActor"> | string
+    permissionsJson?: StringFilter<"TenantControlActor"> | string
+    supportSessionActive?: BoolFilter<"TenantControlActor"> | boolean
+    supportSessionStartedAt?: DateTimeNullableFilter<"TenantControlActor"> | Date | string | null
+    supportSessionExpiresAt?: DateTimeNullableFilter<"TenantControlActor"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantControlActor"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantControlActor"> | Date | string
   }
 
   export type ContactUpsertWithWhereUniqueWithoutTenantInput = {
@@ -18854,6 +20601,7 @@ export namespace Prisma {
     updatedAt: Date | string
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -18870,6 +20618,7 @@ export namespace Prisma {
     updatedAt: Date | string
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -18902,6 +20651,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -18918,6 +20668,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -18934,6 +20685,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -18950,6 +20702,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -19011,6 +20764,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -19027,6 +20781,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -19073,6 +20828,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -19089,6 +20845,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -19121,6 +20878,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -19137,6 +20895,91 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutControlActorsInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    contacts?: ContactCreateNestedManyWithoutTenantInput
+    leads?: LeadCreateNestedManyWithoutTenantInput
+    activities?: ActivityCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutControlActorsInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
+    leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutControlActorsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutControlActorsInput, TenantUncheckedCreateWithoutControlActorsInput>
+  }
+
+  export type TenantUpsertWithoutControlActorsInput = {
+    update: XOR<TenantUpdateWithoutControlActorsInput, TenantUncheckedUpdateWithoutControlActorsInput>
+    create: XOR<TenantCreateWithoutControlActorsInput, TenantUncheckedCreateWithoutControlActorsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutControlActorsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutControlActorsInput, TenantUncheckedUpdateWithoutControlActorsInput>
+  }
+
+  export type TenantUpdateWithoutControlActorsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    contacts?: ContactUpdateManyWithoutTenantNestedInput
+    leads?: LeadUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutControlActorsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -19198,6 +21041,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
@@ -19214,6 +21058,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
@@ -19326,6 +21171,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
@@ -19342,6 +21188,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
@@ -19390,6 +21237,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
@@ -19406,6 +21254,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
@@ -19502,6 +21351,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
@@ -19518,6 +21368,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
@@ -19589,6 +21440,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
@@ -19605,6 +21457,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
@@ -19715,6 +21568,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
@@ -19731,6 +21585,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
@@ -19837,6 +21692,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -19853,6 +21709,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -19885,6 +21742,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -19901,6 +21759,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -19917,6 +21776,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -19933,6 +21793,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -19965,6 +21826,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -19981,6 +21843,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -19991,9 +21854,24 @@ export namespace Prisma {
     id: string
     hostname: string
     hostnameNormalized: string
+    status?: string
     isPrimary?: boolean
     isVerified?: boolean
     verifiedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantControlActorCreateManyTenantInput = {
+    id: string
+    actorId: string
+    displayName?: string | null
+    email?: string | null
+    role: string
+    permissionsJson?: string
+    supportSessionActive?: boolean
+    supportSessionStartedAt?: Date | string | null
+    supportSessionExpiresAt?: Date | string | null
     createdAt: Date | string
     updatedAt: Date | string
   }
@@ -20070,6 +21948,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     hostname?: StringFieldUpdateOperationsInput | string
     hostnameNormalized?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20081,6 +21960,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     hostname?: StringFieldUpdateOperationsInput | string
     hostnameNormalized?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -20092,9 +21972,52 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     hostname?: StringFieldUpdateOperationsInput | string
     hostnameNormalized?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantControlActorUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    permissionsJson?: StringFieldUpdateOperationsInput | string
+    supportSessionActive?: BoolFieldUpdateOperationsInput | boolean
+    supportSessionStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    supportSessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantControlActorUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    permissionsJson?: StringFieldUpdateOperationsInput | string
+    supportSessionActive?: BoolFieldUpdateOperationsInput | boolean
+    supportSessionStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    supportSessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantControlActorUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    permissionsJson?: StringFieldUpdateOperationsInput | string
+    supportSessionActive?: BoolFieldUpdateOperationsInput | boolean
+    supportSessionStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    supportSessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

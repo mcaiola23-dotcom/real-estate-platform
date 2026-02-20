@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getTenantControlSettings, updateTenantControlSettings } from '@real-estate/db/control-plane';
 import {
+  buildAuditRequestMetadata,
   enforceAdminMutationAccess,
   getMutationActorFromRequest,
   safeWriteAdminAuditLog,
@@ -46,15 +47,25 @@ export function createSettingsPatchHandler(dependencies: SettingsRouteDependenci
       return access.response;
     }
 
+    let body:
+      | {
+          planCode?: string;
+          featureFlags?: string[];
+          status?: 'active' | 'archived';
+        }
+      | null = null;
+
     try {
-      const body = (await request.json()) as {
+      body = (await request.json()) as {
         planCode?: string;
         featureFlags?: string[];
+        status?: 'active' | 'archived';
       };
 
       const settings = await dependencies.updateTenantControlSettings(tenantId, {
         planCode: body.planCode,
         featureFlags: Array.isArray(body.featureFlags) ? body.featureFlags : undefined,
+        status: body.status === 'active' || body.status === 'archived' ? body.status : undefined,
       });
 
       await safeWriteAdminAuditLog(
@@ -63,6 +74,13 @@ export function createSettingsPatchHandler(dependencies: SettingsRouteDependenci
           actor: access.actor,
           status: 'succeeded',
           tenantId,
+          metadata: buildAuditRequestMetadata(request, {
+            changes: {
+              planCode: { after: body.planCode ?? null },
+              featureFlags: { after: Array.isArray(body.featureFlags) ? body.featureFlags : null },
+              status: { after: body.status ?? null },
+            },
+          }),
         },
         accessDependencies.writeAdminAuditLog
       );
@@ -76,6 +94,13 @@ export function createSettingsPatchHandler(dependencies: SettingsRouteDependenci
           status: 'failed',
           tenantId,
           error: error instanceof Error ? error.message : 'Settings update failed.',
+          metadata: buildAuditRequestMetadata(request, {
+            changes: {
+              planCode: { after: body?.planCode ?? null },
+              featureFlags: { after: Array.isArray(body?.featureFlags) ? body?.featureFlags : null },
+              status: { after: body?.status ?? null },
+            },
+          }),
         },
         accessDependencies.writeAdminAuditLog
       );

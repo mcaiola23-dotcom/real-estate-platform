@@ -234,6 +234,13 @@ a {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.admin-audit-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.58rem;
+  align-items: end;
+}
+
 .admin-field {
   display: grid;
   gap: 0.3rem;
@@ -428,6 +435,47 @@ button:focus-visible {
   gap: 0.8rem;
 }
 
+.admin-rbac-card,
+.admin-observability-card {
+  gap: 0.8rem;
+}
+
+.admin-rbac-add-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.56rem;
+}
+
+.admin-support-session-row {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.72rem;
+  background: #fff;
+  padding: 0.48rem 0.52rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.admin-observability-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.56rem;
+}
+
+.admin-observability-panel {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.56rem;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.admin-observability-panel h3 {
+  font-size: 0.98rem;
+}
+
 .admin-readiness {
   border: 1px solid var(--admin-border);
   border-radius: 0.75rem;
@@ -530,6 +578,11 @@ button:focus-visible {
   height: 16px;
 }
 
+.admin-audit-toggle {
+  padding-bottom: 0.48rem;
+  font-weight: 700;
+}
+
 .admin-inline-toggle {
   font-size: 0.76rem;
   font-weight: 600;
@@ -572,6 +625,16 @@ button:disabled {
 
 .admin-secondary:hover {
   background: rgba(95, 84, 70, 0.08);
+}
+
+.admin-danger-button {
+  border: 1px solid rgba(155, 35, 35, 0.52);
+  background: var(--admin-danger-bg);
+  color: var(--admin-danger-text);
+}
+
+.admin-danger-button:hover {
+  background: rgba(155, 35, 35, 0.14);
 }
 
 .admin-chip {
@@ -653,6 +716,34 @@ button:disabled {
   font-size: 0.8rem;
 }
 
+.admin-audit-diff {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.68rem;
+  background: rgba(95, 84, 70, 0.06);
+  padding: 0.4rem 0.48rem;
+}
+
+.admin-audit-diff summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--admin-text-soft);
+}
+
+.admin-audit-diff-list {
+  margin: 0.45rem 0 0;
+  padding: 0 0 0 1rem;
+  display: grid;
+  gap: 0.22rem;
+}
+
+.admin-audit-diff-list li {
+  display: grid;
+  gap: 0.08rem;
+  font-size: 0.76rem;
+  color: var(--admin-text-soft);
+}
+
 .admin-next-steps {
   margin: 0;
   padding-left: 1rem;
@@ -689,7 +780,9 @@ button:disabled {
   }
 
   .admin-plan-grid,
-  .admin-feature-grid {
+  .admin-feature-grid,
+  .admin-rbac-add-grid,
+  .admin-observability-grid {
     grid-template-columns: 1fr;
   }
 

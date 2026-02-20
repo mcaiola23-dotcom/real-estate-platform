@@ -3,10 +3,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type {
+  ControlPlaneActorPermission,
+  ControlPlaneActorRole,
   ControlPlaneAdminAuditAction,
   ControlPlaneAdminAuditEvent,
   ControlPlaneAdminAuditStatus,
+  ControlPlaneObservabilitySummary,
   ControlPlaneTenantSnapshot,
+  TenantControlActor,
+  TenantDomainProbeResult,
 } from '@real-estate/types/control-plane';
 import {
   createMutationErrorGuidance,
@@ -34,6 +39,18 @@ interface OnboardingDraft {
   customFlagsCsv: string;
 }
 
+interface ActorDraft {
+  actorId: string;
+  displayName: string;
+  email: string;
+  role: ControlPlaneActorRole;
+  permissions: ControlPlaneActorPermission[];
+}
+
+interface ActorSupportSessionDraft {
+  durationMinutes: number;
+}
+
 interface PlanOption {
   code: string;
   label: string;
@@ -51,10 +68,57 @@ const GLOBAL_AUDIT_SCOPE = '__global__';
 const auditStatusOptions: ControlPlaneAdminAuditStatus[] = ['allowed', 'denied', 'succeeded', 'failed'];
 const auditActionOptions: ControlPlaneAdminAuditAction[] = [
   'tenant.provision',
+  'tenant.status.update',
   'tenant.domain.add',
   'tenant.domain.update',
   'tenant.settings.update',
+  'tenant.actor.add',
+  'tenant.actor.update',
+  'tenant.actor.remove',
+  'tenant.support-session.start',
+  'tenant.support-session.end',
 ];
+const auditActorRoleFilterOptions = ['admin', 'operator', 'support', 'viewer', 'unknown'];
+
+const actorRoleOptions: Array<{ value: ControlPlaneActorRole; label: string }> = [
+  { value: 'admin', label: 'Admin' },
+  { value: 'operator', label: 'Operator' },
+  { value: 'support', label: 'Support' },
+  { value: 'viewer', label: 'Viewer' },
+];
+
+const actorPermissionOptions: Array<{ id: ControlPlaneActorPermission; label: string; detail: string }> = [
+  { id: 'tenant.onboarding.manage', label: 'Onboarding', detail: 'Provision tenants and maintain launch setup.' },
+  { id: 'tenant.domain.manage', label: 'Domain Ops', detail: 'Attach domains and manage verification states.' },
+  { id: 'tenant.settings.manage', label: 'Settings', detail: 'Edit plan and feature entitlement controls.' },
+  { id: 'tenant.audit.read', label: 'Audit Read', detail: 'View mutation audit history for operators.' },
+  {
+    id: 'tenant.observability.read',
+    label: 'Observability Read',
+    detail: 'View reliability, queue, and readiness monitoring data.',
+  },
+  {
+    id: 'tenant.support-session.start',
+    label: 'Support Session',
+    detail: 'Start time-bounded support sessions for tenant troubleshooting.',
+  },
+];
+
+const roleDefaultPermissions: Record<ControlPlaneActorRole, ControlPlaneActorPermission[]> = {
+  admin: [
+    'tenant.onboarding.manage',
+    'tenant.domain.manage',
+    'tenant.settings.manage',
+    'tenant.audit.read',
+    'tenant.observability.read',
+    'tenant.support-session.start',
+  ],
+  operator: ['tenant.onboarding.manage', 'tenant.domain.manage', 'tenant.settings.manage', 'tenant.audit.read'],
+  support: ['tenant.audit.read', 'tenant.observability.read', 'tenant.support-session.start'],
+  viewer: ['tenant.audit.read', 'tenant.observability.read'],
+};
+
+const defaultSupportSessionDurationMinutes = 30;
 
 const onboardingSteps = [
   {
@@ -104,6 +168,149 @@ const defaultOnboardingDraft: OnboardingDraft = {
   customFlagsCsv: '',
 };
 
+interface DomainProbeResponse {
+  ok: true;
+  tenantId: string;
+  checkedAt: string;
+  probes: TenantDomainProbeResult[];
+  primaryDomainProbe: TenantDomainProbeResult | null;
+}
+
+interface ObservabilitySummaryResponse {
+  ok: true;
+  summary: ControlPlaneObservabilitySummary;
+}
+
+interface AuditRequestAttribution {
+  requestId: string | null;
+  requestMethod: string | null;
+  requestPath: string | null;
+}
+
+interface AuditChangeDetail {
+  field: string;
+  before: string;
+  after: string;
+}
+
+function parseAuditLimit(value: string): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return 50;
+  }
+
+  return Math.max(1, Math.min(Math.trunc(parsed), 200));
+}
+
+function toAuditValueString(value: unknown): string {
+  if (value === undefined) {
+    return 'n/a';
+  }
+  if (value === null) {
+    return 'null';
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return '[unserializable]';
+  }
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function getAuditRequestAttribution(event: ControlPlaneAdminAuditEvent): AuditRequestAttribution {
+  const metadata = asRecord(event.metadata);
+  const nestedRequest = asRecord(metadata?.request);
+  const requestId =
+    (typeof metadata?.requestId === 'string' ? metadata.requestId : null) ??
+    (typeof nestedRequest?.id === 'string' ? nestedRequest.id : null);
+  const requestMethod =
+    (typeof metadata?.requestMethod === 'string' ? metadata.requestMethod : null) ??
+    (typeof nestedRequest?.method === 'string' ? nestedRequest.method : null);
+  const requestPath =
+    (typeof metadata?.requestPath === 'string' ? metadata.requestPath : null) ??
+    (typeof nestedRequest?.path === 'string' ? nestedRequest.path : null);
+
+  return {
+    requestId,
+    requestMethod,
+    requestPath,
+  };
+}
+
+function getAuditChangeDetails(event: ControlPlaneAdminAuditEvent): AuditChangeDetail[] {
+  const metadata = asRecord(event.metadata);
+  if (!metadata) {
+    return [];
+  }
+
+  const changes = asRecord(metadata.changes);
+  if (changes) {
+    return Object.entries(changes).map(([field, value]) => {
+      const detail = asRecord(value);
+      if (detail && ('before' in detail || 'after' in detail)) {
+        return {
+          field,
+          before: toAuditValueString(detail.before),
+          after: toAuditValueString(detail.after),
+        };
+      }
+
+      return {
+        field,
+        before: 'n/a',
+        after: toAuditValueString(value),
+      };
+    });
+  }
+
+  const before = asRecord(metadata.before);
+  const after = asRecord(metadata.after);
+  if (before || after) {
+    const keys = new Set<string>([...Object.keys(before ?? {}), ...Object.keys(after ?? {})]);
+    return Array.from(keys).map((field) => ({
+      field,
+      before: toAuditValueString(before?.[field]),
+      after: toAuditValueString(after?.[field]),
+    }));
+  }
+
+  return [];
+}
+
+function escapeCsvCell(value: string): string {
+  const normalized = value.replace(/"/g, '""');
+  return `"${normalized}"`;
+}
+
+function confirmDestructiveAction(message: string): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return window.confirm(message);
+}
+
+const defaultActorDraft: ActorDraft = {
+  actorId: '',
+  displayName: '',
+  email: '',
+  role: 'viewer',
+  permissions: roleDefaultPermissions.viewer,
+};
+
 function toCsv(values: string[]): string {
   return values.join(', ');
 }
@@ -116,6 +323,10 @@ function fromCsv(value: string): string[] {
 }
 
 function uniqueList(values: string[]): string[] {
+  return Array.from(new Set(values));
+}
+
+function uniquePermissions(values: ControlPlaneActorPermission[]): ControlPlaneActorPermission[] {
   return Array.from(new Set(values));
 }
 
@@ -134,6 +345,10 @@ function normalizeHostname(value: string): string {
 
 function formatFeatureLabel(featureId: string): string {
   return featureLabelById[featureId] ?? featureId;
+}
+
+function formatActorRole(role: ControlPlaneActorRole): string {
+  return actorRoleOptions.find((entry) => entry.value === role)?.label ?? role;
 }
 
 function formatTimestamp(value: string): string {
@@ -223,6 +438,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   const [domainOpsAutoPollEnabled, setDomainOpsAutoPollEnabled] = useState(false);
   const [domainOpsPollIntervalSeconds, setDomainOpsPollIntervalSeconds] = useState(20);
   const [domainOpsLastCheckedAt, setDomainOpsLastCheckedAt] = useState<string | null>(null);
+  const [domainProbeByDomainId, setDomainProbeByDomainId] = useState<Record<string, TenantDomainProbeResult>>({});
   const [domainVerificationRetryByDomain, setDomainVerificationRetryByDomain] = useState<Record<string, number>>({});
 
   const [auditEvents, setAuditEvents] = useState<ControlPlaneAdminAuditEvent[]>([]);
@@ -231,6 +447,32 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   const [selectedAuditTenantId, setSelectedAuditTenantId] = useState<string>(GLOBAL_AUDIT_SCOPE);
   const [selectedAuditStatus, setSelectedAuditStatus] = useState<string>('all');
   const [selectedAuditAction, setSelectedAuditAction] = useState<string>('all');
+  const [selectedAuditActorRole, setSelectedAuditActorRole] = useState<string>('all');
+  const [selectedAuditActorId, setSelectedAuditActorId] = useState('');
+  const [selectedAuditRequestId, setSelectedAuditRequestId] = useState('');
+  const [selectedAuditChangedField, setSelectedAuditChangedField] = useState('');
+  const [selectedAuditSearch, setSelectedAuditSearch] = useState('');
+  const [selectedAuditFromDate, setSelectedAuditFromDate] = useState('');
+  const [selectedAuditToDate, setSelectedAuditToDate] = useState('');
+  const [selectedAuditErrorsOnly, setSelectedAuditErrorsOnly] = useState(false);
+  const [selectedAuditLimit, setSelectedAuditLimit] = useState(100);
+
+  const [tenantActorsByTenant, setTenantActorsByTenant] = useState<Record<string, TenantControlActor[]>>({});
+  const [actorsLoadingByTenant, setActorsLoadingByTenant] = useState<Record<string, boolean>>({});
+  const [actorDraftByTenant, setActorDraftByTenant] = useState<Record<string, ActorDraft>>({});
+  const [actorRoleDraftByActorKey, setActorRoleDraftByActorKey] = useState<Record<string, ControlPlaneActorRole>>({});
+  const [actorPermissionsDraftByActorKey, setActorPermissionsDraftByActorKey] = useState<
+    Record<string, ControlPlaneActorPermission[]>
+  >({});
+  const [supportSessionDraftByActorKey, setSupportSessionDraftByActorKey] = useState<
+    Record<string, ActorSupportSessionDraft>
+  >({});
+
+  const [observabilitySummary, setObservabilitySummary] = useState<ControlPlaneObservabilitySummary | null>(null);
+  const [observabilityLoading, setObservabilityLoading] = useState(false);
+  const [observabilityError, setObservabilityError] = useState<string | null>(null);
+
+  const toActorKey = useCallback((tenantId: string, actorId: string) => `${tenantId}:${actorId}`, []);
 
   const selectedTenant = useMemo(() => {
     if (!selectedTenantId) {
@@ -240,19 +482,51 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     return snapshots.find((snapshot) => snapshot.tenant.id === selectedTenantId) ?? null;
   }, [selectedTenantId, snapshots]);
 
+  const selectedTenantActiveDomains = useMemo(() => {
+    if (!selectedTenant) {
+      return [];
+    }
+
+    return selectedTenant.domains.filter((domain) => domain.status === 'active');
+  }, [selectedTenant]);
+
+  const selectedTenantActors = useMemo(() => {
+    if (!selectedTenant) {
+      return [];
+    }
+
+    return tenantActorsByTenant[selectedTenant.tenant.id] ?? [];
+  }, [selectedTenant, tenantActorsByTenant]);
+
+  const selectedTenantActorDraft = useMemo(() => {
+    if (!selectedTenant) {
+      return defaultActorDraft;
+    }
+
+    return actorDraftByTenant[selectedTenant.tenant.id] ?? defaultActorDraft;
+  }, [actorDraftByTenant, selectedTenant]);
+
   const selectedPrimaryDomain = useMemo(() => {
     if (!selectedTenant) {
       return null;
     }
 
-    return selectedTenant.domains.find((domain) => domain.isPrimary) ?? null;
-  }, [selectedTenant]);
+    return selectedTenantActiveDomains.find((domain) => domain.isPrimary) ?? null;
+  }, [selectedTenant, selectedTenantActiveDomains]);
+
+  const selectedPrimaryDomainProbe = useMemo(() => {
+    if (!selectedPrimaryDomain) {
+      return null;
+    }
+
+    return domainProbeByDomainId[selectedPrimaryDomain.id] ?? null;
+  }, [domainProbeByDomainId, selectedPrimaryDomain]);
 
   const totalTenants = snapshots.length;
   const totalDomains = useMemo(() => snapshots.reduce((count, snapshot) => count + snapshot.domains.length, 0), [snapshots]);
   const unverifiedPrimaryCount = useMemo(() => {
     return snapshots.filter((snapshot) => {
-      const primaryDomain = snapshot.domains.find((domain) => domain.isPrimary) ?? null;
+      const primaryDomain = snapshot.domains.find((domain) => domain.status === 'active' && domain.isPrimary) ?? null;
       return !primaryDomain || !primaryDomain.isVerified;
     }).length;
   }, [snapshots]);
@@ -261,22 +535,36 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     if (!selectedTenant) {
       return {
         completed: 0,
-        total: 4,
+        total: 6,
         checks: [
+          { label: 'Tenant active', ok: false },
           { label: 'Primary domain exists', ok: false },
           { label: 'Primary domain verified', ok: false },
+          { label: 'Settings active', ok: false },
           { label: 'Plan assigned', ok: false },
           { label: 'At least one feature enabled', ok: false },
         ],
       };
     }
 
-    const primaryDomain = selectedTenant.domains.find((domain) => domain.isPrimary) ?? null;
+    const primaryDomain = selectedTenant.domains.find((domain) => domain.status === 'active' && domain.isPrimary) ?? null;
+    const primaryDomainVerified = primaryDomain
+      ? (domainProbeByDomainId[primaryDomain.id]?.dnsStatus ?? (primaryDomain.isVerified ? 'verified' : 'pending')) ===
+        'verified'
+      : false;
     const checks = [
+      { label: 'Tenant active', ok: selectedTenant.tenant.status === 'active' },
       { label: 'Primary domain exists', ok: Boolean(primaryDomain) },
-      { label: 'Primary domain verified', ok: Boolean(primaryDomain?.isVerified) },
-      { label: 'Plan assigned', ok: selectedTenant.settings.planCode.trim().length > 0 },
-      { label: 'At least one feature enabled', ok: selectedTenant.settings.featureFlags.length > 0 },
+      { label: 'Primary domain verified', ok: primaryDomainVerified },
+      { label: 'Settings active', ok: selectedTenant.settings.status === 'active' },
+      {
+        label: 'Plan assigned',
+        ok: selectedTenant.settings.status === 'active' && selectedTenant.settings.planCode.trim().length > 0,
+      },
+      {
+        label: 'At least one feature enabled',
+        ok: selectedTenant.settings.status === 'active' && selectedTenant.settings.featureFlags.length > 0,
+      },
     ];
 
     const completed = checks.filter((entry) => entry.ok).length;
@@ -285,7 +573,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       total: checks.length,
       checks,
     };
-  }, [selectedTenant]);
+  }, [domainProbeByDomainId, selectedTenant]);
 
   const tenantNameById = useMemo(() => {
     return snapshots.reduce<Record<string, string>>((result, snapshot) => {
@@ -293,6 +581,16 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       return result;
     }, {});
   }, [snapshots]);
+
+  const auditChangedFieldOptions = useMemo(() => {
+    const fields = new Set<string>();
+    for (const event of auditEvents) {
+      for (const change of getAuditChangeDetails(event)) {
+        fields.add(change.field);
+      }
+    }
+    return Array.from(fields).sort((left, right) => left.localeCompare(right));
+  }, [auditEvents]);
 
   const wizardFeatures = useMemo(() => {
     return uniqueList([...onboardingDraft.featureFlags, ...fromCsv(onboardingDraft.customFlagsCsv)]);
@@ -330,6 +628,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   const selectedSettingsAllowOverride = selectedTenant
     ? Boolean(settingsAllowPlanOverrideByTenant[selectedTenant.tenant.id])
     : false;
+  const selectedTenantIsActive = selectedTenant?.tenant.status === 'active';
+  const selectedSettingsIsActive = selectedTenant?.settings.status === 'active';
+  const settingsEditable = Boolean(selectedTenantIsActive && selectedSettingsIsActive);
 
   const sslReadiness = useMemo(() => {
     if (!selectedPrimaryDomain) {
@@ -338,6 +639,15 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         certificateStatus: 'blocked',
         dnsMessage: 'No primary domain configured yet.',
         certificateMessage: 'Certificate cannot be issued until a primary domain is set.',
+      };
+    }
+
+    if (selectedPrimaryDomainProbe) {
+      return {
+        dnsStatus: selectedPrimaryDomainProbe.dnsStatus,
+        certificateStatus: selectedPrimaryDomainProbe.certificateStatus,
+        dnsMessage: selectedPrimaryDomainProbe.dnsMessage,
+        certificateMessage: selectedPrimaryDomainProbe.certificateMessage,
       };
     }
 
@@ -356,7 +666,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       dnsMessage: `${selectedPrimaryDomain.hostname} is verified.`,
       certificateMessage: 'Certificate readiness checks passed for launch.',
     };
-  }, [selectedPrimaryDomain]);
+  }, [selectedPrimaryDomain, selectedPrimaryDomainProbe]);
 
   const wizardCanContinue = useMemo(() => {
     if (wizardStepIndex === 0) {
@@ -394,7 +704,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
       try {
         const query = new URLSearchParams();
-        query.set('limit', '50');
+        query.set('limit', String(selectedAuditLimit));
 
         if (tenantScope !== GLOBAL_AUDIT_SCOPE) {
           query.set('tenantId', tenantScope);
@@ -404,6 +714,30 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         }
         if (selectedAuditAction !== 'all') {
           query.set('action', selectedAuditAction);
+        }
+        if (selectedAuditActorRole !== 'all') {
+          query.set('actorRole', selectedAuditActorRole);
+        }
+        if (selectedAuditActorId.trim().length > 0) {
+          query.set('actorId', selectedAuditActorId.trim());
+        }
+        if (selectedAuditRequestId.trim().length > 0) {
+          query.set('requestId', selectedAuditRequestId.trim());
+        }
+        if (selectedAuditChangedField.trim().length > 0) {
+          query.set('changedField', selectedAuditChangedField.trim());
+        }
+        if (selectedAuditSearch.trim().length > 0) {
+          query.set('search', selectedAuditSearch.trim());
+        }
+        if (selectedAuditFromDate.trim().length > 0) {
+          query.set('from', selectedAuditFromDate.trim());
+        }
+        if (selectedAuditToDate.trim().length > 0) {
+          query.set('to', selectedAuditToDate.trim());
+        }
+        if (selectedAuditErrorsOnly) {
+          query.set('errorsOnly', 'true');
         }
 
         const response = await fetch(`/api/admin-audit?${query.toString()}`, { cache: 'no-store' });
@@ -419,12 +753,201 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         setAuditLoading(false);
       }
     },
-    [selectedAuditAction, selectedAuditStatus, selectedAuditTenantId]
+    [
+      selectedAuditAction,
+      selectedAuditActorId,
+      selectedAuditActorRole,
+      selectedAuditChangedField,
+      selectedAuditErrorsOnly,
+      selectedAuditFromDate,
+      selectedAuditLimit,
+      selectedAuditRequestId,
+      selectedAuditSearch,
+      selectedAuditStatus,
+      selectedAuditTenantId,
+      selectedAuditToDate,
+    ]
   );
 
   useEffect(() => {
     void loadAuditEvents();
   }, [loadAuditEvents]);
+
+  const exportAuditEvents = useCallback(
+    (format: 'json' | 'csv') => {
+      if (auditEvents.length === 0) {
+        setWorkspaceNotice('No audit events available to export for current filters.');
+        return;
+      }
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(auditEvents, null, 2)], { type: 'application/json;charset=utf-8' });
+        const objectUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = objectUrl;
+        anchor.download = `admin-audit-${new Date().toISOString().slice(0, 10)}.json`;
+        anchor.click();
+        URL.revokeObjectURL(objectUrl);
+        setWorkspaceNotice('Exported audit timeline JSON for current filters.');
+        return;
+      }
+
+      const header = [
+        'createdAt',
+        'eventId',
+        'status',
+        'action',
+        'tenantId',
+        'tenantName',
+        'domainId',
+        'actorId',
+        'actorRole',
+        'requestId',
+        'requestMethod',
+        'requestPath',
+        'changedFields',
+        'error',
+      ];
+
+      const rows = auditEvents.map((event) => {
+        const request = getAuditRequestAttribution(event);
+        const changedFields = getAuditChangeDetails(event)
+          .map((entry) => entry.field)
+          .join('; ');
+
+        return [
+          event.createdAt,
+          event.id,
+          event.status,
+          event.action,
+          event.tenantId ?? '',
+          event.tenantId ? tenantNameById[event.tenantId] ?? '' : '',
+          event.domainId ?? '',
+          event.actorId ?? '',
+          event.actorRole,
+          request.requestId ?? '',
+          request.requestMethod ?? '',
+          request.requestPath ?? '',
+          changedFields,
+          event.error ?? '',
+        ].map((value) => escapeCsvCell(value));
+      });
+
+      const csvContent = [header.map((value) => escapeCsvCell(value)).join(','), ...rows.map((row) => row.join(','))].join(
+        '\n'
+      );
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = `admin-audit-${new Date().toISOString().slice(0, 10)}.csv`;
+      anchor.click();
+      URL.revokeObjectURL(objectUrl);
+      setWorkspaceNotice('Exported audit timeline CSV for current filters.');
+    },
+    [auditEvents, tenantNameById]
+  );
+
+  const loadObservabilitySummary = useCallback(async () => {
+    setObservabilityLoading(true);
+    setObservabilityError(null);
+
+    try {
+      const response = await fetch('/api/observability?tenantLimit=30', { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(await readResponseError(response, 'Unable to load observability summary.'));
+      }
+
+      const payload = (await response.json()) as ObservabilitySummaryResponse;
+      setObservabilitySummary(payload.summary);
+    } catch (error) {
+      setObservabilityError(error instanceof Error ? error.message : 'Unable to load observability summary.');
+    } finally {
+      setObservabilityLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadObservabilitySummary();
+  }, [loadObservabilitySummary]);
+
+  const loadActorsForTenant = useCallback(
+    async (tenantId: string) => {
+      setActorsLoadingByTenant((prev) => ({ ...prev, [tenantId]: true }));
+
+      try {
+        const response = await fetch(`/api/tenants/${tenantId}/actors`, { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(await readResponseError(response, 'Unable to load tenant actors.'));
+        }
+
+        const payload = (await response.json()) as { ok: true; actors: TenantControlActor[] };
+        setTenantActorsByTenant((prev) => ({
+          ...prev,
+          [tenantId]: payload.actors,
+        }));
+        setActorDraftByTenant((prev) => ({
+          ...prev,
+          [tenantId]: prev[tenantId] ?? defaultActorDraft,
+        }));
+        setActorRoleDraftByActorKey((prev) => {
+          const next = { ...prev };
+          for (const actor of payload.actors) {
+            next[toActorKey(tenantId, actor.actorId)] = actor.role;
+          }
+          return next;
+        });
+        setActorPermissionsDraftByActorKey((prev) => {
+          const next = { ...prev };
+          for (const actor of payload.actors) {
+            next[toActorKey(tenantId, actor.actorId)] = actor.permissions;
+          }
+          return next;
+        });
+        setSupportSessionDraftByActorKey((prev) => {
+          const next = { ...prev };
+          for (const actor of payload.actors) {
+            const key = toActorKey(tenantId, actor.actorId);
+            next[key] = prev[key] ?? { durationMinutes: defaultSupportSessionDurationMinutes };
+          }
+          return next;
+        });
+      } finally {
+        setActorsLoadingByTenant((prev) => ({ ...prev, [tenantId]: false }));
+      }
+    },
+    [toActorKey]
+  );
+
+  useEffect(() => {
+    if (!selectedTenantId) {
+      return;
+    }
+
+    void loadActorsForTenant(selectedTenantId);
+  }, [loadActorsForTenant, selectedTenantId]);
+
+  const loadDomainProbes = useCallback(async (tenantId: string, domainId?: string) => {
+    const response = await fetch(`/api/tenants/${tenantId}/domains/probe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(domainId ? { domainId } : {}),
+    });
+    if (!response.ok) {
+      throw new Error(await readResponseError(response, 'Unable to probe domain status.'));
+    }
+
+    const payload = (await response.json()) as DomainProbeResponse;
+    setDomainProbeByDomainId((previous) => {
+      const next = { ...previous };
+      for (const probe of payload.probes) {
+        next[probe.domainId] = probe;
+      }
+      return next;
+    });
+
+    return payload;
+  }, []);
 
   const refresh = useCallback(
     async (preferredTenantId?: string | null) => {
@@ -437,6 +960,10 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       setSnapshots(payload.tenants);
       setPlanDraftByTenant(buildPlanDraftMap(payload.tenants));
       setFlagsDraftByTenant(buildFlagsDraftMap(payload.tenants));
+      setDomainProbeByDomainId((previous) => {
+        const activeDomainIds = new Set(payload.tenants.flatMap((snapshot) => snapshot.domains.map((domain) => domain.id)));
+        return Object.fromEntries(Object.entries(previous).filter(([domainId]) => activeDomainIds.has(domainId)));
+      });
 
       const desiredTenantId = preferredTenantId === undefined ? selectedTenantId : preferredTenantId;
       const resolvedTenantId = desiredTenantId && payload.tenants.some((snapshot) => snapshot.tenant.id === desiredTenantId)
@@ -455,22 +982,27 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       }
 
       await loadAuditEvents(nextAuditScope);
+      await loadObservabilitySummary();
+      if (resolvedTenantId) {
+        await loadActorsForTenant(resolvedTenantId);
+      }
     },
-    [loadAuditEvents, selectedAuditTenantId, selectedTenantId]
+    [loadActorsForTenant, loadAuditEvents, loadObservabilitySummary, selectedAuditTenantId, selectedTenantId]
   );
 
   const runDomainOpsRefresh = useCallback(
-    async (tenantId: string, reason: 'manual' | 'poll' | 'retry') => {
+    async (tenantId: string, reason: 'manual' | 'poll' | 'retry', domainId?: string) => {
       try {
         await refresh(tenantId);
-        const refreshedAt = new Date().toISOString();
+        const probePayload = await loadDomainProbes(tenantId, reason === 'retry' ? domainId : undefined);
+        const refreshedAt = probePayload.checkedAt || new Date().toISOString();
         setDomainOpsLastCheckedAt(refreshedAt);
 
         if (reason === 'manual') {
-          setWorkspaceNotice(`Domain operations refreshed at ${formatTimestamp(refreshedAt)}.`);
+          setWorkspaceNotice(`Domain operations probe completed at ${formatTimestamp(refreshedAt)}.`);
         }
         if (reason === 'retry') {
-          setWorkspaceNotice('Verification retry check complete. Update status when DNS verification succeeds.');
+          setWorkspaceNotice('Verification retry probe complete. Review DNS and certificate status results below.');
         }
       } catch (error) {
         if (reason !== 'poll') {
@@ -484,7 +1016,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         }
       }
     },
-    [refresh]
+    [loadDomainProbes, refresh]
   );
 
   useEffect(() => {
@@ -688,7 +1220,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     }));
 
     try {
-      await runDomainOpsRefresh(tenantId, 'retry');
+      await runDomainOpsRefresh(tenantId, 'retry', domainId);
     } finally {
       setBusy(false);
     }
@@ -698,6 +1230,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     tenantId: string,
     domainId: string,
     updates: {
+      status?: 'active' | 'archived';
       isPrimary?: boolean;
       isVerified?: boolean;
     }
@@ -726,7 +1259,11 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       }
 
       setWorkspaceIssue(null);
-      if (updates.isPrimary) {
+      if (updates.status === 'archived') {
+        setWorkspaceNotice('Domain archived. It is excluded from active routing until restored.');
+      } else if (updates.status === 'active') {
+        setWorkspaceNotice('Domain restored to active status.');
+      } else if (updates.isPrimary) {
         setWorkspaceNotice('Primary domain updated.');
       } else if (updates.isVerified) {
         setWorkspaceNotice('Domain marked as verified.');
@@ -747,6 +1284,17 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   }
 
   async function saveSettings(tenantId: string) {
+    if (!settingsEditable) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 400,
+          message: 'Settings are archived or tenant is inactive. Restore before editing plan or feature flags.',
+        })
+      );
+      return;
+    }
+
     const nextPlanCode = (planDraftByTenant[tenantId] ?? 'starter').trim() || 'starter';
     const nextFeatureFlags = fromCsv(flagsDraftByTenant[tenantId] ?? '');
     const allowPlanOverride = Boolean(settingsAllowPlanOverrideByTenant[tenantId]);
@@ -792,6 +1340,341 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           scope: 'settings',
           status: 0,
           message: error instanceof Error ? error.message : 'Unknown settings update error.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function patchTenantLifecycleStatus(tenantId: string, status: 'active' | 'archived') {
+    const confirmed = confirmDestructiveAction(
+      status === 'archived'
+        ? 'Archive tenant workspace? This soft-delete disables active operations until restored.'
+        : 'Restore tenant workspace to active operations?'
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Tenant lifecycle update failed.');
+        setWorkspaceIssue(createMutationErrorGuidance({ scope: 'settings', status: response.status, message }));
+        return;
+      }
+
+      setWorkspaceNotice(
+        status === 'archived'
+          ? 'Tenant archived (soft-delete). Use Restore to reactivate.'
+          : 'Tenant restored to active status.'
+      );
+      await refresh(tenantId);
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Tenant lifecycle update failed.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function patchSettingsLifecycleStatus(tenantId: string, status: 'active' | 'archived') {
+    const confirmed = confirmDestructiveAction(
+      status === 'archived'
+        ? 'Archive tenant settings? Plan/feature editing will be disabled until restored.'
+        : 'Restore tenant settings to active status?'
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/settings`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Settings lifecycle update failed.');
+        setWorkspaceIssue(createMutationErrorGuidance({ scope: 'settings', status: response.status, message }));
+        return;
+      }
+
+      setWorkspaceNotice(status === 'archived' ? 'Tenant settings archived.' : 'Tenant settings restored.');
+      await refresh(tenantId);
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Settings lifecycle update failed.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function setActorDraftField<K extends keyof ActorDraft>(tenantId: string, field: K, value: ActorDraft[K]) {
+    setActorDraftByTenant((prev) => {
+      const current = prev[tenantId] ?? defaultActorDraft;
+      return {
+        ...prev,
+        [tenantId]: {
+          ...current,
+          [field]: value,
+        },
+      };
+    });
+  }
+
+  function setActorRoleDraft(tenantId: string, actorId: string, role: ControlPlaneActorRole) {
+    const key = toActorKey(tenantId, actorId);
+    setActorRoleDraftByActorKey((prev) => ({
+      ...prev,
+      [key]: role,
+    }));
+    setActorPermissionsDraftByActorKey((prev) => {
+      const current = prev[key] ?? [];
+      return {
+        ...prev,
+        [key]: uniquePermissions([...roleDefaultPermissions[role], ...current]),
+      };
+    });
+  }
+
+  function toggleActorPermissionDraft(tenantId: string, actorId: string, permission: ControlPlaneActorPermission) {
+    const key = toActorKey(tenantId, actorId);
+    setActorPermissionsDraftByActorKey((prev) => {
+      const current = prev[key] ?? [];
+      const next = current.includes(permission)
+        ? current.filter((entry) => entry !== permission)
+        : [...current, permission];
+      return {
+        ...prev,
+        [key]: next,
+      };
+    });
+  }
+
+  async function addActor(tenantId: string) {
+    const draft = actorDraftByTenant[tenantId] ?? defaultActorDraft;
+    const actorId = draft.actorId.trim();
+    if (!actorId) {
+      return;
+    }
+
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/actors`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actorId,
+          displayName: draft.displayName.trim() || null,
+          email: draft.email.trim() || null,
+          role: draft.role,
+          permissions: uniquePermissions(draft.permissions),
+        }),
+      });
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Actor add failed.');
+        setWorkspaceIssue(createMutationErrorGuidance({ scope: 'settings', status: response.status, message }));
+        return;
+      }
+
+      setActorDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: defaultActorDraft,
+      }));
+      setWorkspaceNotice(`Actor ${actorId} added.`);
+      await loadActorsForTenant(tenantId);
+      await loadAuditEvents();
+      await loadObservabilitySummary();
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Actor add failed.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveActor(tenantId: string, actor: TenantControlActor) {
+    const key = toActorKey(tenantId, actor.actorId);
+    const role = actorRoleDraftByActorKey[key] ?? actor.role;
+    const permissions = actorPermissionsDraftByActorKey[key] ?? actor.permissions;
+
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/actors/${encodeURIComponent(actor.actorId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role,
+          permissions: uniquePermissions(permissions),
+        }),
+      });
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Actor update failed.');
+        setWorkspaceIssue(createMutationErrorGuidance({ scope: 'settings', status: response.status, message }));
+        return;
+      }
+
+      setWorkspaceNotice(`Actor ${actor.actorId} updated.`);
+      await loadActorsForTenant(tenantId);
+      await loadAuditEvents();
+      await loadObservabilitySummary();
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Actor update failed.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function removeActor(tenantId: string, actorId: string) {
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/actors/${encodeURIComponent(actorId)}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Actor remove failed.');
+        setWorkspaceIssue(createMutationErrorGuidance({ scope: 'settings', status: response.status, message }));
+        return;
+      }
+
+      setWorkspaceNotice(`Actor ${actorId} removed.`);
+      await loadActorsForTenant(tenantId);
+      await loadAuditEvents();
+      await loadObservabilitySummary();
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Actor remove failed.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function startSupportSession(tenantId: string, actorId: string) {
+    const key = toActorKey(tenantId, actorId);
+    const durationMinutes = supportSessionDraftByActorKey[key]?.durationMinutes ?? defaultSupportSessionDurationMinutes;
+
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(
+        `/api/tenants/${tenantId}/actors/${encodeURIComponent(actorId)}/support-session`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            durationMinutes,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Support session start failed.');
+        setWorkspaceIssue(createMutationErrorGuidance({ scope: 'settings', status: response.status, message }));
+        return;
+      }
+
+      setWorkspaceNotice(`Support session started for ${actorId}.`);
+      await loadActorsForTenant(tenantId);
+      await loadAuditEvents();
+      await loadObservabilitySummary();
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Support session start failed.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function endSupportSession(tenantId: string, actorId: string) {
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(
+        `/api/tenants/${tenantId}/actors/${encodeURIComponent(actorId)}/support-session`,
+        {
+          method: 'DELETE',
+        }
+      );
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Support session end failed.');
+        setWorkspaceIssue(createMutationErrorGuidance({ scope: 'settings', status: response.status, message }));
+        return;
+      }
+
+      setWorkspaceNotice(`Support session ended for ${actorId}.`);
+      await loadActorsForTenant(tenantId);
+      await loadAuditEvents();
+      await loadObservabilitySummary();
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Support session end failed.',
         })
       );
     } finally {
@@ -1141,7 +2024,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             <ul className="admin-list">
               {snapshots.map((snapshot) => {
                 const isSelected = selectedTenantId === snapshot.tenant.id;
-                const primaryDomain = snapshot.domains.find((domain) => domain.isPrimary) ?? null;
+                const activeDomains = snapshot.domains.filter((domain) => domain.status === 'active');
+                const archivedDomains = snapshot.domains.filter((domain) => domain.status === 'archived');
+                const primaryDomain = activeDomains.find((domain) => domain.isPrimary) ?? null;
 
                 return (
                   <li key={snapshot.tenant.id} className={`admin-list-item ${isSelected ? 'is-selected' : ''}`}>
@@ -1155,19 +2040,47 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
                     <div className="admin-row">
                       <span className="admin-chip">plan: {snapshot.settings.planCode}</span>
-                      <span className="admin-chip">domains: {snapshot.domains.length}</span>
+                      <span className="admin-chip">domains: {activeDomains.length} active</span>
+                      {archivedDomains.length > 0 ? (
+                        <span className="admin-chip">archived domains: {archivedDomains.length}</span>
+                      ) : null}
                       <span className="admin-chip">primary: {primaryDomain?.hostname ?? 'none'}</span>
                     </div>
 
-                    <button
-                      type="button"
-                      className="admin-secondary"
-                      onClick={() => {
-                        setSelectedTenantId(snapshot.tenant.id);
-                      }}
-                    >
-                      Open Domain Ops
-                    </button>
+                    <div className="admin-row">
+                      <button
+                        type="button"
+                        className="admin-secondary"
+                        onClick={() => {
+                          setSelectedTenantId(snapshot.tenant.id);
+                        }}
+                      >
+                        Open Domain Ops
+                      </button>
+                      {snapshot.tenant.status === 'active' ? (
+                        <button
+                          type="button"
+                          className="admin-danger-button"
+                          disabled={busy}
+                          onClick={() => {
+                            void patchTenantLifecycleStatus(snapshot.tenant.id, 'archived');
+                          }}
+                        >
+                          Archive Tenant
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy}
+                          onClick={() => {
+                            void patchTenantLifecycleStatus(snapshot.tenant.id, 'active');
+                          }}
+                        >
+                          Restore Tenant
+                        </button>
+                      )}
+                    </div>
                   </li>
                 );
               })}
@@ -1179,19 +2092,31 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       <section className="admin-card admin-ops-card">
         <div className="admin-card-head">
           <h2>Domain Operations & Launch Readiness</h2>
-          {selectedTenant ? <span className="admin-chip">{selectedTenant.tenant.name}</span> : null}
+          {selectedTenant ? (
+            <div className="admin-row">
+              <span className="admin-chip">{selectedTenant.tenant.name}</span>
+              <span className={`admin-chip ${selectedTenant.tenant.status === 'active' ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                tenant {selectedTenant.tenant.status}
+              </span>
+            </div>
+          ) : null}
         </div>
 
         {!selectedTenant ? (
           <p className="admin-muted">Select a tenant from the directory to manage domains and launch settings.</p>
         ) : (
           <>
+            {!selectedTenantIsActive ? (
+              <p className="admin-warning">
+                Tenant is archived. Restore tenant status to resume domain operations and settings updates.
+              </p>
+            ) : null}
             <div className="admin-ops-automation">
               <div className="admin-row">
                 <button
                   type="button"
                   className="admin-secondary"
-                  disabled={busy}
+                  disabled={busy || !selectedTenantIsActive}
                   onClick={() => {
                     void runDomainOpsRefresh(selectedTenant.tenant.id, 'manual');
                   }}
@@ -1201,7 +2126,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 <button
                   type="button"
                   className="admin-secondary"
-                  disabled={busy}
+                  disabled={busy || !selectedTenantIsActive}
                   onClick={() => {
                     setDomainOpsAutoPollEnabled((prev) => !prev);
                   }}
@@ -1259,6 +2184,11 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                   {sslReadiness.certificateStatus}
                 </span>
                 <p className="admin-muted">{sslReadiness.certificateMessage}</p>
+                {selectedPrimaryDomainProbe?.certificateValidTo ? (
+                  <p className="admin-muted">
+                    Expires: {formatTimestamp(selectedPrimaryDomainProbe.certificateValidTo)}
+                  </p>
+                ) : null}
               </article>
             </div>
 
@@ -1282,55 +2212,128 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             </div>
 
             <div className="admin-domain-grid">
-              {selectedTenant.domains.map((domain) => (
-                <article key={domain.id} className="admin-domain-card">
-                  <div className="admin-row admin-space-between">
-                    <strong>{domain.hostname}</strong>
-                    <div className="admin-row">
-                      {domain.isPrimary ? <span className="admin-chip">primary</span> : null}
-                      <span className={`admin-chip ${domain.isVerified ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
-                        {domain.isVerified ? 'verified' : 'unverified'}
-                      </span>
-                    </div>
-                  </div>
+              {selectedTenant.domains.map((domain) => {
+                const domainProbe = domainProbeByDomainId[domain.id] ?? null;
+                const domainActive = domain.status === 'active';
 
-                  <div className="admin-row">
-                    <button
-                      type="button"
-                      className="admin-secondary"
-                      disabled={busy || domain.isVerified}
-                      onClick={() => {
-                        void patchDomain(selectedTenant.tenant.id, domain.id, { isVerified: true });
-                      }}
-                    >
-                      Mark Verified
-                    </button>
-                    <button
-                      type="button"
-                      className="admin-secondary"
-                      disabled={busy || domain.isPrimary}
-                      onClick={() => {
-                        void patchDomain(selectedTenant.tenant.id, domain.id, { isPrimary: true });
-                      }}
-                    >
-                      Set Primary
-                    </button>
-                    <button
-                      type="button"
-                      className="admin-secondary"
-                      disabled={busy || domain.isVerified}
-                      onClick={() => {
-                        void retryDomainVerification(selectedTenant.tenant.id, domain.id);
-                      }}
-                    >
-                      Retry Verification
-                    </button>
-                  </div>
-                  <p className="admin-muted">
-                    Retry checks: {domainVerificationRetryByDomain[domain.id] ?? 0}
-                  </p>
-                </article>
-              ))}
+                return (
+                  <article key={domain.id} className="admin-domain-card">
+                    <div className="admin-row admin-space-between">
+                      <strong>{domain.hostname}</strong>
+                      <div className="admin-row">
+                        {domain.isPrimary ? <span className="admin-chip">primary</span> : null}
+                        <span className={`admin-chip ${domainActive ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                          {domain.status}
+                        </span>
+                        <span
+                          className={`admin-chip ${
+                            (domainProbe?.dnsStatus ?? (domain.isVerified ? 'verified' : 'pending')) === 'verified'
+                              ? 'admin-chip-ok'
+                              : (domainProbe?.dnsStatus ?? 'pending') === 'missing'
+                                ? 'admin-chip-status-failed'
+                                : 'admin-chip-warn'
+                          }`}
+                        >
+                          dns {domainProbe?.dnsStatus ?? (domain.isVerified ? 'verified' : 'pending')}
+                        </span>
+                        <span
+                          className={`admin-chip ${
+                            (domainProbe?.certificateStatus ?? 'pending') === 'ready'
+                              ? 'admin-chip-ok'
+                              : (domainProbe?.certificateStatus ?? 'pending') === 'blocked'
+                                ? 'admin-chip-status-failed'
+                                : 'admin-chip-warn'
+                          }`}
+                        >
+                          tls {domainProbe?.certificateStatus ?? 'pending'}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="admin-muted">
+                      {domainProbe?.dnsMessage ??
+                        (domain.isVerified
+                          ? `${domain.hostname} is marked verified in persisted tenant settings.`
+                          : 'Run Poll Domain Status Now to fetch provider-backed verification status.')}
+                    </p>
+                    <p className="admin-muted">
+                      {domainProbe?.certificateMessage ?? 'Certificate readiness is pending a probe run.'}
+                    </p>
+                    {domainProbe?.certificateValidTo ? (
+                      <p className="admin-muted">Certificate valid to: {formatTimestamp(domainProbe.certificateValidTo)}</p>
+                    ) : null}
+                    {domainProbe?.observedRecords.length ? (
+                      <p className="admin-muted">Observed DNS records: {domainProbe.observedRecords.join(', ')}</p>
+                    ) : null}
+
+                    <div className="admin-row">
+                      <button
+                        type="button"
+                        className="admin-secondary"
+                        disabled={busy || !selectedTenantIsActive || !domainActive || domain.isVerified}
+                        onClick={() => {
+                          void patchDomain(selectedTenant.tenant.id, domain.id, { isVerified: true });
+                        }}
+                      >
+                        Mark Verified
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-secondary"
+                        disabled={busy || !selectedTenantIsActive || !domainActive || domain.isPrimary}
+                        onClick={() => {
+                          void patchDomain(selectedTenant.tenant.id, domain.id, { isPrimary: true });
+                        }}
+                      >
+                        Set Primary
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-secondary"
+                        disabled={busy || !selectedTenantIsActive || !domainActive || domain.isVerified}
+                        onClick={() => {
+                          void retryDomainVerification(selectedTenant.tenant.id, domain.id);
+                        }}
+                      >
+                        Retry Verification
+                      </button>
+                      {domainActive ? (
+                        <button
+                          type="button"
+                          className="admin-danger-button"
+                          disabled={busy || !selectedTenantIsActive || domain.isPrimary}
+                          onClick={() => {
+                            if (
+                              confirmDestructiveAction(
+                                `Archive ${domain.hostname}? It will be removed from active routing until restored.`
+                              )
+                            ) {
+                              void patchDomain(selectedTenant.tenant.id, domain.id, { status: 'archived' });
+                            }
+                          }}
+                        >
+                          Archive Domain
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy || !selectedTenantIsActive}
+                          onClick={() => {
+                            if (confirmDestructiveAction(`Restore ${domain.hostname} to active domain status?`)) {
+                              void patchDomain(selectedTenant.tenant.id, domain.id, { status: 'active' });
+                            }
+                          }}
+                        >
+                          Restore Domain
+                        </button>
+                      )}
+                    </div>
+                    <p className="admin-muted">
+                      Retry checks: {domainVerificationRetryByDomain[domain.id] ?? 0}
+                    </p>
+                  </article>
+                );
+              })}
             </div>
 
             <div className="admin-inline-row">
@@ -1352,7 +2355,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               </label>
               <button
                 type="button"
-                disabled={busy || (domainDraftByTenant[selectedTenant.tenant.id] ?? '').trim().length === 0}
+                disabled={busy || !selectedTenantIsActive || (domainDraftByTenant[selectedTenant.tenant.id] ?? '').trim().length === 0}
                 onClick={() => {
                   void addDomain(selectedTenant.tenant.id);
                 }}
@@ -1366,6 +2369,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 Plan Code
                 <select
                   value={selectedTenantPlanCode}
+                  disabled={!settingsEditable || busy}
                   onChange={(event) => {
                     const nextPlan = event.target.value;
                     setPlanDraftByTenant((prev) => ({
@@ -1393,7 +2397,12 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               <section className="admin-governance-panel">
                 <div className="admin-row admin-space-between">
                   <strong>Plan Governance</strong>
-                  <span className="admin-chip">plan: {selectedTenantPlanCode}</span>
+                  <div className="admin-row">
+                    <span className="admin-chip">plan: {selectedTenantPlanCode}</span>
+                    <span className={`admin-chip ${selectedTenant.settings.status === 'active' ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                      settings {selectedTenant.settings.status}
+                    </span>
+                  </div>
                 </div>
                 <p className="admin-muted">
                   Required: {selectedSettingsGovernance?.requiredFeatures.map(formatFeatureLabel).join(', ') || 'none'}.
@@ -1420,6 +2429,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                   <input
                     type="checkbox"
                     checked={selectedSettingsAllowOverride}
+                    disabled={!settingsEditable || busy}
                     onChange={(event) => {
                       setSettingsAllowPlanOverrideByTenant((prev) => ({
                         ...prev,
@@ -1440,6 +2450,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                       key={feature.id}
                       type="button"
                       className={`admin-feature-chip ${enabled ? 'is-active' : ''}`}
+                      disabled={!settingsEditable || busy}
                       onClick={() => {
                         toggleSettingsFeature(selectedTenant.tenant.id, selectedTenantDraftFeatureFlags, feature.id);
                       }}
@@ -1455,6 +2466,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 Feature Flags (csv, advanced)
                 <input
                   value={toCsv(selectedTenantDraftFeatureFlags)}
+                  disabled={!settingsEditable || busy}
                   onChange={(event) => {
                     setFlagsDraftByTenant((prev) => ({
                       ...prev,
@@ -1471,7 +2483,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 <button
                   type="button"
                   className="admin-secondary"
-                  disabled={busy || !selectedPlanTemplate || selectedPlanTemplate.length === 0}
+                  disabled={busy || !settingsEditable || !selectedPlanTemplate || selectedPlanTemplate.length === 0}
                   onClick={() => {
                     applyPlanTemplateToTenantSettings(selectedTenant.tenant.id, selectedTenantPlanCode);
                   }}
@@ -1481,7 +2493,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 <button
                   type="button"
                   className="admin-secondary"
-                  disabled={busy}
+                  disabled={busy || !settingsEditable}
                   onClick={() => {
                     enforceGuardrailsForTenant(
                       selectedTenant.tenant.id,
@@ -1494,37 +2506,460 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 </button>
                 <button
                   type="button"
-                  disabled={busy}
+                  disabled={busy || !settingsEditable}
                   onClick={() => {
                     void saveSettings(selectedTenant.tenant.id);
                   }}
                 >
                   Save Settings
                 </button>
+                {selectedTenant.settings.status === 'active' ? (
+                  <button
+                    type="button"
+                    className="admin-danger-button"
+                    disabled={busy || !selectedTenantIsActive}
+                    onClick={() => {
+                      void patchSettingsLifecycleStatus(selectedTenant.tenant.id, 'archived');
+                    }}
+                  >
+                    Archive Settings
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={busy || !selectedTenantIsActive}
+                    onClick={() => {
+                      void patchSettingsLifecycleStatus(selectedTenant.tenant.id, 'active');
+                    }}
+                  >
+                    Restore Settings
+                  </button>
+                )}
               </div>
+              {!settingsEditable ? (
+                <p className="admin-warning">
+                  Settings edits are paused while tenant or settings status is archived. Restore status to continue.
+                </p>
+              ) : null}
             </div>
           </>
         )}
       </section>
 
-      <section className="admin-card">
+      <section className="admin-card admin-rbac-card">
         <div className="admin-card-head">
-          <h2>Audit Timeline</h2>
+          <h2>RBAC Management & Support Sessions</h2>
+          {selectedTenant ? (
+            <button
+              type="button"
+              className="admin-secondary"
+              disabled={busy || Boolean(actorsLoadingByTenant[selectedTenant.tenant.id])}
+              onClick={() => {
+                void loadActorsForTenant(selectedTenant.tenant.id);
+              }}
+            >
+              {actorsLoadingByTenant[selectedTenant.tenant.id] ? 'Refreshing...' : 'Refresh Actors'}
+            </button>
+          ) : null}
+        </div>
+
+        {!selectedTenant ? (
+          <p className="admin-muted">Select a tenant to manage roles, permissions, and support-session controls.</p>
+        ) : (
+          <>
+            <div className="admin-rbac-add-grid">
+              <label className="admin-field">
+                Actor ID
+                <input
+                  value={selectedTenantActorDraft.actorId}
+                  onChange={(event) => {
+                    setActorDraftField(selectedTenant.tenant.id, 'actorId', event.target.value);
+                  }}
+                  placeholder="user_abc123"
+                />
+              </label>
+              <label className="admin-field">
+                Display Name
+                <input
+                  value={selectedTenantActorDraft.displayName}
+                  onChange={(event) => {
+                    setActorDraftField(selectedTenant.tenant.id, 'displayName', event.target.value);
+                  }}
+                  placeholder="Alex Support"
+                />
+              </label>
+              <label className="admin-field">
+                Email
+                <input
+                  value={selectedTenantActorDraft.email}
+                  onChange={(event) => {
+                    setActorDraftField(selectedTenant.tenant.id, 'email', event.target.value);
+                  }}
+                  placeholder="alex@tenant.com"
+                />
+              </label>
+              <label className="admin-field">
+                Role
+                <select
+                  value={selectedTenantActorDraft.role}
+                  onChange={(event) => {
+                    const role = event.target.value as ControlPlaneActorRole;
+                    setActorDraftField(selectedTenant.tenant.id, 'role', role);
+                    setActorDraftField(
+                      selectedTenant.tenant.id,
+                      'permissions',
+                      uniquePermissions([
+                        ...roleDefaultPermissions[role],
+                        ...selectedTenantActorDraft.permissions,
+                      ])
+                    );
+                  }}
+                >
+                  {actorRoleOptions.map((role) => (
+                    <option key={role.value} value={role.value}>
+                      {role.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="admin-feature-grid">
+              {actorPermissionOptions.map((permission) => {
+                const enabled = selectedTenantActorDraft.permissions.includes(permission.id);
+                return (
+                  <button
+                    key={permission.id}
+                    type="button"
+                    className={`admin-feature-chip ${enabled ? 'is-active' : ''}`}
+                    onClick={() => {
+                      const next = enabled
+                        ? selectedTenantActorDraft.permissions.filter((entry) => entry !== permission.id)
+                        : [...selectedTenantActorDraft.permissions, permission.id];
+                      setActorDraftField(selectedTenant.tenant.id, 'permissions', uniquePermissions(next));
+                    }}
+                  >
+                    <span>{permission.label}</span>
+                    <small>{permission.detail}</small>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="admin-row">
+              <button
+                type="button"
+                disabled={busy || selectedTenantActorDraft.actorId.trim().length === 0}
+                onClick={() => {
+                  void addActor(selectedTenant.tenant.id);
+                }}
+              >
+                Add Actor
+              </button>
+            </div>
+
+            {actorsLoadingByTenant[selectedTenant.tenant.id] ? (
+              <p className="admin-muted">Loading tenant actors...</p>
+            ) : null}
+
+            {selectedTenantActors.length === 0 ? (
+              <p className="admin-muted">No actors configured yet for this tenant.</p>
+            ) : (
+              <ul className="admin-list">
+                {selectedTenantActors.map((actor) => {
+                  const actorKey = toActorKey(selectedTenant.tenant.id, actor.actorId);
+                  const roleDraft = actorRoleDraftByActorKey[actorKey] ?? actor.role;
+                  const permissionDraft = actorPermissionsDraftByActorKey[actorKey] ?? actor.permissions;
+                  const supportSessionDraft =
+                    supportSessionDraftByActorKey[actorKey]?.durationMinutes ?? defaultSupportSessionDurationMinutes;
+
+                  return (
+                    <li key={actor.id} className="admin-list-item">
+                      <div className="admin-row admin-space-between">
+                        <div>
+                          <strong>{actor.displayName || actor.actorId}</strong>
+                          <p className="admin-muted admin-list-subtitle">{actor.actorId}</p>
+                        </div>
+                        <span className="admin-chip">{formatActorRole(actor.role)}</span>
+                      </div>
+                      {actor.email ? <p className="admin-muted">Email: {actor.email}</p> : null}
+
+                      <label className="admin-field">
+                        Role
+                        <select
+                          value={roleDraft}
+                          onChange={(event) => {
+                            setActorRoleDraft(
+                              selectedTenant.tenant.id,
+                              actor.actorId,
+                              event.target.value as ControlPlaneActorRole
+                            );
+                          }}
+                        >
+                          {actorRoleOptions.map((role) => (
+                            <option key={role.value} value={role.value}>
+                              {role.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <div className="admin-feature-grid">
+                        {actorPermissionOptions.map((permission) => {
+                          const enabled = permissionDraft.includes(permission.id);
+                          return (
+                            <button
+                              key={`${actor.id}-${permission.id}`}
+                              type="button"
+                              className={`admin-feature-chip ${enabled ? 'is-active' : ''}`}
+                              onClick={() => {
+                                toggleActorPermissionDraft(selectedTenant.tenant.id, actor.actorId, permission.id);
+                              }}
+                            >
+                              <span>{permission.label}</span>
+                              <small>{permission.detail}</small>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="admin-support-session-row">
+                        <span className="admin-chip">
+                          support session: {actor.supportSessionActive ? 'active' : 'inactive'}
+                        </span>
+                        {actor.supportSessionExpiresAt ? (
+                          <span className="admin-chip">
+                            expires {formatTimestamp(actor.supportSessionExpiresAt)}
+                          </span>
+                        ) : null}
+                        <label className="admin-inline-field">
+                          Duration (minutes)
+                          <input
+                            type="number"
+                            min={10}
+                            max={240}
+                            value={supportSessionDraft}
+                            onChange={(event) => {
+                              const parsed = Number.parseInt(event.target.value, 10);
+                              if (Number.isNaN(parsed)) {
+                                return;
+                              }
+                              setSupportSessionDraftByActorKey((prev) => ({
+                                ...prev,
+                                [actorKey]: {
+                                  durationMinutes: Math.min(Math.max(parsed, 10), 240),
+                                },
+                              }));
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      <div className="admin-row">
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy}
+                          onClick={() => {
+                            void saveActor(selectedTenant.tenant.id, actor);
+                          }}
+                        >
+                          Save Access
+                        </button>
+                        {actor.supportSessionActive ? (
+                          <button
+                            type="button"
+                            className="admin-secondary"
+                            disabled={busy}
+                            onClick={() => {
+                              void endSupportSession(selectedTenant.tenant.id, actor.actorId);
+                            }}
+                          >
+                            End Support Session
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="admin-secondary"
+                            disabled={busy}
+                            onClick={() => {
+                              void startSupportSession(selectedTenant.tenant.id, actor.actorId);
+                            }}
+                          >
+                            Start Support Session
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy}
+                          onClick={() => {
+                            void removeActor(selectedTenant.tenant.id, actor.actorId);
+                          }}
+                        >
+                          Remove Actor
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </>
+        )}
+      </section>
+
+      <section className="admin-card admin-observability-card">
+        <div className="admin-card-head">
+          <h2>Control Plane Observability</h2>
           <button
             type="button"
             className="admin-secondary"
-            disabled={busy || auditLoading}
+            disabled={busy || observabilityLoading}
             onClick={() => {
-              void loadAuditEvents();
+              void loadObservabilitySummary();
             }}
           >
-            Refresh Timeline
+            {observabilityLoading ? 'Refreshing...' : 'Refresh Observability'}
           </button>
         </div>
 
-        <p className="admin-muted">Operator visibility for provisioning/domain/settings mutation outcomes.</p>
+        {observabilityError ? <p className="admin-error">{observabilityError}</p> : null}
+        {observabilityLoading && !observabilitySummary ? <p className="admin-muted">Loading observability data...</p> : null}
 
-        <div className="admin-grid">
+        {observabilitySummary ? (
+          <>
+            <section className="admin-kpi-grid" aria-label="Observability summary metrics">
+              <article className="admin-kpi-card">
+                <p>Avg Tenant Readiness</p>
+                <strong>{observabilitySummary.totals.averageReadinessScore}%</strong>
+                <span>across tracked tenant readiness checks</span>
+              </article>
+              <article className="admin-kpi-card">
+                <p>Audit Failures (7d)</p>
+                <strong>
+                  {observabilitySummary.mutationTrends.find((entry) => entry.status === 'failed')?.count ?? 0}
+                </strong>
+                <span>admin mutation failures recorded in last seven days</span>
+              </article>
+              <article className="admin-kpi-card">
+                <p>Dead-Letter Queue</p>
+                <strong>{observabilitySummary.ingestion.deadLetterCount}</strong>
+                <span>ingestion jobs awaiting operator action</span>
+              </article>
+            </section>
+
+            <div className="admin-observability-grid">
+              <article className="admin-observability-panel">
+                <h3>Mutation Trend (7 Days)</h3>
+                <div className="admin-row">
+                  {observabilitySummary.mutationTrends.map((trend) => (
+                    <span key={trend.status} className={`admin-chip admin-chip-status-${trend.status}`}>
+                      {trend.status}: {trend.count}
+                    </span>
+                  ))}
+                </div>
+              </article>
+
+              <article className="admin-observability-panel">
+                <h3>Ingestion Runtime Health</h3>
+                <p className="admin-muted">{observabilitySummary.ingestion.runtimeMessage}</p>
+                <div className="admin-row">
+                  <span
+                    className={`admin-chip ${
+                      observabilitySummary.ingestion.runtimeReady ? 'admin-chip-ok' : 'admin-chip-status-failed'
+                    }`}
+                  >
+                    runtime {observabilitySummary.ingestion.runtimeReady ? 'ready' : 'blocked'}
+                  </span>
+                  {observabilitySummary.ingestion.runtimeReason ? (
+                    <span className="admin-chip">reason: {observabilitySummary.ingestion.runtimeReason}</span>
+                  ) : null}
+                </div>
+                <div className="admin-row">
+                  {observabilitySummary.ingestion.queueStatusCounts.map((entry) => (
+                    <span key={entry.status} className="admin-chip">
+                      {entry.status}: {entry.count}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            </div>
+
+            <article className="admin-observability-panel">
+              <h3>Tenant Readiness Scoreboard</h3>
+              {observabilitySummary.tenantReadiness.length === 0 ? (
+                <p className="admin-muted">No tenant readiness records available yet.</p>
+              ) : (
+                <ul className="admin-list">
+                  {observabilitySummary.tenantReadiness.map((entry) => (
+                    <li key={entry.tenantId} className="admin-list-item">
+                      <div className="admin-row admin-space-between">
+                        <strong>{entry.tenantName}</strong>
+                        <span className={`admin-chip ${entry.score >= 75 ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                          {entry.score}%
+                        </span>
+                      </div>
+                      <p className="admin-muted">{entry.tenantSlug}</p>
+                      <div className="admin-row">
+                        {entry.checks.map((check) => (
+                          <span key={`${entry.tenantId}-${check.label}`} className={`admin-chip ${check.ok ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                            {check.label}
+                          </span>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          </>
+        ) : null}
+      </section>
+
+      <section className="admin-card">
+        <div className="admin-card-head">
+          <h2>Audit Timeline</h2>
+          <div className="admin-row">
+            <button
+              type="button"
+              className="admin-secondary"
+              disabled={busy || auditLoading}
+              onClick={() => {
+                void loadAuditEvents();
+              }}
+            >
+              Refresh Timeline
+            </button>
+            <button
+              type="button"
+              className="admin-secondary"
+              disabled={auditLoading || auditEvents.length === 0}
+              onClick={() => {
+                exportAuditEvents('csv');
+              }}
+            >
+              Export CSV
+            </button>
+            <button
+              type="button"
+              className="admin-secondary"
+              disabled={auditLoading || auditEvents.length === 0}
+              onClick={() => {
+                exportAuditEvents('json');
+              }}
+            >
+              Export JSON
+            </button>
+          </div>
+        </div>
+
+        <p className="admin-muted">
+          Operator visibility for control-plane mutations with actor/request attribution and change detail.
+        </p>
+
+        <div className="admin-audit-filter-grid">
           <label className="admin-field">
             Tenant Scope
             <select
@@ -1575,6 +3010,123 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               ))}
             </select>
           </label>
+
+          <label className="admin-field">
+            Actor Role
+            <select
+              value={selectedAuditActorRole}
+              onChange={(event) => {
+                setSelectedAuditActorRole(event.target.value);
+              }}
+            >
+              <option value="all">all</option>
+              {auditActorRoleFilterOptions.map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="admin-field">
+            Actor ID
+            <input
+              type="text"
+              value={selectedAuditActorId}
+              onChange={(event) => {
+                setSelectedAuditActorId(event.target.value);
+              }}
+              placeholder="contains actor id"
+            />
+          </label>
+
+          <label className="admin-field">
+            Request ID
+            <input
+              type="text"
+              value={selectedAuditRequestId}
+              onChange={(event) => {
+                setSelectedAuditRequestId(event.target.value);
+              }}
+              placeholder="contains request id"
+            />
+          </label>
+
+          <label className="admin-field">
+            Changed Field
+            <input
+              type="text"
+              value={selectedAuditChangedField}
+              list="audit-changed-fields"
+              onChange={(event) => {
+                setSelectedAuditChangedField(event.target.value);
+              }}
+              placeholder="planCode / featureFlags / ..."
+            />
+            <datalist id="audit-changed-fields">
+              {auditChangedFieldOptions.map((field) => (
+                <option key={field} value={field} />
+              ))}
+            </datalist>
+          </label>
+
+          <label className="admin-field">
+            From
+            <input
+              type="date"
+              value={selectedAuditFromDate}
+              onChange={(event) => {
+                setSelectedAuditFromDate(event.target.value);
+              }}
+            />
+          </label>
+
+          <label className="admin-field">
+            To
+            <input
+              type="date"
+              value={selectedAuditToDate}
+              onChange={(event) => {
+                setSelectedAuditToDate(event.target.value);
+              }}
+            />
+          </label>
+
+          <label className="admin-field">
+            Limit
+            <input
+              type="number"
+              min={1}
+              max={200}
+              value={selectedAuditLimit}
+              onChange={(event) => {
+                setSelectedAuditLimit(parseAuditLimit(event.target.value));
+              }}
+            />
+          </label>
+
+          <label className="admin-field">
+            Search
+            <input
+              type="text"
+              value={selectedAuditSearch}
+              onChange={(event) => {
+                setSelectedAuditSearch(event.target.value);
+              }}
+              placeholder="action, tenant, path, error..."
+            />
+          </label>
+
+          <label className="admin-inline-field admin-audit-toggle">
+            <input
+              type="checkbox"
+              checked={selectedAuditErrorsOnly}
+              onChange={(event) => {
+                setSelectedAuditErrorsOnly(event.target.checked);
+              }}
+            />
+            Show errors only
+          </label>
         </div>
 
         {auditError ? <p className="admin-error">{auditError}</p> : null}
@@ -1585,20 +3137,53 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           <ul className="admin-list">
             {auditEvents.map((event) => (
               <li key={event.id} className="admin-list-item">
-                <div className="admin-row admin-space-between">
-                  <strong>{event.action}</strong>
-                  <span className={`admin-chip admin-chip-status-${event.status}`}>{event.status}</span>
-                </div>
-                <div className="admin-row">
-                  <span className="admin-chip">{formatTimestamp(event.createdAt)}</span>
-                  <span className="admin-chip">role: {event.actorRole}</span>
-                  <span className="admin-chip">actor: {event.actorId ?? 'unknown'}</span>
-                  <span className="admin-chip">
-                    tenant: {event.tenantId ? (tenantNameById[event.tenantId] ?? event.tenantId) : 'n/a'}
-                  </span>
-                  {event.domainId ? <span className="admin-chip">domain: {event.domainId}</span> : null}
-                </div>
-                {event.error ? <p className="admin-error">{event.error}</p> : null}
+                {(() => {
+                  const requestAttribution = getAuditRequestAttribution(event);
+                  const changeDetails = getAuditChangeDetails(event);
+
+                  return (
+                    <>
+                      <div className="admin-row admin-space-between">
+                        <strong>{event.action}</strong>
+                        <span className={`admin-chip admin-chip-status-${event.status}`}>{event.status}</span>
+                      </div>
+                      <div className="admin-row">
+                        <span className="admin-chip">{formatTimestamp(event.createdAt)}</span>
+                        <span className="admin-chip">role: {event.actorRole}</span>
+                        <span className="admin-chip">actor: {event.actorId ?? 'unknown'}</span>
+                        <span className="admin-chip">
+                          tenant: {event.tenantId ? (tenantNameById[event.tenantId] ?? event.tenantId) : 'n/a'}
+                        </span>
+                        {event.domainId ? <span className="admin-chip">domain: {event.domainId}</span> : null}
+                      </div>
+                      <div className="admin-row">
+                        <span className="admin-chip">request: {requestAttribution.requestId ?? event.id}</span>
+                        {requestAttribution.requestMethod ? (
+                          <span className="admin-chip">method: {requestAttribution.requestMethod}</span>
+                        ) : null}
+                        {requestAttribution.requestPath ? (
+                          <span className="admin-chip">path: {requestAttribution.requestPath}</span>
+                        ) : null}
+                      </div>
+                      {changeDetails.length > 0 ? (
+                        <details className="admin-audit-diff">
+                          <summary>Change detail ({changeDetails.length})</summary>
+                          <ul className="admin-audit-diff-list">
+                            {changeDetails.map((change) => (
+                              <li key={`${event.id}-${change.field}`}>
+                                <strong>{change.field}</strong>
+                                <span>
+                                  {change.before} {'->'} {change.after}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      ) : null}
+                      {event.error ? <p className="admin-error">{event.error}</p> : null}
+                    </>
+                  );
+                })()}
               </li>
             ))}
           </ul>
