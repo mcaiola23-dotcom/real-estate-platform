@@ -60,7 +60,7 @@
 - [x] Identify and implement one additional mitigation for persistent Windows Prisma engine rename lock when direct generation repeatedly fails (`query_engine-windows.dll.node` EPERM), then re-run reliability sample to verify improved full-engine success rate. (Implemented 2026-02-17 via new direct wrapper `packages/db/scripts/db-generate-direct.mjs` with rename-lock probe/wait + cleanup + retry/backoff, and re-ran Windows-authoritative sample: still `0/6` pass, so mitigation landed but did not improve success rate yet.)
 - [x] Implement next mitigation targeting lock-holder process/file-handle contention for `packages/db/generated/prisma-client/query_engine-windows.dll.node` (beyond retry/cleanup/wait), then compare Windows sample pass rate before/after. (Implemented 2026-02-17 by adding healthy full-engine client reuse gate in `packages/db/scripts/db-generate-direct.mjs`; Windows-authoritative sample improved from `0/6` to `6/6` pass for the same command.)
 - [x] Run an extended Windows reliability sample (`db:generate:sample -- 10+ --json --exit-zero`) to confirm mitigation stability over a larger attempt window and record results in `.brain/CURRENT_FOCUS.md`. (Validated 2026-02-17 via Windows `cmd.exe`: `db:generate:sample -- 12 --json --exit-zero` passed `12/12` with `0` `EPERM` failures; post-sample `worker:ingestion:drain` also passed.)
-- [ ] Continue periodic Windows reliability sampling (10+ attempts) after restarts/environment changes and track pass/fail trend in `.brain/CURRENT_FOCUS.md`. (Latest 2026-02-20 Windows-authoritative sample after mitigation pass: `12/12` pass, `0` `EPERM` lock failures.)
+- [ ] Continue periodic Windows reliability sampling (10+ attempts) after restarts/environment changes and track pass/fail trend in `.brain/CURRENT_FOCUS.md`. (Latest 2026-02-20 Windows-authoritative sample after Admin observability/drift-summary updates: `12/12` pass, `0` `EPERM` lock failures; post-sample `worker:ingestion:drain` clean.)
 - [x] Implement next Prisma Windows lock mitigation for `db:generate:direct` and re-run `db:generate:sample -- 12 --json --exit-zero` to restore stable pass rate. (Completed 2026-02-20 via preflight lock reuse + `DATABASE_URL` fallback + existing-engine preservation in `packages/db/scripts/db-generate-direct.mjs`; sample recovered to `12/12` pass.)
 - [x] Add CRM lead-list workflow refinements: quick search/filter controls and pipeline grouping option while preserving tenant-scoped API contracts. (Implemented 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` with status-tab filtering, multi-filter controls, and sticky quick actions for draft saves.)
 - [x] Add CRM micro-interaction polish: optimistic mutation feedback, inline success toasts, and unsaved-change indicators for lead notes/status edits. (Implemented 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` + `apps/crm/app/globals.css` with optimistic lead/contact/activity mutations, toast stack feedback, and per-lead unsaved draft indicators.)
@@ -80,6 +80,7 @@
 - [x] Fix overly dark hover highlights across CRM interactive text/card surfaces (lead/address links, KPI cards, sortable table headers) by normalizing to subtle readable hover styles in `apps/crm/app/globals.css`. (Completed 2026-02-17.)
 
 ## Next Session Candidate Work (Admin Priority)
+- [ ] Propagate the GTM baseline into operator enablement artifacts (sales/onboarding runbook + Admin seed defaults) so canonical plan matrix, setup SLA policy, and managed-services model are operationalized beyond `.brain/PRODUCT_SPEC.md`.
 - [x] Build tenant support diagnostics toolkit (auth/domain/ingestion health checks with operator-friendly remediation actions). (Completed 2026-02-20 via `apps/admin/app/api/tenants/[tenantId]/diagnostics/route.ts`, shared db helpers in `packages/db/src/control-plane.ts`, and Admin workspace diagnostics UI/remediation controls in `apps/admin/app/components/control-plane-workspace.tsx`.)
 - [x] Implement data safety/recovery controls in Admin (soft-delete/restore flows for tenant/domain/settings plus destructive-action confirmations). (Completed 2026-02-20 via status-based lifecycle routes + Admin confirmation UX in `apps/admin`.)
 - [x] Improve Admin mutation error transparency: surface actionable backend error messages in onboarding/domain/settings UI (RBAC denial, duplicate slug/domain, validation failures) with field-level guidance and operator next steps. (Implemented 2026-02-18 in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/lib/mutation-error-guidance.ts`.)
@@ -93,7 +94,7 @@
 - [x] Add operator-facing drift triage surfaces in Admin billing/audit workflows (drift signal cards + one-click audit preset + investigation guidance). (Completed 2026-02-20 in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/globals.css`; validated via Windows `test:routes` `39/39`, `lint`, and `build`.)
 - [x] Add operator remediation shortcuts from drift triage (map missing/extra entitlement flags into guided settings/billing correction actions). (Completed 2026-02-20 in `apps/admin/app/components/control-plane-workspace.tsx` with per-signal missing/extra/all quick actions that update settings draft flags and arm billing entitlement sync; validated via Windows `test:routes` `39/39`, `lint`, and `build`.)
 - [x] Add focused automated regression coverage for billing drift remediation shortcut behavior (settings-draft flag mutation + entitlement-sync arming). (Completed 2026-02-20 via shared helper `apps/admin/app/lib/billing-drift-remediation.ts` and targeted tests in `apps/admin/app/api/lib/routes.integration.test.ts`; validated via Windows `test:routes` `43/43`, `lint`, and `build`.)
-- [ ] Add billing drift reporting summary surface (recent drift counts/modes per tenant) to extend operator visibility beyond per-event triage.
+- [x] Add billing drift reporting summary surface (recent drift counts/modes per tenant) to extend operator visibility beyond per-event triage. (Completed 2026-02-20 via observability summary aggregation in `packages/db/src/control-plane.ts`, shared contracts in `packages/types/src/control-plane.ts`, and Admin UI surface in `apps/admin/app/components/control-plane-workspace.tsx`; validated with `@real-estate/admin` route tests `43/43`.)
 - [ ] Run a final manual local browser click-through for CRM (desktop + smaller laptop viewport) to close the remaining post-polish validation gap after current admin-priority work. (Deferred per product-direction override on 2026-02-20 until additional CRM UI/UX improvements are completed; sandbox remains non-authoritative for local runtime bind checks.)
 
 ## Control Plane Roadmap (Longer Term)
@@ -117,9 +118,9 @@
 - [ ] Add AI result feedback loop and quality scoring.
 
 ## Business / GTM
-- [ ] Define plan matrix (Starter/Growth/Pro/Team).
-- [ ] Define setup package scope and onboarding SLAs.
-- [ ] Define managed services add-ons and operational model.
+- [x] Define plan matrix (Starter/Growth/Pro/Team). (Completed 2026-02-20 in `.brain/PRODUCT_SPEC.md` section `5.1` with canonical control-plane plan mapping, pricing targets, and commercial constraints.)
+- [x] Define setup package scope and onboarding SLAs. (Completed 2026-02-20 in `.brain/PRODUCT_SPEC.md` section `5.2` with deliverable scope, 15-business-day onboarding timeline, and SLA pause/change-order rules.)
+- [x] Define managed services add-ons and operational model. (Completed 2026-02-20 in `.brain/PRODUCT_SPEC.md` section `5.3` with add-on catalog, pod staffing ratios, cadence, contract minimums, and fulfillment SLAs.)
 
 ## Later
 - [ ] Team and brokerage hierarchy model.

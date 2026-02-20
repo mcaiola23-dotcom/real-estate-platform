@@ -404,3 +404,19 @@
 ### D-099: Centralize billing drift remediation math in a shared helper and regression-test it in the authoritative Admin test command
 **Decision**: Extract remediation computation into `apps/admin/app/lib/billing-drift-remediation.ts` and wire `apps/admin/app/components/control-plane-workspace.tsx` to consume it, then add targeted helper assertions to `apps/admin/app/api/lib/routes.integration.test.ts` so `npm run test:routes --workspace @real-estate/admin` validates missing/extra/all drift mutation and entitlement-sync arming behavior.
 **Reason**: Remediation behavior previously lived inline in a large UI component and lacked focused coverage. A pure helper plus route-suite execution keeps logic deterministic, reduces regression risk, and aligns with existing Windows-authoritative validation workflow.
+
+### D-100: Aggregate billing drift summary metrics in the shared observability boundary (not UI-local audit parsing)
+**Decision**: Extend `getControlPlaneObservabilitySummary` in `packages/db/src/control-plane.ts` and `ControlPlaneObservabilitySummary` contracts in `packages/types/src/control-plane.ts` to include a durable `billingDrift` block (7-day totals, mode counts, missing/extra aggregates, and per-tenant drift rollups with latest timestamp), sourced from persisted `tenant.billing.sync` audit metadata.
+**Reason**: Billing drift triage existed only as per-tenant event inspection. A shared observability summary provides a single authoritative operator view for cross-tenant drift volume/trend monitoring and avoids duplicating aggregation logic in the Admin UI layer.
+
+### D-101: Continue reliability sampling as operational maintenance after control-plane feature changes
+**Decision**: After delivering new Admin observability surfaces, run another Windows-authoritative Prisma sample (`db:generate:sample -- 12 --json --exit-zero`) plus post-sample `worker:ingestion:drain`, and treat clean results (`12/12` pass, `0` `EPERM`) as no-regression evidence while keeping the periodic sampling task open.
+**Reason**: Prisma direct-generation lock behavior has previously regressed after unrelated changes; sampling after each meaningful control-plane update provides quick detection of environment-sensitive regressions without speculative code changes.
+
+### D-102: Adopt a canonical four-tier commercial matrix aligned to control-plane plan codes
+**Decision**: Define a concrete commercial plan matrix in `.brain/PRODUCT_SPEC.md` (`5.1`) using plan codes `starter`, `growth`, `pro`, and `team`, each with explicit feature coverage, setup-fee targets, monthly subscription targets, and plan-change billing constraints.
+**Reason**: Plan governance and billing workflows already depend on these plan codes operationally; formalizing commercial definitions in project docs closes the GTM ambiguity and keeps product, operations, and admin implementation aligned.
+
+### D-103: Standardize onboarding SLA and managed-services operating model as default go-to-market baseline
+**Decision**: Define setup-package deliverables + 15-business-day onboarding SLA in `.brain/PRODUCT_SPEC.md` (`5.2`), and define managed-services catalog + staffing/cadence/fulfillment SLAs in `.brain/PRODUCT_SPEC.md` (`5.3`).
+**Reason**: GTM execution required explicit commitments for delivery scope, timing, and post-launch service operations; codifying these now enables consistent sales scoping and predictable operator workflows across new tenant launches.

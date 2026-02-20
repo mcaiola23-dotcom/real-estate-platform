@@ -3963,6 +3963,11 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 <strong>{observabilitySummary.ingestion.deadLetterCount}</strong>
                 <span>ingestion jobs awaiting operator action</span>
               </article>
+              <article className="admin-kpi-card">
+                <p>Billing Drift ({observabilitySummary.billingDrift.windowDays}d)</p>
+                <strong>{observabilitySummary.billingDrift.totals.driftEvents}</strong>
+                <span>billing sync events with entitlement mismatches</span>
+              </article>
             </section>
 
             <div className="admin-observability-grid">
@@ -3999,6 +4004,53 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                     </span>
                   ))}
                 </div>
+              </article>
+
+              <article className="admin-observability-panel">
+                <h3>Billing Drift Summary</h3>
+                <p className="admin-muted">
+                  Recent drift totals across billing sync events (window: {observabilitySummary.billingDrift.windowDays} days).
+                </p>
+                <div className="admin-row">
+                  <span className="admin-chip">tenants: {observabilitySummary.billingDrift.totals.tenantsWithDrift}</span>
+                  <span className="admin-chip">missing flags: {observabilitySummary.billingDrift.totals.missingFlagCount}</span>
+                  <span className="admin-chip">extra flags: {observabilitySummary.billingDrift.totals.extraFlagCount}</span>
+                </div>
+                <div className="admin-row">
+                  <span className="admin-chip">compared: {observabilitySummary.billingDrift.totals.modeCounts.compared}</span>
+                  <span className="admin-chip">
+                    provider_missing: {observabilitySummary.billingDrift.totals.modeCounts.provider_missing}
+                  </span>
+                  <span className="admin-chip">
+                    tenant_unresolved: {observabilitySummary.billingDrift.totals.modeCounts.tenant_unresolved}
+                  </span>
+                </div>
+
+                {observabilitySummary.billingDrift.byTenant.length === 0 ? (
+                  <p className="admin-muted">No billing drift events detected in the current window.</p>
+                ) : (
+                  <ul className="admin-list">
+                    {observabilitySummary.billingDrift.byTenant.map((entry) => (
+                      <li key={entry.tenantId} className="admin-list-item">
+                        <div className="admin-row admin-space-between">
+                          <strong>{entry.tenantName}</strong>
+                          <span className="admin-chip admin-chip-warn">drift events: {entry.driftEvents}</span>
+                        </div>
+                        <p className="admin-muted">{entry.tenantSlug}</p>
+                        <div className="admin-row">
+                          <span className="admin-chip">missing: {entry.missingFlagCount}</span>
+                          <span className="admin-chip">extra: {entry.extraFlagCount}</span>
+                          <span className="admin-chip">compared: {entry.modeCounts.compared}</span>
+                          <span className="admin-chip">provider_missing: {entry.modeCounts.provider_missing}</span>
+                          <span className="admin-chip">tenant_unresolved: {entry.modeCounts.tenant_unresolved}</span>
+                        </div>
+                        {entry.latestDriftAt ? (
+                          <p className="admin-muted">latest drift: {formatTimestamp(entry.latestDriftAt)}</p>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </article>
             </div>
 

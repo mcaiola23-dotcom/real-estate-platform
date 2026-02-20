@@ -5,6 +5,9 @@ import type {
   ControlPlaneActorPermission,
   ControlPlaneActorRole,
   ControlPlaneAdminAuditStatus,
+  ControlPlaneBillingDriftModeCounts,
+  ControlPlaneBillingDriftSummary,
+  ControlPlaneBillingDriftTenantSummary,
   ControlPlaneIngestionStatusCount,
   ControlPlaneMutationTrend,
   ControlPlaneObservabilitySummary,
@@ -443,6 +446,133 @@ function defaultQueueStatusCounts(): ControlPlaneIngestionStatusCount[] {
     { status: 'processed', count: 0 },
     { status: 'dead_letter', count: 0 },
   ];
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function parseAuditMetadataJson(value: string | null | undefined): Record<string, unknown> | null {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return asRecord(JSON.parse(value));
+  } catch {
+    return null;
+  }
+}
+
+function getAuditChangeAfterValue(metadata: Record<string, unknown> | null, field: string): unknown {
+  const changes = asRecord(metadata?.changes);
+  const detail = asRecord(changes?.[field]);
+  if (detail && 'after' in detail) {
+    return detail.after;
+  }
+
+  return changes?.[field];
+}
+
+function toBooleanValue(value: unknown): boolean | null {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true') {
+      return true;
+    }
+    if (normalized === 'false') {
+      return false;
+    }
+  }
+  if (typeof value === 'number') {
+    if (value === 1) {
+      return true;
+    }
+    if (value === 0) {
+      return false;
+    }
+  }
+
+  return null;
+}
+
+function toIntegerValue(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.max(0, Math.trunc(value));
+  }
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return Math.max(0, Math.trunc(parsed));
+    }
+  }
+
+  return null;
+}
+
+function toStringList(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .filter((entry): entry is string => typeof entry === 'string')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return [];
+    }
+
+    return trimmed
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+
+  return [];
+}
+
+function defaultBillingDriftModeCounts(): ControlPlaneBillingDriftModeCounts {
+  return {
+    compared: 0,
+    provider_missing: 0,
+    tenant_unresolved: 0,
+  };
+}
+
+function normalizeBillingDriftMode(value: unknown): keyof ControlPlaneBillingDriftModeCounts {
+  if (typeof value !== 'string') {
+    return 'compared';
+  }
+
+  const normalized = value.trim();
+  if (normalized === 'provider_missing' || normalized === 'tenant_unresolved') {
+    return normalized;
+  }
+
+  return 'compared';
+}
+
+function buildEmptyBillingDriftSummary(generatedAt: string, windowDays: number): ControlPlaneBillingDriftSummary {
+  return {
+    windowDays,
+    generatedAt,
+    totals: {
+      driftEvents: 0,
+      tenantsWithDrift: 0,
+      missingFlagCount: 0,
+      extraFlagCount: 0,
+      modeCounts: defaultBillingDriftModeCounts(),
+    },
+    byTenant: [],
+  };
 }
 
 export async function listTenantSnapshotsForAdmin(): Promise<ControlPlaneTenantSnapshot[]> {
@@ -1569,6 +1699,8 @@ export async function getControlPlaneObservabilitySummary(
   const prisma = await getPrismaClient();
   const snapshots = await listTenantSnapshotsForAdmin();
   const runtime = await getIngestionRuntimeReadiness();
+  const safeTenantLimit = Math.max(1, Math.min(Math.trunc(tenantLimit), 100));
+  const generatedAt = new Date().toISOString();
 
   const tenantReadiness = snapshots
     .map((snapshot) => {
@@ -1601,7 +1733,7 @@ export async function getControlPlaneObservabilitySummary(
       };
     })
     .sort((left, right) => left.score - right.score || left.tenantName.localeCompare(right.tenantName))
-    .slice(0, Math.max(1, Math.min(Math.trunc(tenantLimit), 100)));
+    .slice(0, safeTenantLimit);
 
   const totalDomains = snapshots.reduce((total, snapshot) => total + snapshot.domains.length, 0);
   const verifiedPrimaryDomains = snapshots.reduce((total, snapshot) => {
@@ -1618,9 +1750,11 @@ export async function getControlPlaneObservabilitySummary(
   let mutationTrends = defaultMutationTrends();
   let queueStatusCounts = defaultQueueStatusCounts();
   let deadLetterCount = 0;
+  const billingDriftWindowDays = 7;
+  let billingDriftSummary = buildEmptyBillingDriftSummary(generatedAt, billingDriftWindowDays);
 
   if (prisma) {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(Date.now() - billingDriftWindowDays * 24 * 60 * 60 * 1000);
 
     const auditRows = await prisma.adminAuditEvent.findMany({
       where: {
@@ -1669,10 +1803,105 @@ export async function getControlPlaneObservabilitySummary(
     }
     queueStatusCounts = Array.from(queueCountMap.entries()).map(([status, count]) => ({ status, count }));
     deadLetterCount = queueCountMap.get('dead_letter') ?? 0;
+
+    const driftRows = await prisma.adminAuditEvent.findMany({
+      where: {
+        action: 'tenant.billing.sync',
+        createdAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+      select: {
+        tenantId: true,
+        metadataJson: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const tenantDetailsById = new Map(
+      snapshots.map((snapshot) => [
+        snapshot.tenant.id,
+        { tenantName: snapshot.tenant.name, tenantSlug: snapshot.tenant.slug },
+      ])
+    );
+    const driftByTenant = new Map<string, ControlPlaneBillingDriftTenantSummary>();
+
+    for (const row of driftRows) {
+      const metadata = parseAuditMetadataJson(row.metadataJson);
+      const driftDetected = toBooleanValue(getAuditChangeAfterValue(metadata, 'entitlementDriftDetected'));
+      if (driftDetected !== true) {
+        continue;
+      }
+
+      const mode = normalizeBillingDriftMode(getAuditChangeAfterValue(metadata, 'entitlementDriftMode'));
+      const missingCount =
+        toIntegerValue(getAuditChangeAfterValue(metadata, 'entitlementMissingCount')) ??
+        toStringList(getAuditChangeAfterValue(metadata, 'entitlementMissingFlags')).length;
+      const extraCount =
+        toIntegerValue(getAuditChangeAfterValue(metadata, 'entitlementExtraCount')) ??
+        toStringList(getAuditChangeAfterValue(metadata, 'entitlementExtraFlags')).length;
+      const createdAt = toIsoString(row.createdAt);
+
+      billingDriftSummary.totals.driftEvents += 1;
+      billingDriftSummary.totals.missingFlagCount += missingCount;
+      billingDriftSummary.totals.extraFlagCount += extraCount;
+      billingDriftSummary.totals.modeCounts[mode] += 1;
+
+      const tenantId = typeof row.tenantId === 'string' && row.tenantId.trim().length > 0 ? row.tenantId : null;
+      if (!tenantId) {
+        continue;
+      }
+
+      const tenantDetails = tenantDetailsById.get(tenantId);
+      const tenantSummary = driftByTenant.get(tenantId) ?? {
+        tenantId,
+        tenantName: tenantDetails?.tenantName ?? tenantId,
+        tenantSlug: tenantDetails?.tenantSlug ?? 'unknown',
+        driftEvents: 0,
+        missingFlagCount: 0,
+        extraFlagCount: 0,
+        modeCounts: defaultBillingDriftModeCounts(),
+        latestDriftAt: null,
+      };
+
+      tenantSummary.driftEvents += 1;
+      tenantSummary.missingFlagCount += missingCount;
+      tenantSummary.extraFlagCount += extraCount;
+      tenantSummary.modeCounts[mode] += 1;
+      if (!tenantSummary.latestDriftAt || createdAt > tenantSummary.latestDriftAt) {
+        tenantSummary.latestDriftAt = createdAt;
+      }
+
+      driftByTenant.set(tenantId, tenantSummary);
+    }
+
+    billingDriftSummary = {
+      ...billingDriftSummary,
+      totals: {
+        ...billingDriftSummary.totals,
+        tenantsWithDrift: driftByTenant.size,
+      },
+      byTenant: Array.from(driftByTenant.values())
+        .sort((left, right) => {
+          if (right.driftEvents !== left.driftEvents) {
+            return right.driftEvents - left.driftEvents;
+          }
+
+          const leftLatest = left.latestDriftAt ?? '';
+          const rightLatest = right.latestDriftAt ?? '';
+          if (rightLatest !== leftLatest) {
+            return rightLatest.localeCompare(leftLatest);
+          }
+
+          return left.tenantName.localeCompare(right.tenantName);
+        })
+        .slice(0, safeTenantLimit),
+    };
   }
 
   return {
-    generatedAt: new Date().toISOString(),
+    generatedAt,
     totals: {
       tenants: snapshots.length,
       domains: totalDomains,
@@ -1687,6 +1916,7 @@ export async function getControlPlaneObservabilitySummary(
       queueStatusCounts,
       deadLetterCount,
     },
+    billingDrift: billingDriftSummary,
     tenantReadiness,
   };
 }

@@ -136,6 +136,37 @@ function buildObservabilitySummaryFixture(): ControlPlaneObservabilitySummary {
       ],
       deadLetterCount: 2,
     },
+    billingDrift: {
+      windowDays: 7,
+      generatedAt: '2026-02-20T00:00:00.000Z',
+      totals: {
+        driftEvents: 3,
+        tenantsWithDrift: 2,
+        missingFlagCount: 4,
+        extraFlagCount: 2,
+        modeCounts: {
+          compared: 2,
+          provider_missing: 1,
+          tenant_unresolved: 0,
+        },
+      },
+      byTenant: [
+        {
+          tenantId: 'tenant_alpha',
+          tenantName: 'Alpha Realty',
+          tenantSlug: 'alpha',
+          driftEvents: 2,
+          missingFlagCount: 3,
+          extraFlagCount: 1,
+          modeCounts: {
+            compared: 2,
+            provider_missing: 0,
+            tenant_unresolved: 0,
+          },
+          latestDriftAt: '2026-02-20T12:00:00.000Z',
+        },
+      ],
+    },
     tenantReadiness: [
       {
         tenantId: 'tenant_alpha',
@@ -809,6 +840,8 @@ test('observability GET returns summary payload', async () => {
   assert.equal(json.ok, true);
   assert.equal(json.summary.totals.tenants, 2);
   assert.equal(json.summary.ingestion.deadLetterCount, 2);
+  assert.equal(json.summary.billingDrift.totals.driftEvents, 3);
+  assert.equal(json.summary.billingDrift.byTenant[0]?.tenantId, 'tenant_alpha');
 });
 
 test('billing webhook POST rejects unauthorized requests when secret is configured', async () => {
@@ -886,10 +919,21 @@ test('billing webhook POST rejects Stripe events with invalid signatures', async
 });
 
 test('billing webhook POST verifies and normalizes Stripe payloads before reconciliation', async () => {
-  let capturedProviderEventInput: Record<string, unknown> | null = null;
+  type CapturedProviderEventInput = {
+    provider: string;
+    eventId: string;
+    eventType: string;
+    tenantId?: string | null;
+    billingCustomerId?: string | null;
+    billingSubscriptionId?: string | null;
+    subscription?: Record<string, unknown>;
+    entitlementFlags?: string[];
+    syncEntitlements?: boolean;
+  };
+  let capturedProviderEventInput: CapturedProviderEventInput | undefined;
   const post = createBillingWebhookPostHandler({
     reconcileTenantBillingProviderEvent: async (input) => {
-      capturedProviderEventInput = input as unknown as Record<string, unknown>;
+      capturedProviderEventInput = input as unknown as CapturedProviderEventInput;
       return buildBillingProviderEventResultFixture({
         provider: input.provider,
         eventId: input.eventId,
@@ -937,21 +981,21 @@ test('billing webhook POST verifies and normalizes Stripe payloads before reconc
 
   assert.equal(response.status, 200);
   assert.ok(capturedProviderEventInput);
-  assert.equal(capturedProviderEventInput?.provider, 'stripe');
-  assert.equal(capturedProviderEventInput?.eventId, 'evt_test_2');
-  assert.equal(capturedProviderEventInput?.eventType, 'customer.subscription.updated');
-  assert.equal(capturedProviderEventInput?.tenantId, 'tenant_alpha');
-  assert.equal(capturedProviderEventInput?.billingCustomerId, 'cus_alpha');
-  assert.equal(capturedProviderEventInput?.billingSubscriptionId, 'sub_alpha');
+  assert.equal(capturedProviderEventInput.provider, 'stripe');
+  assert.equal(capturedProviderEventInput.eventId, 'evt_test_2');
+  assert.equal(capturedProviderEventInput.eventType, 'customer.subscription.updated');
+  assert.equal(capturedProviderEventInput.tenantId, 'tenant_alpha');
+  assert.equal(capturedProviderEventInput.billingCustomerId, 'cus_alpha');
+  assert.equal(capturedProviderEventInput.billingSubscriptionId, 'sub_alpha');
 
-  const subscription = capturedProviderEventInput?.subscription as Record<string, unknown>;
+  const subscription = capturedProviderEventInput.subscription;
   assert.equal(subscription?.planCode, 'growth');
   assert.equal(subscription?.status, 'active');
   assert.equal(subscription?.paymentStatus, 'paid');
   assert.equal(subscription?.cancelAtPeriodEnd, false);
 
-  assert.deepEqual(capturedProviderEventInput?.entitlementFlags, ['crm_pipeline', 'lead_capture']);
-  assert.equal(capturedProviderEventInput?.syncEntitlements, true);
+  assert.deepEqual(capturedProviderEventInput.entitlementFlags, ['crm_pipeline', 'lead_capture']);
+  assert.equal(capturedProviderEventInput.syncEntitlements, true);
 
   const json = (await response.json()) as { ok: true; result: TenantBillingProviderEventResult };
   assert.equal(json.ok, true);

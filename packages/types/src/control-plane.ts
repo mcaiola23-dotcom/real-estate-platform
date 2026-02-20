@@ -284,6 +284,36 @@ export interface ControlPlaneTenantReadinessScore {
   }>;
 }
 
+export interface ControlPlaneBillingDriftModeCounts {
+  compared: number;
+  provider_missing: number;
+  tenant_unresolved: number;
+}
+
+export interface ControlPlaneBillingDriftTenantSummary {
+  tenantId: string;
+  tenantName: string;
+  tenantSlug: string;
+  driftEvents: number;
+  missingFlagCount: number;
+  extraFlagCount: number;
+  modeCounts: ControlPlaneBillingDriftModeCounts;
+  latestDriftAt: string | null;
+}
+
+export interface ControlPlaneBillingDriftSummary {
+  windowDays: number;
+  generatedAt: string;
+  totals: {
+    driftEvents: number;
+    tenantsWithDrift: number;
+    missingFlagCount: number;
+    extraFlagCount: number;
+    modeCounts: ControlPlaneBillingDriftModeCounts;
+  };
+  byTenant: ControlPlaneBillingDriftTenantSummary[];
+}
+
 export interface ControlPlaneObservabilitySummary {
   generatedAt: string;
   totals: {
@@ -300,5 +330,6 @@ export interface ControlPlaneObservabilitySummary {
     queueStatusCounts: ControlPlaneIngestionStatusCount[];
     deadLetterCount: number;
   };
+  billingDrift: ControlPlaneBillingDriftSummary;
   tenantReadiness: ControlPlaneTenantReadinessScore[];
 }

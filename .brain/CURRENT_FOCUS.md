@@ -52,11 +52,13 @@ Continue Admin control-plane delivery by hardening billing provider ingestion be
 46. Operator-facing billing drift triage surfaces are now in place in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/globals.css`, with per-tenant drift signal cards, one-click audit preset loading, and audit timeline drift guidance/chips for billing sync investigations.
 47. Operator remediation shortcuts from billing drift triage are now in place in `apps/admin/app/components/control-plane-workspace.tsx`, including one-click missing/extra/all flag correction actions that update settings drafts, arm billing entitlement sync, and surface save-order guidance.
 48. Focused automated regression coverage for billing drift remediation is now in place via pure helper tests in `apps/admin/app/api/lib/routes.integration.test.ts` + shared helper `apps/admin/app/lib/billing-drift-remediation.ts`, validating missing/extra/all draft mutation behavior and entitlement-sync arming semantics.
+49. Cross-tenant billing drift reporting summary is now in place in shared observability contracts/aggregation (`packages/types/src/control-plane.ts`, `packages/db/src/control-plane.ts`) and exposed in Admin workspace observability (`apps/admin/app/components/control-plane-workspace.tsx`) with recent totals, drift modes, and per-tenant breakdowns.
 
 ## Immediate Next Steps
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes and record trend deltas in this file.
 - Defer full manual browser click-through for Admin and CRM until the next planned UI/UX improvement pass is complete (per current product-direction override).
-- Implement a billing drift reporting summary surface (recent drift counts/modes per tenant) to extend operator visibility beyond per-event triage.
+- When the product-direction override is lifted, run focused manual browser click-through for Admin onboarding + domain operations on desktop and smaller laptop viewport.
+- Propagate newly-defined GTM plan/onboarding/service baselines into operator-facing enablement artifacts (sales/onboarding runbook + Admin seed defaults where applicable).
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -684,6 +686,48 @@ Continue Admin control-plane delivery by hardening billing provider ingestion be
 - validates non-actionable input behavior (no sync arming).
 
 ### Session Validation (2026-02-20 Billing Drift Remediation Regression Coverage)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`43/43`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+
+## Session Update (2026-02-20 Billing Drift Observability Summary + Prisma Reliability Sampling)
+
+### Completed This Session
+1. Added observability-level billing drift summary reporting across tenants:
+- expanded shared contracts in `packages/types/src/control-plane.ts` (`ControlPlaneBillingDriftSummary`, `ControlPlaneBillingDriftTenantSummary`, mode-count types) and attached them to `ControlPlaneObservabilitySummary`,
+- extended `getControlPlaneObservabilitySummary` in `packages/db/src/control-plane.ts` to aggregate 7-day `tenant.billing.sync` drift signals from durable audit metadata (`entitlementDriftDetected`, mode, missing/extra counts) and emit tenant-level drift rollups,
+- added Admin observability UI surfaces in `apps/admin/app/components/control-plane-workspace.tsx` (new KPI card + `Billing Drift Summary` panel with totals/mode counts/per-tenant latest-drift rows),
+- updated responsive KPI layout in `apps/admin/app/globals.css` for the added observability metric card.
+2. Executed the periodic Windows-authoritative Prisma reliability sample and recorded trend evidence:
+- `db:generate:sample -- 12 --json --exit-zero` returned `passed: 12`, `failed: 0`, `passRate: 100`, `epermLockFailures: 0`,
+- post-sample ingestion runtime check via `worker:ingestion:drain` completed clean with zero processed/failed/dead-lettered jobs.
+
+### Session Validation (2026-02-20 Billing Drift Observability Summary + Prisma Reliability Sampling)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`43/43`) after observability summary payload/UI updates.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:generate:sample --workspace @real-estate/db -- 12 --json --exit-zero"` passes (`12/12`, `0` `EPERM` failures).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run worker:ingestion:drain"` passes (`totalProcessed: 0`, `totalFailed: 0`, `totalDeadLettered: 0`).
+- `./node_modules/.bin/tsc --noEmit --project packages/types/tsconfig.json` passes.
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes after tightening webhook test capture typing in `apps/admin/app/api/lib/routes.integration.test.ts`.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes route `/api/observability`.
+
+## Session Update (2026-02-20 GTM Baseline Definition + Reliability Maintenance)
+
+### Completed This Session
+1. Closed remaining Business/GTM definition backlog for the current phase in `.brain/PRODUCT_SPEC.md`:
+- defined canonical four-tier plan matrix (`starter`, `growth`, `pro`, `team`) with feature coverage and commercial targets in section `5.1`,
+- defined setup package scope and onboarding SLA policy in section `5.2`,
+- defined managed services catalog and operating model (staffing/cadence/fulfillment SLA) in section `5.3`.
+2. Continued periodic Windows-authoritative Prisma reliability maintenance:
+- re-ran `db:generate:sample -- 12 --json --exit-zero` and recorded stable outcomes (`12/12` pass, `0` `EPERM` failures),
+- re-ran post-sample ingestion runtime check with clean drain summary.
+3. Removed the last blocking Admin typecheck regression from route tests:
+- tightened Stripe webhook capture typing in `apps/admin/app/api/lib/routes.integration.test.ts` so `apps/admin` `tsc --noEmit` is now clean again.
+
+### Session Validation (2026-02-20 GTM Baseline Definition + Reliability Maintenance)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:generate:sample --workspace @real-estate/db -- 12 --json --exit-zero"` passes (`12/12`, `0` `EPERM` failures).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run worker:ingestion:drain"` passes (`totalProcessed: 0`, `totalFailed: 0`, `totalDeadLettered: 0`).
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes after route-test typing fix.
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`43/43`).
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
