@@ -10,9 +10,19 @@ import type {
   ControlPlaneAdminAuditStatus,
   ControlPlaneObservabilitySummary,
   ControlPlaneTenantSnapshot,
+  TenantBillingPaymentStatus,
+  TenantBillingSubscription,
+  TenantBillingSubscriptionStatus,
   TenantControlActor,
+  TenantSupportDiagnosticsSummary,
+  TenantSupportDiagnosticStatus,
+  TenantSupportRemediationAction,
   TenantDomainProbeResult,
 } from '@real-estate/types/control-plane';
+import {
+  computeBillingDriftRemediation,
+  type BillingDriftRemediationMode,
+} from '../lib/billing-drift-remediation';
 import {
   createMutationErrorGuidance,
   type MutationErrorField,
@@ -51,6 +61,19 @@ interface ActorSupportSessionDraft {
   durationMinutes: number;
 }
 
+interface BillingDraft {
+  planCode: string;
+  status: TenantBillingSubscriptionStatus;
+  paymentStatus: TenantBillingPaymentStatus;
+  billingProvider: string;
+  billingCustomerId: string;
+  billingSubscriptionId: string;
+  trialEndsAt: string;
+  currentPeriodEndsAt: string;
+  cancelAtPeriodEnd: boolean;
+  syncEntitlements: boolean;
+}
+
 interface PlanOption {
   code: string;
   label: string;
@@ -72,6 +95,9 @@ const auditActionOptions: ControlPlaneAdminAuditAction[] = [
   'tenant.domain.add',
   'tenant.domain.update',
   'tenant.settings.update',
+  'tenant.billing.update',
+  'tenant.billing.sync',
+  'tenant.diagnostics.remediate',
   'tenant.actor.add',
   'tenant.actor.update',
   'tenant.actor.remove',
@@ -119,6 +145,8 @@ const roleDefaultPermissions: Record<ControlPlaneActorRole, ControlPlaneActorPer
 };
 
 const defaultSupportSessionDurationMinutes = 30;
+const billingSubscriptionStatusOptions: TenantBillingSubscriptionStatus[] = ['trialing', 'active', 'past_due', 'canceled'];
+const billingPaymentStatusOptions: TenantBillingPaymentStatus[] = ['pending', 'paid', 'past_due', 'unpaid'];
 
 const onboardingSteps = [
   {
@@ -181,6 +209,28 @@ interface ObservabilitySummaryResponse {
   summary: ControlPlaneObservabilitySummary;
 }
 
+interface BillingSubscriptionResponse {
+  ok: true;
+  subscription: TenantBillingSubscription;
+}
+
+interface DiagnosticsSummaryResponse {
+  ok: true;
+  summary: TenantSupportDiagnosticsSummary;
+}
+
+interface DiagnosticsRemediationResponse {
+  ok: boolean;
+  result: {
+    action: TenantSupportRemediationAction;
+    ok: boolean;
+    message: string;
+    changedCount?: number;
+  };
+  summary: TenantSupportDiagnosticsSummary;
+  error?: string | null;
+}
+
 interface AuditRequestAttribution {
   requestId: string | null;
   requestMethod: string | null;
@@ -191,6 +241,21 @@ interface AuditChangeDetail {
   field: string;
   before: string;
   after: string;
+}
+
+interface BillingDriftSignal {
+  auditEventId: string;
+  createdAt: string;
+  status: ControlPlaneAdminAuditStatus;
+  mode: string;
+  missingCount: number;
+  extraCount: number;
+  missingFlags: string[];
+  extraFlags: string[];
+  duplicate: boolean | null;
+  applied: boolean | null;
+  requestId: string | null;
+  error: string | null;
 }
 
 function parseAuditLimit(value: string): number {
@@ -291,6 +356,132 @@ function getAuditChangeDetails(event: ControlPlaneAdminAuditEvent): AuditChangeD
   return [];
 }
 
+function getAuditChangeAfterValue(event: ControlPlaneAdminAuditEvent, field: string): unknown {
+  const metadata = asRecord(event.metadata);
+  const changes = asRecord(metadata?.changes);
+  const detail = asRecord(changes?.[field]);
+  if (detail && 'after' in detail) {
+    return detail.after;
+  }
+
+  return changes?.[field];
+}
+
+function toBooleanValue(value: unknown): boolean | null {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true') {
+      return true;
+    }
+    if (normalized === 'false') {
+      return false;
+    }
+  }
+  if (typeof value === 'number') {
+    if (value === 1) {
+      return true;
+    }
+    if (value === 0) {
+      return false;
+    }
+  }
+  return null;
+}
+
+function toIntegerValue(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.trunc(value);
+  }
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return Math.trunc(parsed);
+    }
+  }
+  return null;
+}
+
+function toStringList(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .filter((entry): entry is string => typeof entry === 'string')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return [];
+    }
+    return trimmed
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }
+  return [];
+}
+
+function toBillingDriftSignal(event: ControlPlaneAdminAuditEvent): BillingDriftSignal | null {
+  if (event.action !== 'tenant.billing.sync') {
+    return null;
+  }
+
+  const driftDetected = toBooleanValue(getAuditChangeAfterValue(event, 'entitlementDriftDetected'));
+  if (driftDetected !== true) {
+    return null;
+  }
+
+  const modeValue = getAuditChangeAfterValue(event, 'entitlementDriftMode');
+  const mode = typeof modeValue === 'string' && modeValue.trim().length > 0 ? modeValue.trim() : 'unknown';
+  const missingFlags = toStringList(getAuditChangeAfterValue(event, 'entitlementMissingFlags'));
+  const extraFlags = toStringList(getAuditChangeAfterValue(event, 'entitlementExtraFlags'));
+  const missingCount = toIntegerValue(getAuditChangeAfterValue(event, 'entitlementMissingCount')) ?? missingFlags.length;
+  const extraCount = toIntegerValue(getAuditChangeAfterValue(event, 'entitlementExtraCount')) ?? extraFlags.length;
+  const duplicate = toBooleanValue(getAuditChangeAfterValue(event, 'duplicate'));
+  const applied = toBooleanValue(getAuditChangeAfterValue(event, 'applied'));
+  const request = getAuditRequestAttribution(event);
+
+  return {
+    auditEventId: event.id,
+    createdAt: event.createdAt,
+    status: event.status,
+    mode,
+    missingCount,
+    extraCount,
+    missingFlags,
+    extraFlags,
+    duplicate,
+    applied,
+    requestId: request.requestId,
+    error: event.error,
+  };
+}
+
+function getBillingDriftSummaryForAuditRow(
+  event: ControlPlaneAdminAuditEvent
+): { mode: string; missingCount: number; extraCount: number } | null {
+  if (event.action !== 'tenant.billing.sync') {
+    return null;
+  }
+
+  const driftDetected = toBooleanValue(getAuditChangeAfterValue(event, 'entitlementDriftDetected'));
+  if (driftDetected !== true) {
+    return null;
+  }
+
+  const modeValue = getAuditChangeAfterValue(event, 'entitlementDriftMode');
+  const mode = typeof modeValue === 'string' && modeValue.trim().length > 0 ? modeValue.trim() : 'unknown';
+
+  return {
+    mode,
+    missingCount: toIntegerValue(getAuditChangeAfterValue(event, 'entitlementMissingCount')) ?? 0,
+    extraCount: toIntegerValue(getAuditChangeAfterValue(event, 'entitlementExtraCount')) ?? 0,
+  };
+}
+
 function escapeCsvCell(value: string): string {
   const normalized = value.replace(/"/g, '""');
   return `"${normalized}"`;
@@ -328,6 +519,53 @@ function uniqueList(values: string[]): string[] {
 
 function uniquePermissions(values: ControlPlaneActorPermission[]): ControlPlaneActorPermission[] {
   return Array.from(new Set(values));
+}
+
+function toDateInputValue(value: string | null): string {
+  if (!value) {
+    return '';
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+
+  return parsed.toISOString().slice(0, 10);
+}
+
+function toBillingDraft(subscription: TenantBillingSubscription): BillingDraft {
+  return {
+    planCode: subscription.planCode,
+    status: subscription.status,
+    paymentStatus: subscription.paymentStatus,
+    billingProvider: subscription.billingProvider,
+    billingCustomerId: subscription.billingCustomerId ?? '',
+    billingSubscriptionId: subscription.billingSubscriptionId ?? '',
+    trialEndsAt: toDateInputValue(subscription.trialEndsAt),
+    currentPeriodEndsAt: toDateInputValue(subscription.currentPeriodEndsAt),
+    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+    syncEntitlements: false,
+  };
+}
+
+function diagnosticStatusLabel(status: TenantSupportDiagnosticStatus): string {
+  if (status === 'failed') {
+    return 'failed';
+  }
+  if (status === 'warning') {
+    return 'warning';
+  }
+  return 'ok';
+}
+
+function diagnosticStatusChipClass(status: TenantSupportDiagnosticStatus): string {
+  if (status === 'failed') {
+    return 'admin-chip-status-failed';
+  }
+  if (status === 'warning') {
+    return 'admin-chip-warn';
+  }
+  return 'admin-chip-ok';
 }
 
 function normalizeSlug(value: string): string {
@@ -468,6 +706,20 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     Record<string, ActorSupportSessionDraft>
   >({});
 
+  const [billingByTenant, setBillingByTenant] = useState<Record<string, TenantBillingSubscription>>({});
+  const [billingDraftByTenant, setBillingDraftByTenant] = useState<Record<string, BillingDraft>>({});
+  const [billingLoadingByTenant, setBillingLoadingByTenant] = useState<Record<string, boolean>>({});
+  const [billingDriftSignalsByTenant, setBillingDriftSignalsByTenant] = useState<Record<string, BillingDriftSignal[]>>(
+    {}
+  );
+  const [billingDriftLoadingByTenant, setBillingDriftLoadingByTenant] = useState<Record<string, boolean>>({});
+  const [billingDriftErrorByTenant, setBillingDriftErrorByTenant] = useState<Record<string, string | null>>({});
+
+  const [diagnosticsByTenant, setDiagnosticsByTenant] = useState<Record<string, TenantSupportDiagnosticsSummary>>({});
+  const [diagnosticsLoadingByTenant, setDiagnosticsLoadingByTenant] = useState<Record<string, boolean>>({});
+  const [diagnosticsActionBusyByTenant, setDiagnosticsActionBusyByTenant] = useState<Record<string, boolean>>({});
+  const [diagnosticsErrorByTenant, setDiagnosticsErrorByTenant] = useState<Record<string, string | null>>({});
+
   const [observabilitySummary, setObservabilitySummary] = useState<ControlPlaneObservabilitySummary | null>(null);
   const [observabilityLoading, setObservabilityLoading] = useState(false);
   const [observabilityError, setObservabilityError] = useState<string | null>(null);
@@ -497,6 +749,38 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
     return tenantActorsByTenant[selectedTenant.tenant.id] ?? [];
   }, [selectedTenant, tenantActorsByTenant]);
+
+  const selectedTenantDiagnostics = useMemo(() => {
+    if (!selectedTenant) {
+      return null;
+    }
+
+    return diagnosticsByTenant[selectedTenant.tenant.id] ?? null;
+  }, [diagnosticsByTenant, selectedTenant]);
+
+  const selectedTenantBilling = useMemo(() => {
+    if (!selectedTenant) {
+      return null;
+    }
+
+    return billingByTenant[selectedTenant.tenant.id] ?? null;
+  }, [billingByTenant, selectedTenant]);
+
+  const selectedTenantBillingDraft = useMemo(() => {
+    if (!selectedTenant) {
+      return null;
+    }
+
+    return billingDraftByTenant[selectedTenant.tenant.id] ?? null;
+  }, [billingDraftByTenant, selectedTenant]);
+
+  const selectedTenantBillingDriftSignals = useMemo(() => {
+    if (!selectedTenant) {
+      return [];
+    }
+
+    return billingDriftSignalsByTenant[selectedTenant.tenant.id] ?? [];
+  }, [billingDriftSignalsByTenant, selectedTenant]);
 
   const selectedTenantActorDraft = useMemo(() => {
     if (!selectedTenant) {
@@ -631,6 +915,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   const selectedTenantIsActive = selectedTenant?.tenant.status === 'active';
   const selectedSettingsIsActive = selectedTenant?.settings.status === 'active';
   const settingsEditable = Boolean(selectedTenantIsActive && selectedSettingsIsActive);
+  const auditDriftPresetActive =
+    selectedAuditAction === 'tenant.billing.sync' &&
+    selectedAuditChangedField.trim().toLowerCase() === 'entitlementdriftdetected';
 
   const sslReadiness = useMemo(() => {
     if (!selectedPrimaryDomain) {
@@ -696,47 +983,73 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   ]);
 
   const loadAuditEvents = useCallback(
-    async (tenantScopeOverride?: string) => {
+    async (
+      tenantScopeOverride?: string,
+      filterOverrides?: Partial<{
+        status: string;
+        action: string;
+        actorRole: string;
+        actorId: string;
+        requestId: string;
+        changedField: string;
+        search: string;
+        fromDate: string;
+        toDate: string;
+        errorsOnly: boolean;
+        limit: number;
+      }>
+    ) => {
       const tenantScope = tenantScopeOverride ?? selectedAuditTenantId;
+      const status = filterOverrides?.status ?? selectedAuditStatus;
+      const action = filterOverrides?.action ?? selectedAuditAction;
+      const actorRole = filterOverrides?.actorRole ?? selectedAuditActorRole;
+      const actorId = filterOverrides?.actorId ?? selectedAuditActorId;
+      const requestId = filterOverrides?.requestId ?? selectedAuditRequestId;
+      const changedField = filterOverrides?.changedField ?? selectedAuditChangedField;
+      const search = filterOverrides?.search ?? selectedAuditSearch;
+      const fromDate = filterOverrides?.fromDate ?? selectedAuditFromDate;
+      const toDate = filterOverrides?.toDate ?? selectedAuditToDate;
+      const errorsOnly = filterOverrides?.errorsOnly ?? selectedAuditErrorsOnly;
+      const limit = filterOverrides?.limit ?? selectedAuditLimit;
 
       setAuditLoading(true);
       setAuditError(null);
 
       try {
         const query = new URLSearchParams();
-        query.set('limit', String(selectedAuditLimit));
+        query.set('limit', String(limit));
 
         if (tenantScope !== GLOBAL_AUDIT_SCOPE) {
           query.set('tenantId', tenantScope);
         }
-        if (selectedAuditStatus !== 'all') {
-          query.set('status', selectedAuditStatus);
+        if (status !== 'all') {
+          query.set('status', status);
         }
-        if (selectedAuditAction !== 'all') {
-          query.set('action', selectedAuditAction);
+        if (action !== 'all') {
+          query.set('action', action);
         }
-        if (selectedAuditActorRole !== 'all') {
-          query.set('actorRole', selectedAuditActorRole);
+        if (actorRole !== 'all') {
+          query.set('actorRole', actorRole);
         }
-        if (selectedAuditActorId.trim().length > 0) {
-          query.set('actorId', selectedAuditActorId.trim());
+        if (actorId.trim().length > 0) {
+          query.set('actorId', actorId.trim());
         }
-        if (selectedAuditRequestId.trim().length > 0) {
-          query.set('requestId', selectedAuditRequestId.trim());
+        if (requestId.trim().length > 0) {
+          query.set('requestId', requestId.trim());
         }
-        if (selectedAuditChangedField.trim().length > 0) {
-          query.set('changedField', selectedAuditChangedField.trim());
+        if (changedField.trim().length > 0) {
+          query.set('changedField', changedField.trim());
         }
-        if (selectedAuditSearch.trim().length > 0) {
-          query.set('search', selectedAuditSearch.trim());
+        if (search.trim().length > 0) {
+          query.set('search', search.trim());
         }
-        if (selectedAuditFromDate.trim().length > 0) {
-          query.set('from', selectedAuditFromDate.trim());
+        if (fromDate.trim().length > 0) {
+          query.set('from', fromDate.trim());
         }
-        if (selectedAuditToDate.trim().length > 0) {
-          query.set('to', selectedAuditToDate.trim());
+        if (toDate.trim().length > 0) {
+          query.set('to', toDate.trim());
         }
-        if (selectedAuditErrorsOnly) {
+        if (errorsOnly) {
           query.set('errorsOnly', 'true');
         }
 
@@ -871,6 +1184,87 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     void loadObservabilitySummary();
   }, [loadObservabilitySummary]);
 
+  const loadBillingForTenant = useCallback(async (tenantId: string) => {
+    setBillingLoadingByTenant((prev) => ({ ...prev, [tenantId]: true }));
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/billing`, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(await readResponseError(response, 'Unable to load billing subscription details.'));
+      }
+
+      const payload = (await response.json()) as BillingSubscriptionResponse;
+      setBillingByTenant((prev) => ({
+        ...prev,
+        [tenantId]: payload.subscription,
+      }));
+      setBillingDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: prev[tenantId] ?? toBillingDraft(payload.subscription),
+      }));
+    } finally {
+      setBillingLoadingByTenant((prev) => ({ ...prev, [tenantId]: false }));
+    }
+  }, []);
+
+  const loadBillingDriftSignalsForTenant = useCallback(async (tenantId: string) => {
+    setBillingDriftLoadingByTenant((prev) => ({ ...prev, [tenantId]: true }));
+    setBillingDriftErrorByTenant((prev) => ({ ...prev, [tenantId]: null }));
+
+    try {
+      const query = new URLSearchParams();
+      query.set('tenantId', tenantId);
+      query.set('action', 'tenant.billing.sync');
+      query.set('changedField', 'entitlementDriftDetected');
+      query.set('limit', '30');
+
+      const response = await fetch(`/api/admin-audit?${query.toString()}`, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(await readResponseError(response, 'Unable to load billing drift timeline.'));
+      }
+
+      const payload = (await response.json()) as { events: ControlPlaneAdminAuditEvent[] };
+      const signals = payload.events
+        .map((event) => toBillingDriftSignal(event))
+        .filter((entry): entry is BillingDriftSignal => Boolean(entry));
+      setBillingDriftSignalsByTenant((prev) => ({
+        ...prev,
+        [tenantId]: signals,
+      }));
+    } catch (error) {
+      setBillingDriftErrorByTenant((prev) => ({
+        ...prev,
+        [tenantId]: error instanceof Error ? error.message : 'Unable to load billing drift timeline.',
+      }));
+    } finally {
+      setBillingDriftLoadingByTenant((prev) => ({ ...prev, [tenantId]: false }));
+    }
+  }, []);
+
+  const loadDiagnosticsForTenant = useCallback(async (tenantId: string) => {
+    setDiagnosticsLoadingByTenant((prev) => ({ ...prev, [tenantId]: true }));
+    setDiagnosticsErrorByTenant((prev) => ({ ...prev, [tenantId]: null }));
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/diagnostics`, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(await readResponseError(response, 'Unable to load tenant diagnostics.'));
+      }
+
+      const payload = (await response.json()) as DiagnosticsSummaryResponse;
+      setDiagnosticsByTenant((prev) => ({
+        ...prev,
+        [tenantId]: payload.summary,
+      }));
+    } catch (error) {
+      setDiagnosticsErrorByTenant((prev) => ({
+        ...prev,
+        [tenantId]: error instanceof Error ? error.message : 'Unable to load tenant diagnostics.',
+      }));
+    } finally {
+      setDiagnosticsLoadingByTenant((prev) => ({ ...prev, [tenantId]: false }));
+    }
+  }, []);
+
   const loadActorsForTenant = useCallback(
     async (tenantId: string) => {
       setActorsLoadingByTenant((prev) => ({ ...prev, [tenantId]: true }));
@@ -925,7 +1319,10 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     }
 
     void loadActorsForTenant(selectedTenantId);
-  }, [loadActorsForTenant, selectedTenantId]);
+    void loadBillingForTenant(selectedTenantId);
+    void loadBillingDriftSignalsForTenant(selectedTenantId);
+    void loadDiagnosticsForTenant(selectedTenantId);
+  }, [loadActorsForTenant, loadBillingDriftSignalsForTenant, loadBillingForTenant, loadDiagnosticsForTenant, selectedTenantId]);
 
   const loadDomainProbes = useCallback(async (tenantId: string, domainId?: string) => {
     const response = await fetch(`/api/tenants/${tenantId}/domains/probe`, {
@@ -964,6 +1361,30 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         const activeDomainIds = new Set(payload.tenants.flatMap((snapshot) => snapshot.domains.map((domain) => domain.id)));
         return Object.fromEntries(Object.entries(previous).filter(([domainId]) => activeDomainIds.has(domainId)));
       });
+      setBillingByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setBillingDraftByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setBillingDriftSignalsByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setBillingDriftErrorByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setDiagnosticsByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setDiagnosticsErrorByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
 
       const desiredTenantId = preferredTenantId === undefined ? selectedTenantId : preferredTenantId;
       const resolvedTenantId = desiredTenantId && payload.tenants.some((snapshot) => snapshot.tenant.id === desiredTenantId)
@@ -985,9 +1406,21 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       await loadObservabilitySummary();
       if (resolvedTenantId) {
         await loadActorsForTenant(resolvedTenantId);
+        await loadBillingForTenant(resolvedTenantId);
+        await loadBillingDriftSignalsForTenant(resolvedTenantId);
+        await loadDiagnosticsForTenant(resolvedTenantId);
       }
     },
-    [loadActorsForTenant, loadAuditEvents, loadObservabilitySummary, selectedAuditTenantId, selectedTenantId]
+    [
+      loadActorsForTenant,
+      loadAuditEvents,
+      loadBillingDriftSignalsForTenant,
+      loadBillingForTenant,
+      loadDiagnosticsForTenant,
+      loadObservabilitySummary,
+      selectedAuditTenantId,
+      selectedTenantId,
+    ]
   );
 
   const runDomainOpsRefresh = useCallback(
@@ -1431,6 +1864,290 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         })
       );
     } finally {
+      setBusy(false);
+    }
+  }
+
+  function setBillingDraftField<K extends keyof BillingDraft>(tenantId: string, field: K, value: BillingDraft[K]) {
+    setBillingDraftByTenant((prev) => {
+      const current = prev[tenantId] ?? {
+        planCode: 'starter',
+        status: 'trialing' as TenantBillingSubscriptionStatus,
+        paymentStatus: 'pending' as TenantBillingPaymentStatus,
+        billingProvider: 'manual',
+        billingCustomerId: '',
+        billingSubscriptionId: '',
+        trialEndsAt: '',
+        currentPeriodEndsAt: '',
+        cancelAtPeriodEnd: false,
+        syncEntitlements: false,
+      };
+
+      return {
+        ...prev,
+        [tenantId]: {
+          ...current,
+          [field]: value,
+        },
+      };
+    });
+  }
+
+  async function saveBillingSubscription(tenantId: string) {
+    const draft = billingDraftByTenant[tenantId];
+    if (!draft) {
+      return;
+    }
+
+    const entitlementFlags = draft.syncEntitlements ? fromCsv(flagsDraftByTenant[tenantId] ?? '') : undefined;
+    const toIsoDateOrNull = (value: string): string | null => {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return null;
+      }
+      const parsed = new Date(`${trimmed}T00:00:00.000Z`);
+      return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+    };
+
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/billing`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planCode: draft.planCode.trim() || 'starter',
+          status: draft.status,
+          paymentStatus: draft.paymentStatus,
+          billingProvider: draft.billingProvider.trim() || 'manual',
+          billingCustomerId: draft.billingCustomerId.trim() || null,
+          billingSubscriptionId: draft.billingSubscriptionId.trim() || null,
+          trialEndsAt: toIsoDateOrNull(draft.trialEndsAt),
+          currentPeriodEndsAt: toIsoDateOrNull(draft.currentPeriodEndsAt),
+          cancelAtPeriodEnd: draft.cancelAtPeriodEnd,
+          syncEntitlements: draft.syncEntitlements,
+          entitlementFlags,
+        }),
+      });
+
+      if (!response.ok) {
+        const message = await readResponseError(response, 'Billing subscription update failed.');
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'settings',
+            status: response.status,
+            message,
+          })
+        );
+        return;
+      }
+
+      const payload = (await response.json()) as BillingSubscriptionResponse;
+      setBillingByTenant((prev) => ({
+        ...prev,
+        [tenantId]: payload.subscription,
+      }));
+      setBillingDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: {
+          ...toBillingDraft(payload.subscription),
+          syncEntitlements: false,
+        },
+      }));
+
+      setWorkspaceNotice(
+        draft.syncEntitlements
+          ? 'Billing subscription updated and entitlement flags synchronized.'
+          : 'Billing subscription updated.'
+      );
+      await refresh(tenantId);
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Billing subscription update failed.',
+        })
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function applyBillingDriftAuditPreset(tenantId: string) {
+    setSelectedAuditTenantId(tenantId);
+    setSelectedAuditStatus('all');
+    setSelectedAuditAction('tenant.billing.sync');
+    setSelectedAuditActorRole('all');
+    setSelectedAuditActorId('');
+    setSelectedAuditRequestId('');
+    setSelectedAuditChangedField('entitlementDriftDetected');
+    setSelectedAuditSearch('');
+    setSelectedAuditFromDate('');
+    setSelectedAuditToDate('');
+    setSelectedAuditErrorsOnly(false);
+    setSelectedAuditLimit(100);
+
+    await loadAuditEvents(tenantId, {
+      status: 'all',
+      action: 'tenant.billing.sync',
+      actorRole: 'all',
+      actorId: '',
+      requestId: '',
+      changedField: 'entitlementDriftDetected',
+      search: '',
+      fromDate: '',
+      toDate: '',
+      errorsOnly: false,
+      limit: 100,
+    });
+    setWorkspaceNotice('Audit timeline filtered to billing entitlement drift events for the selected tenant.');
+  }
+
+  function armBillingEntitlementSync(tenantId: string) {
+    setBillingDraftByTenant((prev) => {
+      const existingDraft = prev[tenantId];
+      if (existingDraft) {
+        return {
+          ...prev,
+          [tenantId]: {
+            ...existingDraft,
+            syncEntitlements: true,
+          },
+        };
+      }
+
+      const subscription = billingByTenant[tenantId];
+      if (!subscription) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [tenantId]: {
+          ...toBillingDraft(subscription),
+          syncEntitlements: true,
+        },
+      };
+    });
+  }
+
+  function applyBillingDriftRemediation(
+    tenantId: string,
+    signal: BillingDriftSignal,
+    mode: BillingDriftRemediationMode
+  ) {
+    if (!settingsEditable) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 400,
+          message: 'Settings are archived or tenant is inactive. Restore status before applying drift corrections.',
+        })
+      );
+      return;
+    }
+
+    const tenantSnapshot = snapshots.find((snapshot) => snapshot.tenant.id === tenantId);
+    if (!tenantSnapshot) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 404,
+          message: 'Selected tenant is unavailable for drift remediation.',
+        })
+      );
+      return;
+    }
+
+    const baselineFlags = flagsDraftByTenant[tenantId]
+      ? fromCsv(flagsDraftByTenant[tenantId] ?? '')
+      : tenantSnapshot.settings.featureFlags;
+    const remediation = computeBillingDriftRemediation({
+      baselineFlags,
+      missingFlags: signal.missingFlags,
+      extraFlags: signal.extraFlags,
+      mode,
+    });
+
+    if (!remediation.actionable) {
+      setWorkspaceNotice(
+        'No actionable entitlement flag names were captured for this drift event. Refresh drift signals and retry.'
+      );
+      return;
+    }
+
+    setFlagsDraftByTenant((prev) => ({
+      ...prev,
+      [tenantId]: toCsv(remediation.nextFlags),
+    }));
+    if (remediation.shouldArmEntitlementSync) {
+      armBillingEntitlementSync(tenantId);
+    }
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(
+      `Applied drift corrections to settings draft (${remediation.addedCount} added, ${remediation.removedCount} removed). Save Settings, then Save Billing Workflow to sync entitlements.`
+    );
+  }
+
+  async function runDiagnosticRemediation(tenantId: string, action: TenantSupportRemediationAction) {
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+    setDiagnosticsActionBusyByTenant((prev) => ({ ...prev, [tenantId]: true }));
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/diagnostics`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+
+      const payload = (await response.json()) as DiagnosticsRemediationResponse | { ok: false; error: string };
+      if (!response.ok || !('result' in payload)) {
+        const message =
+          'error' in payload && typeof payload.error === 'string'
+            ? payload.error
+            : 'Diagnostics remediation failed.';
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'settings',
+            status: response.status,
+            message,
+          })
+        );
+        return;
+      }
+
+      setDiagnosticsByTenant((prev) => ({
+        ...prev,
+        [tenantId]: payload.summary,
+      }));
+      if (!payload.ok) {
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'settings',
+            status: 400,
+            message: payload.error ?? payload.result.message,
+          })
+        );
+      } else {
+        setWorkspaceNotice(payload.result.message);
+      }
+
+      await refresh(tenantId);
+    } catch (error) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: error instanceof Error ? error.message : 'Diagnostics remediation failed.',
+        })
+      );
+    } finally {
+      setDiagnosticsActionBusyByTenant((prev) => ({ ...prev, [tenantId]: false }));
       setBusy(false);
     }
   }
@@ -2547,6 +3264,404 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         )}
       </section>
 
+      <section className="admin-card admin-diagnostics-card">
+        <div className="admin-card-head">
+          <h2>Tenant Support Diagnostics</h2>
+          {selectedTenant ? (
+            <button
+              type="button"
+              className="admin-secondary"
+              disabled={busy || Boolean(diagnosticsLoadingByTenant[selectedTenant.tenant.id])}
+              onClick={() => {
+                void loadDiagnosticsForTenant(selectedTenant.tenant.id);
+              }}
+            >
+              {diagnosticsLoadingByTenant[selectedTenant.tenant.id] ? 'Refreshing...' : 'Refresh Diagnostics'}
+            </button>
+          ) : null}
+        </div>
+
+        {!selectedTenant ? (
+          <p className="admin-muted">Select a tenant to run auth/domain/ingestion diagnostics.</p>
+        ) : (
+          <>
+            {diagnosticsErrorByTenant[selectedTenant.tenant.id] ? (
+              <p className="admin-error">{diagnosticsErrorByTenant[selectedTenant.tenant.id]}</p>
+            ) : null}
+            {diagnosticsLoadingByTenant[selectedTenant.tenant.id] && !selectedTenantDiagnostics ? (
+              <p className="admin-muted">Loading diagnostics...</p>
+            ) : null}
+
+            {selectedTenantDiagnostics ? (
+              <>
+                <div className="admin-row">
+                  <span
+                    className={`admin-chip ${diagnosticStatusChipClass(
+                      selectedTenantDiagnostics.overallStatus
+                    )}`}
+                  >
+                    overall {diagnosticStatusLabel(selectedTenantDiagnostics.overallStatus)}
+                  </span>
+                  <span className="admin-chip">ok: {selectedTenantDiagnostics.counts.ok}</span>
+                  <span className="admin-chip">warning: {selectedTenantDiagnostics.counts.warning}</span>
+                  <span className="admin-chip">failed: {selectedTenantDiagnostics.counts.failed}</span>
+                  <span className="admin-chip">checked: {formatTimestamp(selectedTenantDiagnostics.generatedAt)}</span>
+                </div>
+
+                <div className="admin-diagnostics-grid">
+                  {selectedTenantDiagnostics.checks.map((check) => (
+                    <article key={check.id} className="admin-observability-panel">
+                      <div className="admin-row admin-space-between">
+                        <strong>{check.label}</strong>
+                        <span className={`admin-chip ${diagnosticStatusChipClass(check.status)}`}>
+                          {diagnosticStatusLabel(check.status)}
+                        </span>
+                      </div>
+                      <p className="admin-muted">{check.detail}</p>
+                      <div className="admin-row">
+                        <span className="admin-chip">{check.category}</span>
+                      </div>
+                      {check.remediation.length > 0 ? (
+                        <div className="admin-row">
+                          {check.remediation.map((remediation) => (
+                            <button
+                              key={`${check.id}-${remediation.action}`}
+                              type="button"
+                              className="admin-secondary"
+                              disabled={busy || Boolean(diagnosticsActionBusyByTenant[selectedTenant.tenant.id])}
+                              onClick={() => {
+                                void runDiagnosticRemediation(selectedTenant.tenant.id, remediation.action);
+                              }}
+                              title={remediation.detail}
+                            >
+                              {remediation.label}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              </>
+            ) : null}
+          </>
+        )}
+      </section>
+
+      <section className="admin-card admin-billing-card">
+        <div className="admin-card-head">
+          <h2>Billing & Subscription Operations</h2>
+          {selectedTenant ? (
+            <button
+              type="button"
+              className="admin-secondary"
+              disabled={busy || Boolean(billingLoadingByTenant[selectedTenant.tenant.id])}
+              onClick={() => {
+                void loadBillingForTenant(selectedTenant.tenant.id);
+              }}
+            >
+              {billingLoadingByTenant[selectedTenant.tenant.id] ? 'Refreshing...' : 'Refresh Billing'}
+            </button>
+          ) : null}
+        </div>
+
+        {!selectedTenant ? (
+          <p className="admin-muted">Select a tenant to manage plan transitions, billing status, and entitlement sync.</p>
+        ) : selectedTenantBillingDraft ? (
+          <>
+            <div className="admin-row">
+              <span className="admin-chip">{selectedTenant.tenant.name}</span>
+              {selectedTenantBilling ? <span className="admin-chip">subscription: {selectedTenantBilling.status}</span> : null}
+              {selectedTenantBilling ? (
+                <span className="admin-chip">payment: {selectedTenantBilling.paymentStatus}</span>
+              ) : null}
+              <span className={`admin-chip ${selectedTenantBillingDriftSignals.length > 0 ? 'admin-chip-warn' : 'admin-chip-ok'}`}>
+                entitlement drift: {selectedTenantBillingDriftSignals.length}
+              </span>
+            </div>
+
+            <div className="admin-grid">
+              <label className="admin-field">
+                Plan Code
+                <select
+                  value={selectedTenantBillingDraft.planCode}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(selectedTenant.tenant.id, 'planCode', event.target.value);
+                  }}
+                >
+                  {planOptions.map((plan) => (
+                    <option key={plan.code} value={plan.code}>
+                      {plan.label} ({plan.code})
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="admin-field">
+                Subscription Status
+                <select
+                  value={selectedTenantBillingDraft.status}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(
+                      selectedTenant.tenant.id,
+                      'status',
+                      event.target.value as TenantBillingSubscriptionStatus
+                    );
+                  }}
+                >
+                  {billingSubscriptionStatusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="admin-field">
+                Payment Status
+                <select
+                  value={selectedTenantBillingDraft.paymentStatus}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(
+                      selectedTenant.tenant.id,
+                      'paymentStatus',
+                      event.target.value as TenantBillingPaymentStatus
+                    );
+                  }}
+                >
+                  {billingPaymentStatusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="admin-grid">
+              <label className="admin-field">
+                Billing Provider
+                <input
+                  value={selectedTenantBillingDraft.billingProvider}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(selectedTenant.tenant.id, 'billingProvider', event.target.value);
+                  }}
+                  placeholder="manual or stripe"
+                />
+              </label>
+              <label className="admin-field">
+                Customer ID
+                <input
+                  value={selectedTenantBillingDraft.billingCustomerId}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(selectedTenant.tenant.id, 'billingCustomerId', event.target.value);
+                  }}
+                  placeholder="cus_xxx"
+                />
+              </label>
+              <label className="admin-field">
+                Subscription ID
+                <input
+                  value={selectedTenantBillingDraft.billingSubscriptionId}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(selectedTenant.tenant.id, 'billingSubscriptionId', event.target.value);
+                  }}
+                  placeholder="sub_xxx"
+                />
+              </label>
+            </div>
+
+            <div className="admin-grid">
+              <label className="admin-field">
+                Trial Ends
+                <input
+                  type="date"
+                  value={selectedTenantBillingDraft.trialEndsAt}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(selectedTenant.tenant.id, 'trialEndsAt', event.target.value);
+                  }}
+                />
+              </label>
+              <label className="admin-field">
+                Current Period Ends
+                <input
+                  type="date"
+                  value={selectedTenantBillingDraft.currentPeriodEndsAt}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(selectedTenant.tenant.id, 'currentPeriodEndsAt', event.target.value);
+                  }}
+                />
+              </label>
+              <label className="admin-inline-field admin-inline-toggle admin-billing-toggle">
+                <input
+                  type="checkbox"
+                  checked={selectedTenantBillingDraft.cancelAtPeriodEnd}
+                  disabled={!settingsEditable || busy}
+                  onChange={(event) => {
+                    setBillingDraftField(selectedTenant.tenant.id, 'cancelAtPeriodEnd', event.target.checked);
+                  }}
+                />
+                Cancel at period end
+              </label>
+            </div>
+
+            <label className="admin-inline-field admin-inline-toggle admin-billing-toggle">
+              <input
+                type="checkbox"
+                checked={selectedTenantBillingDraft.syncEntitlements}
+                disabled={!settingsEditable || busy}
+                onChange={(event) => {
+                  setBillingDraftField(selectedTenant.tenant.id, 'syncEntitlements', event.target.checked);
+                }}
+              />
+              Sync entitlement flags from current settings draft when saving plan transition
+            </label>
+
+            <section className="admin-billing-drift-panel">
+              <div className="admin-row admin-space-between">
+                <strong>Entitlement Drift Triage</strong>
+                <div className="admin-row">
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={busy || Boolean(billingDriftLoadingByTenant[selectedTenant.tenant.id])}
+                    onClick={() => {
+                      void loadBillingDriftSignalsForTenant(selectedTenant.tenant.id);
+                    }}
+                  >
+                    {billingDriftLoadingByTenant[selectedTenant.tenant.id] ? 'Refreshing...' : 'Refresh Drift Signals'}
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={busy}
+                    onClick={() => {
+                      void applyBillingDriftAuditPreset(selectedTenant.tenant.id);
+                    }}
+                  >
+                    Open in Audit Timeline
+                  </button>
+                </div>
+              </div>
+              <p className="admin-muted">
+                Drift compares provider entitlement flags against persisted tenant settings. Investigate and remediate
+                missing/extra flag mismatches before billing escalations.
+              </p>
+              {billingDriftErrorByTenant[selectedTenant.tenant.id] ? (
+                <p className="admin-error">{billingDriftErrorByTenant[selectedTenant.tenant.id]}</p>
+              ) : null}
+              {billingDriftLoadingByTenant[selectedTenant.tenant.id] ? (
+                <p className="admin-muted">Loading entitlement drift signals...</p>
+              ) : null}
+              {!billingDriftLoadingByTenant[selectedTenant.tenant.id] && selectedTenantBillingDriftSignals.length === 0 ? (
+                <p className="admin-muted">No entitlement drift signals detected for recent billing sync events.</p>
+              ) : null}
+              {selectedTenantBillingDriftSignals.length > 0 ? (
+                <ul className="admin-billing-drift-list">
+                  {selectedTenantBillingDriftSignals.slice(0, 5).map((signal) => (
+                    <li key={signal.auditEventId} className="admin-billing-drift-item">
+                      <div className="admin-row admin-space-between">
+                        <span className="admin-chip">{formatTimestamp(signal.createdAt)}</span>
+                        <span className={`admin-chip admin-chip-status-${signal.status}`}>{signal.status}</span>
+                      </div>
+                      <div className="admin-row">
+                        <span className="admin-chip admin-chip-warn">mode: {signal.mode}</span>
+                        <span className="admin-chip">missing: {signal.missingCount}</span>
+                        <span className="admin-chip">extra: {signal.extraCount}</span>
+                        {signal.duplicate !== null ? (
+                          <span className="admin-chip">duplicate: {signal.duplicate ? 'yes' : 'no'}</span>
+                        ) : null}
+                        {signal.applied !== null ? (
+                          <span className="admin-chip">applied: {signal.applied ? 'yes' : 'no'}</span>
+                        ) : null}
+                        {signal.requestId ? <span className="admin-chip">request: {signal.requestId}</span> : null}
+                      </div>
+                      {signal.missingFlags.length > 0 ? (
+                        <p className="admin-muted">Missing provider flags: {signal.missingFlags.join(', ')}</p>
+                      ) : null}
+                      {signal.extraFlags.length > 0 ? (
+                        <p className="admin-muted">Extra tenant flags: {signal.extraFlags.join(', ')}</p>
+                      ) : null}
+                      {signal.error ? <p className="admin-error">{signal.error}</p> : null}
+                      <div className="admin-row">
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy || !settingsEditable || signal.missingFlags.length === 0}
+                          onClick={() => {
+                            applyBillingDriftRemediation(selectedTenant.tenant.id, signal, 'missing');
+                          }}
+                        >
+                          Add Missing Flags
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy || !settingsEditable || signal.extraFlags.length === 0}
+                          onClick={() => {
+                            applyBillingDriftRemediation(selectedTenant.tenant.id, signal, 'extra');
+                          }}
+                        >
+                          Remove Extra Flags
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={
+                            busy ||
+                            !settingsEditable ||
+                            (signal.missingFlags.length === 0 && signal.extraFlags.length === 0)
+                          }
+                          onClick={() => {
+                            applyBillingDriftRemediation(selectedTenant.tenant.id, signal, 'all');
+                          }}
+                        >
+                          Apply Both
+                        </button>
+                      </div>
+                      <p className="admin-muted admin-audit-guidance">
+                        Quick actions update the Settings draft and arm Billing entitlement sync. Save Settings, then
+                        Save Billing Workflow to persist corrections.
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+
+            <div className="admin-row">
+              <button
+                type="button"
+                disabled={busy || !settingsEditable || Boolean(billingLoadingByTenant[selectedTenant.tenant.id])}
+                onClick={() => {
+                  void saveBillingSubscription(selectedTenant.tenant.id);
+                }}
+              >
+                Save Billing Workflow
+              </button>
+            </div>
+
+            {!settingsEditable ? (
+              <p className="admin-warning">
+                Billing mutation controls are disabled while tenant/settings status is archived.
+              </p>
+            ) : null}
+          </>
+        ) : (
+          <p className="admin-muted">
+            {billingLoadingByTenant[selectedTenant.tenant.id] ? 'Loading billing details...' : 'No billing details loaded yet.'}
+          </p>
+        )}
+      </section>
+
       <section className="admin-card admin-rbac-card">
         <div className="admin-card-head">
           <h2>RBAC Management & Support Sessions</h2>
@@ -2958,6 +4073,12 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         <p className="admin-muted">
           Operator visibility for control-plane mutations with actor/request attribution and change detail.
         </p>
+        {auditDriftPresetActive ? (
+          <p className="admin-warning admin-audit-guidance">
+            Drift triage view is active. Focus on events where `entitlementDriftDetected {'->'} true`, then reconcile
+            missing/extra counts against tenant settings feature flags.
+          </p>
+        ) : null}
 
         <div className="admin-audit-filter-grid">
           <label className="admin-field">
@@ -3140,6 +4261,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 {(() => {
                   const requestAttribution = getAuditRequestAttribution(event);
                   const changeDetails = getAuditChangeDetails(event);
+                  const billingDriftSummary = getBillingDriftSummaryForAuditRow(event);
 
                   return (
                     <>
@@ -3156,6 +4278,14 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                         </span>
                         {event.domainId ? <span className="admin-chip">domain: {event.domainId}</span> : null}
                       </div>
+                      {billingDriftSummary ? (
+                        <div className="admin-row">
+                          <span className="admin-chip admin-chip-warn">entitlement drift detected</span>
+                          <span className="admin-chip">mode: {billingDriftSummary.mode}</span>
+                          <span className="admin-chip">missing: {billingDriftSummary.missingCount}</span>
+                          <span className="admin-chip">extra: {billingDriftSummary.extraCount}</span>
+                        </div>
+                      ) : null}
                       <div className="admin-row">
                         <span className="admin-chip">request: {requestAttribution.requestId ?? event.id}</span>
                         {requestAttribution.requestMethod ? (

@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Shift active delivery focus to Admin Portal usability: complete high-impact onboarding and operator workflows in `apps/admin` before deeper validation/hardening passes, while preserving tenant isolation and shared package boundaries.
+Continue Admin control-plane delivery by hardening billing provider ingestion beyond baseline reconciliation, while preserving tenant isolation and shared package boundaries.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -44,11 +44,19 @@ Shift active delivery focus to Admin Portal usability: complete high-impact onbo
 38. Control-plane observability dashboard is now in place via `apps/admin/app/api/observability/route.ts`, shared summary helper `getControlPlaneObservabilitySummary` in `packages/db/src/control-plane.ts`, and new Admin workspace observability surfaces for mutation trends, ingestion runtime/queue health, and tenant readiness scoring.
 39. Advanced Admin audit timeline UX is now in place via expanded filter/query surface in `apps/admin/app/api/admin-audit/route.ts`, richer request/change metadata capture in `apps/admin/app/api/lib/admin-access.ts` + mutation routes, and timeline/export UX updates in `apps/admin/app/components/control-plane-workspace.tsx` with supporting route tests in `apps/admin/app/api/lib/routes.integration.test.ts`.
 40. Data safety/recovery controls are now in place in Admin via status-based soft-delete/restore flows for tenant/domain/settings (`apps/admin/app/api/tenants/[tenantId]/status/route.ts`, status-aware updates in settings/domain routes, and lifecycle persistence in `packages/db/src/control-plane.ts`) plus destructive confirmation UX in `apps/admin/app/components/control-plane-workspace.tsx`.
+41. Tenant support diagnostics toolkit is now in place via shared db helpers (`getTenantSupportDiagnosticsSummary`, `runTenantSupportRemediationAction`) plus Admin API/UI surfaces (`apps/admin/app/api/tenants/[tenantId]/diagnostics/route.ts`, `apps/admin/app/components/control-plane-workspace.tsx`) covering auth/domain/ingestion health checks and one-click remediation actions.
+42. Billing/subscription operations baseline is now in place via new Prisma model/migration `TenantBillingSubscription`, shared db helper surfaces (`getTenantBillingSubscription`, `updateTenantBillingSubscription`), Admin API route `apps/admin/app/api/tenants/[tenantId]/billing/route.ts`, and operator UI controls in `apps/admin/app/components/control-plane-workspace.tsx` for plan transitions, payment/trial status visibility, and optional entitlement sync.
+43. Billing-provider reconciliation baseline is now in place via idempotent shared helper `reconcileTenantBillingProviderEvent` (`packages/db/src/control-plane.ts`), new webhook route `apps/admin/app/api/billing/webhooks/route.ts`, persisted sync-event model/migration `TenantBillingSyncEvent`, and audit visibility support for `tenant.billing.sync`.
+44. Billing webhook provider-native hardening (phase 1) is now in place in `apps/admin/app/api/billing/webhooks/route.ts` with strict Stripe signature verification (`stripe-signature` + `ADMIN_BILLING_STRIPE_WEBHOOK_SECRET`) and Stripe payload normalization into `TenantBillingProviderEventInput` before reconciliation.
+45. Entitlement drift detection/reporting is now in place in shared billing reconciliation via tenant-scoped provider-vs-settings comparisons in `packages/db/src/control-plane.ts`, with drift summary reporting in webhook responses and audit metadata from `apps/admin/app/api/billing/webhooks/route.ts`.
+46. Operator-facing billing drift triage surfaces are now in place in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/globals.css`, with per-tenant drift signal cards, one-click audit preset loading, and audit timeline drift guidance/chips for billing sync investigations.
+47. Operator remediation shortcuts from billing drift triage are now in place in `apps/admin/app/components/control-plane-workspace.tsx`, including one-click missing/extra/all flag correction actions that update settings drafts, arm billing entitlement sync, and surface save-order guidance.
+48. Focused automated regression coverage for billing drift remediation is now in place via pure helper tests in `apps/admin/app/api/lib/routes.integration.test.ts` + shared helper `apps/admin/app/lib/billing-drift-remediation.ts`, validating missing/extra/all draft mutation behavior and entitlement-sync arming semantics.
 
 ## Immediate Next Steps
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes and record trend deltas in this file.
 - Defer full manual browser click-through for Admin and CRM until the next planned UI/UX improvement pass is complete (per current product-direction override).
-- Execute the next control-plane roadmap slice: tenant support diagnostics toolkit (auth/domain/ingestion health checks with operator remediation actions).
+- Implement a billing drift reporting summary surface (recent drift counts/modes per tenant) to extend operator visibility beyond per-event triage.
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -530,3 +538,152 @@ Shift active delivery focus to Admin Portal usability: complete high-impact onbo
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`27/27`).
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes route `/api/tenants/[tenantId]/status`.
+
+## Session Update (2026-02-20 Admin Diagnostics + Billing Workflow Baseline)
+
+### Completed This Session
+1. Delivered tenant support diagnostics toolkit:
+- added shared diagnostics/remediation helpers in `packages/db/src/control-plane.ts`,
+- added Admin diagnostics API route `apps/admin/app/api/tenants/[tenantId]/diagnostics/route.ts`,
+- added diagnostics UI section in `apps/admin/app/components/control-plane-workspace.tsx` with tenant-scoped auth/domain/ingestion checks and one-click remediation actions.
+2. Delivered billing/subscription control-plane baseline:
+- added Prisma model + migration `TenantBillingSubscription` (`packages/db/prisma/schema.prisma`, `packages/db/prisma/migrations/202602200003_add_tenant_billing_subscriptions/migration.sql`) and seed baseline update,
+- added shared helpers `getTenantBillingSubscription` / `updateTenantBillingSubscription` in `packages/db/src/control-plane.ts`,
+- added Admin billing API route `apps/admin/app/api/tenants/[tenantId]/billing/route.ts`,
+- added Admin billing workflow UI controls in `apps/admin/app/components/control-plane-workspace.tsx` for plan transitions, payment/trial state visibility, and optional entitlement sync.
+3. Expanded route-level regression coverage and audit plumbing:
+- extended `apps/admin/app/api/lib/routes.integration.test.ts` with diagnostics and billing GET/PATCH coverage (including non-admin guard assertions),
+- extended audit action handling/filtering for `tenant.billing.update` and `tenant.diagnostics.remediate` in `packages/types/src/control-plane.ts`, `apps/admin/app/api/admin-audit/route.ts`, and Admin timeline filter options.
+
+### Session Validation (2026-02-20 Admin Diagnostics + Billing Workflow Baseline)
+- `./node_modules/.bin/tsc --noEmit --project packages/types/tsconfig.json` passes.
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`33/33`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes new routes:
+  - `/api/tenants/[tenantId]/diagnostics`
+  - `/api/tenants/[tenantId]/billing`
+- Known unrelated baseline issue remains in shared db typecheck:
+  - `./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json` fails due existing unresolved import path `@real-estate/types/website-config` in `packages/db/src/seed-data.ts` and `packages/db/src/website-config.ts`.
+
+## Session Update (2026-02-20 Billing Provider Reconciliation Hook)
+
+### Completed This Session
+1. Added provider-event reconciliation boundary in shared db layer:
+- added `reconcileTenantBillingProviderEvent` in `packages/db/src/control-plane.ts` with tenant resolution by explicit tenant id or persisted provider/customer identifiers,
+- added idempotent sync-event persistence model `TenantBillingSyncEvent` via schema/migration updates (`packages/db/prisma/schema.prisma`, `packages/db/prisma/migrations/202602200004_add_tenant_billing_sync_events/migration.sql`),
+- preserved entitlement sync behavior through existing `updateTenantBillingSubscription` path.
+2. Added webhook ingestion route for provider billing events:
+- new route `apps/admin/app/api/billing/webhooks/route.ts` accepts normalized provider events (`provider`, `eventId`, `eventType`, subscription state payload),
+- optional secret-gate support via `ADMIN_BILLING_WEBHOOK_SECRET`,
+- emits audit records under `tenant.billing.sync` and returns `200` for applied/duplicate events and `202` for unresolved tenant mappings.
+3. Expanded audit/read/test coverage:
+- extended audit action parsing and UI filter options to include `tenant.billing.sync`,
+- added route integration tests in `apps/admin/app/api/lib/routes.integration.test.ts` for webhook auth guard, successful reconcile flow, and unresolved-tenant reconciliation behavior.
+
+### Session Validation (2026-02-20 Billing Provider Reconciliation Hook)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:migrate:deploy --workspace @real-estate/db"` passes and applies migrations:
+  - `202602200003_add_tenant_billing_subscriptions`
+  - `202602200004_add_tenant_billing_sync_events`
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:generate:direct --workspace @real-estate/db"` completes (lock-reuse fallback path) and generated client includes `TenantBillingSyncEvent`.
+- `./node_modules/.bin/tsc --noEmit --project packages/types/tsconfig.json` passes.
+- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`36/36`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes route `/api/billing/webhooks`.
+
+## Session Update (2026-02-20 Billing Webhook Signature + Payload Normalization Hardening)
+
+### Completed This Session
+1. Implemented strict provider-native Stripe webhook verification in `apps/admin/app/api/billing/webhooks/route.ts`:
+- added raw-body signature verification using `stripe-signature` HMAC checks,
+- introduced configurable Stripe secret/tolerance support (`ADMIN_BILLING_STRIPE_WEBHOOK_SECRET`, optional tolerance override),
+- preserved existing secret-gated normalized/manual webhook path (`ADMIN_BILLING_WEBHOOK_SECRET`) for non-Stripe/manual events.
+2. Implemented Stripe payload normalization into shared reconciliation input in `apps/admin/app/api/billing/webhooks/route.ts`:
+- mapped Stripe event envelope/object fields into `TenantBillingProviderEventInput`,
+- normalized tenant/customer/subscription identifiers plus subscription status/payment/period data,
+- extracted metadata-based plan/entitlement hints and synchronized entitlement flags when present.
+3. Expanded route-level hardening coverage in `apps/admin/app/api/lib/routes.integration.test.ts`:
+- added regression coverage for normalized-Stripe rejection without provider-native signature path,
+- added invalid-signature rejection coverage,
+- added verified Stripe normalization flow assertions before reconciliation,
+- preserved unresolved-tenant reconciliation behavior using provider-native signed payload flow.
+
+### Session Validation (2026-02-20 Billing Webhook Signature + Payload Normalization Hardening)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`38/38`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes route `/api/billing/webhooks`.
+
+## Session Update (2026-02-20 Billing Entitlement Drift Detection + Reporting)
+
+### Completed This Session
+1. Added entitlement drift summary contracts in `packages/types/src/control-plane.ts`:
+- introduced `TenantBillingEntitlementDriftSummary` and attached it to `TenantBillingProviderEventResult`.
+2. Implemented shared drift detection during billing reconciliation in `packages/db/src/control-plane.ts`:
+- compares provider entitlement flags against persisted tenant settings feature flags after reconciliation,
+- reports deterministic drift states across applied, duplicate, and unresolved-tenant outcomes,
+- preserves tenant isolation by scoping all comparisons to resolved tenant ids only.
+3. Extended webhook reporting in `apps/admin/app/api/billing/webhooks/route.ts`:
+- includes drift summary details in webhook response result payloads,
+- emits drift indicators in `tenant.billing.sync` audit metadata (`mode`, drift detected flag, missing/extra counts).
+4. Expanded route-level coverage in `apps/admin/app/api/lib/routes.integration.test.ts`:
+- added explicit drift-report assertion coverage for signed Stripe webhook flows,
+- preserved existing signature verification/normalization and unresolved-tenant behaviors.
+
+### Session Validation (2026-02-20 Billing Entitlement Drift Detection + Reporting)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`39/39`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes and includes route `/api/billing/webhooks`.
+
+## Session Update (2026-02-20 Billing Drift Operator Triage Surfaces)
+
+### Completed This Session
+1. Added billing drift triage UX in Admin workspace (`apps/admin/app/components/control-plane-workspace.tsx`):
+- added per-tenant entitlement drift signal surface in Billing & Subscription Operations,
+- added latest drift event summaries (mode, missing/extra counts, request/status context),
+- added one-click `Open in Audit Timeline` preset for `tenant.billing.sync` + `entitlementDriftDetected` investigation.
+2. Added audit-focused drift investigation guidance in Admin audit timeline (`apps/admin/app/components/control-plane-workspace.tsx`):
+- added drift-preset contextual guidance copy,
+- surfaced drift chips directly on matching `tenant.billing.sync` audit rows for faster triage.
+3. Added supporting Admin UI styling in `apps/admin/app/globals.css` for drift triage cards/list/guidance states.
+
+### Session Validation (2026-02-20 Billing Drift Operator Triage Surfaces)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`39/39`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+
+## Session Update (2026-02-20 Billing Drift Remediation Shortcuts)
+
+### Completed This Session
+1. Added operator remediation shortcuts in billing drift triage UI (`apps/admin/app/components/control-plane-workspace.tsx`):
+- surfaced missing/extra entitlement flag names per drift signal,
+- added one-click actions for `Add Missing Flags`, `Remove Extra Flags`, and `Apply Both`,
+- wired actions to update tenant settings feature-flag drafts and automatically arm billing entitlement sync.
+2. Added explicit operator save-order guidance in drift remediation flows:
+- workspace notices now instruct operators to `Save Settings` and then `Save Billing Workflow` after quick actions.
+3. Extended billing sync audit drift metadata payload shape in `apps/admin/app/api/billing/webhooks/route.ts`:
+- now includes `entitlementMissingFlags` and `entitlementExtraFlags` arrays for actionable remediation context.
+
+### Session Validation (2026-02-20 Billing Drift Remediation Shortcuts)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`39/39`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+
+## Session Update (2026-02-20 Billing Drift Remediation Regression Coverage)
+
+### Completed This Session
+1. Extracted pure remediation computation helper in `apps/admin/app/lib/billing-drift-remediation.ts`:
+- centralizes missing/extra/all entitlement drift flag reconciliation logic,
+- returns deterministic mutation counts and entitlement-sync arming signals.
+2. Wired Admin billing remediation UI to the shared helper in `apps/admin/app/components/control-plane-workspace.tsx`:
+- preserves existing operator behavior while reducing inline state-mutation complexity.
+3. Added focused automated coverage in `apps/admin/app/api/lib/routes.integration.test.ts`:
+- validates missing-mode add behavior + sync arming,
+- validates extra-mode removal behavior + sync arming,
+- validates combined all-mode add/remove behavior + sync arming,
+- validates non-actionable input behavior (no sync arming).
+
+### Session Validation (2026-02-20 Billing Drift Remediation Regression Coverage)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`43/43`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.

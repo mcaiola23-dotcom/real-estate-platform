@@ -8,11 +8,24 @@ import type {
   ControlPlaneIngestionStatusCount,
   ControlPlaneMutationTrend,
   ControlPlaneObservabilitySummary,
+  TenantBillingEntitlementDriftSummary,
+  TenantBillingPaymentStatus,
+  TenantBillingProvider,
+  TenantBillingProviderEventInput,
+  TenantBillingProviderEventResult,
+  TenantBillingSubscription,
+  TenantBillingSubscriptionStatus,
+  TenantSupportDiagnosticCheck,
+  TenantSupportDiagnosticStatus,
+  TenantSupportDiagnosticsSummary,
+  TenantSupportRemediationAction,
+  TenantSupportRemediationResult,
   ControlPlaneTenantSnapshot,
   CreateTenantProvisioningInput,
   TenantControlActor,
   TenantSupportSessionUpdateInput,
   TenantControlSettings,
+  UpdateTenantBillingSubscriptionInput,
   UpdateTenantControlActorInput,
   UpdateTenantControlSettingsInput,
   UpsertTenantControlActorInput,
@@ -20,7 +33,12 @@ import type {
 import type { Tenant, TenantDomain } from '@real-estate/types/tenant';
 
 import { getPrismaClient } from './prisma-client';
-import { getIngestionRuntimeReadiness } from './crm';
+import {
+  getIngestionRuntimeReadiness,
+  listDeadLetterQueueJobs,
+  requeueDeadLetterQueueJobs,
+  scheduleIngestionQueueJobNow,
+} from './crm';
 import { DEFAULT_WEBSITE_MODULE_ORDER, SEED_TENANT_DOMAINS, SEED_TENANTS } from './seed-data';
 
 function toIsoString(value: string | Date): string {
@@ -93,6 +111,74 @@ function parseFeatureFlags(value: string | null | undefined): string[] {
   }
 }
 
+function normalizeEntitlementFlags(
+  flags: Array<string | null | undefined> | string[] | null | undefined
+): string[] {
+  if (!Array.isArray(flags)) {
+    return [];
+  }
+
+  const normalized: string[] = [];
+  for (const entry of flags) {
+    if (typeof entry !== 'string') {
+      continue;
+    }
+    const trimmed = entry.trim();
+    if (trimmed.length > 0) {
+      normalized.push(trimmed);
+    }
+  }
+
+  return Array.from(
+    new Set(normalized)
+  ).sort((left, right) => left.localeCompare(right));
+}
+
+async function getPersistedTenantEntitlementFlags(prismaAny: any, tenantId: string): Promise<string[]> {
+  const settings = await prismaAny.tenantControlSettings.findUnique({
+    where: { tenantId },
+    select: { featureFlagsJson: true },
+  });
+  return normalizeEntitlementFlags(parseFeatureFlags(settings?.featureFlagsJson));
+}
+
+async function buildTenantBillingEntitlementDriftSummary(
+  prismaAny: any,
+  tenantId: string,
+  providerEntitlementFlags: string[] | undefined
+): Promise<TenantBillingEntitlementDriftSummary> {
+  const evaluatedAt = new Date().toISOString();
+  const persistedEntitlementFlags = await getPersistedTenantEntitlementFlags(prismaAny, tenantId);
+  const normalizedProviderFlags = normalizeEntitlementFlags(providerEntitlementFlags);
+
+  if (providerEntitlementFlags === undefined) {
+    return {
+      mode: 'provider_missing',
+      evaluatedAt,
+      hasDrift: false,
+      providerEntitlementFlags: normalizedProviderFlags,
+      persistedEntitlementFlags,
+      missingInTenantSettings: [],
+      extraInTenantSettings: [],
+    };
+  }
+
+  const persistedSet = new Set(persistedEntitlementFlags);
+  const providerSet = new Set(normalizedProviderFlags);
+  const missingInTenantSettings = normalizedProviderFlags.filter((flag) => !persistedSet.has(flag));
+  const extraInTenantSettings = persistedEntitlementFlags.filter((flag) => !providerSet.has(flag));
+
+  return {
+    mode: 'compared',
+    evaluatedAt,
+    hasDrift: missingInTenantSettings.length > 0 || extraInTenantSettings.length > 0,
+    providerEntitlementFlags: normalizedProviderFlags,
+    persistedEntitlementFlags,
+    missingInTenantSettings,
+    extraInTenantSettings,
+  };
+}
+
 function buildDefaultSettings(tenantId: string): TenantControlSettings {
   const now = new Date().toISOString();
   return {
@@ -126,6 +212,59 @@ function toTenantControlSettings(record: {
   };
 }
 
+function buildDefaultBillingSubscription(tenantId: string, planCode = 'starter'): TenantBillingSubscription {
+  const now = new Date().toISOString();
+  const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+
+  return {
+    id: `tenant_billing_subscription_${tenantId}`,
+    tenantId,
+    planCode: planCode.trim() || 'starter',
+    status: 'trialing',
+    paymentStatus: 'pending',
+    billingProvider: 'manual',
+    billingCustomerId: null,
+    billingSubscriptionId: null,
+    trialEndsAt,
+    currentPeriodEndsAt: null,
+    cancelAtPeriodEnd: false,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+function toTenantBillingSubscription(record: {
+  id: string;
+  tenantId: string;
+  planCode: string;
+  status: string;
+  paymentStatus: string;
+  billingProvider: string;
+  billingCustomerId: string | null;
+  billingSubscriptionId: string | null;
+  trialEndsAt: string | Date | null;
+  currentPeriodEndsAt: string | Date | null;
+  cancelAtPeriodEnd: boolean;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): TenantBillingSubscription {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    planCode: record.planCode,
+    status: normalizeBillingStatus(record.status),
+    paymentStatus: normalizeBillingPaymentStatus(record.paymentStatus),
+    billingProvider: record.billingProvider,
+    billingCustomerId: record.billingCustomerId,
+    billingSubscriptionId: record.billingSubscriptionId,
+    trialEndsAt: record.trialEndsAt ? toIsoString(record.trialEndsAt) : null,
+    currentPeriodEndsAt: record.currentPeriodEndsAt ? toIsoString(record.currentPeriodEndsAt) : null,
+    cancelAtPeriodEnd: record.cancelAtPeriodEnd,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
 const CONTROL_PLANE_ROLE_PERMISSIONS: Record<ControlPlaneActorRole, ControlPlaneActorPermission[]> = {
   admin: [
     'tenant.onboarding.manage',
@@ -149,6 +288,60 @@ const VALID_CONTROL_PLANE_PERMISSIONS = new Set<ControlPlaneActorPermission>([
   'tenant.observability.read',
   'tenant.support-session.start',
 ]);
+
+const VALID_BILLING_SUBSCRIPTION_STATUS = new Set<TenantBillingSubscriptionStatus>([
+  'trialing',
+  'active',
+  'past_due',
+  'canceled',
+]);
+const VALID_BILLING_PAYMENT_STATUS = new Set<TenantBillingPaymentStatus>(['pending', 'paid', 'past_due', 'unpaid']);
+const VALID_BILLING_PROVIDERS = new Set<TenantBillingProvider>(['manual', 'stripe']);
+
+function normalizeBillingStatus(value: string | null | undefined): TenantBillingSubscriptionStatus {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (VALID_BILLING_SUBSCRIPTION_STATUS.has(normalized as TenantBillingSubscriptionStatus)) {
+    return normalized as TenantBillingSubscriptionStatus;
+  }
+  return 'trialing';
+}
+
+function normalizeBillingPaymentStatus(value: string | null | undefined): TenantBillingPaymentStatus {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (VALID_BILLING_PAYMENT_STATUS.has(normalized as TenantBillingPaymentStatus)) {
+    return normalized as TenantBillingPaymentStatus;
+  }
+  return 'pending';
+}
+
+function normalizeBillingProvider(value: string | null | undefined): TenantBillingProvider {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (VALID_BILLING_PROVIDERS.has(normalized as TenantBillingProvider)) {
+    return normalized as TenantBillingProvider;
+  }
+  return 'manual';
+}
+
+function parseOptionalIsoDate(value: string | null | undefined): Date | null {
+  if (!value) {
+    return null;
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed;
+}
+
+function deriveOverallDiagnosticStatus(statuses: TenantSupportDiagnosticStatus[]): TenantSupportDiagnosticStatus {
+  if (statuses.some((status) => status === 'failed')) {
+    return 'failed';
+  }
+  if (statuses.some((status) => status === 'warning')) {
+    return 'warning';
+  }
+  return 'ok';
+}
 
 function normalizeOptionalString(value: string | null | undefined): string | null {
   if (typeof value !== 'string') {
@@ -357,6 +550,24 @@ export async function provisionTenant(input: CreateTenantProvisioningInput): Pro
         updatedAt: now,
       },
     });
+
+    await tx.tenantBillingSubscription.create({
+      data: {
+        id: `tenant_billing_subscription_${tenantId}`,
+        tenantId,
+        planCode: input.planCode?.trim() || 'starter',
+        status: 'trialing',
+        paymentStatus: 'pending',
+        billingProvider: 'manual',
+        billingCustomerId: null,
+        billingSubscriptionId: null,
+        trialEndsAt: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000),
+        currentPeriodEndsAt: null,
+        cancelAtPeriodEnd: false,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
   });
 
   const snapshot = await getTenantSnapshotForAdmin(tenantId);
@@ -472,6 +683,564 @@ export async function getTenantControlSettings(tenantId: string): Promise<Tenant
   }
 
   return toTenantControlSettings(settings);
+}
+
+export async function getTenantBillingSubscription(tenantId: string): Promise<TenantBillingSubscription> {
+  const prisma = await getPrismaClient();
+  const settings = await getTenantControlSettings(tenantId);
+  if (!prisma) {
+    return buildDefaultBillingSubscription(tenantId, settings.planCode);
+  }
+  const prismaAny = prisma as any;
+
+  const subscription = await prismaAny.tenantBillingSubscription.findUnique({ where: { tenantId } });
+  if (!subscription) {
+    return buildDefaultBillingSubscription(tenantId, settings.planCode);
+  }
+
+  return toTenantBillingSubscription(subscription);
+}
+
+export async function updateTenantBillingSubscription(
+  tenantId: string,
+  input: UpdateTenantBillingSubscriptionInput
+): Promise<TenantBillingSubscription> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    throw new Error('Billing updates require Prisma runtime availability.');
+  }
+  const prismaAny = prisma as any;
+
+  const existingTenant = await prismaAny.tenant.findUnique({
+    where: { id: tenantId },
+    select: { id: true },
+  });
+  if (!existingTenant) {
+    throw new Error('Tenant not found.');
+  }
+
+  const existing = await prismaAny.tenantBillingSubscription.findUnique({ where: { tenantId } });
+  const existingSettings = await prismaAny.tenantControlSettings.findUnique({ where: { tenantId } });
+  const now = new Date();
+
+  const normalizedPlanCode =
+    typeof input.planCode === 'string' && input.planCode.trim().length > 0
+      ? input.planCode.trim()
+      : existing?.planCode || existingSettings?.planCode || 'starter';
+  const normalizedStatus = input.status ? normalizeBillingStatus(input.status) : normalizeBillingStatus(existing?.status);
+  const normalizedPaymentStatus = input.paymentStatus
+    ? normalizeBillingPaymentStatus(input.paymentStatus)
+    : normalizeBillingPaymentStatus(existing?.paymentStatus);
+  const normalizedProvider = input.billingProvider
+    ? normalizeBillingProvider(input.billingProvider)
+    : normalizeBillingProvider(existing?.billingProvider);
+
+  const parsedTrialEndsAt =
+    input.trialEndsAt === undefined
+      ? existing?.trialEndsAt ?? null
+      : input.trialEndsAt === null
+        ? null
+        : parseOptionalIsoDate(input.trialEndsAt);
+  if (input.trialEndsAt !== undefined && input.trialEndsAt !== null && !parsedTrialEndsAt) {
+    throw new Error('trialEndsAt must be a valid ISO date or null.');
+  }
+
+  const parsedCurrentPeriodEndsAt =
+    input.currentPeriodEndsAt === undefined
+      ? existing?.currentPeriodEndsAt ?? null
+      : input.currentPeriodEndsAt === null
+        ? null
+        : parseOptionalIsoDate(input.currentPeriodEndsAt);
+  if (input.currentPeriodEndsAt !== undefined && input.currentPeriodEndsAt !== null && !parsedCurrentPeriodEndsAt) {
+    throw new Error('currentPeriodEndsAt must be a valid ISO date or null.');
+  }
+
+  const normalizedEntitlements =
+    input.entitlementFlags !== undefined
+      ? input.entitlementFlags.map((entry) => entry.trim()).filter((entry) => entry.length > 0)
+      : undefined;
+
+  const next = await prisma.$transaction(async (tx: any) => {
+    const subscription = existing
+      ? await tx.tenantBillingSubscription.update({
+          where: { tenantId },
+          data: {
+            planCode: normalizedPlanCode,
+            status: normalizedStatus,
+            paymentStatus: normalizedPaymentStatus,
+            billingProvider: normalizedProvider,
+            billingCustomerId:
+              input.billingCustomerId === undefined
+                ? existing.billingCustomerId
+                : normalizeOptionalString(input.billingCustomerId),
+            billingSubscriptionId:
+              input.billingSubscriptionId === undefined
+                ? existing.billingSubscriptionId
+                : normalizeOptionalString(input.billingSubscriptionId),
+            trialEndsAt: parsedTrialEndsAt,
+            currentPeriodEndsAt: parsedCurrentPeriodEndsAt,
+            cancelAtPeriodEnd: input.cancelAtPeriodEnd ?? existing.cancelAtPeriodEnd,
+            updatedAt: now,
+          },
+        })
+      : await tx.tenantBillingSubscription.create({
+          data: {
+            id: `tenant_billing_subscription_${tenantId}`,
+            tenantId,
+            planCode: normalizedPlanCode,
+            status: normalizedStatus,
+            paymentStatus: normalizedPaymentStatus,
+            billingProvider: normalizedProvider,
+            billingCustomerId: normalizeOptionalString(input.billingCustomerId),
+            billingSubscriptionId: normalizeOptionalString(input.billingSubscriptionId),
+            trialEndsAt: parsedTrialEndsAt,
+            currentPeriodEndsAt: parsedCurrentPeriodEndsAt,
+            cancelAtPeriodEnd: Boolean(input.cancelAtPeriodEnd),
+            createdAt: now,
+            updatedAt: now,
+          },
+        });
+
+    const shouldSyncPlanCode = typeof input.planCode === 'string' && input.planCode.trim().length > 0;
+    const shouldSyncEntitlements = Boolean(input.syncEntitlements);
+    if (shouldSyncPlanCode || shouldSyncEntitlements) {
+      const settings = await tx.tenantControlSettings.findUnique({ where: { tenantId } });
+      const nextFeatureFlags = shouldSyncEntitlements
+        ? JSON.stringify(normalizedEntitlements ?? parseFeatureFlags(settings?.featureFlagsJson))
+        : settings?.featureFlagsJson ?? '[]';
+
+      if (settings) {
+        await tx.tenantControlSettings.update({
+          where: { tenantId },
+          data: {
+            planCode: shouldSyncPlanCode ? normalizedPlanCode : settings.planCode,
+            featureFlagsJson: nextFeatureFlags,
+            updatedAt: now,
+          },
+        });
+      } else {
+        await tx.tenantControlSettings.create({
+          data: {
+            id: `tenant_control_settings_${tenantId}`,
+            tenantId,
+            status: 'active',
+            planCode: normalizedPlanCode,
+            featureFlagsJson: shouldSyncEntitlements ? JSON.stringify(normalizedEntitlements ?? []) : '[]',
+            createdAt: now,
+            updatedAt: now,
+          },
+        });
+      }
+    }
+
+    return subscription;
+  });
+
+  return toTenantBillingSubscription(next);
+}
+
+async function resolveTenantIdForBillingProviderEvent(
+  prismaAny: any,
+  input: TenantBillingProviderEventInput
+): Promise<string | null> {
+  const explicitTenantId = normalizeOptionalString(input.tenantId);
+  if (explicitTenantId) {
+    const tenant = await prismaAny.tenant.findUnique({
+      where: { id: explicitTenantId },
+      select: { id: true },
+    });
+    return tenant ? tenant.id : null;
+  }
+
+  const billingSubscriptionId = normalizeOptionalString(input.billingSubscriptionId);
+  if (billingSubscriptionId) {
+    const bySubscriptionId = await prismaAny.tenantBillingSubscription.findFirst({
+      where: { billingSubscriptionId },
+      select: { tenantId: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+    if (bySubscriptionId?.tenantId) {
+      return bySubscriptionId.tenantId;
+    }
+  }
+
+  const billingCustomerId = normalizeOptionalString(input.billingCustomerId);
+  if (billingCustomerId) {
+    const byCustomerId = await prismaAny.tenantBillingSubscription.findFirst({
+      where: { billingCustomerId },
+      select: { tenantId: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+    if (byCustomerId?.tenantId) {
+      return byCustomerId.tenantId;
+    }
+  }
+
+  return null;
+}
+
+export async function reconcileTenantBillingProviderEvent(
+  input: TenantBillingProviderEventInput
+): Promise<TenantBillingProviderEventResult> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    throw new Error('Billing provider reconciliation requires Prisma runtime availability.');
+  }
+
+  const eventId = normalizeOptionalString(input.eventId);
+  if (!eventId) {
+    throw new Error('eventId is required for billing provider reconciliation.');
+  }
+
+  const eventType = normalizeOptionalString(input.eventType) ?? 'unknown';
+  const provider = normalizeBillingProvider(input.provider);
+  const prismaAny = prisma as any;
+
+  const existingEvent = await prismaAny.tenantBillingSyncEvent.findUnique({
+    where: {
+      provider_eventId: {
+        provider,
+        eventId,
+      },
+    },
+    select: {
+      tenantId: true,
+      resultStatus: true,
+      resultMessage: true,
+    },
+  });
+  if (existingEvent) {
+    const tenantId = typeof existingEvent.tenantId === 'string' ? existingEvent.tenantId : null;
+    const entitlementDrift = tenantId
+      ? await buildTenantBillingEntitlementDriftSummary(prismaAny, tenantId, input.entitlementFlags)
+      : null;
+    return {
+      provider,
+      eventId,
+      eventType,
+      tenantId,
+      duplicate: true,
+      applied: existingEvent.resultStatus === 'applied',
+      message: existingEvent.resultMessage || 'Provider event was already reconciled.',
+      subscription: tenantId ? await getTenantBillingSubscription(tenantId) : null,
+      entitlementDrift,
+    };
+  }
+
+  const tenantId = await resolveTenantIdForBillingProviderEvent(prismaAny, input);
+  const now = new Date();
+  const payloadJson = JSON.stringify(input);
+  if (!tenantId) {
+    const message = 'Unable to resolve tenant from billing provider identifiers.';
+    await prismaAny.tenantBillingSyncEvent.create({
+      data: {
+        id: `tenant_billing_sync_event_${randomUUID().replace(/-/g, '')}`,
+        tenantId: null,
+        provider,
+        eventId,
+        eventType,
+        payloadJson,
+        resultStatus: 'ignored',
+        resultMessage: message,
+        createdAt: now,
+        processedAt: now,
+      },
+    });
+
+    return {
+      provider,
+      eventId,
+      eventType,
+      tenantId: null,
+      duplicate: false,
+      applied: false,
+      message,
+      subscription: null,
+      entitlementDrift: {
+        mode: 'tenant_unresolved',
+        evaluatedAt: new Date().toISOString(),
+        hasDrift: false,
+        providerEntitlementFlags: normalizeEntitlementFlags(input.entitlementFlags),
+        persistedEntitlementFlags: [],
+        missingInTenantSettings: [],
+        extraInTenantSettings: [],
+      },
+    };
+  }
+
+  const subscriptionInput = input.subscription ?? {};
+  const result = await updateTenantBillingSubscription(tenantId, {
+    planCode: subscriptionInput.planCode,
+    status: subscriptionInput.status,
+    paymentStatus: subscriptionInput.paymentStatus,
+    billingProvider: provider,
+    billingCustomerId: normalizeOptionalString(input.billingCustomerId),
+    billingSubscriptionId: normalizeOptionalString(input.billingSubscriptionId),
+    trialEndsAt:
+      subscriptionInput.trialEndsAt === undefined ? undefined : subscriptionInput.trialEndsAt,
+    currentPeriodEndsAt:
+      subscriptionInput.currentPeriodEndsAt === undefined ? undefined : subscriptionInput.currentPeriodEndsAt,
+    cancelAtPeriodEnd: subscriptionInput.cancelAtPeriodEnd,
+    entitlementFlags: input.entitlementFlags,
+    syncEntitlements: input.syncEntitlements,
+  });
+
+  const message = 'Billing provider event reconciled.';
+  const entitlementDrift = await buildTenantBillingEntitlementDriftSummary(prismaAny, tenantId, input.entitlementFlags);
+  await prismaAny.tenantBillingSyncEvent.create({
+    data: {
+      id: `tenant_billing_sync_event_${randomUUID().replace(/-/g, '')}`,
+      tenantId,
+      provider,
+      eventId,
+      eventType,
+      payloadJson,
+      resultStatus: 'applied',
+      resultMessage: message,
+      createdAt: now,
+      processedAt: now,
+    },
+  });
+
+  return {
+    provider,
+    eventId,
+    eventType,
+    tenantId,
+    duplicate: false,
+    applied: true,
+    message,
+    subscription: result,
+    entitlementDrift,
+  };
+}
+
+export async function getTenantSupportDiagnosticsSummary(tenantId: string): Promise<TenantSupportDiagnosticsSummary> {
+  const snapshot = await getTenantSnapshotForAdmin(tenantId);
+  if (!snapshot) {
+    throw new Error('Tenant not found.');
+  }
+
+  const runtime = await getIngestionRuntimeReadiness();
+  const actors = await listTenantControlActors(tenantId);
+  const deadLetterJobs = await listDeadLetterQueueJobs({ tenantId, limit: 200 });
+  const prisma = await getPrismaClient();
+
+  let pendingReadyCount = 0;
+  if (prisma) {
+    pendingReadyCount = await prisma.ingestionQueueJob.count({
+      where: {
+        tenantId,
+        status: 'pending',
+        nextAttemptAt: { lte: new Date() },
+      },
+    });
+  }
+
+  const hasClerkKey = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+  const privilegedActors = actors.filter((actor) => actor.role === 'admin' || actor.role === 'operator');
+  const primaryDomain = snapshot.domains.find((domain) => domain.status === 'active' && domain.isPrimary) ?? null;
+
+  const checks: TenantSupportDiagnosticCheck[] = [
+    {
+      id: 'auth.clerk-key',
+      category: 'auth' as const,
+      status: hasClerkKey ? 'ok' : 'warning',
+      label: 'Auth provider key',
+      detail: hasClerkKey
+        ? 'Clerk publishable key detected for authenticated admin flows.'
+        : 'Clerk publishable key missing. Authenticated admin sign-in is unavailable in this environment.',
+      remediation: [],
+    },
+    {
+      id: 'auth.privileged-actor-coverage',
+      category: 'auth' as const,
+      status: privilegedActors.length > 0 ? 'ok' : 'warning',
+      label: 'Privileged actor coverage',
+      detail:
+        privilegedActors.length > 0
+          ? `${privilegedActors.length} admin/operator actor(s) configured for tenant support workflows.`
+          : 'No admin/operator actors are configured. Add at least one privileged actor for support remediation ownership.',
+      remediation: [],
+    },
+    {
+      id: 'domain.primary-domain',
+      category: 'domain' as const,
+      status: primaryDomain ? 'ok' : 'failed',
+      label: 'Primary domain assigned',
+      detail: primaryDomain
+        ? `Primary domain is set to ${primaryDomain.hostname}.`
+        : 'Tenant has no active primary domain, so launch routing cannot be completed.',
+      remediation: [],
+    },
+    {
+      id: 'domain.primary-domain-verified',
+      category: 'domain' as const,
+      status: !primaryDomain ? 'failed' : primaryDomain.isVerified ? 'ok' : 'warning',
+      label: 'Primary domain verification',
+      detail: !primaryDomain
+        ? 'Primary domain verification cannot run without an active primary domain.'
+        : primaryDomain.isVerified
+          ? `${primaryDomain.hostname} is marked verified in control-plane persistence.`
+          : `${primaryDomain.hostname} is not verified yet.`,
+      remediation:
+        primaryDomain && !primaryDomain.isVerified
+          ? [
+              {
+                action: 'domain.mark_primary_verified' as const,
+                label: 'Mark primary domain verified',
+                detail: 'Apply verified state to the current primary domain.',
+              },
+            ]
+          : [],
+    },
+    {
+      id: 'ingestion.runtime',
+      category: 'ingestion' as const,
+      status: runtime.ready ? 'ok' : 'failed',
+      label: 'Ingestion runtime readiness',
+      detail: runtime.message,
+      remediation: [],
+    },
+    {
+      id: 'ingestion.dead-letter-backlog',
+      category: 'ingestion' as const,
+      status: deadLetterJobs.length === 0 ? 'ok' : 'warning',
+      label: 'Dead-letter backlog',
+      detail:
+        deadLetterJobs.length === 0
+          ? 'No dead-letter queue jobs are awaiting intervention.'
+          : `${deadLetterJobs.length} dead-letter job(s) require remediation.`,
+      remediation:
+        deadLetterJobs.length > 0
+          ? [
+              {
+                action: 'ingestion.requeue_dead_letters' as const,
+                label: 'Requeue dead-letter jobs',
+                detail: 'Move dead-letter jobs back to pending for retry processing.',
+              },
+            ]
+          : [],
+    },
+    {
+      id: 'ingestion.pending-ready',
+      category: 'ingestion' as const,
+      status: pendingReadyCount > 0 ? 'warning' : 'ok',
+      label: 'Pending ingestion jobs',
+      detail:
+        pendingReadyCount > 0
+          ? `${pendingReadyCount} pending job(s) are ready for immediate processing.`
+          : 'No pending ingestion jobs are currently awaiting immediate processing.',
+      remediation:
+        pendingReadyCount > 0
+          ? [
+              {
+                action: 'ingestion.schedule_pending_now' as const,
+                label: 'Schedule next pending job now',
+                detail: 'Pull the next pending job forward for immediate worker pickup.',
+              },
+            ]
+          : [],
+    },
+  ];
+
+  const counts = {
+    ok: checks.filter((check) => check.status === 'ok').length,
+    warning: checks.filter((check) => check.status === 'warning').length,
+    failed: checks.filter((check) => check.status === 'failed').length,
+  };
+  const overallStatus = deriveOverallDiagnosticStatus(checks.map((check) => check.status));
+
+  return {
+    tenantId,
+    generatedAt: new Date().toISOString(),
+    overallStatus,
+    counts,
+    checks,
+  };
+}
+
+export async function runTenantSupportRemediationAction(
+  tenantId: string,
+  action: TenantSupportRemediationAction
+): Promise<TenantSupportRemediationResult> {
+  if (action === 'domain.mark_primary_verified') {
+    const snapshot = await getTenantSnapshotForAdmin(tenantId);
+    if (!snapshot) {
+      return { action, ok: false, message: 'Tenant not found.' };
+    }
+
+    const primaryDomain = snapshot.domains.find((domain) => domain.status === 'active' && domain.isPrimary) ?? null;
+    if (!primaryDomain) {
+      return { action, ok: false, message: 'No active primary domain is configured for this tenant.' };
+    }
+
+    const updated = await updateTenantDomainStatus(tenantId, primaryDomain.id, { isVerified: true });
+    if (!updated) {
+      return { action, ok: false, message: 'Unable to update primary domain verification state.' };
+    }
+
+    return {
+      action,
+      ok: true,
+      message: `Primary domain ${updated.hostname} marked verified.`,
+      changedCount: 1,
+    };
+  }
+
+  if (action === 'ingestion.requeue_dead_letters') {
+    const result = await requeueDeadLetterQueueJobs({ tenantId, limit: 200 });
+    if (result.requeuedCount === 0) {
+      return {
+        action,
+        ok: false,
+        message: 'No dead-letter jobs were requeued (none found or runtime unavailable).',
+        changedCount: 0,
+      };
+    }
+
+    return {
+      action,
+      ok: true,
+      message: `Requeued ${result.requeuedCount} dead-letter job(s).`,
+      changedCount: result.requeuedCount,
+    };
+  }
+
+  if (action === 'ingestion.schedule_pending_now') {
+    const prisma = await getPrismaClient();
+    if (!prisma) {
+      return { action, ok: false, message: 'Prisma runtime unavailable for pending-job scheduling.' };
+    }
+
+    const job = await prisma.ingestionQueueJob.findFirst({
+      where: {
+        tenantId,
+        status: 'pending',
+      },
+      orderBy: {
+        nextAttemptAt: 'asc',
+      },
+      select: { id: true },
+    });
+    if (!job) {
+      return { action, ok: false, message: 'No pending ingestion jobs are available for scheduling.' };
+    }
+
+    const scheduled = await scheduleIngestionQueueJobNow(job.id);
+    if (!scheduled) {
+      return { action, ok: false, message: 'Unable to schedule the next pending ingestion job.' };
+    }
+
+    return {
+      action,
+      ok: true,
+      message: 'Next pending ingestion job scheduled for immediate attempt.',
+      changedCount: 1,
+    };
+  }
+
+  return { action, ok: false, message: 'Unsupported remediation action.' };
 }
 
 export async function updateTenantControlSettings(

@@ -49,6 +49,37 @@ VALUES (
   '2026-02-12T00:00:00.000Z'
 );
 
+INSERT OR REPLACE INTO "TenantBillingSubscription" (
+  "id",
+  "tenantId",
+  "planCode",
+  "status",
+  "paymentStatus",
+  "billingProvider",
+  "billingCustomerId",
+  "billingSubscriptionId",
+  "trialEndsAt",
+  "currentPeriodEndsAt",
+  "cancelAtPeriodEnd",
+  "createdAt",
+  "updatedAt"
+)
+VALUES (
+  'tenant_billing_subscription_tenant_fairfield',
+  'tenant_fairfield',
+  'starter',
+  'trialing',
+  'pending',
+  'manual',
+  NULL,
+  NULL,
+  '2026-02-26T00:00:00.000Z',
+  NULL,
+  0,
+  '2026-02-12T00:00:00.000Z',
+  '2026-02-12T00:00:00.000Z'
+);
+
 INSERT OR REPLACE INTO "ModuleConfig" (
   "id",
   "websiteConfigId",

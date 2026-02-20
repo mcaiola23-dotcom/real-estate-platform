@@ -157,6 +157,35 @@ exports.Prisma.TenantControlSettingsScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.TenantBillingSubscriptionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  planCode: 'planCode',
+  status: 'status',
+  paymentStatus: 'paymentStatus',
+  billingProvider: 'billingProvider',
+  billingCustomerId: 'billingCustomerId',
+  billingSubscriptionId: 'billingSubscriptionId',
+  trialEndsAt: 'trialEndsAt',
+  currentPeriodEndsAt: 'currentPeriodEndsAt',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TenantBillingSyncEventScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  provider: 'provider',
+  eventId: 'eventId',
+  eventType: 'eventType',
+  payloadJson: 'payloadJson',
+  resultStatus: 'resultStatus',
+  resultMessage: 'resultMessage',
+  createdAt: 'createdAt',
+  processedAt: 'processedAt'
+};
+
 exports.Prisma.TenantControlActorScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -285,6 +314,8 @@ exports.Prisma.ModelName = {
   TenantDomain: 'TenantDomain',
   WebsiteConfig: 'WebsiteConfig',
   TenantControlSettings: 'TenantControlSettings',
+  TenantBillingSubscription: 'TenantBillingSubscription',
+  TenantBillingSyncEvent: 'TenantBillingSyncEvent',
   TenantControlActor: 'TenantControlActor',
   ModuleConfig: 'ModuleConfig',
   Contact: 'Contact',

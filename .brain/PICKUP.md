@@ -4,52 +4,40 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Run `platform-session-bootstrap`, then execute the next control-plane roadmap slice: tenant support diagnostics toolkit (auth/domain/ingestion health checks + operator remediation actions).
+- Run `platform-session-bootstrap`, then implement a billing drift reporting summary surface (recent drift counts/modes per tenant) in Admin.
 
 ## Why This Is Next
-- The current session completed Admin data safety/recovery controls (tenant/domain/settings soft-delete + restore workflows with confirmation UX).
-- The highest-leverage pending control-plane work is now tenant support diagnostics depth so operators can run guided auth/domain/ingestion checks from one workflow.
+- The current session completed remediation-shortcut automation coverage, closing the immediate regression gap.
+- The next highest-leverage billing hardening step is raising drift visibility from per-event triage to compact tenant-level drift reporting signals.
 
 ## Current Snapshot
 - Completed in this session:
-  - Implemented status-based soft-delete/restore persistence for control-plane entities:
-    - schema + migration updates for `TenantDomain.status` and `TenantControlSettings.status`,
-    - shared lifecycle helpers in `packages/db/src/control-plane.ts` including `updateTenantLifecycleStatus`.
-  - Added Admin API lifecycle endpoints/updates:
-    - new `PATCH /api/tenants/[tenantId]/status`,
-    - extended domain/settings PATCH routes for lifecycle status updates,
-    - domain probe route now scopes probes to active domains.
-  - Delivered Admin UI safety/recovery controls in `apps/admin/app/components/control-plane-workspace.tsx`:
-    - archive/restore controls for tenant/domain/settings,
-    - destructive confirmation prompts,
-    - archived-state edit locks and status chips/readiness gating updates.
-  - Extended route integration coverage in `apps/admin/app/api/lib/routes.integration.test.ts` for tenant/domain/settings lifecycle status behavior.
-  - Updated `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, and `.brain/DECISIONS_LOG.md` with completed work and decisions.
+  - Added focused remediation computation helper `apps/admin/app/lib/billing-drift-remediation.ts` for missing/extra/all drift correction math and entitlement-sync arming signals.
+  - Wired `apps/admin/app/components/control-plane-workspace.tsx` drift quick actions to the shared remediation helper.
+  - Added focused automated coverage in `apps/admin/app/api/lib/routes.integration.test.ts` for:
+    - missing-mode additions + sync arming,
+    - extra-mode removals + sync arming,
+    - all-mode combined add/remove + sync arming,
+    - non-actionable drift inputs (no sync arming).
+  - Updated `.brain/CURRENT_FOCUS.md`, `.brain/TODO_BACKLOG.md`, `.brain/DECISIONS_LOG.md`, and `.brain/PICKUP.md` to reflect completion and next tasking.
 - In progress / pending:
   - Manual full-browser review for Admin and CRM remains intentionally deferred until additional UI/UX improvement passes are complete.
-  - Next control-plane roadmap items: tenant support diagnostics toolkit, then billing/subscription workflow integration.
+  - Billing drift reporting summary surface (tenant-level drift counts/modes) remains pending.
 
 ## Validation (Most Recent)
-- `node --check packages/db/scripts/db-generate-direct.mjs` passes.
-- `./node_modules/.bin/tsc --noEmit --project packages/types/tsconfig.json` passes.
-- `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` passes.
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`27/27`).
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:migrate:deploy --workspace @real-estate/db"` passes and applies migration `202602200002_add_control_plane_soft_delete_status`.
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run db:generate:sample --workspace @real-estate/db -- 12 --json --exit-zero"` passes (`12/12`, `0` `EPERM` failures).
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run worker:ingestion:drain"` passes.
-- `npm run db:generate:direct --workspace @real-estate/db` required a forced non-reuse regeneration path in this shell to refresh generated client metadata after the new migration.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`43/43`) including billing drift remediation shortcut coverage.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes (includes `/api/billing/webhooks`).
 - Known unrelated baseline issue remains in `packages/db` typecheck:
   - `./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json` fails due existing unresolved import path `@real-estate/types/website-config` in `packages/db/src/seed-data.ts` and `packages/db/src/website-config.ts`.
 
 ## First Actions Next Session
 1. Run `platform-session-bootstrap` and confirm alignment with `.brain/CURRENT_FOCUS.md` immediate next steps.
-2. Implement tenant support diagnostics toolkit in `apps/admin`:
-   - add tenant-scoped auth/domain/ingestion health checks,
-   - add operator-friendly remediation guidance/actions per failed check.
-3. Add targeted route/UI regression coverage for diagnostics behavior and rerun Admin validation commands (`lint`, `test:routes`, `build` via Windows-authoritative shell).
-4. If diagnostics slice is stable, move to billing/subscription workflow integration.
+2. Implement billing drift reporting summary surface:
+   - aggregate recent `tenant.billing.sync` drift events by tenant with count/mode summaries,
+   - expose actionable summary in Admin workspace near billing/audit triage flows.
+3. Rerun Admin validation commands (`test:routes`, `lint`, `build` via Windows-authoritative shell) and record outcomes.
+4. Keep manual browser validation deferred until planned UI/UX pass completion.
 
 ## Constraints To Keep
 - Preserve tenant isolation for all request/event paths and UI data interactions.

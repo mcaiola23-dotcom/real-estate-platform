@@ -1,14 +1,21 @@
 import assert from 'node:assert/strict';
+import { createHmac } from 'node:crypto';
 import test from 'node:test';
 
 import type {
   ControlPlaneAdminAuditEvent,
   ControlPlaneObservabilitySummary,
   ControlPlaneTenantSnapshot,
+  TenantBillingProviderEventResult,
+  TenantBillingSubscription,
   TenantControlActor,
+  TenantSupportDiagnosticsSummary,
+  TenantSupportRemediationResult,
 } from '@real-estate/types/control-plane';
 
+import { computeBillingDriftRemediation } from '../../lib/billing-drift-remediation';
 import { createAdminAuditGetHandler } from '../admin-audit/route';
+import { createBillingWebhookPostHandler } from '../billing/webhooks/route';
 import { createObservabilityGetHandler } from '../observability/route';
 import { createTenantsGetHandler, createTenantsPostHandler } from '../tenants/route';
 import { createTenantStatusPatchHandler } from '../tenants/[tenantId]/status/route';
@@ -21,6 +28,8 @@ import {
 import { createDomainsPostHandler } from '../tenants/[tenantId]/domains/route';
 import { createDomainPatchHandler } from '../tenants/[tenantId]/domains/[domainId]/route';
 import { createDomainProbePostHandler } from '../tenants/[tenantId]/domains/probe/route';
+import { createBillingGetHandler, createBillingPatchHandler } from '../tenants/[tenantId]/billing/route';
+import { createDiagnosticsGetHandler, createDiagnosticsPostHandler } from '../tenants/[tenantId]/diagnostics/route';
 import { createSettingsGetHandler, createSettingsPatchHandler } from '../tenants/[tenantId]/settings/route';
 
 const snapshotFixture: ControlPlaneTenantSnapshot = {
@@ -143,6 +152,172 @@ function buildObservabilitySummaryFixture(): ControlPlaneObservabilitySummary {
     ],
   };
 }
+
+function buildDiagnosticsSummaryFixture(): TenantSupportDiagnosticsSummary {
+  return {
+    tenantId: 'tenant_alpha',
+    generatedAt: '2026-02-20T00:00:00.000Z',
+    overallStatus: 'warning',
+    counts: {
+      ok: 3,
+      warning: 2,
+      failed: 0,
+    },
+    checks: [
+      {
+        id: 'auth.clerk-key',
+        category: 'auth',
+        status: 'ok',
+        label: 'Auth provider key',
+        detail: 'configured',
+        remediation: [],
+      },
+      {
+        id: 'domain.primary-domain-verified',
+        category: 'domain',
+        status: 'warning',
+        label: 'Primary domain verification',
+        detail: 'pending',
+        remediation: [
+          {
+            action: 'domain.mark_primary_verified',
+            label: 'Mark primary domain verified',
+            detail: 'Apply verified state.',
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function buildDiagnosticsRemediationFixture(
+  overrides: Partial<TenantSupportRemediationResult> = {}
+): TenantSupportRemediationResult {
+  return {
+    action: 'domain.mark_primary_verified',
+    ok: true,
+    message: 'done',
+    changedCount: 1,
+    ...overrides,
+  };
+}
+
+function buildBillingSubscriptionFixture(
+  overrides: Partial<TenantBillingSubscription> = {}
+): TenantBillingSubscription {
+  return {
+    id: 'tenant_billing_subscription_tenant_alpha',
+    tenantId: 'tenant_alpha',
+    planCode: 'starter',
+    status: 'trialing',
+    paymentStatus: 'pending',
+    billingProvider: 'manual',
+    billingCustomerId: null,
+    billingSubscriptionId: null,
+    trialEndsAt: '2026-03-06T00:00:00.000Z',
+    currentPeriodEndsAt: null,
+    cancelAtPeriodEnd: false,
+    createdAt: '2026-02-20T00:00:00.000Z',
+    updatedAt: '2026-02-20T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+function buildBillingProviderEventResultFixture(
+  overrides: Partial<TenantBillingProviderEventResult> = {}
+): TenantBillingProviderEventResult {
+  return {
+    provider: 'stripe',
+    eventId: 'evt_test_1',
+    eventType: 'customer.subscription.updated',
+    tenantId: 'tenant_alpha',
+    duplicate: false,
+    applied: true,
+    message: 'Billing provider event reconciled.',
+    subscription: buildBillingSubscriptionFixture({
+      billingProvider: 'stripe',
+      billingCustomerId: 'cus_alpha',
+      billingSubscriptionId: 'sub_alpha',
+      status: 'active',
+      paymentStatus: 'paid',
+    }),
+    entitlementDrift: {
+      mode: 'compared',
+      evaluatedAt: '2026-02-20T00:00:00.000Z',
+      hasDrift: false,
+      providerEntitlementFlags: ['crm_pipeline', 'lead_capture'],
+      persistedEntitlementFlags: ['crm_pipeline', 'lead_capture'],
+      missingInTenantSettings: [],
+      extraInTenantSettings: [],
+    },
+    ...overrides,
+  };
+}
+
+function buildStripeSignatureHeader(payload: string, secret: string, timestamp = Math.floor(Date.now() / 1000)): string {
+  const digest = createHmac('sha256', secret).update(`${timestamp}.${payload}`).digest('hex');
+  return `t=${timestamp},v1=${digest}`;
+}
+
+test('billing drift remediation computes missing-flag additions and arms entitlement sync', () => {
+  const result = computeBillingDriftRemediation({
+    baselineFlags: ['crm_pipeline'],
+    missingFlags: ['lead_capture', 'crm_pipeline'],
+    extraFlags: ['crm_pipeline'],
+    mode: 'missing',
+  });
+
+  assert.equal(result.actionable, true);
+  assert.equal(result.shouldArmEntitlementSync, true);
+  assert.equal(result.addedCount, 1);
+  assert.equal(result.removedCount, 0);
+  assert.deepEqual(result.nextFlags, ['crm_pipeline', 'lead_capture']);
+});
+
+test('billing drift remediation computes extra-flag removals and arms entitlement sync', () => {
+  const result = computeBillingDriftRemediation({
+    baselineFlags: ['crm_pipeline', 'lead_capture', 'legacy_flag'],
+    missingFlags: [],
+    extraFlags: ['legacy_flag', 'unknown_flag'],
+    mode: 'extra',
+  });
+
+  assert.equal(result.actionable, true);
+  assert.equal(result.shouldArmEntitlementSync, true);
+  assert.equal(result.addedCount, 0);
+  assert.equal(result.removedCount, 1);
+  assert.deepEqual(result.nextFlags, ['crm_pipeline', 'lead_capture']);
+});
+
+test('billing drift remediation computes combined add/remove mutations in all mode', () => {
+  const result = computeBillingDriftRemediation({
+    baselineFlags: ['crm_pipeline', 'legacy_flag'],
+    missingFlags: ['lead_capture'],
+    extraFlags: ['legacy_flag'],
+    mode: 'all',
+  });
+
+  assert.equal(result.actionable, true);
+  assert.equal(result.shouldArmEntitlementSync, true);
+  assert.equal(result.addedCount, 1);
+  assert.equal(result.removedCount, 1);
+  assert.deepEqual(result.nextFlags, ['crm_pipeline', 'lead_capture']);
+});
+
+test('billing drift remediation skips sync arming when no actionable flags are provided', () => {
+  const result = computeBillingDriftRemediation({
+    baselineFlags: ['crm_pipeline', 'crm_pipeline'],
+    missingFlags: [' '],
+    extraFlags: [''],
+    mode: 'all',
+  });
+
+  assert.equal(result.actionable, false);
+  assert.equal(result.shouldArmEntitlementSync, false);
+  assert.equal(result.addedCount, 0);
+  assert.equal(result.removedCount, 0);
+  assert.deepEqual(result.nextFlags, ['crm_pipeline']);
+});
 
 test('tenants GET returns snapshots', async () => {
   const get = createTenantsGetHandler({
@@ -634,6 +809,391 @@ test('observability GET returns summary payload', async () => {
   assert.equal(json.ok, true);
   assert.equal(json.summary.totals.tenants, 2);
   assert.equal(json.summary.ingestion.deadLetterCount, 2);
+});
+
+test('billing webhook POST rejects unauthorized requests when secret is configured', async () => {
+  const post = createBillingWebhookPostHandler({
+    reconcileTenantBillingProviderEvent: async () => buildBillingProviderEventResultFixture(),
+    webhookSecret: 'secret-abc',
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/billing/webhooks', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'manual',
+        eventId: 'evt_test_1',
+        eventType: 'subscription.updated',
+      }),
+    })
+  );
+
+  assert.equal(response.status, 401);
+});
+
+test('billing webhook POST rejects normalized stripe payloads without provider-native signature flow', async () => {
+  const post = createBillingWebhookPostHandler({
+    reconcileTenantBillingProviderEvent: async () => buildBillingProviderEventResultFixture(),
+    webhookSecret: 'secret-abc',
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/billing/webhooks', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-billing-webhook-secret': 'secret-abc' },
+      body: JSON.stringify({
+        provider: 'stripe',
+        eventId: 'evt_test_2',
+        eventType: 'customer.subscription.updated',
+      }),
+    })
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test('billing webhook POST rejects Stripe events with invalid signatures', async () => {
+  const post = createBillingWebhookPostHandler({
+    reconcileTenantBillingProviderEvent: async () => buildBillingProviderEventResultFixture(),
+    stripeWebhookSecret: 'whsec_test_123',
+  });
+
+  const stripePayload = JSON.stringify({
+    id: 'evt_test_invalid_signature',
+    type: 'customer.subscription.updated',
+    data: {
+      object: {
+        object: 'subscription',
+        id: 'sub_alpha',
+        customer: 'cus_alpha',
+      },
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/billing/webhooks', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'stripe-signature': buildStripeSignatureHeader(stripePayload, 'different_secret'),
+      },
+      body: stripePayload,
+    })
+  );
+
+  assert.equal(response.status, 401);
+});
+
+test('billing webhook POST verifies and normalizes Stripe payloads before reconciliation', async () => {
+  let capturedProviderEventInput: Record<string, unknown> | null = null;
+  const post = createBillingWebhookPostHandler({
+    reconcileTenantBillingProviderEvent: async (input) => {
+      capturedProviderEventInput = input as unknown as Record<string, unknown>;
+      return buildBillingProviderEventResultFixture({
+        provider: input.provider,
+        eventId: input.eventId,
+        eventType: input.eventType,
+      });
+    },
+    stripeWebhookSecret: 'whsec_test_123',
+  });
+
+  const stripePayload = JSON.stringify({
+    id: 'evt_test_2',
+    type: 'customer.subscription.updated',
+    created: 1760000000,
+    data: {
+      object: {
+        object: 'subscription',
+        id: 'sub_alpha',
+        customer: 'cus_alpha',
+        status: 'active',
+        trial_end: 1760604800,
+        current_period_end: 1763196800,
+        cancel_at_period_end: false,
+        metadata: {
+          tenantId: 'tenant_alpha',
+          planCode: 'growth',
+          entitlementFlags: 'crm_pipeline,lead_capture',
+        },
+        items: {
+          data: [{ price: { lookup_key: 'growth', id: 'price_growth' } }],
+        },
+      },
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/billing/webhooks', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'stripe-signature': buildStripeSignatureHeader(stripePayload, 'whsec_test_123'),
+      },
+      body: stripePayload,
+    })
+  );
+
+  assert.equal(response.status, 200);
+  assert.ok(capturedProviderEventInput);
+  assert.equal(capturedProviderEventInput?.provider, 'stripe');
+  assert.equal(capturedProviderEventInput?.eventId, 'evt_test_2');
+  assert.equal(capturedProviderEventInput?.eventType, 'customer.subscription.updated');
+  assert.equal(capturedProviderEventInput?.tenantId, 'tenant_alpha');
+  assert.equal(capturedProviderEventInput?.billingCustomerId, 'cus_alpha');
+  assert.equal(capturedProviderEventInput?.billingSubscriptionId, 'sub_alpha');
+
+  const subscription = capturedProviderEventInput?.subscription as Record<string, unknown>;
+  assert.equal(subscription?.planCode, 'growth');
+  assert.equal(subscription?.status, 'active');
+  assert.equal(subscription?.paymentStatus, 'paid');
+  assert.equal(subscription?.cancelAtPeriodEnd, false);
+
+  assert.deepEqual(capturedProviderEventInput?.entitlementFlags, ['crm_pipeline', 'lead_capture']);
+  assert.equal(capturedProviderEventInput?.syncEntitlements, true);
+
+  const json = (await response.json()) as { ok: true; result: TenantBillingProviderEventResult };
+  assert.equal(json.ok, true);
+  assert.equal(json.result.applied, true);
+  assert.equal(json.result.duplicate, false);
+  assert.equal(json.result.eventId, 'evt_test_2');
+});
+
+test('billing webhook POST reports entitlement drift summary from reconciliation', async () => {
+  const post = createBillingWebhookPostHandler({
+    reconcileTenantBillingProviderEvent: async () =>
+      buildBillingProviderEventResultFixture({
+        entitlementDrift: {
+          mode: 'compared',
+          evaluatedAt: '2026-02-20T16:00:00.000Z',
+          hasDrift: true,
+          providerEntitlementFlags: ['crm_pipeline', 'lead_capture'],
+          persistedEntitlementFlags: ['crm_pipeline'],
+          missingInTenantSettings: ['lead_capture'],
+          extraInTenantSettings: [],
+        },
+      }),
+    stripeWebhookSecret: 'whsec_test_123',
+  });
+
+  const stripePayload = JSON.stringify({
+    id: 'evt_test_drift',
+    type: 'customer.subscription.updated',
+    data: {
+      object: {
+        object: 'subscription',
+        id: 'sub_alpha',
+        customer: 'cus_alpha',
+      },
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/billing/webhooks', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'stripe-signature': buildStripeSignatureHeader(stripePayload, 'whsec_test_123'),
+      },
+      body: stripePayload,
+    })
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; result: TenantBillingProviderEventResult };
+  assert.equal(json.ok, true);
+  assert.ok(json.result.entitlementDrift);
+  assert.equal(json.result.entitlementDrift?.hasDrift, true);
+  assert.deepEqual(json.result.entitlementDrift?.missingInTenantSettings, ['lead_capture']);
+});
+
+test('billing webhook POST returns 202 for unresolved tenant mappings', async () => {
+  const post = createBillingWebhookPostHandler({
+    reconcileTenantBillingProviderEvent: async () =>
+      buildBillingProviderEventResultFixture({
+        applied: false,
+        duplicate: false,
+        tenantId: null,
+        subscription: null,
+        message: 'Unable to resolve tenant from billing provider identifiers.',
+        entitlementDrift: {
+          mode: 'tenant_unresolved',
+          evaluatedAt: '2026-02-20T16:00:00.000Z',
+          hasDrift: false,
+          providerEntitlementFlags: [],
+          persistedEntitlementFlags: [],
+          missingInTenantSettings: [],
+          extraInTenantSettings: [],
+        },
+      }),
+    stripeWebhookSecret: 'whsec_test_123',
+  });
+
+  const stripePayload = JSON.stringify({
+    id: 'evt_test_unresolved',
+    type: 'customer.subscription.updated',
+    data: {
+      object: {
+        object: 'subscription',
+        id: 'sub_unknown',
+        customer: 'cus_unknown',
+      },
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/billing/webhooks', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'stripe-signature': buildStripeSignatureHeader(stripePayload, 'whsec_test_123'),
+      },
+      body: stripePayload,
+    })
+  );
+
+  assert.equal(response.status, 202);
+  const json = (await response.json()) as { ok: true; result: TenantBillingProviderEventResult };
+  assert.equal(json.ok, true);
+  assert.equal(json.result.applied, false);
+  assert.equal(json.result.tenantId, null);
+});
+
+test('diagnostics GET returns tenant diagnostics summary', async () => {
+  const get = createDiagnosticsGetHandler({
+    getTenantSupportDiagnosticsSummary: async () => buildDiagnosticsSummaryFixture(),
+    runTenantSupportRemediationAction: async () => buildDiagnosticsRemediationFixture(),
+  });
+
+  const response = await get(new Request('http://localhost/api/tenants/tenant_alpha/diagnostics'), {
+    params: Promise.resolve({ tenantId: 'tenant_alpha' }),
+  });
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; summary: TenantSupportDiagnosticsSummary };
+  assert.equal(json.ok, true);
+  assert.equal(json.summary.tenantId, 'tenant_alpha');
+  assert.equal(json.summary.overallStatus, 'warning');
+});
+
+test('diagnostics POST runs remediation action and returns updated summary', async () => {
+  const actions: string[] = [];
+  const post = createDiagnosticsPostHandler({
+    getTenantSupportDiagnosticsSummary: async () => buildDiagnosticsSummaryFixture(),
+    runTenantSupportRemediationAction: async (_tenantId, action) => {
+      actions.push(action);
+      return buildDiagnosticsRemediationFixture({ action });
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/tenants/tenant_alpha/diagnostics', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({ action: 'domain.mark_primary_verified' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as {
+    ok: true;
+    result: TenantSupportRemediationResult;
+    summary: TenantSupportDiagnosticsSummary;
+  };
+  assert.equal(json.ok, true);
+  assert.equal(json.result.action, 'domain.mark_primary_verified');
+  assert.equal(json.summary.tenantId, 'tenant_alpha');
+  assert.deepEqual(actions, ['domain.mark_primary_verified']);
+});
+
+test('diagnostics POST rejects non-admin actor', async () => {
+  const post = createDiagnosticsPostHandler({
+    getTenantSupportDiagnosticsSummary: async () => buildDiagnosticsSummaryFixture(),
+    runTenantSupportRemediationAction: async () => buildDiagnosticsRemediationFixture(),
+    getMutationActorFromRequest: async () => ({ actorId: 'user_viewer_1', role: 'viewer' }),
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/tenants/tenant_alpha/diagnostics', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'domain.mark_primary_verified' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 403);
+});
+
+test('billing GET returns tenant subscription snapshot', async () => {
+  const get = createBillingGetHandler({
+    getTenantBillingSubscription: async () => buildBillingSubscriptionFixture(),
+    updateTenantBillingSubscription: async () => buildBillingSubscriptionFixture(),
+  });
+
+  const response = await get(new Request('http://localhost/api/tenants/tenant_alpha/billing'), {
+    params: Promise.resolve({ tenantId: 'tenant_alpha' }),
+  });
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; subscription: TenantBillingSubscription };
+  assert.equal(json.ok, true);
+  assert.equal(json.subscription.planCode, 'starter');
+});
+
+test('billing PATCH updates subscription workflow and entitlement sync payload', async () => {
+  const patch = createBillingPatchHandler({
+    getTenantBillingSubscription: async () => buildBillingSubscriptionFixture(),
+    updateTenantBillingSubscription: async (_tenantId, input) =>
+      buildBillingSubscriptionFixture({
+        planCode: input.planCode ?? 'starter',
+        status: input.status ?? 'trialing',
+        paymentStatus: input.paymentStatus ?? 'pending',
+      }),
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/billing', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({
+        planCode: 'growth',
+        status: 'active',
+        paymentStatus: 'paid',
+        syncEntitlements: true,
+        entitlementFlags: ['crm_pipeline', 'lead_capture'],
+      }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; subscription: TenantBillingSubscription };
+  assert.equal(json.ok, true);
+  assert.equal(json.subscription.planCode, 'growth');
+  assert.equal(json.subscription.status, 'active');
+  assert.equal(json.subscription.paymentStatus, 'paid');
+});
+
+test('billing PATCH rejects non-admin actor', async () => {
+  const patch = createBillingPatchHandler({
+    getTenantBillingSubscription: async () => buildBillingSubscriptionFixture(),
+    updateTenantBillingSubscription: async () => buildBillingSubscriptionFixture(),
+    getMutationActorFromRequest: async () => ({ actorId: 'support_1', role: 'support' }),
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/billing', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ planCode: 'growth' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 403);
 });
 
 test('tenants POST rejects non-admin actor and records denied audit event', async () => {

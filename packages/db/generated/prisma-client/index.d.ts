@@ -34,6 +34,16 @@ export type WebsiteConfig = $Result.DefaultSelection<Prisma.$WebsiteConfigPayloa
  */
 export type TenantControlSettings = $Result.DefaultSelection<Prisma.$TenantControlSettingsPayload>
 /**
+ * Model TenantBillingSubscription
+ * 
+ */
+export type TenantBillingSubscription = $Result.DefaultSelection<Prisma.$TenantBillingSubscriptionPayload>
+/**
+ * Model TenantBillingSyncEvent
+ * 
+ */
+export type TenantBillingSyncEvent = $Result.DefaultSelection<Prisma.$TenantBillingSyncEventPayload>
+/**
  * Model TenantControlActor
  * 
  */
@@ -231,6 +241,26 @@ export class PrismaClient<
     * ```
     */
   get tenantControlSettings(): Prisma.TenantControlSettingsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tenantBillingSubscription`: Exposes CRUD operations for the **TenantBillingSubscription** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TenantBillingSubscriptions
+    * const tenantBillingSubscriptions = await prisma.tenantBillingSubscription.findMany()
+    * ```
+    */
+  get tenantBillingSubscription(): Prisma.TenantBillingSubscriptionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tenantBillingSyncEvent`: Exposes CRUD operations for the **TenantBillingSyncEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TenantBillingSyncEvents
+    * const tenantBillingSyncEvents = await prisma.tenantBillingSyncEvent.findMany()
+    * ```
+    */
+  get tenantBillingSyncEvent(): Prisma.TenantBillingSyncEventDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.tenantControlActor`: Exposes CRUD operations for the **TenantControlActor** model.
@@ -756,6 +786,8 @@ export namespace Prisma {
     TenantDomain: 'TenantDomain',
     WebsiteConfig: 'WebsiteConfig',
     TenantControlSettings: 'TenantControlSettings',
+    TenantBillingSubscription: 'TenantBillingSubscription',
+    TenantBillingSyncEvent: 'TenantBillingSyncEvent',
     TenantControlActor: 'TenantControlActor',
     ModuleConfig: 'ModuleConfig',
     Contact: 'Contact',
@@ -782,7 +814,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "tenantControlActor" | "moduleConfig" | "contact" | "lead" | "activity" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent"
+      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "tenantBillingSubscription" | "tenantBillingSyncEvent" | "tenantControlActor" | "moduleConfig" | "contact" | "lead" | "activity" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1079,6 +1111,154 @@ export namespace Prisma {
           count: {
             args: Prisma.TenantControlSettingsCountArgs<ExtArgs>
             result: $Utils.Optional<TenantControlSettingsCountAggregateOutputType> | number
+          }
+        }
+      }
+      TenantBillingSubscription: {
+        payload: Prisma.$TenantBillingSubscriptionPayload<ExtArgs>
+        fields: Prisma.TenantBillingSubscriptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TenantBillingSubscriptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TenantBillingSubscriptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>
+          }
+          findFirst: {
+            args: Prisma.TenantBillingSubscriptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TenantBillingSubscriptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>
+          }
+          findMany: {
+            args: Prisma.TenantBillingSubscriptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>[]
+          }
+          create: {
+            args: Prisma.TenantBillingSubscriptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>
+          }
+          createMany: {
+            args: Prisma.TenantBillingSubscriptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TenantBillingSubscriptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>[]
+          }
+          delete: {
+            args: Prisma.TenantBillingSubscriptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>
+          }
+          update: {
+            args: Prisma.TenantBillingSubscriptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.TenantBillingSubscriptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TenantBillingSubscriptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TenantBillingSubscriptionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>[]
+          }
+          upsert: {
+            args: Prisma.TenantBillingSubscriptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSubscriptionPayload>
+          }
+          aggregate: {
+            args: Prisma.TenantBillingSubscriptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTenantBillingSubscription>
+          }
+          groupBy: {
+            args: Prisma.TenantBillingSubscriptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TenantBillingSubscriptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TenantBillingSubscriptionCountArgs<ExtArgs>
+            result: $Utils.Optional<TenantBillingSubscriptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      TenantBillingSyncEvent: {
+        payload: Prisma.$TenantBillingSyncEventPayload<ExtArgs>
+        fields: Prisma.TenantBillingSyncEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TenantBillingSyncEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TenantBillingSyncEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>
+          }
+          findFirst: {
+            args: Prisma.TenantBillingSyncEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TenantBillingSyncEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>
+          }
+          findMany: {
+            args: Prisma.TenantBillingSyncEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>[]
+          }
+          create: {
+            args: Prisma.TenantBillingSyncEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>
+          }
+          createMany: {
+            args: Prisma.TenantBillingSyncEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TenantBillingSyncEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>[]
+          }
+          delete: {
+            args: Prisma.TenantBillingSyncEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>
+          }
+          update: {
+            args: Prisma.TenantBillingSyncEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.TenantBillingSyncEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TenantBillingSyncEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TenantBillingSyncEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.TenantBillingSyncEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantBillingSyncEventPayload>
+          }
+          aggregate: {
+            args: Prisma.TenantBillingSyncEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTenantBillingSyncEvent>
+          }
+          groupBy: {
+            args: Prisma.TenantBillingSyncEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TenantBillingSyncEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TenantBillingSyncEventCountArgs<ExtArgs>
+            result: $Utils.Optional<TenantBillingSyncEventCountAggregateOutputType> | number
           }
         }
       }
@@ -1774,6 +1954,8 @@ export namespace Prisma {
     tenantDomain?: TenantDomainOmit
     websiteConfig?: WebsiteConfigOmit
     tenantControlSettings?: TenantControlSettingsOmit
+    tenantBillingSubscription?: TenantBillingSubscriptionOmit
+    tenantBillingSyncEvent?: TenantBillingSyncEventOmit
     tenantControlActor?: TenantControlActorOmit
     moduleConfig?: ModuleConfigOmit
     contact?: ContactOmit
@@ -2223,6 +2405,7 @@ export namespace Prisma {
     domains?: boolean | Tenant$domainsArgs<ExtArgs>
     websiteConfig?: boolean | Tenant$websiteConfigArgs<ExtArgs>
     controlSettings?: boolean | Tenant$controlSettingsArgs<ExtArgs>
+    billingSubscription?: boolean | Tenant$billingSubscriptionArgs<ExtArgs>
     controlActors?: boolean | Tenant$controlActorsArgs<ExtArgs>
     contacts?: boolean | Tenant$contactsArgs<ExtArgs>
     leads?: boolean | Tenant$leadsArgs<ExtArgs>
@@ -2264,6 +2447,7 @@ export namespace Prisma {
     domains?: boolean | Tenant$domainsArgs<ExtArgs>
     websiteConfig?: boolean | Tenant$websiteConfigArgs<ExtArgs>
     controlSettings?: boolean | Tenant$controlSettingsArgs<ExtArgs>
+    billingSubscription?: boolean | Tenant$billingSubscriptionArgs<ExtArgs>
     controlActors?: boolean | Tenant$controlActorsArgs<ExtArgs>
     contacts?: boolean | Tenant$contactsArgs<ExtArgs>
     leads?: boolean | Tenant$leadsArgs<ExtArgs>
@@ -2281,6 +2465,7 @@ export namespace Prisma {
       domains: Prisma.$TenantDomainPayload<ExtArgs>[]
       websiteConfig: Prisma.$WebsiteConfigPayload<ExtArgs> | null
       controlSettings: Prisma.$TenantControlSettingsPayload<ExtArgs> | null
+      billingSubscription: Prisma.$TenantBillingSubscriptionPayload<ExtArgs> | null
       controlActors: Prisma.$TenantControlActorPayload<ExtArgs>[]
       contacts: Prisma.$ContactPayload<ExtArgs>[]
       leads: Prisma.$LeadPayload<ExtArgs>[]
@@ -2692,6 +2877,7 @@ export namespace Prisma {
     domains<T extends Tenant$domainsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantDomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     websiteConfig<T extends Tenant$websiteConfigArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$websiteConfigArgs<ExtArgs>>): Prisma__WebsiteConfigClient<$Result.GetResult<Prisma.$WebsiteConfigPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     controlSettings<T extends Tenant$controlSettingsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$controlSettingsArgs<ExtArgs>>): Prisma__TenantControlSettingsClient<$Result.GetResult<Prisma.$TenantControlSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    billingSubscription<T extends Tenant$billingSubscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$billingSubscriptionArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     controlActors<T extends Tenant$controlActorsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$controlActorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     contacts<T extends Tenant$contactsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     leads<T extends Tenant$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3178,6 +3364,25 @@ export namespace Prisma {
      */
     include?: TenantControlSettingsInclude<ExtArgs> | null
     where?: TenantControlSettingsWhereInput
+  }
+
+  /**
+   * Tenant.billingSubscription
+   */
+  export type Tenant$billingSubscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    where?: TenantBillingSubscriptionWhereInput
   }
 
   /**
@@ -6616,6 +6821,2224 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: TenantControlSettingsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TenantBillingSubscription
+   */
+
+  export type AggregateTenantBillingSubscription = {
+    _count: TenantBillingSubscriptionCountAggregateOutputType | null
+    _min: TenantBillingSubscriptionMinAggregateOutputType | null
+    _max: TenantBillingSubscriptionMaxAggregateOutputType | null
+  }
+
+  export type TenantBillingSubscriptionMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    planCode: string | null
+    status: string | null
+    paymentStatus: string | null
+    billingProvider: string | null
+    billingCustomerId: string | null
+    billingSubscriptionId: string | null
+    trialEndsAt: Date | null
+    currentPeriodEndsAt: Date | null
+    cancelAtPeriodEnd: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantBillingSubscriptionMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    planCode: string | null
+    status: string | null
+    paymentStatus: string | null
+    billingProvider: string | null
+    billingCustomerId: string | null
+    billingSubscriptionId: string | null
+    trialEndsAt: Date | null
+    currentPeriodEndsAt: Date | null
+    cancelAtPeriodEnd: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantBillingSubscriptionCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    planCode: number
+    status: number
+    paymentStatus: number
+    billingProvider: number
+    billingCustomerId: number
+    billingSubscriptionId: number
+    trialEndsAt: number
+    currentPeriodEndsAt: number
+    cancelAtPeriodEnd: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TenantBillingSubscriptionMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    planCode?: true
+    status?: true
+    paymentStatus?: true
+    billingProvider?: true
+    billingCustomerId?: true
+    billingSubscriptionId?: true
+    trialEndsAt?: true
+    currentPeriodEndsAt?: true
+    cancelAtPeriodEnd?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantBillingSubscriptionMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    planCode?: true
+    status?: true
+    paymentStatus?: true
+    billingProvider?: true
+    billingCustomerId?: true
+    billingSubscriptionId?: true
+    trialEndsAt?: true
+    currentPeriodEndsAt?: true
+    cancelAtPeriodEnd?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantBillingSubscriptionCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    planCode?: true
+    status?: true
+    paymentStatus?: true
+    billingProvider?: true
+    billingCustomerId?: true
+    billingSubscriptionId?: true
+    trialEndsAt?: true
+    currentPeriodEndsAt?: true
+    cancelAtPeriodEnd?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TenantBillingSubscriptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantBillingSubscription to aggregate.
+     */
+    where?: TenantBillingSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSubscriptions to fetch.
+     */
+    orderBy?: TenantBillingSubscriptionOrderByWithRelationInput | TenantBillingSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TenantBillingSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TenantBillingSubscriptions
+    **/
+    _count?: true | TenantBillingSubscriptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TenantBillingSubscriptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TenantBillingSubscriptionMaxAggregateInputType
+  }
+
+  export type GetTenantBillingSubscriptionAggregateType<T extends TenantBillingSubscriptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateTenantBillingSubscription]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTenantBillingSubscription[P]>
+      : GetScalarType<T[P], AggregateTenantBillingSubscription[P]>
+  }
+
+
+
+
+  export type TenantBillingSubscriptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantBillingSubscriptionWhereInput
+    orderBy?: TenantBillingSubscriptionOrderByWithAggregationInput | TenantBillingSubscriptionOrderByWithAggregationInput[]
+    by: TenantBillingSubscriptionScalarFieldEnum[] | TenantBillingSubscriptionScalarFieldEnum
+    having?: TenantBillingSubscriptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TenantBillingSubscriptionCountAggregateInputType | true
+    _min?: TenantBillingSubscriptionMinAggregateInputType
+    _max?: TenantBillingSubscriptionMaxAggregateInputType
+  }
+
+  export type TenantBillingSubscriptionGroupByOutputType = {
+    id: string
+    tenantId: string
+    planCode: string
+    status: string
+    paymentStatus: string
+    billingProvider: string
+    billingCustomerId: string | null
+    billingSubscriptionId: string | null
+    trialEndsAt: Date | null
+    currentPeriodEndsAt: Date | null
+    cancelAtPeriodEnd: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: TenantBillingSubscriptionCountAggregateOutputType | null
+    _min: TenantBillingSubscriptionMinAggregateOutputType | null
+    _max: TenantBillingSubscriptionMaxAggregateOutputType | null
+  }
+
+  type GetTenantBillingSubscriptionGroupByPayload<T extends TenantBillingSubscriptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TenantBillingSubscriptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TenantBillingSubscriptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TenantBillingSubscriptionGroupByOutputType[P]>
+            : GetScalarType<T[P], TenantBillingSubscriptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TenantBillingSubscriptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    planCode?: boolean
+    status?: boolean
+    paymentStatus?: boolean
+    billingProvider?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    trialEndsAt?: boolean
+    currentPeriodEndsAt?: boolean
+    cancelAtPeriodEnd?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantBillingSubscription"]>
+
+  export type TenantBillingSubscriptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    planCode?: boolean
+    status?: boolean
+    paymentStatus?: boolean
+    billingProvider?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    trialEndsAt?: boolean
+    currentPeriodEndsAt?: boolean
+    cancelAtPeriodEnd?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantBillingSubscription"]>
+
+  export type TenantBillingSubscriptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    planCode?: boolean
+    status?: boolean
+    paymentStatus?: boolean
+    billingProvider?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    trialEndsAt?: boolean
+    currentPeriodEndsAt?: boolean
+    cancelAtPeriodEnd?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantBillingSubscription"]>
+
+  export type TenantBillingSubscriptionSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    planCode?: boolean
+    status?: boolean
+    paymentStatus?: boolean
+    billingProvider?: boolean
+    billingCustomerId?: boolean
+    billingSubscriptionId?: boolean
+    trialEndsAt?: boolean
+    currentPeriodEndsAt?: boolean
+    cancelAtPeriodEnd?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TenantBillingSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "planCode" | "status" | "paymentStatus" | "billingProvider" | "billingCustomerId" | "billingSubscriptionId" | "trialEndsAt" | "currentPeriodEndsAt" | "cancelAtPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantBillingSubscription"]>
+  export type TenantBillingSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type TenantBillingSubscriptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type TenantBillingSubscriptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $TenantBillingSubscriptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TenantBillingSubscription"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      planCode: string
+      status: string
+      paymentStatus: string
+      billingProvider: string
+      billingCustomerId: string | null
+      billingSubscriptionId: string | null
+      trialEndsAt: Date | null
+      currentPeriodEndsAt: Date | null
+      cancelAtPeriodEnd: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["tenantBillingSubscription"]>
+    composites: {}
+  }
+
+  type TenantBillingSubscriptionGetPayload<S extends boolean | null | undefined | TenantBillingSubscriptionDefaultArgs> = $Result.GetResult<Prisma.$TenantBillingSubscriptionPayload, S>
+
+  type TenantBillingSubscriptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TenantBillingSubscriptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TenantBillingSubscriptionCountAggregateInputType | true
+    }
+
+  export interface TenantBillingSubscriptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TenantBillingSubscription'], meta: { name: 'TenantBillingSubscription' } }
+    /**
+     * Find zero or one TenantBillingSubscription that matches the filter.
+     * @param {TenantBillingSubscriptionFindUniqueArgs} args - Arguments to find a TenantBillingSubscription
+     * @example
+     * // Get one TenantBillingSubscription
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TenantBillingSubscriptionFindUniqueArgs>(args: SelectSubset<T, TenantBillingSubscriptionFindUniqueArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TenantBillingSubscription that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TenantBillingSubscriptionFindUniqueOrThrowArgs} args - Arguments to find a TenantBillingSubscription
+     * @example
+     * // Get one TenantBillingSubscription
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TenantBillingSubscriptionFindUniqueOrThrowArgs>(args: SelectSubset<T, TenantBillingSubscriptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantBillingSubscription that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSubscriptionFindFirstArgs} args - Arguments to find a TenantBillingSubscription
+     * @example
+     * // Get one TenantBillingSubscription
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TenantBillingSubscriptionFindFirstArgs>(args?: SelectSubset<T, TenantBillingSubscriptionFindFirstArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantBillingSubscription that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSubscriptionFindFirstOrThrowArgs} args - Arguments to find a TenantBillingSubscription
+     * @example
+     * // Get one TenantBillingSubscription
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TenantBillingSubscriptionFindFirstOrThrowArgs>(args?: SelectSubset<T, TenantBillingSubscriptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TenantBillingSubscriptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSubscriptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TenantBillingSubscriptions
+     * const tenantBillingSubscriptions = await prisma.tenantBillingSubscription.findMany()
+     * 
+     * // Get first 10 TenantBillingSubscriptions
+     * const tenantBillingSubscriptions = await prisma.tenantBillingSubscription.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tenantBillingSubscriptionWithIdOnly = await prisma.tenantBillingSubscription.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TenantBillingSubscriptionFindManyArgs>(args?: SelectSubset<T, TenantBillingSubscriptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TenantBillingSubscription.
+     * @param {TenantBillingSubscriptionCreateArgs} args - Arguments to create a TenantBillingSubscription.
+     * @example
+     * // Create one TenantBillingSubscription
+     * const TenantBillingSubscription = await prisma.tenantBillingSubscription.create({
+     *   data: {
+     *     // ... data to create a TenantBillingSubscription
+     *   }
+     * })
+     * 
+     */
+    create<T extends TenantBillingSubscriptionCreateArgs>(args: SelectSubset<T, TenantBillingSubscriptionCreateArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TenantBillingSubscriptions.
+     * @param {TenantBillingSubscriptionCreateManyArgs} args - Arguments to create many TenantBillingSubscriptions.
+     * @example
+     * // Create many TenantBillingSubscriptions
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TenantBillingSubscriptionCreateManyArgs>(args?: SelectSubset<T, TenantBillingSubscriptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TenantBillingSubscriptions and returns the data saved in the database.
+     * @param {TenantBillingSubscriptionCreateManyAndReturnArgs} args - Arguments to create many TenantBillingSubscriptions.
+     * @example
+     * // Create many TenantBillingSubscriptions
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TenantBillingSubscriptions and only return the `id`
+     * const tenantBillingSubscriptionWithIdOnly = await prisma.tenantBillingSubscription.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TenantBillingSubscriptionCreateManyAndReturnArgs>(args?: SelectSubset<T, TenantBillingSubscriptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TenantBillingSubscription.
+     * @param {TenantBillingSubscriptionDeleteArgs} args - Arguments to delete one TenantBillingSubscription.
+     * @example
+     * // Delete one TenantBillingSubscription
+     * const TenantBillingSubscription = await prisma.tenantBillingSubscription.delete({
+     *   where: {
+     *     // ... filter to delete one TenantBillingSubscription
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TenantBillingSubscriptionDeleteArgs>(args: SelectSubset<T, TenantBillingSubscriptionDeleteArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TenantBillingSubscription.
+     * @param {TenantBillingSubscriptionUpdateArgs} args - Arguments to update one TenantBillingSubscription.
+     * @example
+     * // Update one TenantBillingSubscription
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TenantBillingSubscriptionUpdateArgs>(args: SelectSubset<T, TenantBillingSubscriptionUpdateArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TenantBillingSubscriptions.
+     * @param {TenantBillingSubscriptionDeleteManyArgs} args - Arguments to filter TenantBillingSubscriptions to delete.
+     * @example
+     * // Delete a few TenantBillingSubscriptions
+     * const { count } = await prisma.tenantBillingSubscription.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TenantBillingSubscriptionDeleteManyArgs>(args?: SelectSubset<T, TenantBillingSubscriptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantBillingSubscriptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSubscriptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TenantBillingSubscriptions
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TenantBillingSubscriptionUpdateManyArgs>(args: SelectSubset<T, TenantBillingSubscriptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantBillingSubscriptions and returns the data updated in the database.
+     * @param {TenantBillingSubscriptionUpdateManyAndReturnArgs} args - Arguments to update many TenantBillingSubscriptions.
+     * @example
+     * // Update many TenantBillingSubscriptions
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TenantBillingSubscriptions and only return the `id`
+     * const tenantBillingSubscriptionWithIdOnly = await prisma.tenantBillingSubscription.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TenantBillingSubscriptionUpdateManyAndReturnArgs>(args: SelectSubset<T, TenantBillingSubscriptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TenantBillingSubscription.
+     * @param {TenantBillingSubscriptionUpsertArgs} args - Arguments to update or create a TenantBillingSubscription.
+     * @example
+     * // Update or create a TenantBillingSubscription
+     * const tenantBillingSubscription = await prisma.tenantBillingSubscription.upsert({
+     *   create: {
+     *     // ... data to create a TenantBillingSubscription
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TenantBillingSubscription we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TenantBillingSubscriptionUpsertArgs>(args: SelectSubset<T, TenantBillingSubscriptionUpsertArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TenantBillingSubscriptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSubscriptionCountArgs} args - Arguments to filter TenantBillingSubscriptions to count.
+     * @example
+     * // Count the number of TenantBillingSubscriptions
+     * const count = await prisma.tenantBillingSubscription.count({
+     *   where: {
+     *     // ... the filter for the TenantBillingSubscriptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends TenantBillingSubscriptionCountArgs>(
+      args?: Subset<T, TenantBillingSubscriptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TenantBillingSubscriptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TenantBillingSubscription.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSubscriptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TenantBillingSubscriptionAggregateArgs>(args: Subset<T, TenantBillingSubscriptionAggregateArgs>): Prisma.PrismaPromise<GetTenantBillingSubscriptionAggregateType<T>>
+
+    /**
+     * Group by TenantBillingSubscription.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSubscriptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TenantBillingSubscriptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TenantBillingSubscriptionGroupByArgs['orderBy'] }
+        : { orderBy?: TenantBillingSubscriptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TenantBillingSubscriptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTenantBillingSubscriptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TenantBillingSubscription model
+   */
+  readonly fields: TenantBillingSubscriptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TenantBillingSubscription.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TenantBillingSubscriptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TenantBillingSubscription model
+   */
+  interface TenantBillingSubscriptionFieldRefs {
+    readonly id: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly tenantId: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly planCode: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly status: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly paymentStatus: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly billingProvider: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly billingCustomerId: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly billingSubscriptionId: FieldRef<"TenantBillingSubscription", 'String'>
+    readonly trialEndsAt: FieldRef<"TenantBillingSubscription", 'DateTime'>
+    readonly currentPeriodEndsAt: FieldRef<"TenantBillingSubscription", 'DateTime'>
+    readonly cancelAtPeriodEnd: FieldRef<"TenantBillingSubscription", 'Boolean'>
+    readonly createdAt: FieldRef<"TenantBillingSubscription", 'DateTime'>
+    readonly updatedAt: FieldRef<"TenantBillingSubscription", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TenantBillingSubscription findUnique
+   */
+  export type TenantBillingSubscriptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSubscription to fetch.
+     */
+    where: TenantBillingSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSubscription findUniqueOrThrow
+   */
+  export type TenantBillingSubscriptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSubscription to fetch.
+     */
+    where: TenantBillingSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSubscription findFirst
+   */
+  export type TenantBillingSubscriptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSubscription to fetch.
+     */
+    where?: TenantBillingSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSubscriptions to fetch.
+     */
+    orderBy?: TenantBillingSubscriptionOrderByWithRelationInput | TenantBillingSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantBillingSubscriptions.
+     */
+    cursor?: TenantBillingSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantBillingSubscriptions.
+     */
+    distinct?: TenantBillingSubscriptionScalarFieldEnum | TenantBillingSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * TenantBillingSubscription findFirstOrThrow
+   */
+  export type TenantBillingSubscriptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSubscription to fetch.
+     */
+    where?: TenantBillingSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSubscriptions to fetch.
+     */
+    orderBy?: TenantBillingSubscriptionOrderByWithRelationInput | TenantBillingSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantBillingSubscriptions.
+     */
+    cursor?: TenantBillingSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantBillingSubscriptions.
+     */
+    distinct?: TenantBillingSubscriptionScalarFieldEnum | TenantBillingSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * TenantBillingSubscription findMany
+   */
+  export type TenantBillingSubscriptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSubscriptions to fetch.
+     */
+    where?: TenantBillingSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSubscriptions to fetch.
+     */
+    orderBy?: TenantBillingSubscriptionOrderByWithRelationInput | TenantBillingSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TenantBillingSubscriptions.
+     */
+    cursor?: TenantBillingSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSubscriptions.
+     */
+    skip?: number
+    distinct?: TenantBillingSubscriptionScalarFieldEnum | TenantBillingSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * TenantBillingSubscription create
+   */
+  export type TenantBillingSubscriptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TenantBillingSubscription.
+     */
+    data: XOR<TenantBillingSubscriptionCreateInput, TenantBillingSubscriptionUncheckedCreateInput>
+  }
+
+  /**
+   * TenantBillingSubscription createMany
+   */
+  export type TenantBillingSubscriptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TenantBillingSubscriptions.
+     */
+    data: TenantBillingSubscriptionCreateManyInput | TenantBillingSubscriptionCreateManyInput[]
+  }
+
+  /**
+   * TenantBillingSubscription createManyAndReturn
+   */
+  export type TenantBillingSubscriptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * The data used to create many TenantBillingSubscriptions.
+     */
+    data: TenantBillingSubscriptionCreateManyInput | TenantBillingSubscriptionCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantBillingSubscription update
+   */
+  export type TenantBillingSubscriptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TenantBillingSubscription.
+     */
+    data: XOR<TenantBillingSubscriptionUpdateInput, TenantBillingSubscriptionUncheckedUpdateInput>
+    /**
+     * Choose, which TenantBillingSubscription to update.
+     */
+    where: TenantBillingSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSubscription updateMany
+   */
+  export type TenantBillingSubscriptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TenantBillingSubscriptions.
+     */
+    data: XOR<TenantBillingSubscriptionUpdateManyMutationInput, TenantBillingSubscriptionUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantBillingSubscriptions to update
+     */
+    where?: TenantBillingSubscriptionWhereInput
+    /**
+     * Limit how many TenantBillingSubscriptions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantBillingSubscription updateManyAndReturn
+   */
+  export type TenantBillingSubscriptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * The data used to update TenantBillingSubscriptions.
+     */
+    data: XOR<TenantBillingSubscriptionUpdateManyMutationInput, TenantBillingSubscriptionUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantBillingSubscriptions to update
+     */
+    where?: TenantBillingSubscriptionWhereInput
+    /**
+     * Limit how many TenantBillingSubscriptions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantBillingSubscription upsert
+   */
+  export type TenantBillingSubscriptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TenantBillingSubscription to update in case it exists.
+     */
+    where: TenantBillingSubscriptionWhereUniqueInput
+    /**
+     * In case the TenantBillingSubscription found by the `where` argument doesn't exist, create a new TenantBillingSubscription with this data.
+     */
+    create: XOR<TenantBillingSubscriptionCreateInput, TenantBillingSubscriptionUncheckedCreateInput>
+    /**
+     * In case the TenantBillingSubscription was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TenantBillingSubscriptionUpdateInput, TenantBillingSubscriptionUncheckedUpdateInput>
+  }
+
+  /**
+   * TenantBillingSubscription delete
+   */
+  export type TenantBillingSubscriptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter which TenantBillingSubscription to delete.
+     */
+    where: TenantBillingSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSubscription deleteMany
+   */
+  export type TenantBillingSubscriptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantBillingSubscriptions to delete
+     */
+    where?: TenantBillingSubscriptionWhereInput
+    /**
+     * Limit how many TenantBillingSubscriptions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantBillingSubscription without action
+   */
+  export type TenantBillingSubscriptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSubscription
+     */
+    select?: TenantBillingSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSubscription
+     */
+    omit?: TenantBillingSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantBillingSubscriptionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TenantBillingSyncEvent
+   */
+
+  export type AggregateTenantBillingSyncEvent = {
+    _count: TenantBillingSyncEventCountAggregateOutputType | null
+    _min: TenantBillingSyncEventMinAggregateOutputType | null
+    _max: TenantBillingSyncEventMaxAggregateOutputType | null
+  }
+
+  export type TenantBillingSyncEventMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    provider: string | null
+    eventId: string | null
+    eventType: string | null
+    payloadJson: string | null
+    resultStatus: string | null
+    resultMessage: string | null
+    createdAt: Date | null
+    processedAt: Date | null
+  }
+
+  export type TenantBillingSyncEventMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    provider: string | null
+    eventId: string | null
+    eventType: string | null
+    payloadJson: string | null
+    resultStatus: string | null
+    resultMessage: string | null
+    createdAt: Date | null
+    processedAt: Date | null
+  }
+
+  export type TenantBillingSyncEventCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    provider: number
+    eventId: number
+    eventType: number
+    payloadJson: number
+    resultStatus: number
+    resultMessage: number
+    createdAt: number
+    processedAt: number
+    _all: number
+  }
+
+
+  export type TenantBillingSyncEventMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    provider?: true
+    eventId?: true
+    eventType?: true
+    payloadJson?: true
+    resultStatus?: true
+    resultMessage?: true
+    createdAt?: true
+    processedAt?: true
+  }
+
+  export type TenantBillingSyncEventMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    provider?: true
+    eventId?: true
+    eventType?: true
+    payloadJson?: true
+    resultStatus?: true
+    resultMessage?: true
+    createdAt?: true
+    processedAt?: true
+  }
+
+  export type TenantBillingSyncEventCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    provider?: true
+    eventId?: true
+    eventType?: true
+    payloadJson?: true
+    resultStatus?: true
+    resultMessage?: true
+    createdAt?: true
+    processedAt?: true
+    _all?: true
+  }
+
+  export type TenantBillingSyncEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantBillingSyncEvent to aggregate.
+     */
+    where?: TenantBillingSyncEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSyncEvents to fetch.
+     */
+    orderBy?: TenantBillingSyncEventOrderByWithRelationInput | TenantBillingSyncEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TenantBillingSyncEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSyncEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSyncEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TenantBillingSyncEvents
+    **/
+    _count?: true | TenantBillingSyncEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TenantBillingSyncEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TenantBillingSyncEventMaxAggregateInputType
+  }
+
+  export type GetTenantBillingSyncEventAggregateType<T extends TenantBillingSyncEventAggregateArgs> = {
+        [P in keyof T & keyof AggregateTenantBillingSyncEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTenantBillingSyncEvent[P]>
+      : GetScalarType<T[P], AggregateTenantBillingSyncEvent[P]>
+  }
+
+
+
+
+  export type TenantBillingSyncEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantBillingSyncEventWhereInput
+    orderBy?: TenantBillingSyncEventOrderByWithAggregationInput | TenantBillingSyncEventOrderByWithAggregationInput[]
+    by: TenantBillingSyncEventScalarFieldEnum[] | TenantBillingSyncEventScalarFieldEnum
+    having?: TenantBillingSyncEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TenantBillingSyncEventCountAggregateInputType | true
+    _min?: TenantBillingSyncEventMinAggregateInputType
+    _max?: TenantBillingSyncEventMaxAggregateInputType
+  }
+
+  export type TenantBillingSyncEventGroupByOutputType = {
+    id: string
+    tenantId: string | null
+    provider: string
+    eventId: string
+    eventType: string
+    payloadJson: string
+    resultStatus: string
+    resultMessage: string | null
+    createdAt: Date
+    processedAt: Date
+    _count: TenantBillingSyncEventCountAggregateOutputType | null
+    _min: TenantBillingSyncEventMinAggregateOutputType | null
+    _max: TenantBillingSyncEventMaxAggregateOutputType | null
+  }
+
+  type GetTenantBillingSyncEventGroupByPayload<T extends TenantBillingSyncEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TenantBillingSyncEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TenantBillingSyncEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TenantBillingSyncEventGroupByOutputType[P]>
+            : GetScalarType<T[P], TenantBillingSyncEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TenantBillingSyncEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    provider?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    payloadJson?: boolean
+    resultStatus?: boolean
+    resultMessage?: boolean
+    createdAt?: boolean
+    processedAt?: boolean
+  }, ExtArgs["result"]["tenantBillingSyncEvent"]>
+
+  export type TenantBillingSyncEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    provider?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    payloadJson?: boolean
+    resultStatus?: boolean
+    resultMessage?: boolean
+    createdAt?: boolean
+    processedAt?: boolean
+  }, ExtArgs["result"]["tenantBillingSyncEvent"]>
+
+  export type TenantBillingSyncEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    provider?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    payloadJson?: boolean
+    resultStatus?: boolean
+    resultMessage?: boolean
+    createdAt?: boolean
+    processedAt?: boolean
+  }, ExtArgs["result"]["tenantBillingSyncEvent"]>
+
+  export type TenantBillingSyncEventSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    provider?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    payloadJson?: boolean
+    resultStatus?: boolean
+    resultMessage?: boolean
+    createdAt?: boolean
+    processedAt?: boolean
+  }
+
+  export type TenantBillingSyncEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "provider" | "eventId" | "eventType" | "payloadJson" | "resultStatus" | "resultMessage" | "createdAt" | "processedAt", ExtArgs["result"]["tenantBillingSyncEvent"]>
+
+  export type $TenantBillingSyncEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TenantBillingSyncEvent"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string | null
+      provider: string
+      eventId: string
+      eventType: string
+      payloadJson: string
+      resultStatus: string
+      resultMessage: string | null
+      createdAt: Date
+      processedAt: Date
+    }, ExtArgs["result"]["tenantBillingSyncEvent"]>
+    composites: {}
+  }
+
+  type TenantBillingSyncEventGetPayload<S extends boolean | null | undefined | TenantBillingSyncEventDefaultArgs> = $Result.GetResult<Prisma.$TenantBillingSyncEventPayload, S>
+
+  type TenantBillingSyncEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TenantBillingSyncEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TenantBillingSyncEventCountAggregateInputType | true
+    }
+
+  export interface TenantBillingSyncEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TenantBillingSyncEvent'], meta: { name: 'TenantBillingSyncEvent' } }
+    /**
+     * Find zero or one TenantBillingSyncEvent that matches the filter.
+     * @param {TenantBillingSyncEventFindUniqueArgs} args - Arguments to find a TenantBillingSyncEvent
+     * @example
+     * // Get one TenantBillingSyncEvent
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TenantBillingSyncEventFindUniqueArgs>(args: SelectSubset<T, TenantBillingSyncEventFindUniqueArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TenantBillingSyncEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TenantBillingSyncEventFindUniqueOrThrowArgs} args - Arguments to find a TenantBillingSyncEvent
+     * @example
+     * // Get one TenantBillingSyncEvent
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TenantBillingSyncEventFindUniqueOrThrowArgs>(args: SelectSubset<T, TenantBillingSyncEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantBillingSyncEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSyncEventFindFirstArgs} args - Arguments to find a TenantBillingSyncEvent
+     * @example
+     * // Get one TenantBillingSyncEvent
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TenantBillingSyncEventFindFirstArgs>(args?: SelectSubset<T, TenantBillingSyncEventFindFirstArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantBillingSyncEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSyncEventFindFirstOrThrowArgs} args - Arguments to find a TenantBillingSyncEvent
+     * @example
+     * // Get one TenantBillingSyncEvent
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TenantBillingSyncEventFindFirstOrThrowArgs>(args?: SelectSubset<T, TenantBillingSyncEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TenantBillingSyncEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSyncEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TenantBillingSyncEvents
+     * const tenantBillingSyncEvents = await prisma.tenantBillingSyncEvent.findMany()
+     * 
+     * // Get first 10 TenantBillingSyncEvents
+     * const tenantBillingSyncEvents = await prisma.tenantBillingSyncEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tenantBillingSyncEventWithIdOnly = await prisma.tenantBillingSyncEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TenantBillingSyncEventFindManyArgs>(args?: SelectSubset<T, TenantBillingSyncEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TenantBillingSyncEvent.
+     * @param {TenantBillingSyncEventCreateArgs} args - Arguments to create a TenantBillingSyncEvent.
+     * @example
+     * // Create one TenantBillingSyncEvent
+     * const TenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.create({
+     *   data: {
+     *     // ... data to create a TenantBillingSyncEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends TenantBillingSyncEventCreateArgs>(args: SelectSubset<T, TenantBillingSyncEventCreateArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TenantBillingSyncEvents.
+     * @param {TenantBillingSyncEventCreateManyArgs} args - Arguments to create many TenantBillingSyncEvents.
+     * @example
+     * // Create many TenantBillingSyncEvents
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TenantBillingSyncEventCreateManyArgs>(args?: SelectSubset<T, TenantBillingSyncEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TenantBillingSyncEvents and returns the data saved in the database.
+     * @param {TenantBillingSyncEventCreateManyAndReturnArgs} args - Arguments to create many TenantBillingSyncEvents.
+     * @example
+     * // Create many TenantBillingSyncEvents
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TenantBillingSyncEvents and only return the `id`
+     * const tenantBillingSyncEventWithIdOnly = await prisma.tenantBillingSyncEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TenantBillingSyncEventCreateManyAndReturnArgs>(args?: SelectSubset<T, TenantBillingSyncEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TenantBillingSyncEvent.
+     * @param {TenantBillingSyncEventDeleteArgs} args - Arguments to delete one TenantBillingSyncEvent.
+     * @example
+     * // Delete one TenantBillingSyncEvent
+     * const TenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.delete({
+     *   where: {
+     *     // ... filter to delete one TenantBillingSyncEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TenantBillingSyncEventDeleteArgs>(args: SelectSubset<T, TenantBillingSyncEventDeleteArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TenantBillingSyncEvent.
+     * @param {TenantBillingSyncEventUpdateArgs} args - Arguments to update one TenantBillingSyncEvent.
+     * @example
+     * // Update one TenantBillingSyncEvent
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TenantBillingSyncEventUpdateArgs>(args: SelectSubset<T, TenantBillingSyncEventUpdateArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TenantBillingSyncEvents.
+     * @param {TenantBillingSyncEventDeleteManyArgs} args - Arguments to filter TenantBillingSyncEvents to delete.
+     * @example
+     * // Delete a few TenantBillingSyncEvents
+     * const { count } = await prisma.tenantBillingSyncEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TenantBillingSyncEventDeleteManyArgs>(args?: SelectSubset<T, TenantBillingSyncEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantBillingSyncEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSyncEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TenantBillingSyncEvents
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TenantBillingSyncEventUpdateManyArgs>(args: SelectSubset<T, TenantBillingSyncEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantBillingSyncEvents and returns the data updated in the database.
+     * @param {TenantBillingSyncEventUpdateManyAndReturnArgs} args - Arguments to update many TenantBillingSyncEvents.
+     * @example
+     * // Update many TenantBillingSyncEvents
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TenantBillingSyncEvents and only return the `id`
+     * const tenantBillingSyncEventWithIdOnly = await prisma.tenantBillingSyncEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TenantBillingSyncEventUpdateManyAndReturnArgs>(args: SelectSubset<T, TenantBillingSyncEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TenantBillingSyncEvent.
+     * @param {TenantBillingSyncEventUpsertArgs} args - Arguments to update or create a TenantBillingSyncEvent.
+     * @example
+     * // Update or create a TenantBillingSyncEvent
+     * const tenantBillingSyncEvent = await prisma.tenantBillingSyncEvent.upsert({
+     *   create: {
+     *     // ... data to create a TenantBillingSyncEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TenantBillingSyncEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TenantBillingSyncEventUpsertArgs>(args: SelectSubset<T, TenantBillingSyncEventUpsertArgs<ExtArgs>>): Prisma__TenantBillingSyncEventClient<$Result.GetResult<Prisma.$TenantBillingSyncEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TenantBillingSyncEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSyncEventCountArgs} args - Arguments to filter TenantBillingSyncEvents to count.
+     * @example
+     * // Count the number of TenantBillingSyncEvents
+     * const count = await prisma.tenantBillingSyncEvent.count({
+     *   where: {
+     *     // ... the filter for the TenantBillingSyncEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends TenantBillingSyncEventCountArgs>(
+      args?: Subset<T, TenantBillingSyncEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TenantBillingSyncEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TenantBillingSyncEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSyncEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TenantBillingSyncEventAggregateArgs>(args: Subset<T, TenantBillingSyncEventAggregateArgs>): Prisma.PrismaPromise<GetTenantBillingSyncEventAggregateType<T>>
+
+    /**
+     * Group by TenantBillingSyncEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantBillingSyncEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TenantBillingSyncEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TenantBillingSyncEventGroupByArgs['orderBy'] }
+        : { orderBy?: TenantBillingSyncEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TenantBillingSyncEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTenantBillingSyncEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TenantBillingSyncEvent model
+   */
+  readonly fields: TenantBillingSyncEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TenantBillingSyncEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TenantBillingSyncEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TenantBillingSyncEvent model
+   */
+  interface TenantBillingSyncEventFieldRefs {
+    readonly id: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly tenantId: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly provider: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly eventId: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly eventType: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly payloadJson: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly resultStatus: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly resultMessage: FieldRef<"TenantBillingSyncEvent", 'String'>
+    readonly createdAt: FieldRef<"TenantBillingSyncEvent", 'DateTime'>
+    readonly processedAt: FieldRef<"TenantBillingSyncEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TenantBillingSyncEvent findUnique
+   */
+  export type TenantBillingSyncEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSyncEvent to fetch.
+     */
+    where: TenantBillingSyncEventWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSyncEvent findUniqueOrThrow
+   */
+  export type TenantBillingSyncEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSyncEvent to fetch.
+     */
+    where: TenantBillingSyncEventWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSyncEvent findFirst
+   */
+  export type TenantBillingSyncEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSyncEvent to fetch.
+     */
+    where?: TenantBillingSyncEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSyncEvents to fetch.
+     */
+    orderBy?: TenantBillingSyncEventOrderByWithRelationInput | TenantBillingSyncEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantBillingSyncEvents.
+     */
+    cursor?: TenantBillingSyncEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSyncEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSyncEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantBillingSyncEvents.
+     */
+    distinct?: TenantBillingSyncEventScalarFieldEnum | TenantBillingSyncEventScalarFieldEnum[]
+  }
+
+  /**
+   * TenantBillingSyncEvent findFirstOrThrow
+   */
+  export type TenantBillingSyncEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSyncEvent to fetch.
+     */
+    where?: TenantBillingSyncEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSyncEvents to fetch.
+     */
+    orderBy?: TenantBillingSyncEventOrderByWithRelationInput | TenantBillingSyncEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantBillingSyncEvents.
+     */
+    cursor?: TenantBillingSyncEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSyncEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSyncEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantBillingSyncEvents.
+     */
+    distinct?: TenantBillingSyncEventScalarFieldEnum | TenantBillingSyncEventScalarFieldEnum[]
+  }
+
+  /**
+   * TenantBillingSyncEvent findMany
+   */
+  export type TenantBillingSyncEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * Filter, which TenantBillingSyncEvents to fetch.
+     */
+    where?: TenantBillingSyncEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantBillingSyncEvents to fetch.
+     */
+    orderBy?: TenantBillingSyncEventOrderByWithRelationInput | TenantBillingSyncEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TenantBillingSyncEvents.
+     */
+    cursor?: TenantBillingSyncEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantBillingSyncEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantBillingSyncEvents.
+     */
+    skip?: number
+    distinct?: TenantBillingSyncEventScalarFieldEnum | TenantBillingSyncEventScalarFieldEnum[]
+  }
+
+  /**
+   * TenantBillingSyncEvent create
+   */
+  export type TenantBillingSyncEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * The data needed to create a TenantBillingSyncEvent.
+     */
+    data: XOR<TenantBillingSyncEventCreateInput, TenantBillingSyncEventUncheckedCreateInput>
+  }
+
+  /**
+   * TenantBillingSyncEvent createMany
+   */
+  export type TenantBillingSyncEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TenantBillingSyncEvents.
+     */
+    data: TenantBillingSyncEventCreateManyInput | TenantBillingSyncEventCreateManyInput[]
+  }
+
+  /**
+   * TenantBillingSyncEvent createManyAndReturn
+   */
+  export type TenantBillingSyncEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many TenantBillingSyncEvents.
+     */
+    data: TenantBillingSyncEventCreateManyInput | TenantBillingSyncEventCreateManyInput[]
+  }
+
+  /**
+   * TenantBillingSyncEvent update
+   */
+  export type TenantBillingSyncEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * The data needed to update a TenantBillingSyncEvent.
+     */
+    data: XOR<TenantBillingSyncEventUpdateInput, TenantBillingSyncEventUncheckedUpdateInput>
+    /**
+     * Choose, which TenantBillingSyncEvent to update.
+     */
+    where: TenantBillingSyncEventWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSyncEvent updateMany
+   */
+  export type TenantBillingSyncEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TenantBillingSyncEvents.
+     */
+    data: XOR<TenantBillingSyncEventUpdateManyMutationInput, TenantBillingSyncEventUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantBillingSyncEvents to update
+     */
+    where?: TenantBillingSyncEventWhereInput
+    /**
+     * Limit how many TenantBillingSyncEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantBillingSyncEvent updateManyAndReturn
+   */
+  export type TenantBillingSyncEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * The data used to update TenantBillingSyncEvents.
+     */
+    data: XOR<TenantBillingSyncEventUpdateManyMutationInput, TenantBillingSyncEventUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantBillingSyncEvents to update
+     */
+    where?: TenantBillingSyncEventWhereInput
+    /**
+     * Limit how many TenantBillingSyncEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantBillingSyncEvent upsert
+   */
+  export type TenantBillingSyncEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * The filter to search for the TenantBillingSyncEvent to update in case it exists.
+     */
+    where: TenantBillingSyncEventWhereUniqueInput
+    /**
+     * In case the TenantBillingSyncEvent found by the `where` argument doesn't exist, create a new TenantBillingSyncEvent with this data.
+     */
+    create: XOR<TenantBillingSyncEventCreateInput, TenantBillingSyncEventUncheckedCreateInput>
+    /**
+     * In case the TenantBillingSyncEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TenantBillingSyncEventUpdateInput, TenantBillingSyncEventUncheckedUpdateInput>
+  }
+
+  /**
+   * TenantBillingSyncEvent delete
+   */
+  export type TenantBillingSyncEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
+    /**
+     * Filter which TenantBillingSyncEvent to delete.
+     */
+    where: TenantBillingSyncEventWhereUniqueInput
+  }
+
+  /**
+   * TenantBillingSyncEvent deleteMany
+   */
+  export type TenantBillingSyncEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantBillingSyncEvents to delete
+     */
+    where?: TenantBillingSyncEventWhereInput
+    /**
+     * Limit how many TenantBillingSyncEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantBillingSyncEvent without action
+   */
+  export type TenantBillingSyncEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantBillingSyncEvent
+     */
+    select?: TenantBillingSyncEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantBillingSyncEvent
+     */
+    omit?: TenantBillingSyncEventOmit<ExtArgs> | null
   }
 
 
@@ -15969,6 +18392,41 @@ export namespace Prisma {
   export type TenantControlSettingsScalarFieldEnum = (typeof TenantControlSettingsScalarFieldEnum)[keyof typeof TenantControlSettingsScalarFieldEnum]
 
 
+  export const TenantBillingSubscriptionScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    planCode: 'planCode',
+    status: 'status',
+    paymentStatus: 'paymentStatus',
+    billingProvider: 'billingProvider',
+    billingCustomerId: 'billingCustomerId',
+    billingSubscriptionId: 'billingSubscriptionId',
+    trialEndsAt: 'trialEndsAt',
+    currentPeriodEndsAt: 'currentPeriodEndsAt',
+    cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TenantBillingSubscriptionScalarFieldEnum = (typeof TenantBillingSubscriptionScalarFieldEnum)[keyof typeof TenantBillingSubscriptionScalarFieldEnum]
+
+
+  export const TenantBillingSyncEventScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    provider: 'provider',
+    eventId: 'eventId',
+    eventType: 'eventType',
+    payloadJson: 'payloadJson',
+    resultStatus: 'resultStatus',
+    resultMessage: 'resultMessage',
+    createdAt: 'createdAt',
+    processedAt: 'processedAt'
+  };
+
+  export type TenantBillingSyncEventScalarFieldEnum = (typeof TenantBillingSyncEventScalarFieldEnum)[keyof typeof TenantBillingSyncEventScalarFieldEnum]
+
+
   export const TenantControlActorScalarFieldEnum: {
     id: 'id',
     tenantId: 'tenantId',
@@ -16177,6 +18635,7 @@ export namespace Prisma {
     domains?: TenantDomainListRelationFilter
     websiteConfig?: XOR<WebsiteConfigNullableScalarRelationFilter, WebsiteConfigWhereInput> | null
     controlSettings?: XOR<TenantControlSettingsNullableScalarRelationFilter, TenantControlSettingsWhereInput> | null
+    billingSubscription?: XOR<TenantBillingSubscriptionNullableScalarRelationFilter, TenantBillingSubscriptionWhereInput> | null
     controlActors?: TenantControlActorListRelationFilter
     contacts?: ContactListRelationFilter
     leads?: LeadListRelationFilter
@@ -16195,6 +18654,7 @@ export namespace Prisma {
     domains?: TenantDomainOrderByRelationAggregateInput
     websiteConfig?: WebsiteConfigOrderByWithRelationInput
     controlSettings?: TenantControlSettingsOrderByWithRelationInput
+    billingSubscription?: TenantBillingSubscriptionOrderByWithRelationInput
     controlActors?: TenantControlActorOrderByRelationAggregateInput
     contacts?: ContactOrderByRelationAggregateInput
     leads?: LeadOrderByRelationAggregateInput
@@ -16216,6 +18676,7 @@ export namespace Prisma {
     domains?: TenantDomainListRelationFilter
     websiteConfig?: XOR<WebsiteConfigNullableScalarRelationFilter, WebsiteConfigWhereInput> | null
     controlSettings?: XOR<TenantControlSettingsNullableScalarRelationFilter, TenantControlSettingsWhereInput> | null
+    billingSubscription?: XOR<TenantBillingSubscriptionNullableScalarRelationFilter, TenantBillingSubscriptionWhereInput> | null
     controlActors?: TenantControlActorListRelationFilter
     contacts?: ContactListRelationFilter
     leads?: LeadListRelationFilter
@@ -16444,6 +18905,179 @@ export namespace Prisma {
     featureFlagsJson?: StringWithAggregatesFilter<"TenantControlSettings"> | string
     createdAt?: DateTimeWithAggregatesFilter<"TenantControlSettings"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TenantControlSettings"> | Date | string
+  }
+
+  export type TenantBillingSubscriptionWhereInput = {
+    AND?: TenantBillingSubscriptionWhereInput | TenantBillingSubscriptionWhereInput[]
+    OR?: TenantBillingSubscriptionWhereInput[]
+    NOT?: TenantBillingSubscriptionWhereInput | TenantBillingSubscriptionWhereInput[]
+    id?: StringFilter<"TenantBillingSubscription"> | string
+    tenantId?: StringFilter<"TenantBillingSubscription"> | string
+    planCode?: StringFilter<"TenantBillingSubscription"> | string
+    status?: StringFilter<"TenantBillingSubscription"> | string
+    paymentStatus?: StringFilter<"TenantBillingSubscription"> | string
+    billingProvider?: StringFilter<"TenantBillingSubscription"> | string
+    billingCustomerId?: StringNullableFilter<"TenantBillingSubscription"> | string | null
+    billingSubscriptionId?: StringNullableFilter<"TenantBillingSubscription"> | string | null
+    trialEndsAt?: DateTimeNullableFilter<"TenantBillingSubscription"> | Date | string | null
+    currentPeriodEndsAt?: DateTimeNullableFilter<"TenantBillingSubscription"> | Date | string | null
+    cancelAtPeriodEnd?: BoolFilter<"TenantBillingSubscription"> | boolean
+    createdAt?: DateTimeFilter<"TenantBillingSubscription"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantBillingSubscription"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }
+
+  export type TenantBillingSubscriptionOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    planCode?: SortOrder
+    status?: SortOrder
+    paymentStatus?: SortOrder
+    billingProvider?: SortOrder
+    billingCustomerId?: SortOrderInput | SortOrder
+    billingSubscriptionId?: SortOrderInput | SortOrder
+    trialEndsAt?: SortOrderInput | SortOrder
+    currentPeriodEndsAt?: SortOrderInput | SortOrder
+    cancelAtPeriodEnd?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+  }
+
+  export type TenantBillingSubscriptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantId?: string
+    AND?: TenantBillingSubscriptionWhereInput | TenantBillingSubscriptionWhereInput[]
+    OR?: TenantBillingSubscriptionWhereInput[]
+    NOT?: TenantBillingSubscriptionWhereInput | TenantBillingSubscriptionWhereInput[]
+    planCode?: StringFilter<"TenantBillingSubscription"> | string
+    status?: StringFilter<"TenantBillingSubscription"> | string
+    paymentStatus?: StringFilter<"TenantBillingSubscription"> | string
+    billingProvider?: StringFilter<"TenantBillingSubscription"> | string
+    billingCustomerId?: StringNullableFilter<"TenantBillingSubscription"> | string | null
+    billingSubscriptionId?: StringNullableFilter<"TenantBillingSubscription"> | string | null
+    trialEndsAt?: DateTimeNullableFilter<"TenantBillingSubscription"> | Date | string | null
+    currentPeriodEndsAt?: DateTimeNullableFilter<"TenantBillingSubscription"> | Date | string | null
+    cancelAtPeriodEnd?: BoolFilter<"TenantBillingSubscription"> | boolean
+    createdAt?: DateTimeFilter<"TenantBillingSubscription"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantBillingSubscription"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }, "id" | "tenantId">
+
+  export type TenantBillingSubscriptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    planCode?: SortOrder
+    status?: SortOrder
+    paymentStatus?: SortOrder
+    billingProvider?: SortOrder
+    billingCustomerId?: SortOrderInput | SortOrder
+    billingSubscriptionId?: SortOrderInput | SortOrder
+    trialEndsAt?: SortOrderInput | SortOrder
+    currentPeriodEndsAt?: SortOrderInput | SortOrder
+    cancelAtPeriodEnd?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TenantBillingSubscriptionCountOrderByAggregateInput
+    _max?: TenantBillingSubscriptionMaxOrderByAggregateInput
+    _min?: TenantBillingSubscriptionMinOrderByAggregateInput
+  }
+
+  export type TenantBillingSubscriptionScalarWhereWithAggregatesInput = {
+    AND?: TenantBillingSubscriptionScalarWhereWithAggregatesInput | TenantBillingSubscriptionScalarWhereWithAggregatesInput[]
+    OR?: TenantBillingSubscriptionScalarWhereWithAggregatesInput[]
+    NOT?: TenantBillingSubscriptionScalarWhereWithAggregatesInput | TenantBillingSubscriptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TenantBillingSubscription"> | string
+    tenantId?: StringWithAggregatesFilter<"TenantBillingSubscription"> | string
+    planCode?: StringWithAggregatesFilter<"TenantBillingSubscription"> | string
+    status?: StringWithAggregatesFilter<"TenantBillingSubscription"> | string
+    paymentStatus?: StringWithAggregatesFilter<"TenantBillingSubscription"> | string
+    billingProvider?: StringWithAggregatesFilter<"TenantBillingSubscription"> | string
+    billingCustomerId?: StringNullableWithAggregatesFilter<"TenantBillingSubscription"> | string | null
+    billingSubscriptionId?: StringNullableWithAggregatesFilter<"TenantBillingSubscription"> | string | null
+    trialEndsAt?: DateTimeNullableWithAggregatesFilter<"TenantBillingSubscription"> | Date | string | null
+    currentPeriodEndsAt?: DateTimeNullableWithAggregatesFilter<"TenantBillingSubscription"> | Date | string | null
+    cancelAtPeriodEnd?: BoolWithAggregatesFilter<"TenantBillingSubscription"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"TenantBillingSubscription"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TenantBillingSubscription"> | Date | string
+  }
+
+  export type TenantBillingSyncEventWhereInput = {
+    AND?: TenantBillingSyncEventWhereInput | TenantBillingSyncEventWhereInput[]
+    OR?: TenantBillingSyncEventWhereInput[]
+    NOT?: TenantBillingSyncEventWhereInput | TenantBillingSyncEventWhereInput[]
+    id?: StringFilter<"TenantBillingSyncEvent"> | string
+    tenantId?: StringNullableFilter<"TenantBillingSyncEvent"> | string | null
+    provider?: StringFilter<"TenantBillingSyncEvent"> | string
+    eventId?: StringFilter<"TenantBillingSyncEvent"> | string
+    eventType?: StringFilter<"TenantBillingSyncEvent"> | string
+    payloadJson?: StringFilter<"TenantBillingSyncEvent"> | string
+    resultStatus?: StringFilter<"TenantBillingSyncEvent"> | string
+    resultMessage?: StringNullableFilter<"TenantBillingSyncEvent"> | string | null
+    createdAt?: DateTimeFilter<"TenantBillingSyncEvent"> | Date | string
+    processedAt?: DateTimeFilter<"TenantBillingSyncEvent"> | Date | string
+  }
+
+  export type TenantBillingSyncEventOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    payloadJson?: SortOrder
+    resultStatus?: SortOrder
+    resultMessage?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    processedAt?: SortOrder
+  }
+
+  export type TenantBillingSyncEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    provider_eventId?: TenantBillingSyncEventProviderEventIdCompoundUniqueInput
+    AND?: TenantBillingSyncEventWhereInput | TenantBillingSyncEventWhereInput[]
+    OR?: TenantBillingSyncEventWhereInput[]
+    NOT?: TenantBillingSyncEventWhereInput | TenantBillingSyncEventWhereInput[]
+    tenantId?: StringNullableFilter<"TenantBillingSyncEvent"> | string | null
+    provider?: StringFilter<"TenantBillingSyncEvent"> | string
+    eventId?: StringFilter<"TenantBillingSyncEvent"> | string
+    eventType?: StringFilter<"TenantBillingSyncEvent"> | string
+    payloadJson?: StringFilter<"TenantBillingSyncEvent"> | string
+    resultStatus?: StringFilter<"TenantBillingSyncEvent"> | string
+    resultMessage?: StringNullableFilter<"TenantBillingSyncEvent"> | string | null
+    createdAt?: DateTimeFilter<"TenantBillingSyncEvent"> | Date | string
+    processedAt?: DateTimeFilter<"TenantBillingSyncEvent"> | Date | string
+  }, "id" | "provider_eventId">
+
+  export type TenantBillingSyncEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    payloadJson?: SortOrder
+    resultStatus?: SortOrder
+    resultMessage?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    processedAt?: SortOrder
+    _count?: TenantBillingSyncEventCountOrderByAggregateInput
+    _max?: TenantBillingSyncEventMaxOrderByAggregateInput
+    _min?: TenantBillingSyncEventMinOrderByAggregateInput
+  }
+
+  export type TenantBillingSyncEventScalarWhereWithAggregatesInput = {
+    AND?: TenantBillingSyncEventScalarWhereWithAggregatesInput | TenantBillingSyncEventScalarWhereWithAggregatesInput[]
+    OR?: TenantBillingSyncEventScalarWhereWithAggregatesInput[]
+    NOT?: TenantBillingSyncEventScalarWhereWithAggregatesInput | TenantBillingSyncEventScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TenantBillingSyncEvent"> | string
+    tenantId?: StringNullableWithAggregatesFilter<"TenantBillingSyncEvent"> | string | null
+    provider?: StringWithAggregatesFilter<"TenantBillingSyncEvent"> | string
+    eventId?: StringWithAggregatesFilter<"TenantBillingSyncEvent"> | string
+    eventType?: StringWithAggregatesFilter<"TenantBillingSyncEvent"> | string
+    payloadJson?: StringWithAggregatesFilter<"TenantBillingSyncEvent"> | string
+    resultStatus?: StringWithAggregatesFilter<"TenantBillingSyncEvent"> | string
+    resultMessage?: StringNullableWithAggregatesFilter<"TenantBillingSyncEvent"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TenantBillingSyncEvent"> | Date | string
+    processedAt?: DateTimeWithAggregatesFilter<"TenantBillingSyncEvent"> | Date | string
   }
 
   export type TenantControlActorWhereInput = {
@@ -17163,6 +19797,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
@@ -17181,6 +19816,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
@@ -17199,6 +19835,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
@@ -17217,6 +19854,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
@@ -17461,6 +20099,208 @@ export namespace Prisma {
     featureFlagsJson?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSubscriptionCreateInput = {
+    id: string
+    planCode?: string
+    status?: string
+    paymentStatus?: string
+    billingProvider?: string
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    trialEndsAt?: Date | string | null
+    currentPeriodEndsAt?: Date | string | null
+    cancelAtPeriodEnd?: boolean
+    createdAt: Date | string
+    updatedAt: Date | string
+    tenant: TenantCreateNestedOneWithoutBillingSubscriptionInput
+  }
+
+  export type TenantBillingSubscriptionUncheckedCreateInput = {
+    id: string
+    tenantId: string
+    planCode?: string
+    status?: string
+    paymentStatus?: string
+    billingProvider?: string
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    trialEndsAt?: Date | string | null
+    currentPeriodEndsAt?: Date | string | null
+    cancelAtPeriodEnd?: boolean
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantBillingSubscriptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    billingProvider?: StringFieldUpdateOperationsInput | string
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentPeriodEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutBillingSubscriptionNestedInput
+  }
+
+  export type TenantBillingSubscriptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    billingProvider?: StringFieldUpdateOperationsInput | string
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentPeriodEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSubscriptionCreateManyInput = {
+    id: string
+    tenantId: string
+    planCode?: string
+    status?: string
+    paymentStatus?: string
+    billingProvider?: string
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    trialEndsAt?: Date | string | null
+    currentPeriodEndsAt?: Date | string | null
+    cancelAtPeriodEnd?: boolean
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantBillingSubscriptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    billingProvider?: StringFieldUpdateOperationsInput | string
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentPeriodEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSubscriptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    billingProvider?: StringFieldUpdateOperationsInput | string
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentPeriodEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSyncEventCreateInput = {
+    id: string
+    tenantId?: string | null
+    provider: string
+    eventId: string
+    eventType: string
+    payloadJson: string
+    resultStatus: string
+    resultMessage?: string | null
+    createdAt: Date | string
+    processedAt: Date | string
+  }
+
+  export type TenantBillingSyncEventUncheckedCreateInput = {
+    id: string
+    tenantId?: string | null
+    provider: string
+    eventId: string
+    eventType: string
+    payloadJson: string
+    resultStatus: string
+    resultMessage?: string | null
+    createdAt: Date | string
+    processedAt: Date | string
+  }
+
+  export type TenantBillingSyncEventUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    payloadJson?: StringFieldUpdateOperationsInput | string
+    resultStatus?: StringFieldUpdateOperationsInput | string
+    resultMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSyncEventUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    payloadJson?: StringFieldUpdateOperationsInput | string
+    resultStatus?: StringFieldUpdateOperationsInput | string
+    resultMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSyncEventCreateManyInput = {
+    id: string
+    tenantId?: string | null
+    provider: string
+    eventId: string
+    eventType: string
+    payloadJson: string
+    resultStatus: string
+    resultMessage?: string | null
+    createdAt: Date | string
+    processedAt: Date | string
+  }
+
+  export type TenantBillingSyncEventUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    payloadJson?: StringFieldUpdateOperationsInput | string
+    resultStatus?: StringFieldUpdateOperationsInput | string
+    resultMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSyncEventUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    payloadJson?: StringFieldUpdateOperationsInput | string
+    resultStatus?: StringFieldUpdateOperationsInput | string
+    resultMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TenantControlActorCreateInput = {
@@ -18290,6 +21130,11 @@ export namespace Prisma {
     isNot?: TenantControlSettingsWhereInput | null
   }
 
+  export type TenantBillingSubscriptionNullableScalarRelationFilter = {
+    is?: TenantBillingSubscriptionWhereInput | null
+    isNot?: TenantBillingSubscriptionWhereInput | null
+  }
+
   export type TenantControlActorListRelationFilter = {
     every?: TenantControlActorWhereInput
     some?: TenantControlActorWhereInput
@@ -18574,6 +21419,115 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type TenantBillingSubscriptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    planCode?: SortOrder
+    status?: SortOrder
+    paymentStatus?: SortOrder
+    billingProvider?: SortOrder
+    billingCustomerId?: SortOrder
+    billingSubscriptionId?: SortOrder
+    trialEndsAt?: SortOrder
+    currentPeriodEndsAt?: SortOrder
+    cancelAtPeriodEnd?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantBillingSubscriptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    planCode?: SortOrder
+    status?: SortOrder
+    paymentStatus?: SortOrder
+    billingProvider?: SortOrder
+    billingCustomerId?: SortOrder
+    billingSubscriptionId?: SortOrder
+    trialEndsAt?: SortOrder
+    currentPeriodEndsAt?: SortOrder
+    cancelAtPeriodEnd?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantBillingSubscriptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    planCode?: SortOrder
+    status?: SortOrder
+    paymentStatus?: SortOrder
+    billingProvider?: SortOrder
+    billingCustomerId?: SortOrder
+    billingSubscriptionId?: SortOrder
+    trialEndsAt?: SortOrder
+    currentPeriodEndsAt?: SortOrder
+    cancelAtPeriodEnd?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type TenantBillingSyncEventProviderEventIdCompoundUniqueInput = {
+    provider: string
+    eventId: string
+  }
+
+  export type TenantBillingSyncEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    provider?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    payloadJson?: SortOrder
+    resultStatus?: SortOrder
+    resultMessage?: SortOrder
+    createdAt?: SortOrder
+    processedAt?: SortOrder
+  }
+
+  export type TenantBillingSyncEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    provider?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    payloadJson?: SortOrder
+    resultStatus?: SortOrder
+    resultMessage?: SortOrder
+    createdAt?: SortOrder
+    processedAt?: SortOrder
+  }
+
+  export type TenantBillingSyncEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    provider?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    payloadJson?: SortOrder
+    resultStatus?: SortOrder
+    resultMessage?: SortOrder
+    createdAt?: SortOrder
+    processedAt?: SortOrder
+  }
+
   export type TenantControlActorTenantIdActorIdCompoundUniqueInput = {
     tenantId: string
     actorId: string
@@ -18622,23 +21576,6 @@ export namespace Prisma {
     supportSessionExpiresAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -19073,6 +22010,12 @@ export namespace Prisma {
     connect?: TenantControlSettingsWhereUniqueInput
   }
 
+  export type TenantBillingSubscriptionCreateNestedOneWithoutTenantInput = {
+    create?: XOR<TenantBillingSubscriptionCreateWithoutTenantInput, TenantBillingSubscriptionUncheckedCreateWithoutTenantInput>
+    connectOrCreate?: TenantBillingSubscriptionCreateOrConnectWithoutTenantInput
+    connect?: TenantBillingSubscriptionWhereUniqueInput
+  }
+
   export type TenantControlActorCreateNestedManyWithoutTenantInput = {
     create?: XOR<TenantControlActorCreateWithoutTenantInput, TenantControlActorUncheckedCreateWithoutTenantInput> | TenantControlActorCreateWithoutTenantInput[] | TenantControlActorUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: TenantControlActorCreateOrConnectWithoutTenantInput | TenantControlActorCreateOrConnectWithoutTenantInput[]
@@ -19132,6 +22075,12 @@ export namespace Prisma {
     create?: XOR<TenantControlSettingsCreateWithoutTenantInput, TenantControlSettingsUncheckedCreateWithoutTenantInput>
     connectOrCreate?: TenantControlSettingsCreateOrConnectWithoutTenantInput
     connect?: TenantControlSettingsWhereUniqueInput
+  }
+
+  export type TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput = {
+    create?: XOR<TenantBillingSubscriptionCreateWithoutTenantInput, TenantBillingSubscriptionUncheckedCreateWithoutTenantInput>
+    connectOrCreate?: TenantBillingSubscriptionCreateOrConnectWithoutTenantInput
+    connect?: TenantBillingSubscriptionWhereUniqueInput
   }
 
   export type TenantControlActorUncheckedCreateNestedManyWithoutTenantInput = {
@@ -19216,6 +22165,16 @@ export namespace Prisma {
     delete?: TenantControlSettingsWhereInput | boolean
     connect?: TenantControlSettingsWhereUniqueInput
     update?: XOR<XOR<TenantControlSettingsUpdateToOneWithWhereWithoutTenantInput, TenantControlSettingsUpdateWithoutTenantInput>, TenantControlSettingsUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput = {
+    create?: XOR<TenantBillingSubscriptionCreateWithoutTenantInput, TenantBillingSubscriptionUncheckedCreateWithoutTenantInput>
+    connectOrCreate?: TenantBillingSubscriptionCreateOrConnectWithoutTenantInput
+    upsert?: TenantBillingSubscriptionUpsertWithoutTenantInput
+    disconnect?: TenantBillingSubscriptionWhereInput | boolean
+    delete?: TenantBillingSubscriptionWhereInput | boolean
+    connect?: TenantBillingSubscriptionWhereUniqueInput
+    update?: XOR<XOR<TenantBillingSubscriptionUpdateToOneWithWhereWithoutTenantInput, TenantBillingSubscriptionUpdateWithoutTenantInput>, TenantBillingSubscriptionUncheckedUpdateWithoutTenantInput>
   }
 
   export type TenantControlActorUpdateManyWithoutTenantNestedInput = {
@@ -19334,6 +22293,16 @@ export namespace Prisma {
     delete?: TenantControlSettingsWhereInput | boolean
     connect?: TenantControlSettingsWhereUniqueInput
     update?: XOR<XOR<TenantControlSettingsUpdateToOneWithWhereWithoutTenantInput, TenantControlSettingsUpdateWithoutTenantInput>, TenantControlSettingsUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput = {
+    create?: XOR<TenantBillingSubscriptionCreateWithoutTenantInput, TenantBillingSubscriptionUncheckedCreateWithoutTenantInput>
+    connectOrCreate?: TenantBillingSubscriptionCreateOrConnectWithoutTenantInput
+    upsert?: TenantBillingSubscriptionUpsertWithoutTenantInput
+    disconnect?: TenantBillingSubscriptionWhereInput | boolean
+    delete?: TenantBillingSubscriptionWhereInput | boolean
+    connect?: TenantBillingSubscriptionWhereUniqueInput
+    update?: XOR<XOR<TenantBillingSubscriptionUpdateToOneWithWhereWithoutTenantInput, TenantBillingSubscriptionUpdateWithoutTenantInput>, TenantBillingSubscriptionUncheckedUpdateWithoutTenantInput>
   }
 
   export type TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput = {
@@ -19512,14 +22481,28 @@ export namespace Prisma {
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutControlSettingsInput, TenantUpdateWithoutControlSettingsInput>, TenantUncheckedUpdateWithoutControlSettingsInput>
   }
 
-  export type TenantCreateNestedOneWithoutControlActorsInput = {
-    create?: XOR<TenantCreateWithoutControlActorsInput, TenantUncheckedCreateWithoutControlActorsInput>
-    connectOrCreate?: TenantCreateOrConnectWithoutControlActorsInput
+  export type TenantCreateNestedOneWithoutBillingSubscriptionInput = {
+    create?: XOR<TenantCreateWithoutBillingSubscriptionInput, TenantUncheckedCreateWithoutBillingSubscriptionInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutBillingSubscriptionInput
     connect?: TenantWhereUniqueInput
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type TenantUpdateOneRequiredWithoutBillingSubscriptionNestedInput = {
+    create?: XOR<TenantCreateWithoutBillingSubscriptionInput, TenantUncheckedCreateWithoutBillingSubscriptionInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutBillingSubscriptionInput
+    upsert?: TenantUpsertWithoutBillingSubscriptionInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutBillingSubscriptionInput, TenantUpdateWithoutBillingSubscriptionInput>, TenantUncheckedUpdateWithoutBillingSubscriptionInput>
+  }
+
+  export type TenantCreateNestedOneWithoutControlActorsInput = {
+    create?: XOR<TenantCreateWithoutControlActorsInput, TenantUncheckedCreateWithoutControlActorsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutControlActorsInput
+    connect?: TenantWhereUniqueInput
   }
 
   export type TenantUpdateOneRequiredWithoutControlActorsNestedInput = {
@@ -20080,6 +23063,41 @@ export namespace Prisma {
     create: XOR<TenantControlSettingsCreateWithoutTenantInput, TenantControlSettingsUncheckedCreateWithoutTenantInput>
   }
 
+  export type TenantBillingSubscriptionCreateWithoutTenantInput = {
+    id: string
+    planCode?: string
+    status?: string
+    paymentStatus?: string
+    billingProvider?: string
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    trialEndsAt?: Date | string | null
+    currentPeriodEndsAt?: Date | string | null
+    cancelAtPeriodEnd?: boolean
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantBillingSubscriptionUncheckedCreateWithoutTenantInput = {
+    id: string
+    planCode?: string
+    status?: string
+    paymentStatus?: string
+    billingProvider?: string
+    billingCustomerId?: string | null
+    billingSubscriptionId?: string | null
+    trialEndsAt?: Date | string | null
+    currentPeriodEndsAt?: Date | string | null
+    cancelAtPeriodEnd?: boolean
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantBillingSubscriptionCreateOrConnectWithoutTenantInput = {
+    where: TenantBillingSubscriptionWhereUniqueInput
+    create: XOR<TenantBillingSubscriptionCreateWithoutTenantInput, TenantBillingSubscriptionUncheckedCreateWithoutTenantInput>
+  }
+
   export type TenantControlActorCreateWithoutTenantInput = {
     id: string
     actorId: string
@@ -20390,6 +23408,47 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TenantBillingSubscriptionUpsertWithoutTenantInput = {
+    update: XOR<TenantBillingSubscriptionUpdateWithoutTenantInput, TenantBillingSubscriptionUncheckedUpdateWithoutTenantInput>
+    create: XOR<TenantBillingSubscriptionCreateWithoutTenantInput, TenantBillingSubscriptionUncheckedCreateWithoutTenantInput>
+    where?: TenantBillingSubscriptionWhereInput
+  }
+
+  export type TenantBillingSubscriptionUpdateToOneWithWhereWithoutTenantInput = {
+    where?: TenantBillingSubscriptionWhereInput
+    data: XOR<TenantBillingSubscriptionUpdateWithoutTenantInput, TenantBillingSubscriptionUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantBillingSubscriptionUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    billingProvider?: StringFieldUpdateOperationsInput | string
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentPeriodEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantBillingSubscriptionUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    billingProvider?: StringFieldUpdateOperationsInput | string
+    billingCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
+    billingSubscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    trialEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentPeriodEndsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelAtPeriodEnd?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type TenantControlActorUpsertWithWhereUniqueWithoutTenantInput = {
     where: TenantControlActorWhereUniqueInput
     update: XOR<TenantControlActorUpdateWithoutTenantInput, TenantControlActorUncheckedUpdateWithoutTenantInput>
@@ -20601,6 +23660,7 @@ export namespace Prisma {
     updatedAt: Date | string
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
@@ -20618,6 +23678,7 @@ export namespace Prisma {
     updatedAt: Date | string
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
@@ -20651,6 +23712,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
@@ -20668,6 +23730,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
@@ -20685,6 +23748,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
@@ -20702,6 +23766,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
@@ -20764,6 +23829,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
@@ -20781,6 +23847,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
@@ -20828,6 +23895,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
@@ -20845,6 +23913,7 @@ export namespace Prisma {
     updatedAt: Date | string
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
@@ -20878,6 +23947,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
@@ -20895,6 +23965,95 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutBillingSubscriptionInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    contacts?: ContactCreateNestedManyWithoutTenantInput
+    leads?: LeadCreateNestedManyWithoutTenantInput
+    activities?: ActivityCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutBillingSubscriptionInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
+    leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutBillingSubscriptionInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutBillingSubscriptionInput, TenantUncheckedCreateWithoutBillingSubscriptionInput>
+  }
+
+  export type TenantUpsertWithoutBillingSubscriptionInput = {
+    update: XOR<TenantUpdateWithoutBillingSubscriptionInput, TenantUncheckedUpdateWithoutBillingSubscriptionInput>
+    create: XOR<TenantCreateWithoutBillingSubscriptionInput, TenantUncheckedCreateWithoutBillingSubscriptionInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutBillingSubscriptionInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutBillingSubscriptionInput, TenantUncheckedUpdateWithoutBillingSubscriptionInput>
+  }
+
+  export type TenantUpdateWithoutBillingSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUpdateManyWithoutTenantNestedInput
+    leads?: LeadUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutBillingSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
@@ -20913,6 +24072,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -20930,6 +24090,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -20963,6 +24124,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -20980,6 +24142,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -21041,6 +24204,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -21058,6 +24222,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -21171,6 +24336,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -21188,6 +24354,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -21237,6 +24404,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -21254,6 +24422,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -21351,6 +24520,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -21368,6 +24538,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -21440,6 +24611,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
@@ -21457,6 +24629,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
@@ -21568,6 +24741,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
@@ -21585,6 +24759,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
@@ -21692,6 +24867,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
@@ -21709,6 +24885,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
@@ -21742,6 +24919,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
@@ -21759,6 +24937,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
@@ -21776,6 +24955,7 @@ export namespace Prisma {
     domains?: TenantDomainCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
@@ -21793,6 +24973,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
@@ -21826,6 +25007,7 @@ export namespace Prisma {
     domains?: TenantDomainUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
@@ -21843,6 +25025,7 @@ export namespace Prisma {
     domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput

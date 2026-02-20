@@ -364,3 +364,43 @@
 ### D-089: Enforce destructive lifecycle confirmations and archived-state edit locks in Admin UI
 **Decision**: Add confirmation-gated archive/restore actions for tenant/domain/settings in `apps/admin/app/components/control-plane-workspace.tsx`, disable settings edits while tenant/settings are archived, and restrict active domain operations to active domains/tenants.
 **Reason**: Control-plane destructive actions should require explicit operator intent and safe defaults; archived-state locks reduce accidental mutations and make recovery posture predictable.
+
+### D-090: Implement tenant support diagnostics as a dedicated control-plane read/remediation boundary
+**Decision**: Add shared diagnostics/remediation helpers in `packages/db/src/control-plane.ts` (`getTenantSupportDiagnosticsSummary`, `runTenantSupportRemediationAction`) and expose them through `apps/admin/app/api/tenants/[tenantId]/diagnostics/route.ts`, with one-click remediation actions for primary-domain verification and ingestion queue recovery.
+**Reason**: Operators needed a single tenant-scoped workflow for auth/domain/ingestion health plus guided remediations; embedding this as a first-class API/UI surface reduces troubleshooting latency and keeps tenant-isolated operations explicit.
+
+### D-091: Add first-class billing/subscription model and admin workflow before provider-specific integration
+**Decision**: Introduce `TenantBillingSubscription` in Prisma (`packages/db/prisma/schema.prisma`, migration `202602200003_add_tenant_billing_subscriptions`) and add shared db helpers + Admin API/UI controls for plan transitions, payment/trial state visibility, and optional entitlement synchronization.
+**Reason**: Control-plane billing operations required durable tenant-scoped state independent of transient UI edits; establishing this baseline now enables provider/webhook integration as a focused follow-up slice without reworking operator workflows.
+
+### D-092: Extend admin audit action taxonomy for diagnostics and billing mutations
+**Decision**: Expand `ControlPlaneAdminAuditAction` with `tenant.diagnostics.remediate` and `tenant.billing.update`, wire these into route audit emission/filter parsing, and include them in Admin timeline filter options.
+**Reason**: New mutation surfaces must be searchable and attributable in the existing audit workflow to preserve control-plane operability and incident forensics consistency.
+
+### D-093: Normalize external billing events into an idempotent shared reconciliation helper before provider-specific wiring
+**Decision**: Add `reconcileTenantBillingProviderEvent` in `packages/db/src/control-plane.ts` that resolves tenant identity from explicit tenant id or persisted provider identifiers (`billingSubscriptionId`/`billingCustomerId`), updates subscription state through shared billing helpers, and persists dedupe status in new Prisma model `TenantBillingSyncEvent`.
+**Reason**: Provider webhooks can retry and arrive out of order; an idempotent shared reconciliation boundary reduces duplicate side effects and keeps billing state transitions consistent across webhook/manual sync entry points.
+
+### D-094: Add a dedicated webhook ingestion route for billing provider events with audit visibility
+**Decision**: Add `apps/admin/app/api/billing/webhooks/route.ts` as the provider event ingress point, guard with optional `ADMIN_BILLING_WEBHOOK_SECRET`, emit audit events under `tenant.billing.sync`, and return `202` for unresolved tenant mappings while preserving deterministic `200` success for applied/duplicate events.
+**Reason**: A separate webhook boundary decouples external provider delivery from operator-authenticated mutation flows and ensures billing sync activity is observable in the existing admin audit timeline.
+
+### D-095: Enforce Stripe-native webhook verification and normalize provider payloads before reconciliation
+**Decision**: Update `apps/admin/app/api/billing/webhooks/route.ts` to process Stripe webhooks through strict raw-body signature verification (`stripe-signature` + `ADMIN_BILLING_STRIPE_WEBHOOK_SECRET`) and normalize Stripe event envelopes into `TenantBillingProviderEventInput` before calling `reconcileTenantBillingProviderEvent`; keep the existing secret-gated normalized/manual webhook path for non-Stripe ingress.
+**Reason**: Stripe webhook security and payload semantics differ from internal normalized event formats; provider-native verification plus normalization reduces spoofing risk and keeps shared reconciliation inputs deterministic across provider retries and schema variance.
+
+### D-096: Compute entitlement drift summaries during billing provider reconciliation and report them through webhook/audit surfaces
+**Decision**: Extend `reconcileTenantBillingProviderEvent` in `packages/db/src/control-plane.ts` to compute tenant-scoped entitlement drift summaries by comparing provider entitlement flags to persisted tenant settings feature flags after reconciliation (including duplicate/unresolved outcomes), return the summary in `TenantBillingProviderEventResult`, and emit drift indicators in webhook audit metadata from `apps/admin/app/api/billing/webhooks/route.ts`.
+**Reason**: Operators need deterministic post-sync visibility into entitlement mismatches to act on configuration drift quickly; reporting drift directly in reconciliation outputs and audit logs keeps troubleshooting tenant-scoped and actionable without introducing cross-app coupling.
+
+### D-097: Surface billing drift triage directly in Admin billing workflow with an audit preset handoff
+**Decision**: Extend `apps/admin/app/components/control-plane-workspace.tsx` to load tenant-scoped `tenant.billing.sync` drift events (`entitlementDriftDetected`) into a Billing panel triage surface, and add a one-click audit preset that applies billing-drift filters (`action=tenant.billing.sync`, `changedField=entitlementDriftDetected`) while keeping existing audit controls available.
+**Reason**: Drift summaries in webhook/audit payloads were present but not operator-friendly to discover during support workflows; surfacing recent drift signals in-context and linking directly to filtered audit investigations reduces triage time and improves remediation consistency.
+
+### D-098: Apply billing entitlement drift corrections through draft-first quick actions in Admin UI
+**Decision**: Add per-signal remediation shortcuts in `apps/admin/app/components/control-plane-workspace.tsx` (`Add Missing Flags`, `Remove Extra Flags`, `Apply Both`) that mutate tenant settings feature-flag drafts from drift metadata and automatically arm billing workflow entitlement sync.
+**Reason**: Drift triage visibility alone still required manual flag copying and increased operator error risk. Draft-first quick actions make remediation deterministic, faster, and aligned with existing save boundaries (`Save Settings` then `Save Billing Workflow`).
+
+### D-099: Centralize billing drift remediation math in a shared helper and regression-test it in the authoritative Admin test command
+**Decision**: Extract remediation computation into `apps/admin/app/lib/billing-drift-remediation.ts` and wire `apps/admin/app/components/control-plane-workspace.tsx` to consume it, then add targeted helper assertions to `apps/admin/app/api/lib/routes.integration.test.ts` so `npm run test:routes --workspace @real-estate/admin` validates missing/extra/all drift mutation and entitlement-sync arming behavior.
+**Reason**: Remediation behavior previously lived inline in a large UI component and lacked focused coverage. A pure helper plus route-suite execution keeps logic deterministic, reduces regression risk, and aligns with existing Windows-authoritative validation workflow.

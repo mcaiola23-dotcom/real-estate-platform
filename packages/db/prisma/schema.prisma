@@ -18,6 +18,7 @@ model Tenant {
   domains            TenantDomain[]
   websiteConfig      WebsiteConfig?
   controlSettings    TenantControlSettings?
+  billingSubscription TenantBillingSubscription?
   controlActors      TenantControlActor[]
   contacts           Contact[]
   leads              Lead[]
@@ -60,6 +61,39 @@ model TenantControlSettings {
   createdAt        DateTime
   updatedAt        DateTime
   tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantBillingSubscription {
+  id                   String   @id
+  tenantId             String   @unique
+  planCode             String   @default("starter")
+  status               String   @default("trialing")
+  paymentStatus        String   @default("pending")
+  billingProvider      String   @default("manual")
+  billingCustomerId    String?
+  billingSubscriptionId String?
+  trialEndsAt          DateTime?
+  currentPeriodEndsAt  DateTime?
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt            DateTime
+  updatedAt            DateTime
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model TenantBillingSyncEvent {
+  id            String   @id
+  tenantId      String?
+  provider      String
+  eventId       String
+  eventType     String
+  payloadJson   String
+  resultStatus  String
+  resultMessage String?
+  createdAt     DateTime
+  processedAt   DateTime
+
+  @@unique([provider, eventId])
+  @@index([tenantId, createdAt])
 }
 
 model TenantControlActor {
