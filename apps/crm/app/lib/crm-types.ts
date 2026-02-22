@@ -26,6 +26,8 @@ export interface LeadDraft {
   sqft: string;
   nextActionAt: string;
   nextActionNote: string;
+  nextActionChannel: string;
+  reminderSnoozedUntil: string;
   priceMin: string;
   priceMax: string;
 }

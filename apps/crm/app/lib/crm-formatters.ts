@@ -51,6 +51,8 @@ export function buildLeadDraft(lead: CrmLead): LeadDraft {
     sqft: lead.sqft === null ? '' : String(lead.sqft),
     nextActionAt: lead.nextActionAt ?? '',
     nextActionNote: lead.nextActionNote ?? '',
+    nextActionChannel: lead.nextActionChannel ?? '',
+    reminderSnoozedUntil: lead.reminderSnoozedUntil ?? '',
     priceMin: lead.priceMin === null ? '' : String(lead.priceMin),
     priceMax: lead.priceMax === null ? '' : String(lead.priceMax),
   };

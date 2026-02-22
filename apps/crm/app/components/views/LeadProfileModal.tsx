@@ -27,6 +27,9 @@ import { DuplicateWarning } from '../leads/DuplicateWarning';
 import { LeadTagInput } from '../leads/LeadTagInput';
 import { SourceAttributionChain } from '../leads/SourceAttributionChain';
 import { UnifiedTimeline } from '../leads/UnifiedTimeline';
+import { SmartReminderForm } from '../shared/SmartReminderForm';
+import { TemplateLibrary } from '../shared/TemplateLibrary';
+import type { MergeFieldContext } from '../../lib/crm-templates';
 
 interface LeadProfileModalProps {
   lead: CrmLead;
@@ -50,6 +53,8 @@ interface LeadProfileModalProps {
   onClearLeadDraft: (leadId: string) => void;
   onLogContact: (activityType: string, summary: string) => Promise<void>;
   onViewLead?: (leadId: string) => void;
+  onSaveReminder?: (leadId: string, data: { nextActionAt: string; nextActionNote: string; nextActionChannel: string }) => void;
+  onSnoozeReminder?: (leadId: string, durationMs: number) => void;
 }
 
 export function LeadProfileModal({
@@ -74,7 +79,10 @@ export function LeadProfileModal({
   onClearLeadDraft,
   onLogContact,
   onViewLead,
+  onSaveReminder,
+  onSnoozeReminder,
 }: LeadProfileModalProps) {
+  const [showTemplates, setShowTemplates] = useState(false);
   // Suggested property matches — derive loading from data staleness to avoid synchronous setState in effect body
   interface MatchEntry { listing: Listing; score: number; matchReasons: string[] }
   const [matchData, setMatchData] = useState<{ leadId: string; data: MatchEntry[] } | null>(null);
@@ -419,6 +427,55 @@ export function LeadProfileModal({
             </div>
             <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
             <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
+            <SmartReminderForm
+              leadId={lead.id}
+              tenantId={lead.tenantId}
+              currentNextAction={lead.nextActionAt}
+              currentNextActionNote={lead.nextActionNote}
+              currentChannel={lead.nextActionChannel}
+              onSave={(data) => onSaveReminder?.(lead.id, data)}
+              onSnooze={(ms) => onSnoozeReminder?.(lead.id, ms)}
+            />
+            <div className="crm-template-toggle">
+              <button
+                type="button"
+                className="crm-template-toggle__btn"
+                onClick={() => setShowTemplates(!showTemplates)}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <path d="M5 5h6M5 8h6M5 11h3" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+                </svg>
+                {showTemplates ? 'Hide Templates' : 'Message Templates'}
+              </button>
+            </div>
+            {showTemplates && (
+              <TemplateLibrary
+                mergeContext={{
+                  leadName: activeContact?.fullName ?? null,
+                  agentName: null,
+                  propertyAddress: lead.listingAddress,
+                  propertyType: lead.propertyType,
+                  priceRange: lead.priceMin && lead.priceMax ? `$${lead.priceMin.toLocaleString()}-$${lead.priceMax.toLocaleString()}` : null,
+                  timeframe: lead.timeframe,
+                  agentPhone: null,
+                  agentEmail: null,
+                } satisfies MergeFieldContext}
+                tenantId={lead.tenantId}
+                leadId={lead.id}
+                onUseTemplate={(data) => {
+                  if (data.channel === 'email' && activeContact?.email) {
+                    const subject = encodeURIComponent(data.subject || '');
+                    const body = encodeURIComponent(data.body);
+                    window.open(`mailto:${activeContact.email}?subject=${subject}&body=${body}`, '_blank');
+                  } else {
+                    void navigator.clipboard.writeText(data.body);
+                  }
+                  setShowTemplates(false);
+                }}
+                onClose={() => setShowTemplates(false)}
+              />
+            )}
           </section>
         </div>
 

@@ -1,14 +1,32 @@
 import type { CrmActivity, CrmLead } from '@real-estate/types/crm';
 import type { LeadListingSignal, LeadSearchSignal } from './crm-types';
 
+/**
+ * Compute escalation-based score decay for overdue follow-ups.
+ * Returns a percentage (0-50) to subtract from the base score.
+ */
+function computeOverdueDecay(lead: CrmLead): number {
+  if (!lead.nextActionAt) return 0;
+  const now = Date.now();
+  const nextActionTime = new Date(lead.nextActionAt).getTime();
+  if (nextActionTime >= now) return 0;
+
+  const daysOverdue = (now - nextActionTime) / (24 * 60 * 60 * 1000);
+  if (daysOverdue <= 1) return 5;
+  if (daysOverdue <= 3) return 10;
+  if (daysOverdue <= 7) return 20;
+  if (daysOverdue <= 14) return 35;
+  return 50;
+}
+
 export function calculateLeadScore(
   activities: CrmActivity[],
   searchSignals: LeadSearchSignal[],
   listingSignals: LeadListingSignal[],
   lead: CrmLead | null,
-): { score: number; label: string } {
+): { score: number; label: string; decayApplied: number } {
   if (!lead) {
-    return { score: 0, label: 'No Data' };
+    return { score: 0, label: 'No Data', decayApplied: 0 };
   }
 
   const now = Date.now();
@@ -42,12 +60,17 @@ export function calculateLeadScore(
   if (lead.timeframe) profileScore += 20;
   if (lead.contactId) profileScore += 30;
 
-  const total = Math.round(
+  const baseTotal = Math.round(
     recencyScore * 0.25 +
     frequencyScore * 0.25 +
     intentScore * 0.30 +
     profileScore * 0.20
   );
+
+  // Apply escalation decay for overdue follow-ups
+  const decayPercent = computeOverdueDecay(lead);
+  const decayPoints = Math.round(baseTotal * (decayPercent / 100));
+  const total = baseTotal - decayPoints;
 
   const score = Math.max(0, Math.min(100, total));
   const label =
@@ -56,5 +79,5 @@ export function calculateLeadScore(
         score >= 40 ? 'Interested' :
           score >= 20 ? 'Cool' : 'Cold';
 
-  return { score, label };
+  return { score, label, decayApplied: decayPoints };
 }

@@ -546,6 +546,22 @@
 **Decision**: Create `project_tracking/admin_onboarding_task_persistence_design.md` to define the proposed `TenantOnboardingPlan` / `TenantOnboardingTask` schema, API surface, UI rollout, and Action Center integration before adding new Prisma models/routes.
 **Reason**: The current plan-tier checklists are useful as operator defaults, but durable task state introduces new persistence and workflow complexity. A design-first pass reduces rework and clarifies rollout sequencing.
 
+### D-134: Smart reminder engine uses rule-based patterns with optional AI enhancement
+**Decision**: Reminder engine in `packages/ai/src/crm/reminder-engine.ts` uses 5 deterministic rule-based patterns (overdue_followup, due_today, no_contact_7d, active_browsing_no_scheduled, declining_engagement) with optional AI enhancement for top 2 suggestions, matching the next-action engine pattern.
+**Reason**: Consistent with D-124. Rule-based patterns ensure reminders work without AI service setup. AI enhancement adds natural language context when available.
+
+### D-135: Progressive escalation levels (0-4) with score decay for overdue follow-ups
+**Decision**: Escalation engine defines 5 levels: 0 (on-time), 1 (1-3d amber), 2 (4-7d red), 3 (8-14d red banner), 4 (14d+ critical with pulse). Score decay applies progressively: 5% at 1d, 10% at 3d, 20% at 7d, 35% at 14d, 50% at 14d+.
+**Reason**: Real estate follow-up urgency scales with time elapsed. Progressive levels give agents clear visual hierarchy. Score decay ensures overdue leads surface prominently in scoring-based views.
+
+### D-136: Message templates use merge-field syntax with context-based resolution
+**Decision**: Templates use `{{field.name}}` merge-field syntax (e.g., `{{lead.name}}`, `{{agent.name}}`, `{{property.address}}`). Resolution via `resolveMergeFields()` replaces known fields and marks unknown ones visually. Templates categorized by purpose (outreach, follow_up, update, milestone) and channel (email, sms).
+**Reason**: Merge fields are familiar from CRM/email-marketing tools. Category/channel taxonomy enables quick filtering. Visual markers for unresolved fields prevent agents from sending incomplete messages.
+
+### D-137: Add `nextActionChannel` and `reminderSnoozedUntil` to Lead model
+**Decision**: Add two nullable columns to the Lead table via migration `202602220001_add_reminder_fields`: `nextActionChannel TEXT` (preferred follow-up channel) and `reminderSnoozedUntil DATETIME` (snooze expiry timestamp).
+**Reason**: Channel preference enables reminder suggestions to recommend the right communication method. Snooze support prevents reminder fatigue by allowing agents to temporarily suppress follow-up prompts.
+
 ### D-134: Extract Admin `billing` / `access` / `audit` tab bodies as body-only components before persistence MVP work
 **Decision**: Decompose `apps/admin/app/components/control-plane-workspace.tsx` further by extracting `BillingTabBody`, `AccessTabBody`, and `AuditTabBody` into `apps/admin/app/components/control-plane/`, while keeping existing state, helpers, and mutation orchestration in the parent workspace component for now.
 **Reason**: This finishes the highest-noise rendering extraction before onboarding-task persistence implementation, reducing UI-file cognitive load and merge risk without changing tenant-scoped workflow behavior or forcing a larger state-management rewrite.

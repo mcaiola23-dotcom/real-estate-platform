@@ -81,6 +81,8 @@ import { NotificationCenter } from './header/NotificationCenter';
 import { useCrmTheme } from '../lib/use-theme';
 import { useNotifications } from '../lib/use-notifications';
 import { usePinnedLeads } from '../lib/use-pinned-leads';
+import { EscalationAlertBanner } from './shared/EscalationBanner';
+import { computeLeadEscalationLevel } from '@real-estate/ai/crm/escalation-engine';
 
 const ProfileView = dynamic(() => import('./views/ProfileView').then(m => ({ default: m.ProfileView })), { ssr: false });
 const SettingsView = dynamic(() => import('./views/SettingsView').then(m => ({ default: m.SettingsView })), { ssr: false });
@@ -313,6 +315,8 @@ export function CrmWorkspace({
         parseNullableNumber(draft.sqft) !== lead.sqft ||
         normalizeOptionalString(draft.nextActionAt) !== normalizeOptionalString(lead.nextActionAt) ||
         normalizeOptionalString(draft.nextActionNote) !== normalizeOptionalString(lead.nextActionNote) ||
+        normalizeOptionalString(draft.nextActionChannel) !== normalizeOptionalString(lead.nextActionChannel) ||
+        normalizeOptionalString(draft.reminderSnoozedUntil) !== normalizeOptionalString(lead.reminderSnoozedUntil) ||
         parseNullableNumber(draft.priceMin) !== lead.priceMin ||
         parseNullableNumber(draft.priceMax) !== lead.priceMax
       );
@@ -365,6 +369,24 @@ export function CrmWorkspace({
       return new Date(l.nextActionAt).getTime() <= endOfToday.getTime();
     });
   }, [leads]);
+
+  // Escalation computation for dashboard banner
+  const escalatedLeads = useMemo(() => {
+    return leads
+      .filter((l) => l.status !== 'won' && l.status !== 'lost')
+      .map((l) => {
+        const esc = computeLeadEscalationLevel(l);
+        const linkedContact = l.contactId ? contactById.get(l.contactId) : undefined;
+        return {
+          leadId: l.id,
+          leadName: linkedContact?.fullName || l.listingAddress || l.id.slice(0, 8),
+          level: esc.level,
+          daysOverdue: esc.daysOverdue,
+        };
+      })
+      .filter((e) => e.level >= 1)
+      .sort((a, b) => b.level - a.level || b.daysOverdue - a.daysOverdue);
+  }, [leads, contactById]);
 
   const activityVolumeLast7Days = useMemo(() => {
     const buckets = Array.from({ length: 7 }, (_, index) => {
@@ -1032,6 +1054,8 @@ export function CrmWorkspace({
       sqft?: number | null;
       nextActionAt?: string | null;
       nextActionNote?: string | null;
+      nextActionChannel?: string | null;
+      reminderSnoozedUntil?: string | null;
       priceMin?: number | null;
       priceMax?: number | null;
     } = {};
@@ -1089,6 +1113,14 @@ export function CrmWorkspace({
 
     if (normalizeOptionalString(draft.nextActionNote) !== normalizeOptionalString(lead.nextActionNote)) {
       payload.nextActionNote = normalizeOptionalString(draft.nextActionNote);
+    }
+
+    if (normalizeOptionalString(draft.nextActionChannel) !== normalizeOptionalString(lead.nextActionChannel)) {
+      payload.nextActionChannel = normalizeOptionalString(draft.nextActionChannel);
+    }
+
+    if (normalizeOptionalString(draft.reminderSnoozedUntil) !== normalizeOptionalString(lead.reminderSnoozedUntil)) {
+      payload.reminderSnoozedUntil = normalizeOptionalString(draft.reminderSnoozedUntil);
     }
 
     const priceMin = parseNullableNumber(draft.priceMin);
@@ -1489,6 +1521,8 @@ export function CrmWorkspace({
       lastContactAt: null,
       nextActionAt: null,
       nextActionNote: null,
+      nextActionChannel: null,
+      reminderSnoozedUntil: null,
       priceMin: null,
       priceMax: null,
       tags: [],
@@ -1979,6 +2013,13 @@ export function CrmWorkspace({
               contactById={contactById}
               onOpenLead={openLeadProfile}
             />
+
+            {escalatedLeads.length > 0 && (
+              <EscalationAlertBanner
+                escalatedLeads={escalatedLeads}
+                onViewLead={openLeadProfile}
+              />
+            )}
 
             <section className="crm-kpi-grid" aria-label="Summary metrics">
               <button type="button" className="crm-kpi-card" onClick={() => openLeadsTable('new')}>
@@ -2854,6 +2895,17 @@ export function CrmWorkspace({
           onClearLeadDraft={clearLeadDraft}
           onLogContact={logContactActivity}
           onViewLead={openLeadProfile}
+          onSaveReminder={(leadId, data) => {
+            setLeadDraftField(leadId, 'nextActionAt', data.nextActionAt);
+            setLeadDraftField(leadId, 'nextActionNote', data.nextActionNote);
+            setLeadDraftField(leadId, 'nextActionChannel', data.nextActionChannel);
+            void updateLead(leadId);
+          }}
+          onSnoozeReminder={(leadId, durationMs) => {
+            const snoozedUntil = new Date(Date.now() + durationMs).toISOString();
+            setLeadDraftField(leadId, 'reminderSnoozedUntil', snoozedUntil);
+            void updateLead(leadId);
+          }}
         />
       ) : null}
 

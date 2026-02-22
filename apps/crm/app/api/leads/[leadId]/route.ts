@@ -133,6 +133,8 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
           lastContactAt?: string | null;
           nextActionAt?: string | null;
           nextActionNote?: string | null;
+          nextActionChannel?: string | null;
+          reminderSnoozedUntil?: string | null;
           priceMin?: number | string | null;
           priceMax?: number | string | null;
           tags?: string[];
@@ -163,6 +165,8 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
     const lastContactAt = toNullableString(payload.lastContactAt);
     const nextActionAt = toNullableString(payload.nextActionAt);
     const nextActionNote = toNullableString(payload.nextActionNote);
+    const nextActionChannel = toNullableString(payload.nextActionChannel);
+    const reminderSnoozedUntil = toNullableString(payload.reminderSnoozedUntil);
     const priceMin = toNullableInt(payload.priceMin);
     const priceMax = toNullableInt(payload.priceMax);
     const tags = Array.isArray(payload.tags)
@@ -181,6 +185,8 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       lastContactAt === undefined &&
       nextActionAt === undefined &&
       nextActionNote === undefined &&
+      nextActionChannel === undefined &&
+      reminderSnoozedUntil === undefined &&
       priceMin === undefined &&
       priceMax === undefined &&
       tags === undefined
@@ -206,6 +212,8 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       lastContactAt,
       nextActionAt,
       nextActionNote,
+      nextActionChannel,
+      reminderSnoozedUntil,
       priceMin,
       priceMax,
       tags,

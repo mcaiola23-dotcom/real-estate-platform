@@ -262,6 +262,8 @@ function toCrmLead(record: {
   lastContactAt?: string | Date | null;
   nextActionAt?: string | Date | null;
   nextActionNote?: string | null;
+  nextActionChannel?: string | null;
+  reminderSnoozedUntil?: string | Date | null;
   priceMin?: number | null;
   priceMax?: number | null;
   tags?: string;
@@ -291,6 +293,8 @@ function toCrmLead(record: {
     lastContactAt: toNullableIso(record.lastContactAt),
     nextActionAt: toNullableIso(record.nextActionAt),
     nextActionNote: record.nextActionNote ?? null,
+    nextActionChannel: record.nextActionChannel ?? null,
+    reminderSnoozedUntil: toNullableIso(record.reminderSnoozedUntil),
     priceMin: record.priceMin ?? null,
     priceMax: record.priceMax ?? null,
     tags: parsedTags,
@@ -346,6 +350,8 @@ export interface UpdateCrmLeadInput {
   lastContactAt?: string | Date | null;
   nextActionAt?: string | Date | null;
   nextActionNote?: string | null;
+  nextActionChannel?: string | null;
+  reminderSnoozedUntil?: string | Date | null;
   priceMin?: number | null;
   priceMax?: number | null;
   tags?: string[];
@@ -1416,6 +1422,12 @@ export async function updateLeadForTenant(
   }
   if (input.nextActionNote !== undefined) {
     data.nextActionNote = input.nextActionNote;
+  }
+  if (input.nextActionChannel !== undefined) {
+    data.nextActionChannel = input.nextActionChannel;
+  }
+  if (input.reminderSnoozedUntil !== undefined) {
+    data.reminderSnoozedUntil = input.reminderSnoozedUntil ? new Date(input.reminderSnoozedUntil) : null;
   }
   if (input.priceMin !== undefined) {
     data.priceMin = input.priceMin;

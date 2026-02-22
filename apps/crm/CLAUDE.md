@@ -29,6 +29,8 @@ All routes are tenant-scoped and use dependency-injected handler factories (`cre
 - `GET /api/ai/lead-summary/[leadId]` — AI-generated lead summary with key signals
 - `POST /api/ai/draft-message` — AI message drafting with tone presets
 - `POST /api/ai/extract-insights` — Structured insight extraction from conversation text
+- `GET /api/ai/reminders/[leadId]` — AI-powered smart follow-up reminder suggestions
+- `GET /api/ai/escalation/[leadId]` — Progressive escalation evaluation for overdue leads
 - `app/api/lib/query-params.ts` — Shared query parser for filters/pagination
 
 ## Key Patterns
@@ -42,7 +44,7 @@ All routes are tenant-scoped and use dependency-injected handler factories (`cre
 ## Testing
 
 ```bash
-npm run test:routes --workspace @real-estate/crm      # Route integration tests (37+ tests)
+npm run test:routes --workspace @real-estate/crm      # Route integration tests (43+ tests)
 npm run test:workspace --workspace @real-estate/crm    # Interaction helper unit tests
 ```
 

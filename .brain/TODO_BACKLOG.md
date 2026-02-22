@@ -130,9 +130,9 @@
 - [x] Phase 13C: Source Attribution Chain — SourceAttributionChain component with transit-map visualization, auto-computed from activities, deduplication, overflow indicator. (Completed 2026-02-21, session 4.)
 - [x] Phase 13D: Duplicate Detection — `findPotentialDuplicateLeads` DB helper, `/api/leads/duplicates` route, DuplicateWarning component with View/Dismiss actions. (Completed 2026-02-21, session 4.)
 - [x] Phase 8: AI Integration Foundation — `packages/ai/` scaffold with types, config, LLM client, prompt templates, and 4 CRM orchestration modules (next-action-engine, lead-intelligence, message-drafting, conversation-extractor). 5 factory-pattern AI API routes, 4 AI UI components, 12 route tests. (Completed 2026-02-22, session 5.)
-- [ ] Phase 9A: AI-Powered Reminders (unlocked by Phase 8).
-- [ ] Phase 9B: AI Message Templates (unlocked by Phase 8).
-- [ ] Phase 9D: AI Escalation (unlocked by Phase 8).
+- [x] Phase 9A: AI-Powered Reminders — DB migration (`202602220001_add_reminder_fields` — `nextActionChannel`, `reminderSnoozedUntil`), smart reminder engine (`packages/ai/src/crm/reminder-engine.ts`) with 5 rule-based patterns + AI enhancement, factory-pattern API route, `SmartReminderForm` UI component with AI suggestions + snooze, 3 route tests. (Completed 2026-02-22, session 7.)
+- [x] Phase 9B: AI Message Templates — Template library (`apps/crm/app/lib/crm-templates.ts`) with 9 templates, merge field resolution, `TemplateLibrary` UI component with category/channel filters, AI tone adjustment via existing draft-message API. (Completed 2026-02-22, session 7.)
+- [x] Phase 9D: AI Escalation — Escalation engine (`packages/ai/src/crm/escalation-engine.ts`) with 4 triggers and 5 escalation levels, score decay integration in `crm-scoring.ts`, factory-pattern API route, `EscalationBanner` + `EscalationAlertBanner` UI components, 3 route tests. (Completed 2026-02-22, session 7.)
 - [ ] Phases 13E-13G (AI features), remaining 14: See implementation plan.
 
 ## Control Plane Roadmap (Longer Term)

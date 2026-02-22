@@ -33,6 +33,8 @@ export interface CrmLead {
   lastContactAt: string | null;
   nextActionAt: string | null;
   nextActionNote: string | null;
+  nextActionChannel: string | null;
+  reminderSnoozedUntil: string | null;
   priceMin: number | null;
   priceMax: number | null;
   tags: string[];

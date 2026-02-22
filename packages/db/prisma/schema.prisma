@@ -169,7 +169,9 @@ model Lead {
   sqft           Int?
   lastContactAt  DateTime?
   nextActionAt   DateTime?
-  nextActionNote String?
+  nextActionNote      String?
+  nextActionChannel   String?
+  reminderSnoozedUntil DateTime?
   priceMin       Int?
   priceMax       Int?
   tags           String     @default("[]")

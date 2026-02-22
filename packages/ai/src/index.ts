@@ -15,6 +15,21 @@ export type {
   InsightExtractionResult,
 } from './types';
 
+export type {
+  ReminderSuggestion,
+  ReminderResult,
+  ReminderChannel,
+  ReminderUrgency,
+  SnoozeOption,
+} from './crm/reminder-engine';
+
+export type {
+  EscalationResult,
+  EscalationLevel,
+  EscalationTrigger,
+  EscalationTriggerDetail,
+} from './crm/escalation-engine';
+
 export {
   getAiConfigForTenant,
   setAiConfigOverride,

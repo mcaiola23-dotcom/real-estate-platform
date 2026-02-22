@@ -15,6 +15,8 @@ import { createNextActionGetHandler } from '../ai/next-action/[leadId]/route';
 import { createLeadSummaryGetHandler } from '../ai/lead-summary/[leadId]/route';
 import { createDraftMessagePostHandler } from '../ai/draft-message/route';
 import { createExtractInsightsPostHandler } from '../ai/extract-insights/route';
+import { createRemindersGetHandler } from '../ai/reminders/[leadId]/route';
+import { createEscalationGetHandler } from '../ai/escalation/[leadId]/route';
 
 const tenantContext: TenantContext = {
   tenantId: 'tenant_fairfield',
@@ -71,6 +73,8 @@ test('leads GET returns tenant-scoped pagination payload', async () => {
     lastContactAt: null,
     nextActionAt: null,
     nextActionNote: null,
+    nextActionChannel: null,
+    reminderSnoozedUntil: null,
     priceMin: null,
     priceMax: null,
     tags: [],
@@ -449,6 +453,8 @@ test('lead PATCH writes status-change activity when status is updated', async ()
     lastContactAt: null,
     nextActionAt: null,
     nextActionNote: null,
+    nextActionChannel: null,
+    reminderSnoozedUntil: null,
     priceMin: null,
     priceMax: null,
     tags: [],
@@ -499,6 +505,8 @@ test('lead PATCH does not write status-change activity when only notes are updat
     lastContactAt: null,
     nextActionAt: null,
     nextActionNote: null,
+    nextActionChannel: null,
+    reminderSnoozedUntil: null,
     priceMin: null,
     priceMax: null,
     tags: [],
@@ -572,6 +580,8 @@ test('lead GET returns tenant-scoped lead payload', async () => {
     lastContactAt: null,
     nextActionAt: null,
     nextActionNote: null,
+    nextActionChannel: null,
+    reminderSnoozedUntil: null,
     priceMin: null,
     priceMax: null,
     tags: [],
@@ -634,6 +644,8 @@ const testLead: CrmLead = {
   lastContactAt: null,
   nextActionAt: null,
   nextActionNote: null,
+  nextActionChannel: null,
+  reminderSnoozedUntil: null,
   priceMin: null,
   priceMax: null,
   tags: [],
@@ -926,4 +938,198 @@ test('AI extract-insights POST returns tenant-scoped insights', async () => {
   assert.equal(body.ok, true);
   assert.equal(body.result.insights.length, 1);
   assert.equal(body.result.insights[0]!.value, '$500k');
+});
+
+// ---------------------------------------------------------------------------
+// AI Reminders (Phase 9A)
+// ---------------------------------------------------------------------------
+
+test('AI reminders GET returns 401 when unauthorized', async () => {
+  const handler = createRemindersGetHandler({
+    requireTenantContext: unauthorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    computeSmartReminders: async () => ({ leadId: '', tenantId: '', suggestions: [], provenance: {} as never }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/reminders/lead_1'),
+    { params: Promise.resolve({ leadId: 'lead_1' }) },
+  );
+  assert.equal(response.status, 401);
+});
+
+test('AI reminders GET returns 404 for missing lead', async () => {
+  const handler = createRemindersGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    computeSmartReminders: async () => ({ leadId: '', tenantId: '', suggestions: [], provenance: {} as never }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/reminders/lead_missing'),
+    { params: Promise.resolve({ leadId: 'lead_missing' }) },
+  );
+  assert.equal(response.status, 404);
+});
+
+test('AI reminders GET returns tenant-scoped suggestions', async () => {
+  const lead: CrmLead = {
+    id: 'lead_reminder',
+    tenantId: tenantContext.tenantId,
+    contactId: null,
+    status: 'new',
+    leadType: 'website_lead',
+    source: 'website',
+    timeframe: null,
+    notes: null,
+    listingId: null,
+    listingUrl: null,
+    listingAddress: null,
+    propertyType: null,
+    beds: null,
+    baths: null,
+    sqft: null,
+    lastContactAt: null,
+    nextActionAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    nextActionNote: 'Follow up call',
+    nextActionChannel: 'call',
+    reminderSnoozedUntil: null,
+    priceMin: null,
+    priceMax: null,
+    tags: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createRemindersGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async (tid) => { receivedTenantId = tid; return lead; },
+    listActivitiesByTenantId: async () => [],
+    computeSmartReminders: async (tid, l, _a) => ({
+      leadId: l.id,
+      tenantId: tid,
+      suggestions: [{
+        suggestedAt: lead.nextActionAt!,
+        channel: 'call' as const,
+        urgency: 'overdue' as const,
+        reason: 'Overdue follow-up.',
+        aiEnhancedReason: null,
+        snoozeOptions: [{ label: '1 hour', durationMs: 3600000 }],
+        provenance: { source: 'rule_engine' as const, model: null, promptVersion: 'crm.reminder_suggest.v1', generatedAt: new Date().toISOString(), latencyMs: 5, cached: false },
+      }],
+      provenance: { source: 'rule_engine' as const, model: null, promptVersion: 'crm.reminder_suggest.v1', generatedAt: new Date().toISOString(), latencyMs: 5, cached: false },
+    }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/reminders/lead_reminder'),
+    { params: Promise.resolve({ leadId: 'lead_reminder' }) },
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; reminders: { suggestions: Array<{ urgency: string }> } };
+  assert.equal(body.ok, true);
+  assert.equal(body.reminders.suggestions.length, 1);
+  assert.equal(body.reminders.suggestions[0]!.urgency, 'overdue');
+});
+
+// ---------------------------------------------------------------------------
+// AI Escalation (Phase 9D)
+// ---------------------------------------------------------------------------
+
+test('AI escalation GET returns 401 when unauthorized', async () => {
+  const handler = createEscalationGetHandler({
+    requireTenantContext: unauthorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    evaluateEscalation: async () => ({ leadId: '', tenantId: '', level: 0 as const, triggers: [], scoreDecayPercent: 0, recommendation: '', aiRecommendation: null, provenance: {} as never }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/escalation/lead_1'),
+    { params: Promise.resolve({ leadId: 'lead_1' }) },
+  );
+  assert.equal(response.status, 401);
+});
+
+test('AI escalation GET returns 404 for missing lead', async () => {
+  const handler = createEscalationGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    evaluateEscalation: async () => ({ leadId: '', tenantId: '', level: 0 as const, triggers: [], scoreDecayPercent: 0, recommendation: '', aiRecommendation: null, provenance: {} as never }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/escalation/lead_missing'),
+    { params: Promise.resolve({ leadId: 'lead_missing' }) },
+  );
+  assert.equal(response.status, 404);
+});
+
+test('AI escalation GET returns tenant-scoped escalation result', async () => {
+  const lead: CrmLead = {
+    id: 'lead_esc',
+    tenantId: tenantContext.tenantId,
+    contactId: null,
+    status: 'new',
+    leadType: 'website_lead',
+    source: 'website',
+    timeframe: null,
+    notes: null,
+    listingId: null,
+    listingUrl: null,
+    listingAddress: '123 Main St',
+    propertyType: null,
+    beds: null,
+    baths: null,
+    sqft: null,
+    lastContactAt: null,
+    nextActionAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    nextActionNote: null,
+    nextActionChannel: null,
+    reminderSnoozedUntil: null,
+    priceMin: null,
+    priceMax: null,
+    tags: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createEscalationGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async (tid) => { receivedTenantId = tid; return lead; },
+    listActivitiesByTenantId: async () => [],
+    evaluateEscalation: async (tid, l, _a) => ({
+      leadId: l.id,
+      tenantId: tid,
+      level: 2 as const,
+      triggers: [{
+        trigger: 'overdue_followup' as const,
+        detail: 'Follow-up is 5 days overdue.',
+        daysOverdue: 5,
+      }],
+      scoreDecayPercent: 20,
+      recommendation: 'Action needed: Follow-up is 5 days overdue.',
+      aiRecommendation: null,
+      provenance: { source: 'rule_engine' as const, model: null, promptVersion: 'crm.escalation.v1', generatedAt: new Date().toISOString(), latencyMs: 3, cached: false },
+    }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/escalation/lead_esc'),
+    { params: Promise.resolve({ leadId: 'lead_esc' }) },
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; escalation: { level: number; scoreDecayPercent: number; triggers: Array<{ trigger: string }> } };
+  assert.equal(body.ok, true);
+  assert.equal(body.escalation.level, 2);
+  assert.equal(body.escalation.scoreDecayPercent, 20);
+  assert.equal(body.escalation.triggers.length, 1);
+  assert.equal(body.escalation.triggers[0]!.trigger, 'overdue_followup');
 });
