@@ -130,6 +130,12 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
           beds?: number | string | null;
           baths?: number | string | null;
           sqft?: number | string | null;
+          lastContactAt?: string | null;
+          nextActionAt?: string | null;
+          nextActionNote?: string | null;
+          priceMin?: number | string | null;
+          priceMax?: number | string | null;
+          tags?: string[];
         }
       | null;
 
@@ -154,6 +160,14 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
     const beds = toNullableInt(payload.beds);
     const baths = toNullableInt(payload.baths);
     const sqft = toNullableInt(payload.sqft);
+    const lastContactAt = toNullableString(payload.lastContactAt);
+    const nextActionAt = toNullableString(payload.nextActionAt);
+    const nextActionNote = toNullableString(payload.nextActionNote);
+    const priceMin = toNullableInt(payload.priceMin);
+    const priceMax = toNullableInt(payload.priceMax);
+    const tags = Array.isArray(payload.tags)
+      ? payload.tags.filter((t): t is string => typeof t === 'string' && t.trim().length > 0).map((t) => t.trim())
+      : undefined;
 
     if (
       status === undefined &&
@@ -163,7 +177,13 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       propertyType === undefined &&
       beds === undefined &&
       baths === undefined &&
-      sqft === undefined
+      sqft === undefined &&
+      lastContactAt === undefined &&
+      nextActionAt === undefined &&
+      nextActionNote === undefined &&
+      priceMin === undefined &&
+      priceMax === undefined &&
+      tags === undefined
     ) {
       return NextResponse.json(
         {
@@ -183,6 +203,12 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       beds,
       baths,
       sqft,
+      lastContactAt,
+      nextActionAt,
+      nextActionNote,
+      priceMin,
+      priceMax,
+      tags,
     });
 
     if (!updatedLead) {

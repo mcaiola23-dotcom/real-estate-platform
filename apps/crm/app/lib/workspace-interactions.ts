@@ -2,8 +2,8 @@ import type { CrmLeadStatus } from '@real-estate/types/crm';
 
 import { formatLeadStatusLabel } from './crm-display';
 
-export type WorkspaceNav = 'dashboard' | 'pipeline' | 'leads' | 'contacts' | 'activity' | 'settings' | 'profile';
-export type WorkspaceView = 'dashboard' | 'pipeline' | 'leads' | 'settings' | 'profile';
+export type WorkspaceNav = 'dashboard' | 'pipeline' | 'leads' | 'properties' | 'transactions' | 'contacts' | 'activity' | 'analytics' | 'settings' | 'profile';
+export type WorkspaceView = 'dashboard' | 'pipeline' | 'leads' | 'properties' | 'transactions' | 'analytics' | 'settings' | 'profile';
 export type TableStatusPreset = 'all' | 'new' | 'follow_up' | 'open_pipeline' | 'closed';
 
 export type LeadsTableSortColumn =
@@ -16,7 +16,9 @@ export type LeadsTableSortColumn =
   | 'lastContact'
   | 'desired'
   | 'source'
-  | 'updatedAt';
+  | 'updatedAt'
+  | 'phone'
+  | 'email';
 
 export interface LeadsTableSort {
   column: LeadsTableSortColumn;
@@ -30,11 +32,20 @@ export function resolveViewFromNav(nav: WorkspaceNav): WorkspaceView {
   if (nav === 'leads') {
     return 'leads';
   }
+  if (nav === 'properties') {
+    return 'properties';
+  }
+  if (nav === 'transactions') {
+    return 'transactions';
+  }
   if (nav === 'settings') {
     return 'settings';
   }
   if (nav === 'profile') {
     return 'profile';
+  }
+  if (nav === 'analytics') {
+    return 'analytics';
   }
   return 'dashboard';
 }

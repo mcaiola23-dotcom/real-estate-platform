@@ -9,7 +9,8 @@
     "./crm": "./src/crm.ts",
     "./ingestion": "./src/ingestion.ts",
     "./tenant": "./src/tenant.ts",
-    "./events": "./src/events.ts"
+    "./events": "./src/events.ts",
+    "./listings": "./src/listings.ts"
   },
   "types": "./src/index.ts"
 }

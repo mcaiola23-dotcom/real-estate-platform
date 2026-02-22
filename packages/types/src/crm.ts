@@ -30,6 +30,12 @@ export interface CrmLead {
   beds: number | null;
   baths: number | null;
   sqft: number | null;
+  lastContactAt: string | null;
+  nextActionAt: string | null;
+  nextActionNote: string | null;
+  priceMin: number | null;
+  priceMax: number | null;
+  tags: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -64,6 +70,7 @@ export interface CrmLeadListQuery {
   leadType?: CrmLeadType;
   source?: string;
   contactId?: string;
+  tag?: string;
   limit?: number;
   offset?: number;
 }

@@ -17,6 +17,7 @@
     "./control-plane": "./src/control-plane.ts",
     "./crm": "./src/crm.ts",
     "./tenants": "./src/tenants.ts",
+    "./transactions": "./src/transactions.ts",
     "./website-config": "./src/website-config.ts"
   },
   "dependencies": {

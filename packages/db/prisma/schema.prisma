@@ -25,6 +25,7 @@ model Tenant {
   activities         Activity[]
   ingestedEvents     IngestedEvent[]
   ingestionQueueJobs IngestionQueueJob[]
+  transactions       Transaction[]
 }
 
 model TenantDomain {
@@ -166,6 +167,12 @@ model Lead {
   beds           Int?
   baths          Int?
   sqft           Int?
+  lastContactAt  DateTime?
+  nextActionAt   DateTime?
+  nextActionNote String?
+  priceMin       Int?
+  priceMax       Int?
+  tags           String     @default("[]")
   createdAt      DateTime
   updatedAt      DateTime
   tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -248,4 +255,79 @@ model AdminAuditEvent {
   @@index([tenantId, createdAt])
   @@index([action, createdAt])
   @@index([status, createdAt])
+}
+
+model Transaction {
+  id              String    @id
+  tenantId        String
+  leadId          String?
+  contactId       String?
+  propertyAddress String
+  status          String
+  side            String
+  salePrice       Int?
+  listPrice       Int?
+  closingDate     DateTime?
+  contractDate    DateTime?
+  inspectionDate  DateTime?
+  appraisalDate   DateTime?
+  titleDate       DateTime?
+  notes           String?
+  createdAt       DateTime
+  updatedAt       DateTime
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  parties         TransactionParty[]
+  documents       TransactionDocument[]
+  milestones      TransactionMilestone[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+}
+
+model TransactionParty {
+  id            String      @id
+  transactionId String
+  tenantId      String
+  role          String
+  name          String
+  email         String?
+  phone         String?
+  company       String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+  @@index([tenantId])
+}
+
+model TransactionDocument {
+  id            String      @id
+  transactionId String
+  tenantId      String
+  documentType  String
+  fileName      String
+  status        String      @default("pending")
+  notes         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+  @@index([tenantId])
+}
+
+model TransactionMilestone {
+  id            String      @id
+  transactionId String
+  tenantId      String
+  milestoneType String
+  scheduledAt   DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime
+  updatedAt     DateTime
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+  @@index([tenantId])
 }

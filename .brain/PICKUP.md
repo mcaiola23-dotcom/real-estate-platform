@@ -4,44 +4,74 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Run `platform-session-bootstrap`, then propagate the GTM baseline from `.brain/PRODUCT_SPEC.md` into operator enablement artifacts:
-  - update/create the sales/onboarding runbook with canonical plan matrix, setup scope/SLAs, and managed-services operating model,
-  - align Admin seed defaults to those same plan/onboarding/service baselines where applicable.
+- Continue CRM UI/UX overhaul. Most phases complete. Next priority: **Phase 8 (AI Integration Foundation)** which unblocks Phases 9A/9B/9D and Phase 13E-13G.
+- Implementation plan: `/home/mc23/.claude/plans/glistening-sniffing-pie.md`
 
 ## Why This Is Next
-- GTM definitions were finalized this session (`.brain/PRODUCT_SPEC.md` sections `5.1`-`5.3`, decisions `D-102` and `D-103`), but operational artifacts have not yet been updated to use that baseline.
-- Manual click-through remains intentionally deferred by product-direction override, so documentation + seed-default propagation is the highest-leverage next slice.
+- The user's directive is "as many CRM phases as we can get through per session."
+- Phase 8 (AI Integration Foundation) is the largest remaining enabler — it unlocks AI-powered features across CRM.
+- User said "save AI for last" — all non-AI phases are now complete except Phase 14D-14I (advanced features like mobile, offline, calendar sync).
+- Phase 14 items (D-I) are lower priority stretch goals.
 
 ## Current Snapshot
-- Completed this session:
-  - Added cross-tenant billing drift summary support to observability contracts in `packages/types/src/control-plane.ts`.
-  - Implemented billing drift aggregation in `packages/db/src/control-plane.ts` from `tenant.billing.sync` audit metadata.
-  - Added Admin observability KPI/panel surfaces for billing drift in `apps/admin/app/components/control-plane-workspace.tsx` and responsive KPI grid update in `apps/admin/app/globals.css`.
-  - Extended route tests for observability payload + Stripe webhook typed capture updates in `apps/admin/app/api/lib/routes.integration.test.ts`.
-  - Finalized Business/GTM baseline definitions in `.brain/PRODUCT_SPEC.md` section `5` (plan matrix, setup SLA policy, managed services model).
+- Completed this session (2026-02-21, session 4):
+  - **Phase 3**: Active Transactions — 4 DB models (Transaction, TransactionParty, TransactionDocument, TransactionMilestone), migration `202602210002_add_transaction_models`, 7 API routes (factory pattern), 5 UI components (TransactionsView, TransactionPipeline, TransactionCard, TransactionDetailModal, NewTransactionForm), workspace nav integration.
+  - **Phase 12B**: Lead Source ROI Chart — SourceRoiChart component with editable cost inputs, pure CSS bar chart, ROI tier coloring, wired into AnalyticsView.
+  - **Phase 13A**: Unified Lead Timeline — UnifiedTimeline + TimelineEvent components replacing 3 separate sections. Category filter chips, day grouping, relative timestamps, category-colored left borders.
+  - **Phase 13B**: Lead Tags — DB migration `202602210003_add_lead_tags` (tags TEXT column on Lead), LeadTagInput component with autocomplete + preset suggestions, `GET /api/leads/tags` endpoint, PATCH support, filter-by-tag in list query.
+  - **Phase 13C**: Source Attribution Chain — SourceAttributionChain component with transit-map visualization, auto-computed from lead source + activities, deduplication of consecutive same-type events, overflow indicator.
+  - **Phase 13D**: Duplicate Detection — `findPotentialDuplicateLeads` DB helper (email/phone/address matching), `GET /api/leads/duplicates` route (factory pattern), DuplicateWarning component with View/Dismiss actions, wired into LeadProfileModal.
+- Previously completed (sessions 1-3):
+  - Phase 0: Component Decomposition
+  - Phase 1A-1E: UI Enhancements
+  - Phase 2: Properties Section
+  - Phase 4: Drag-and-Drop Pipeline
+  - Phase 5: Dark Mode
+  - Phase 6A/6B: ICS Calendar + Performance
+  - Phase 7: Auto Lead-to-Property Matching
+  - Phase 10A-10D: My Day, Conversion Funnel, Revenue Pipeline, Breadcrumb
+  - Phase 11A-11C: Command Palette, Notification Center, Pinned Leads
+  - Phase 12A/12C: Analytics View, CSV Export
+  - Phase 14A-14C: Pipeline Swimlanes, Deal Values, Pipeline Aging
+  - Phase 9C (partial): Communication Quick Actions
 - Still pending:
-  - Propagate GTM baseline into sales/onboarding runbook + Admin seed defaults.
-  - Manual browser click-through for Admin and CRM once current product-direction override is lifted.
-  - Continue periodic Windows Prisma reliability sampling and trend recording.
+  - Phase 8: AI Integration Foundation (packages/ai scaffold)
+  - Phase 9A/9B/9D: Reminders, Templates, Escalation (depends on Phase 8)
+  - Phase 13E-13G: AI Market Digest, AI Listing Desc, AI features (depends on Phase 8)
+  - Phase 14D-14I: Win/Loss Analysis, Mobile, Offline, Calendar Sync, MLS Feed, Documents
 
 ## Validation (Most Recent)
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`43/43`).
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:generate:sample --workspace @real-estate/db -- 12 --json --exit-zero"` passes (`12/12`, `0` `EPERM` failures).
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run worker:ingestion:drain"` passes (`totalProcessed: 0`, `totalFailed: 0`, `totalDeadLettered: 0`).
-- Known unrelated baseline issue remains:
-  - `./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json` fails due existing unresolved import path `@real-estate/types/website-config` in `packages/db/src/seed-data.ts` and `packages/db/src/website-config.ts`.
+- `npx tsc --noEmit -p apps/crm/tsconfig.json` — CLEAN (0 errors).
+- `npm run lint --workspace @real-estate/crm` — 0 errors, 2 warnings (pre-existing unused eslint-disable in seed script).
+- `npm run test:routes --workspace @real-estate/crm` — 25/25 pass.
+- `npm run test:workspace --workspace @real-estate/crm` — 4/4 pass.
+
+## Key New Files This Session
+- `packages/db/prisma/migrations/202602210002_add_transaction_models/migration.sql`
+- `packages/db/prisma/migrations/202602210003_add_lead_tags/migration.sql`
+- `packages/db/src/transactions.ts` — Transaction CRUD helpers
+- `packages/types/src/transactions.ts` — Transaction type contracts
+- `apps/crm/app/api/transactions/**` — 7 transaction API route files
+- `apps/crm/app/components/transactions/**` — 5 transaction UI components
+- `apps/crm/app/components/analytics/SourceRoiChart.tsx` — ROI chart
+- `apps/crm/app/components/leads/UnifiedTimeline.tsx` — Unified timeline
+- `apps/crm/app/components/leads/TimelineEvent.tsx` — Timeline event
+- `apps/crm/app/components/leads/LeadTagInput.tsx` — Tag input with autocomplete
+- `apps/crm/app/components/leads/SourceAttributionChain.tsx` — Attribution chain
+- `apps/crm/app/components/leads/DuplicateWarning.tsx` — Duplicate warning
+- `apps/crm/app/api/leads/tags/route.ts` — Tags listing endpoint
+- `apps/crm/app/api/leads/duplicates/route.ts` — Duplicate detection endpoint
 
 ## First Actions Next Session
-1. Run `platform-session-bootstrap` and re-read `.brain/CURRENT_FOCUS.md` Immediate Next Steps.
-2. Locate/create the sales/onboarding runbook artifact and encode canonical plan/SLA/services baseline from `.brain/PRODUCT_SPEC.md`.
-3. Update Admin seed defaults to reflect the same plan tiers and baseline onboarding/service assumptions.
-4. Run targeted validation for touched paths and record outcomes in `.brain/CURRENT_FOCUS.md`.
-5. Keep manual click-through deferred unless product-direction override is explicitly lifted.
+1. Run `/session-bootstrap`.
+2. Phase 8 (AI Integration Foundation) is the recommended next phase — scaffold `packages/ai/` and create CRM AI endpoints.
+3. Phase 8 requires scaffolding `packages/ai/` package with prompt templates, orchestration logic, and config.
+4. After Phase 8, unlock Phase 9A/9B/9D (reminders, templates, escalation) and Phase 13E-13G (AI features).
 
 ## Constraints To Keep
 - Preserve tenant isolation for all request/event paths and UI data interactions.
-- Keep shared package boundaries strict: contracts in `packages/types`, persistence/helpers in `packages/db`, app UI in `apps/admin`.
-- Do not modify CRM app files or CRM-owned planning artifacts (`apps/crm/**`, `.brain/CRM_Update.md`) in this workstream.
+- Keep shared package boundaries strict: no cross-app imports.
+- Follow factory pattern for new API routes.
+- Strict React lint rules: no setState in effects, no ref access during render.
 - Treat Windows-authoritative command results as canonical when WSL sandbox limitations are present.
+- Use `/frontend-design` skill for UI component design work.

@@ -238,6 +238,11 @@ function toCrmContact(record: {
   };
 }
 
+function toNullableIso(value: string | Date | null | undefined): string | null {
+  if (value === null || value === undefined) return null;
+  return toIsoString(value);
+}
+
 function toCrmLead(record: {
   id: string;
   tenantId: string;
@@ -254,9 +259,19 @@ function toCrmLead(record: {
   beds: number | null;
   baths: number | null;
   sqft: number | null;
+  lastContactAt?: string | Date | null;
+  nextActionAt?: string | Date | null;
+  nextActionNote?: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  tags?: string;
   createdAt: string | Date;
   updatedAt: string | Date;
 }): CrmLead {
+  let parsedTags: string[] = [];
+  if (record.tags) {
+    try { parsedTags = JSON.parse(record.tags); } catch { /* keep empty */ }
+  }
   return {
     id: record.id,
     tenantId: record.tenantId,
@@ -273,6 +288,12 @@ function toCrmLead(record: {
     beds: record.beds,
     baths: record.baths,
     sqft: record.sqft,
+    lastContactAt: toNullableIso(record.lastContactAt),
+    nextActionAt: toNullableIso(record.nextActionAt),
+    nextActionNote: record.nextActionNote ?? null,
+    priceMin: record.priceMin ?? null,
+    priceMax: record.priceMax ?? null,
+    tags: parsedTags,
     createdAt: toIsoString(record.createdAt),
     updatedAt: toIsoString(record.updatedAt),
   };
@@ -322,6 +343,12 @@ export interface UpdateCrmLeadInput {
   beds?: number | null;
   baths?: number | null;
   sqft?: number | null;
+  lastContactAt?: string | Date | null;
+  nextActionAt?: string | Date | null;
+  nextActionNote?: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  tags?: string[];
 }
 
 export interface UpdateCrmContactInput {
@@ -353,6 +380,7 @@ export interface CreateCrmLeadInput {
   beds?: number | null;
   baths?: number | null;
   sqft?: number | null;
+  tags?: string[];
 }
 
 async function resolveOrCreateContact(tx: any, event: WebsiteLeadSubmittedEvent): Promise<string | null> {
@@ -1168,6 +1196,7 @@ export async function listLeadsByTenantId(tenantId: string, options: ListCrmLead
         ...(options.leadType ? { leadType: options.leadType } : {}),
         ...(options.source ? { source: options.source } : {}),
         ...(options.contactId ? { contactId: options.contactId } : {}),
+        ...(options.tag ? { tags: { contains: `"${options.tag}"` } } : {}),
       },
       orderBy: { createdAt: 'desc' },
       take,
@@ -1329,6 +1358,7 @@ export async function createLeadForTenant(tenantId: string, input: CreateCrmLead
         beds: input.beds ?? null,
         baths: input.baths ?? null,
         sqft: input.sqft ?? null,
+        tags: JSON.stringify(input.tags ?? []),
         createdAt: now,
         updatedAt: now,
       },
@@ -1377,6 +1407,24 @@ export async function updateLeadForTenant(
   }
   if (input.sqft !== undefined) {
     data.sqft = input.sqft;
+  }
+  if (input.lastContactAt !== undefined) {
+    data.lastContactAt = input.lastContactAt ? new Date(input.lastContactAt) : null;
+  }
+  if (input.nextActionAt !== undefined) {
+    data.nextActionAt = input.nextActionAt ? new Date(input.nextActionAt) : null;
+  }
+  if (input.nextActionNote !== undefined) {
+    data.nextActionNote = input.nextActionNote;
+  }
+  if (input.priceMin !== undefined) {
+    data.priceMin = input.priceMin;
+  }
+  if (input.priceMax !== undefined) {
+    data.priceMax = input.priceMax;
+  }
+  if (input.tags !== undefined) {
+    data.tags = JSON.stringify(input.tags);
   }
 
   try {
@@ -1554,5 +1602,128 @@ export async function getContactByIdForTenant(tenantId: string, contactId: strin
     return contact ? toCrmContact(contact) : null;
   } catch {
     return null;
+  }
+}
+
+export async function listAllLeadTagsForTenant(tenantId: string): Promise<string[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return [];
+  }
+
+  try {
+    const leads = await prisma.lead.findMany({
+      where: { tenantId },
+      select: { tags: true },
+    });
+
+    const tagSet = new Set<string>();
+    for (const lead of leads) {
+      try {
+        const parsed = JSON.parse(lead.tags) as string[];
+        for (const t of parsed) {
+          if (t) tagSet.add(t);
+        }
+      } catch { /* skip malformed */ }
+    }
+    return Array.from(tagSet).sort();
+  } catch {
+    return [];
+  }
+}
+
+export interface DuplicateLeadMatch {
+  lead: CrmLead;
+  contact: CrmContact | null;
+  matchReasons: string[];
+}
+
+export async function findPotentialDuplicateLeads(
+  tenantId: string,
+  opts: { excludeLeadId?: string; email?: string; phone?: string; address?: string }
+): Promise<DuplicateLeadMatch[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+
+  const { excludeLeadId, email, phone, address } = opts;
+  const normalizedEmail = email?.trim().toLowerCase() || null;
+  const normalizedPhone = phone?.replace(/\D/g, '') || null;
+  const normalizedAddress = address?.trim().toLowerCase() || null;
+
+  if (!normalizedEmail && !normalizedPhone && !normalizedAddress) return [];
+
+  try {
+    // Find contacts matching email or phone
+    const contactConditions: Array<Record<string, unknown>> = [];
+    if (normalizedEmail) {
+      contactConditions.push({ emailNormalized: normalizedEmail });
+    }
+    if (normalizedPhone) {
+      contactConditions.push({ phoneNormalized: normalizedPhone });
+    }
+
+    const matchedContactIds = new Set<string>();
+    if (contactConditions.length > 0) {
+      const contacts = await prisma.contact.findMany({
+        where: {
+          tenantId,
+          OR: contactConditions,
+        },
+        select: { id: true, emailNormalized: true, phoneNormalized: true },
+      });
+      for (const c of contacts) {
+        matchedContactIds.add(c.id);
+      }
+    }
+
+    // Build lead query conditions
+    const leadOrConditions: Array<Record<string, unknown>> = [];
+    if (matchedContactIds.size > 0) {
+      leadOrConditions.push({ contactId: { in: Array.from(matchedContactIds) } });
+    }
+    if (normalizedAddress) {
+      leadOrConditions.push({ listingAddress: { contains: normalizedAddress } });
+    }
+
+    if (leadOrConditions.length === 0) return [];
+
+    const leads = await prisma.lead.findMany({
+      where: {
+        tenantId,
+        ...(excludeLeadId ? { id: { not: excludeLeadId } } : {}),
+        OR: leadOrConditions,
+      },
+      include: { contact: true },
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const results: DuplicateLeadMatch[] = [];
+    for (const row of leads) {
+      const reasons: string[] = [];
+      const contact = row.contact;
+
+      if (contact && normalizedEmail && contact.emailNormalized === normalizedEmail) {
+        reasons.push('Email match');
+      }
+      if (contact && normalizedPhone && contact.phoneNormalized === normalizedPhone) {
+        reasons.push('Phone match');
+      }
+      if (normalizedAddress && row.listingAddress?.toLowerCase().includes(normalizedAddress)) {
+        reasons.push('Address match');
+      }
+
+      if (reasons.length > 0) {
+        results.push({
+          lead: toCrmLead(row),
+          contact: contact ? toCrmContact(contact) : null,
+          matchReasons: reasons,
+        });
+      }
+    }
+
+    return results;
+  } catch {
+    return [];
   }
 }

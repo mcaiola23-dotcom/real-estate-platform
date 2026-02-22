@@ -5,10 +5,17 @@ import type {
   CrmLeadStatus,
   CrmLeadType,
   CrmPagination,
-} from '@real-estate/types/crm';
+  CrmTransactionListQuery,
+  TransactionStatus,
+  TransactionSide,
+} from '@real-estate/types';
 
 const VALID_STATUSES: Set<CrmLeadStatus> = new Set(['new', 'qualified', 'nurturing', 'won', 'lost']);
 const VALID_LEAD_TYPES: Set<CrmLeadType> = new Set(['website_lead', 'valuation_request']);
+const VALID_TXN_STATUSES: Set<TransactionStatus> = new Set([
+  'under_contract', 'inspection', 'appraisal', 'title', 'closing', 'closed', 'fallen_through',
+]);
+const VALID_TXN_SIDES: Set<TransactionSide> = new Set(['buyer', 'seller', 'dual']);
 
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 200;
@@ -43,6 +50,7 @@ export function parseLeadListQuery(searchParams: URLSearchParams): CrmLeadListQu
       leadTypeValue && VALID_LEAD_TYPES.has(leadTypeValue as CrmLeadType) ? (leadTypeValue as CrmLeadType) : undefined,
     source: parseOptionalString(searchParams.get('source')),
     contactId: parseOptionalString(searchParams.get('contactId')),
+    tag: parseOptionalString(searchParams.get('tag')),
     limit,
     offset,
   };
@@ -64,6 +72,18 @@ export function parseActivityListQuery(searchParams: URLSearchParams): CrmActivi
     leadId: parseOptionalString(searchParams.get('leadId')),
     contactId: parseOptionalString(searchParams.get('contactId')),
     activityType: parseOptionalString(searchParams.get('activityType')),
+    limit,
+    offset,
+  };
+}
+
+export function parseTransactionListQuery(searchParams: URLSearchParams): CrmTransactionListQuery {
+  const { limit, offset } = parsePaginationQuery(searchParams);
+  const statusValue = searchParams.get('status');
+  const sideValue = searchParams.get('side');
+  return {
+    status: statusValue && VALID_TXN_STATUSES.has(statusValue as TransactionStatus) ? (statusValue as TransactionStatus) : undefined,
+    side: sideValue && VALID_TXN_SIDES.has(sideValue as TransactionSide) ? (sideValue as TransactionSide) : undefined,
     limit,
     offset,
   };

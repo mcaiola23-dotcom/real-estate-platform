@@ -420,3 +420,78 @@
 ### D-103: Standardize onboarding SLA and managed-services operating model as default go-to-market baseline
 **Decision**: Define setup-package deliverables + 15-business-day onboarding SLA in `.brain/PRODUCT_SPEC.md` (`5.2`), and define managed-services catalog + staffing/cadence/fulfillment SLAs in `.brain/PRODUCT_SPEC.md` (`5.3`).
 **Reason**: GTM execution required explicit commitments for delivery scope, timing, and post-launch service operations; codifying these now enables consistent sales scoping and predictable operator workflows across new tenant launches.
+
+## 2026-02-21
+### D-104: Tackle as many CRM phases as possible per session
+**Decision**: No fixed phase-per-session limit. Work through phases sequentially, completing as many as time and complexity allow per session.
+**Reason**: Phase duration varies significantly; fixed limits would either under-deliver or force incomplete phases.
+
+### D-105: Use shared package for CRM properties data source
+**Decision**: Extract listing types and mock data from `apps/web` into `packages/types` so both `apps/web` and `apps/crm` import from the same source.
+**Reason**: Preserves the no-cross-app-imports rule while avoiding data duplication. Sets up clean architecture for when real IDX/MLS data replaces mocks.
+
+### D-106: Use @dnd-kit for drag-and-drop pipeline
+**Decision**: Use `@dnd-kit/core` + `@dnd-kit/sortable` for the pipeline board drag-and-drop feature.
+**Reason**: Purpose-built for React hooks, excellent keyboard accessibility, small bundle (~10KB), SSR-compatible. Preferred over native HTML5 DnD.
+
+## 2026-02-21
+
+### D-107: Add 5 lead tracking columns via ALTER TABLE migration
+**Decision**: Add `lastContactAt`, `nextActionAt`, `nextActionNote`, `priceMin`, `priceMax` as nullable columns to the Lead table via migration `202602210001_add_lead_tracking_fields`.
+**Reason**: Enables inline-editable fields in lead modal, contact history logging with timestamp tracking, and urgent follow-ups dashboard widget without breaking existing data.
+
+### D-108: Remove leadBehavior prop from LeadProfileModal
+**Decision**: Remove the `leadBehavior` prop from `LeadProfileModal` after replacing the static price range display with editable `priceMin`/`priceMax` draft fields.
+**Reason**: The prop's only usage was `leadBehavior?.minPrice` / `leadBehavior?.maxPrice` in a definition grid. With editable fields sourced from the lead draft, the prop became unused. Behavior intelligence data (searches, listings, favorites) uses separate `searchSignals` and `listingSignals` props.
+
+### D-109: Use angular straight-line SVG paths for 7-Day Pulse chart
+**Decision**: Replace bezier curves (`C` commands) with straight lines (`L` commands) in the 7-Day Pulse SVG for a heart-rate-monitor aesthetic.
+**Reason**: Aligns with the design direction: sharp angular charts, not smooth curves. Combined with `strokeLinejoin="miter"` for consistent sharp angles.
+
+### D-110: Hydration-safe time greeting via useState + useEffect
+**Decision**: Replace `useMemo(() => getTimeGreeting(), [])` with `useState('Welcome')` + `useEffect` for the dashboard greeting.
+**Reason**: `getTimeGreeting()` returns different values on server vs client (SSR renders at build time), causing React hydration mismatch. The `useEffect` pattern ensures the time-dependent value only computes client-side.
+
+### D-111: Dark mode via CSS custom property override on `[data-theme="dark"]`
+**Decision**: Implement dark mode by overriding CSS variables in a `[data-theme="dark"]` selector rather than a separate stylesheet or CSS-in-JS approach.
+**Reason**: The codebase already uses CSS variables extensively. A single override block is minimal, maintainable, and doesn't require any component-level theme awareness.
+
+### D-112: useCrmTheme hook with lazy initializer (not effect-based setState)
+**Decision**: Use `useState(() => readStoredTheme(tenantId))` lazy initializer instead of `useState('light')` + `useEffect(setThemeState(...))`.
+**Reason**: React strict lint rules flag setState in effects as cascading render trigger. Lazy initializer reads localStorage synchronously during initialization, avoiding the lint error and an extra render cycle.
+
+### D-113: Avoid ref access during render — use mount/unmount for CommandPalette reset
+**Decision**: Split CommandPalette into outer guard + inner component that mounts fresh when opened.
+**Reason**: React strict lint rules prevent ref access during render body. Mounting the inner component fresh on open naturally resets query/selection state without effects or refs.
+
+### D-114: Pipeline aging thresholds — 7d/14d/30d
+**Decision**: Use 7d (warm/amber), 14d (stale/orange), 30d+ (critical/red) for pipeline aging badges.
+**Reason**: Real estate deals move on weekly rhythms — 7 days signals attention needed, 14 days signals risk, 30+ signals potential loss.
+
+### D-115: Add analytics as workspace navigation view
+**Decision**: Add `'analytics'` to `WorkspaceNav` and `WorkspaceView` types with a dedicated `AnalyticsView` component.
+**Reason**: Performance metrics and source ROI analysis deserve their own dedicated view, separate from the dashboard which focuses on daily operational context.
+
+### D-116: React.memo on leaf components, dynamic() for extracted views
+**Decision**: Apply `React.memo` to `StatusIcon`, `KpiSparkline`, `PropertyCard`, and `MyDayPanel`. Use `next/dynamic` for `ProfileView`, `SettingsView`, `LeadProfileModal`, `PropertiesView`.
+**Reason**: Leaf components receive stable props from parent memos/callbacks — memo prevents unnecessary re-renders. Dynamic imports reduce initial bundle size for views only loaded on navigation.
+
+### D-117: Transaction models as separate tables (not embedded JSON)
+**Decision**: Create 4 dedicated Prisma models (Transaction, TransactionParty, TransactionDocument, TransactionMilestone) with foreign keys and indexes.
+**Reason**: Transactions have structured sub-resources (parties, documents, milestones) that benefit from relational queries, filtering, and pagination. Embedded JSON would limit queryability and make reporting difficult.
+
+### D-118: Lead tags stored as JSON text column
+**Decision**: Store tags as a JSON text array (`tags TEXT DEFAULT '[]'`) on the Lead model rather than a separate TagAssignment junction table.
+**Reason**: Tags are simple string labels with low cardinality per lead (max 10). JSON text keeps queries simple (SQLite `contains` for filtering) and avoids join overhead. Tag autocomplete aggregates from all leads in the tenant.
+
+### D-119: Unified Timeline replaces separate behavior + activity sections
+**Decision**: Replace the 3 separate sections (behavior intelligence cards, signal lists, activity timeline) in LeadProfileModal with a single `UnifiedTimeline` component that interleaves all event types chronologically.
+**Reason**: Separate sections fragmented the lead story. A unified chronological feed with category filters gives agents a complete picture of lead engagement in one scrollable view.
+
+### D-120: Source attribution chain as transit-map visualization
+**Decision**: Derive the attribution chain from lead source + activity records chronologically, deduplicate consecutive same-type events, and display as a compact horizontal station-dot chain.
+**Reason**: Agents need to quickly understand how a lead was acquired and their journey. The transit-map metaphor is compact, scannable, and fits in the modal header area.
+
+### D-121: Duplicate detection via contact email/phone + address matching
+**Decision**: Duplicate detection queries contacts by normalized email/phone and leads by address substring match, excluding the current lead. Results show in a dismissible warning banner.
+**Reason**: Real estate CRMs commonly have duplicate leads from the same person submitting multiple inquiries. Early detection prevents wasted effort and data fragmentation.

@@ -241,6 +241,12 @@ exports.Prisma.LeadScalarFieldEnum = {
   beds: 'beds',
   baths: 'baths',
   sqft: 'sqft',
+  lastContactAt: 'lastContactAt',
+  nextActionAt: 'nextActionAt',
+  nextActionNote: 'nextActionNote',
+  priceMin: 'priceMin',
+  priceMax: 'priceMax',
+  tags: 'tags',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -298,6 +304,62 @@ exports.Prisma.AdminAuditEventScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  leadId: 'leadId',
+  contactId: 'contactId',
+  propertyAddress: 'propertyAddress',
+  status: 'status',
+  side: 'side',
+  salePrice: 'salePrice',
+  listPrice: 'listPrice',
+  closingDate: 'closingDate',
+  contractDate: 'contractDate',
+  inspectionDate: 'inspectionDate',
+  appraisalDate: 'appraisalDate',
+  titleDate: 'titleDate',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TransactionPartyScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  tenantId: 'tenantId',
+  role: 'role',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  company: 'company',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TransactionDocumentScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  tenantId: 'tenantId',
+  documentType: 'documentType',
+  fileName: 'fileName',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TransactionMilestoneScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  tenantId: 'tenantId',
+  milestoneType: 'milestoneType',
+  scheduledAt: 'scheduledAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -323,7 +385,11 @@ exports.Prisma.ModelName = {
   Activity: 'Activity',
   IngestedEvent: 'IngestedEvent',
   IngestionQueueJob: 'IngestionQueueJob',
-  AdminAuditEvent: 'AdminAuditEvent'
+  AdminAuditEvent: 'AdminAuditEvent',
+  Transaction: 'Transaction',
+  TransactionParty: 'TransactionParty',
+  TransactionDocument: 'TransactionDocument',
+  TransactionMilestone: 'TransactionMilestone'
 };
 
 /**

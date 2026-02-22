@@ -20,6 +20,9 @@ const ACTIVITY_LABELS: Record<string, string> = {
   website_listing_unfavorited: 'Listing Unfavorited',
   lead_status_changed: 'Status Updated',
   note: 'Note',
+  call_logged: 'Call Logged',
+  text_logged: 'Text Logged',
+  email_logged: 'Email Logged',
 };
 
 export function formatLeadTypeLabel(leadType: CrmLeadType): string {
