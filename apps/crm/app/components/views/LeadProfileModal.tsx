@@ -17,9 +17,12 @@ import {
   formatLeadTypeLabel,
 } from '../../lib/crm-display';
 import { LeadEngagementGauge } from '../shared/LeadEngagementGauge';
+import { AiScoreExplanation } from '../shared/AiScoreExplanation';
 import { LeadActivityChart } from '../shared/LeadActivityChart';
 import { PriceInterestBar } from '../shared/PriceInterestBar';
 import { ContactHistoryLog } from '../leads/ContactHistoryLog';
+import { AiLeadSummary } from '../leads/AiLeadSummary';
+import { AiNextActions } from '../leads/AiNextActions';
 import { DuplicateWarning } from '../leads/DuplicateWarning';
 import { LeadTagInput } from '../leads/LeadTagInput';
 import { SourceAttributionChain } from '../leads/SourceAttributionChain';
@@ -402,12 +405,20 @@ export function LeadProfileModal({
           <section className="crm-modal-section">
             <h4>Lead Intelligence</h4>
             <div className="crm-lead-insights">
-              <LeadEngagementGauge score={leadScore.score} label={leadScore.label} />
+              <div className="crm-lead-insights__gauge-wrapper">
+                <LeadEngagementGauge score={leadScore.score} label={leadScore.label} />
+                <AiScoreExplanation
+                  leadId={lead.id}
+                  tenantId={lead.tenantId}
+                />
+              </div>
               <div className="crm-lead-insights-charts">
                 <LeadActivityChart activities={activities} />
                 <PriceInterestBar signals={listingSignals} />
               </div>
             </div>
+            <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
+            <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
           </section>
         </div>
 

@@ -60,7 +60,7 @@
 - [x] Identify and implement one additional mitigation for persistent Windows Prisma engine rename lock when direct generation repeatedly fails (`query_engine-windows.dll.node` EPERM), then re-run reliability sample to verify improved full-engine success rate. (Implemented 2026-02-17 via new direct wrapper `packages/db/scripts/db-generate-direct.mjs` with rename-lock probe/wait + cleanup + retry/backoff, and re-ran Windows-authoritative sample: still `0/6` pass, so mitigation landed but did not improve success rate yet.)
 - [x] Implement next mitigation targeting lock-holder process/file-handle contention for `packages/db/generated/prisma-client/query_engine-windows.dll.node` (beyond retry/cleanup/wait), then compare Windows sample pass rate before/after. (Implemented 2026-02-17 by adding healthy full-engine client reuse gate in `packages/db/scripts/db-generate-direct.mjs`; Windows-authoritative sample improved from `0/6` to `6/6` pass for the same command.)
 - [x] Run an extended Windows reliability sample (`db:generate:sample -- 10+ --json --exit-zero`) to confirm mitigation stability over a larger attempt window and record results in `.brain/CURRENT_FOCUS.md`. (Validated 2026-02-17 via Windows `cmd.exe`: `db:generate:sample -- 12 --json --exit-zero` passed `12/12` with `0` `EPERM` failures; post-sample `worker:ingestion:drain` also passed.)
-- [ ] Continue periodic Windows reliability sampling (10+ attempts) after restarts/environment changes and track pass/fail trend in `.brain/CURRENT_FOCUS.md`. (Latest 2026-02-20 Windows-authoritative sample after Admin observability/drift-summary updates: `12/12` pass, `0` `EPERM` lock failures; post-sample `worker:ingestion:drain` clean.)
+- [ ] Continue periodic Windows reliability sampling (10+ attempts) after restarts/environment changes and track pass/fail trend in `.brain/CURRENT_FOCUS.md`. (Latest 2026-02-22 Windows-authoritative sample: `12/12` pass, `0` `EPERM` lock failures; `worker:ingestion:drain` command from this mixed WSL/Windows dependency state was non-authoritative due `esbuild` platform mismatch.)
 - [x] Implement next Prisma Windows lock mitigation for `db:generate:direct` and re-run `db:generate:sample -- 12 --json --exit-zero` to restore stable pass rate. (Completed 2026-02-20 via preflight lock reuse + `DATABASE_URL` fallback + existing-engine preservation in `packages/db/scripts/db-generate-direct.mjs`; sample recovered to `12/12` pass.)
 - [x] Add CRM lead-list workflow refinements: quick search/filter controls and pipeline grouping option while preserving tenant-scoped API contracts. (Implemented 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` with status-tab filtering, multi-filter controls, and sticky quick actions for draft saves.)
 - [x] Add CRM micro-interaction polish: optimistic mutation feedback, inline success toasts, and unsaved-change indicators for lead notes/status edits. (Implemented 2026-02-17 in `apps/crm/app/components/crm-workspace.tsx` + `apps/crm/app/globals.css` with optimistic lead/contact/activity mutations, toast stack feedback, and per-lead unsaved draft indicators.)
@@ -129,8 +129,11 @@
 - [x] Phase 13B: Lead Tags — DB migration (tags TEXT column), inline tag input with autocomplete, preset suggestions, PATCH API, `/api/leads/tags` endpoint, filter-by-tag support. (Completed 2026-02-21, session 4.)
 - [x] Phase 13C: Source Attribution Chain — SourceAttributionChain component with transit-map visualization, auto-computed from activities, deduplication, overflow indicator. (Completed 2026-02-21, session 4.)
 - [x] Phase 13D: Duplicate Detection — `findPotentialDuplicateLeads` DB helper, `/api/leads/duplicates` route, DuplicateWarning component with View/Dismiss actions. (Completed 2026-02-21, session 4.)
-- [ ] Phase 8: AI Integration Foundation — requires `packages/ai` scaffold.
-- [ ] Phases 9 (remaining), 13E-13G (AI features), remaining 14: See implementation plan.
+- [x] Phase 8: AI Integration Foundation — `packages/ai/` scaffold with types, config, LLM client, prompt templates, and 4 CRM orchestration modules (next-action-engine, lead-intelligence, message-drafting, conversation-extractor). 5 factory-pattern AI API routes, 4 AI UI components, 12 route tests. (Completed 2026-02-22, session 5.)
+- [ ] Phase 9A: AI-Powered Reminders (unlocked by Phase 8).
+- [ ] Phase 9B: AI Message Templates (unlocked by Phase 8).
+- [ ] Phase 9D: AI Escalation (unlocked by Phase 8).
+- [ ] Phases 13E-13G (AI features), remaining 14: See implementation plan.
 
 ## Control Plane Roadmap (Longer Term)
 - [x] Improve Admin mutation error transparency: surface actionable backend error messages in UI (RBAC denial, duplicate slug/domain, validation failures) with field-level hints. (Implemented 2026-02-18 in admin onboarding/domain/settings flows with scoped next-step guidance.)
@@ -145,6 +148,13 @@
 - [x] Integrate billing/subscription operations into control-plane workflows (plan transitions, entitlement sync, trial/payment status visibility). (Completed 2026-02-20 via Prisma model/migration `TenantBillingSubscription`, shared db helpers, Admin billing API route, and billing controls in `apps/admin/app/components/control-plane-workspace.tsx`.)
 - [x] Build support diagnostics toolkit per tenant (auth/domain/ingestion checks with one-click operator diagnostics and remediation actions). (Completed 2026-02-20 via diagnostics API/db/UI surfaces with one-click remediation actions.)
 - [x] Harden billing-provider integration on top of control-plane billing baseline (external provider/customer sync, status reconciliation/webhooks, and entitlement drift detection). (Completed 2026-02-20 across shared reconciliation, provider-native Stripe signature/payload hardening, and entitlement drift reporting with route-level coverage.)
+- [x] Improve Admin workspace information architecture/usability (guided mode, clearer section naming, selected-tenant next-step summary, progressive disclosure for advanced tools). (Completed 2026-02-22 in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/globals.css`.)
+- [x] Add task-based Admin workspace navigation with operator Action Center and inline glossary help for advanced platform terms. (Completed 2026-02-22 in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/globals.css`.)
+- [x] Propagate GTM plan/onboarding/service baselines into operator enablement artifacts and Admin onboarding guidance/default surfaces. (Completed 2026-02-22 via `project_tracking/operator_onboarding_runbook.md`, `apps/admin/app/lib/commercial-baselines.ts`, Admin onboarding UI integration, plan-tier checklist templates, and actor seed presets.)
+- [x] Extract Action Center prioritization into a tested pure helper and split new Admin task-navigation surfaces into subcomponents. (Completed 2026-02-22 via `apps/admin/app/lib/action-center.ts`, `apps/admin/app/lib/action-center.test.ts`, `apps/admin/app/components/control-plane/ActionCenterPanel.tsx`, and `apps/admin/app/components/control-plane/WorkspaceTaskTabs.tsx`.)
+- [x] Continue Admin workspace decomposition by extracting `support` and `health` tab bodies plus workspace tab-metrics helper into dedicated/tested modules. (Completed 2026-02-22 via `SupportTabBody.tsx`, `PlatformHealthTabBody.tsx`, `workspace-task-metrics.ts`, and `workspace-task-metrics.test.ts`.)
+- [x] Continue Admin workspace decomposition by extracting `billing`, `access`, and `audit` tab bodies into dedicated components while preserving tenant-scoped behavior. (Completed 2026-02-22 via `BillingTabBody.tsx`, `AccessTabBody.tsx`, and `AuditTabBody.tsx` plus wiring updates in `apps/admin/app/components/control-plane-workspace.tsx`.)
+- [ ] Implement durable onboarding task persistence in Admin control plane (schema, helpers, API routes, UI state) using the design proposal in `project_tracking/admin_onboarding_task_persistence_design.md`.
 
 ## AI Roadmap
 - [ ] Create prompt registry and versioning.
@@ -161,4 +171,3 @@
 - [ ] Team and brokerage hierarchy model.
 - [ ] Marketing attribution dashboard.
 - [ ] Listing portal pilot and feasibility analysis.
-

@@ -3,11 +3,18 @@ import test from 'node:test';
 
 import type { CrmActivity, CrmContact, CrmLead, TenantContext } from '@real-estate/types';
 
+import type { LeadScoreExplanation, NextActionResult, LeadSummary } from '@real-estate/ai/types';
+
 import { createActivitiesGetHandler, createActivitiesPostHandler } from '../activities/route';
 import { createContactsGetHandler, createContactsPostHandler } from '../contacts/route';
 import { createContactPatchHandler } from '../contacts/[contactId]/route';
 import { createLeadGetHandler, createLeadPatchHandler } from '../leads/[leadId]/route';
 import { createLeadsGetHandler } from '../leads/route';
+import { createScoreExplainGetHandler } from '../ai/lead-score-explain/[leadId]/route';
+import { createNextActionGetHandler } from '../ai/next-action/[leadId]/route';
+import { createLeadSummaryGetHandler } from '../ai/lead-summary/[leadId]/route';
+import { createDraftMessagePostHandler } from '../ai/draft-message/route';
+import { createExtractInsightsPostHandler } from '../ai/extract-insights/route';
 
 const tenantContext: TenantContext = {
   tenantId: 'tenant_fairfield',
@@ -602,4 +609,321 @@ test('lead GET returns 404 when tenant-scoped lead is missing', async () => {
   });
 
   assert.equal(response.status, 404);
+});
+
+// ============================================================
+// AI Routes
+// ============================================================
+
+const testLead: CrmLead = {
+  id: 'lead_ai_1',
+  tenantId: tenantContext.tenantId,
+  contactId: null,
+  status: 'new',
+  leadType: 'website_lead',
+  source: 'website',
+  timeframe: null,
+  notes: null,
+  listingId: null,
+  listingUrl: null,
+  listingAddress: null,
+  propertyType: null,
+  beds: null,
+  baths: null,
+  sqft: null,
+  lastContactAt: null,
+  nextActionAt: null,
+  nextActionNote: null,
+  priceMin: null,
+  priceMax: null,
+  tags: [],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
+
+test('AI score-explain GET returns unauthorized when tenant context is missing', async () => {
+  const handler = createScoreExplainGetHandler({
+    requireTenantContext: unauthorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listActivitiesByTenantId: async () => [],
+    explainLeadScore: async () => ({} as LeadScoreExplanation),
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/lead-score-explain/lead_ai_1'), {
+    params: Promise.resolve({ leadId: 'lead_ai_1' }),
+  });
+  assert.equal(response.status, 401);
+});
+
+test('AI score-explain GET returns 404 when lead is missing', async () => {
+  const handler = createScoreExplainGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    explainLeadScore: async () => ({} as LeadScoreExplanation),
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/lead-score-explain/missing'), {
+    params: Promise.resolve({ leadId: 'missing' }),
+  });
+  assert.equal(response.status, 404);
+});
+
+test('AI score-explain GET returns tenant-scoped explanation', async () => {
+  const mockExplanation: LeadScoreExplanation = {
+    leadId: 'lead_ai_1',
+    tenantId: tenantContext.tenantId,
+    score: 42,
+    label: 'Interested',
+    breakdown: [],
+    naturalLanguage: 'Test explanation',
+    provenance: {
+      source: 'fallback',
+      model: null,
+      promptVersion: 'crm.lead_score_explain.v1',
+      generatedAt: new Date().toISOString(),
+      latencyMs: 5,
+      cached: false,
+    },
+  };
+
+  let receivedTenantId: string | null = null;
+  const handler = createScoreExplainGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listActivitiesByTenantId: async () => [],
+    explainLeadScore: async (tenantId: string) => {
+      receivedTenantId = tenantId;
+      return mockExplanation;
+    },
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/lead-score-explain/lead_ai_1'), {
+    params: Promise.resolve({ leadId: 'lead_ai_1' }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; explanation: LeadScoreExplanation };
+  assert.equal(body.ok, true);
+  assert.equal(body.explanation.score, 42);
+  assert.equal(body.explanation.provenance.source, 'fallback');
+});
+
+test('AI next-action GET returns unauthorized when tenant context is missing', async () => {
+  const handler = createNextActionGetHandler({
+    requireTenantContext: unauthorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listActivitiesByTenantId: async () => [],
+    computeNextActions: async () => ({} as NextActionResult),
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/next-action/lead_ai_1'), {
+    params: Promise.resolve({ leadId: 'lead_ai_1' }),
+  });
+  assert.equal(response.status, 401);
+});
+
+test('AI next-action GET returns 404 when lead is missing', async () => {
+  const handler = createNextActionGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    computeNextActions: async () => ({} as NextActionResult),
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/next-action/missing'), {
+    params: Promise.resolve({ leadId: 'missing' }),
+  });
+  assert.equal(response.status, 404);
+});
+
+test('AI next-action GET returns tenant-scoped suggestions', async () => {
+  const mockResult: NextActionResult = {
+    leadId: 'lead_ai_1',
+    tenantId: tenantContext.tenantId,
+    suggestions: [{
+      patternId: 'overdue_followup',
+      action: 'Follow up',
+      reason: 'Overdue',
+      urgency: 'high',
+      aiEnhancedReason: null,
+      provenance: {
+        source: 'rule_engine',
+        model: null,
+        promptVersion: 'crm.next_action_enhance.v1',
+        generatedAt: new Date().toISOString(),
+        latencyMs: 2,
+        cached: false,
+      },
+    }],
+    provenance: {
+      source: 'rule_engine',
+      model: null,
+      promptVersion: 'crm.next_action_enhance.v1',
+      generatedAt: new Date().toISOString(),
+      latencyMs: 2,
+      cached: false,
+    },
+  };
+
+  const handler = createNextActionGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listActivitiesByTenantId: async () => [],
+    computeNextActions: async () => mockResult,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/next-action/lead_ai_1'), {
+    params: Promise.resolve({ leadId: 'lead_ai_1' }),
+  });
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as { ok: boolean; result: NextActionResult };
+  assert.equal(body.ok, true);
+  assert.equal(body.result.suggestions.length, 1);
+  assert.equal(body.result.suggestions[0]!.patternId, 'overdue_followup');
+});
+
+test('AI lead-summary GET returns 404 when lead is missing', async () => {
+  const handler = createLeadSummaryGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    getContactByIdForTenant: async () => null,
+    generateLeadSummary: async () => ({} as LeadSummary),
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/lead-summary/missing'), {
+    params: Promise.resolve({ leadId: 'missing' }),
+  });
+  assert.equal(response.status, 404);
+});
+
+test('AI lead-summary GET returns tenant-scoped summary', async () => {
+  const mockSummary: LeadSummary = {
+    leadId: 'lead_ai_1',
+    tenantId: tenantContext.tenantId,
+    summary: 'Test summary',
+    keySignals: ['Signal 1'],
+    recommendedApproach: 'Call them',
+    provenance: {
+      source: 'fallback',
+      model: null,
+      promptVersion: 'crm.lead_summary.v1',
+      generatedAt: new Date().toISOString(),
+      latencyMs: 3,
+      cached: false,
+    },
+  };
+
+  let receivedTenantId: string | null = null;
+  const handler = createLeadSummaryGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listActivitiesByTenantId: async () => [],
+    getContactByIdForTenant: async () => null,
+    generateLeadSummary: async (tenantId: string) => {
+      receivedTenantId = tenantId;
+      return mockSummary;
+    },
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/lead-summary/lead_ai_1'), {
+    params: Promise.resolve({ leadId: 'lead_ai_1' }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; summary: LeadSummary };
+  assert.equal(body.ok, true);
+  assert.equal(body.summary.summary, 'Test summary');
+});
+
+test('AI draft-message POST returns 400 when leadId is missing', async () => {
+  const handler = createDraftMessagePostHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listActivitiesByTenantId: async () => [],
+    getContactByIdForTenant: async () => null,
+    draftMessage: async () => ({ subject: null, body: '', tone: 'professional', provenance: {} as LeadSummary['provenance'] }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/draft-message', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ context: 'Test' }),
+    })
+  );
+  assert.equal(response.status, 400);
+});
+
+test('AI draft-message POST returns 404 when lead is missing', async () => {
+  const handler = createDraftMessagePostHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listActivitiesByTenantId: async () => [],
+    getContactByIdForTenant: async () => null,
+    draftMessage: async () => ({ subject: null, body: '', tone: 'professional', provenance: {} as LeadSummary['provenance'] }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/draft-message', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ leadId: 'missing_lead', context: 'Follow up' }),
+    })
+  );
+  assert.equal(response.status, 404);
+});
+
+test('AI extract-insights POST returns 400 when text is missing', async () => {
+  const handler = createExtractInsightsPostHandler({
+    requireTenantContext: authorizedContext,
+    extractInsights: async () => ({ tenantId: '', leadId: null, insights: [], provenance: {} as LeadSummary['provenance'] }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/extract-insights', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+  );
+  assert.equal(response.status, 400);
+});
+
+test('AI extract-insights POST returns tenant-scoped insights', async () => {
+  let receivedTenantId: string | null = null;
+  const handler = createExtractInsightsPostHandler({
+    requireTenantContext: authorizedContext,
+    extractInsights: async (tenantId: string) => {
+      receivedTenantId = tenantId;
+      return {
+        tenantId,
+        leadId: null,
+        insights: [{ category: 'budget' as const, value: '$500k', confidence: 0.8 }],
+        provenance: {
+          source: 'fallback' as const,
+          model: null,
+          promptVersion: 'crm.extract_insights.v1',
+          generatedAt: new Date().toISOString(),
+          latencyMs: 1,
+          cached: false,
+        },
+      };
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/extract-insights', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ text: 'Budget is around $500k' }),
+    })
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; result: { insights: Array<{ value: string }> } };
+  assert.equal(body.ok, true);
+  assert.equal(body.result.insights.length, 1);
+  assert.equal(body.result.insights[0]!.value, '$500k');
 });

@@ -34,6 +34,26 @@ import {
   evaluatePlanGovernance,
   planFeatureTemplates,
 } from '../lib/plan-governance';
+import {
+  CONTROL_PLANE_PLAN_BASELINES,
+  MANAGED_SERVICE_BASELINES,
+  MANAGED_SERVICE_OPERATING_MODEL_BASELINES,
+  PLAN_ACTOR_SEED_PRESETS,
+  PLAN_ONBOARDING_CHECKLIST_TEMPLATES,
+  SETUP_PACKAGE_SCOPE_BASELINE,
+  SETUP_PACKAGE_SLA_POLICY_NOTES_BASELINE,
+  SETUP_PACKAGE_SLA_TIMELINE_BASELINE,
+  formatUsd,
+} from '../lib/commercial-baselines';
+import { buildActionCenterItems, type ActionCenterItem, type AdminWorkspaceTab } from '../lib/action-center';
+import { buildWorkspaceTaskMetrics } from '../lib/workspace-task-metrics';
+import { ActionCenterPanel } from './control-plane/ActionCenterPanel';
+import { AccessTabBody } from './control-plane/AccessTabBody';
+import { AuditTabBody } from './control-plane/AuditTabBody';
+import { BillingTabBody } from './control-plane/BillingTabBody';
+import { PlatformHealthTabBody } from './control-plane/PlatformHealthTabBody';
+import { SupportTabBody } from './control-plane/SupportTabBody';
+import { WorkspaceTaskTabs } from './control-plane/WorkspaceTaskTabs';
 
 interface ControlPlaneWorkspaceProps {
   initialSnapshots: ControlPlaneTenantSnapshot[];
@@ -78,6 +98,10 @@ interface PlanOption {
   code: string;
   label: string;
   summary: string;
+  primaryIcp: string;
+  includedFeatureSummary: string;
+  setupFeeTargetUsd: number;
+  monthlySubscriptionTargetUsd: number;
 }
 
 interface FeatureOption {
@@ -85,6 +109,8 @@ interface FeatureOption {
   label: string;
   detail: string;
 }
+
+type AdminWorkspaceMode = 'guided' | 'full';
 
 const GLOBAL_AUDIT_SCOPE = '__global__';
 
@@ -167,12 +193,15 @@ const onboardingSteps = [
   },
 ] as const;
 
-const planOptions: PlanOption[] = [
-  { code: 'starter', label: 'Starter', summary: 'Core CRM + website operations for solo agents.' },
-  { code: 'growth', label: 'Growth', summary: 'Adds automation and deeper lead intelligence workflows.' },
-  { code: 'pro', label: 'Pro', summary: 'Full operational stack for higher-volume teams.' },
-  { code: 'team', label: 'Team', summary: 'Expanded collaboration controls and advanced governance.' },
-];
+const planOptions: PlanOption[] = CONTROL_PLANE_PLAN_BASELINES.map((plan) => ({
+  code: plan.code,
+  label: plan.label,
+  summary: plan.summary,
+  primaryIcp: plan.primaryIcp,
+  includedFeatureSummary: plan.includedFeatureSummary,
+  setupFeeTargetUsd: plan.setupFeeTargetUsd,
+  monthlySubscriptionTargetUsd: plan.monthlySubscriptionTargetUsd,
+}));
 
 const featureOptions: FeatureOption[] = [
   { id: 'crm_pipeline', label: 'Pipeline Workspace', detail: 'Lead board, stage transitions, and activity timeline.' },
@@ -186,6 +215,19 @@ const featureLabelById = featureOptions.reduce<Record<string, string>>((result, 
   result[feature.id] = feature.label;
   return result;
 }, {});
+
+const adminGlossary: Record<string, string> = {
+  guardrails:
+    'Plan guardrails define required and disallowed features for a plan tier so tenant settings stay aligned with packaging.',
+  entitlementDrift:
+    'Entitlement drift means billing-provider entitlements and tenant settings feature flags do not match and need reconciliation.',
+  supportSession:
+    'A time-boxed elevated access window for support troubleshooting that should be started and ended explicitly.',
+  observability:
+    'Platform health signals across tenants, including runtime readiness, queue status, audit failures, and readiness metrics.',
+  auditActions:
+    'Audit actions are named operator mutations (tenant.provision, tenant.settings.update, etc.) recorded with actor/request metadata.',
+};
 
 const defaultOnboardingDraft: OnboardingDraft = {
   name: '',
@@ -494,6 +536,14 @@ function confirmDestructiveAction(message: string): boolean {
   return window.confirm(message);
 }
 
+function GlossaryHelp({ term }: { term: keyof typeof adminGlossary }) {
+  return (
+    <abbr className="admin-help-inline" title={adminGlossary[term]} aria-label={`${term} help`}>
+      ?
+    </abbr>
+  );
+}
+
 const defaultActorDraft: ActorDraft = {
   actorId: '',
   displayName: '',
@@ -519,6 +569,10 @@ function uniqueList(values: string[]): string[] {
 
 function uniquePermissions(values: ControlPlaneActorPermission[]): ControlPlaneActorPermission[] {
   return Array.from(new Set(values));
+}
+
+function resolveActorSeedPresetText(template: string, tenantSlug: string): string {
+  return template.replaceAll('{tenantSlug}', tenantSlug || 'tenant');
 }
 
 function toDateInputValue(value: string | null): string {
@@ -660,6 +714,9 @@ function buildPlanGovernanceIssue(
 export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: ControlPlaneWorkspaceProps) {
   const [snapshots, setSnapshots] = useState(initialSnapshots);
   const [selectedTenantId, setSelectedTenantId] = useState<string | null>(initialSnapshots[0]?.tenant.id ?? null);
+  const [workspaceMode, setWorkspaceMode] = useState<AdminWorkspaceMode>('guided');
+  const [showAdvancedTools, setShowAdvancedTools] = useState(false);
+  const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<AdminWorkspaceTab>('launch');
 
   const [busy, setBusy] = useState(false);
   const [workspaceIssue, setWorkspaceIssue] = useState<MutationErrorGuidance | null>(null);
@@ -909,6 +966,14 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     return evaluatePlanGovernance(selectedTenantPlanCode, selectedTenantDraftFeatureFlags);
   }, [selectedTenant, selectedTenantDraftFeatureFlags, selectedTenantPlanCode]);
 
+  const selectedPlanChecklistTemplate = useMemo(() => {
+    return PLAN_ONBOARDING_CHECKLIST_TEMPLATES[selectedTenantPlanCode] ?? PLAN_ONBOARDING_CHECKLIST_TEMPLATES.starter ?? [];
+  }, [selectedTenantPlanCode]);
+
+  const selectedPlanActorSeedPresets = useMemo(() => {
+    return PLAN_ACTOR_SEED_PRESETS.filter((preset) => preset.recommendedForPlans.includes(selectedTenantPlanCode));
+  }, [selectedTenantPlanCode]);
+
   const selectedSettingsAllowOverride = selectedTenant
     ? Boolean(settingsAllowPlanOverrideByTenant[selectedTenant.tenant.id])
     : false;
@@ -954,6 +1019,105 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       certificateMessage: 'Certificate readiness checks passed for launch.',
     };
   }, [selectedPrimaryDomain, selectedPrimaryDomainProbe]);
+
+  const selectedTenantReadinessPercent = Math.round(
+    (readinessSummary.completed / Math.max(1, readinessSummary.total)) * 100
+  );
+
+  const selectedTenantNextSteps = useMemo(() => {
+    if (!selectedTenant) {
+      return [
+        'Create a new tenant in the onboarding panel or choose one from Tenant Directory.',
+        'Then open Launch Setup to manage domains, plan, and feature flags for go-live.',
+      ];
+    }
+
+    const nextSteps: string[] = [];
+    if (selectedTenant.tenant.status !== 'active') {
+      nextSteps.push('Restore the tenant to active status before making launch or settings changes.');
+    }
+    if (!selectedPrimaryDomain) {
+      nextSteps.push('Attach a primary domain in Launch Setup.');
+    } else {
+      const dnsStatus =
+        domainProbeByDomainId[selectedPrimaryDomain.id]?.dnsStatus ?? (selectedPrimaryDomain.isVerified ? 'verified' : 'pending');
+      if (dnsStatus !== 'verified') {
+        nextSteps.push('Run Domain Status polling and complete DNS verification for the primary domain.');
+      }
+    }
+    if (selectedTenant.settings.status !== 'active') {
+      nextSteps.push('Restore tenant settings to active so plan and feature changes can be saved.');
+    }
+    if (selectedTenant.settings.featureFlags.length === 0) {
+      nextSteps.push('Apply a plan template or enable at least one feature flag before launch.');
+    }
+
+    if (nextSteps.length === 0) {
+      nextSteps.push('Launch setup is in good shape. Use Billing, Access, and Diagnostics for operational follow-through.');
+    }
+
+    return nextSteps;
+  }, [domainProbeByDomainId, selectedPrimaryDomain, selectedTenant]);
+
+  const actionCenterItems = useMemo<ActionCenterItem[]>(() => {
+    return buildActionCenterItems({
+      hasSelectedTenant: Boolean(selectedTenant),
+      tenantStatus: selectedTenant?.tenant.status,
+      settingsStatus: selectedTenant?.settings.status,
+      hasPrimaryDomain: Boolean(selectedPrimaryDomain),
+      dnsStatus: sslReadiness.dnsStatus as 'verified' | 'pending' | 'missing',
+      certificateStatus: sslReadiness.certificateStatus as 'ready' | 'pending' | 'blocked',
+      billingDriftCount: selectedTenantBillingDriftSignals.length,
+      diagnosticsLoaded: Boolean(selectedTenantDiagnostics),
+      diagnosticsFailedCount: selectedTenantDiagnostics?.counts.failed ?? 0,
+      diagnosticsWarningCount: selectedTenantDiagnostics?.counts.warning ?? 0,
+      actorCount: selectedTenantActors.length,
+    });
+  }, [
+    selectedPrimaryDomain,
+    selectedTenant,
+    selectedTenantActors.length,
+    selectedTenantBillingDriftSignals.length,
+    selectedTenantDiagnostics,
+    sslReadiness.certificateStatus,
+    sslReadiness.dnsStatus,
+  ]);
+
+  const goToWorkspaceArea = useCallback((tab: AdminWorkspaceTab, sectionId?: string) => {
+    setActiveWorkspaceTab(tab);
+    if (tab !== 'launch') {
+      setShowAdvancedTools(true);
+    }
+    if (!sectionId || typeof window === 'undefined') {
+      return;
+    }
+
+    window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 40);
+  }, []);
+
+  const workspaceTaskMetrics = useMemo(
+    () =>
+      buildWorkspaceTaskMetrics({
+        launchReadinessPercent: selectedTenantReadinessPercent,
+        supportAlertCount: selectedTenantDiagnostics
+          ? selectedTenantDiagnostics.counts.failed + selectedTenantDiagnostics.counts.warning
+          : 0,
+        billingDriftCount: selectedTenantBillingDriftSignals.length,
+        actorCount: selectedTenantActors.length,
+        deadLetterCount: observabilitySummary?.ingestion.deadLetterCount ?? 0,
+        auditEventCount: auditEvents.length,
+      }),
+    [
+      auditEvents.length,
+      observabilitySummary?.ingestion.deadLetterCount,
+      selectedTenantActors.length,
+      selectedTenantBillingDriftSignals.length,
+      selectedTenantDiagnostics,
+      selectedTenantReadinessPercent,
+    ]
+  );
 
   const wizardCanContinue = useMemo(() => {
     if (wizardStepIndex === 0) {
@@ -2165,6 +2329,30 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     });
   }
 
+  function applyActorSeedPresetToDraft(tenantId: string, tenantSlug: string, presetId: string) {
+    const preset = PLAN_ACTOR_SEED_PRESETS.find((entry) => entry.id === presetId);
+    if (!preset) {
+      return;
+    }
+
+    const actorId = resolveActorSeedPresetText(preset.actorIdTemplate, tenantSlug);
+    const email = resolveActorSeedPresetText(preset.emailTemplate, tenantSlug);
+    const permissions = uniquePermissions(preset.permissions ?? roleDefaultPermissions[preset.role]);
+
+    setActorDraftByTenant((prev) => ({
+      ...prev,
+      [tenantId]: {
+        actorId,
+        displayName: preset.displayName,
+        email,
+        role: preset.role,
+        permissions,
+      },
+    }));
+    setWorkspaceNotice(`Loaded actor seed preset "${preset.label}" into the add-actor draft.`);
+    setWorkspaceIssue(null);
+  }
+
   function setActorRoleDraft(tenantId: string, actorId: string, role: ControlPlaneActorRole) {
     const key = toActorKey(tenantId, actorId);
     setActorRoleDraftByActorKey((prev) => ({
@@ -2496,6 +2684,11 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 >
                   <span>{plan.label}</span>
                   <small>{plan.summary}</small>
+                  <small>ICP: {plan.primaryIcp}</small>
+                  <small>
+                    Commercial target: {formatUsd(plan.setupFeeTargetUsd)} setup /{' '}
+                    {formatUsd(plan.monthlySubscriptionTargetUsd)} monthly
+                  </small>
                 </button>
               );
             })}
@@ -2538,7 +2731,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
           <section className="admin-governance-panel">
             <div className="admin-row admin-space-between">
-              <strong>Plan Guardrails</strong>
+              <strong>
+                Plan Guardrails <GlossaryHelp term="guardrails" />
+              </strong>
               <span className="admin-chip">plan: {onboardingDraft.planCode}</span>
             </div>
             <p className="admin-muted">
@@ -2573,33 +2768,111 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               Allow temporary plan override for provisioning
             </label>
           </section>
+
+          <section className="admin-governance-panel">
+            <div className="admin-row admin-space-between">
+              <strong>Commercial Baseline (Operator Reference)</strong>
+              <span className="admin-chip">canonical plan matrix</span>
+            </div>
+            {(() => {
+              const selectedPlan = planOptions.find((plan) => plan.code === onboardingDraft.planCode) ?? null;
+              if (!selectedPlan) {
+                return <p className="admin-muted">Select a plan to view baseline pricing and scope expectations.</p>;
+              }
+
+              return (
+                <>
+                  <p className="admin-muted">ICP: {selectedPlan.primaryIcp}.</p>
+                  <p className="admin-muted">Included set: {selectedPlan.includedFeatureSummary}.</p>
+                  <p className="admin-muted">
+                    Pricing target: {formatUsd(selectedPlan.setupFeeTargetUsd)} setup /{' '}
+                    {formatUsd(selectedPlan.monthlySubscriptionTargetUsd)} monthly.
+                  </p>
+                </>
+              );
+            })()}
+          </section>
         </div>
       );
     }
 
     return (
-      <div className="admin-review-grid">
-        <article>
-          <h3>Tenant</h3>
-          <p>
-            <strong>{onboardingDraft.name || '—'}</strong>
-          </p>
-          <p className="admin-muted">Slug: {normalizeSlug(onboardingDraft.slug) || '—'}</p>
-        </article>
-        <article>
-          <h3>Primary Domain</h3>
-          <p>
-            <strong>{normalizeHostname(onboardingDraft.primaryDomain) || '—'}</strong>
-          </p>
-          <p className="admin-muted">Domain starts unverified and should be verified after DNS propagation.</p>
-        </article>
-        <article>
-          <h3>Plan</h3>
-          <p>
-            <strong>{onboardingDraft.planCode}</strong>
-          </p>
-          <p className="admin-muted">Features: {wizardFeatures.length > 0 ? wizardFeatures.join(', ') : 'none'}</p>
-        </article>
+      <div className="admin-wizard-grid">
+        <div className="admin-review-grid">
+          <article>
+            <h3>Tenant</h3>
+            <p>
+              <strong>{onboardingDraft.name || '—'}</strong>
+            </p>
+            <p className="admin-muted">Slug: {normalizeSlug(onboardingDraft.slug) || '—'}</p>
+          </article>
+          <article>
+            <h3>Primary Domain</h3>
+            <p>
+              <strong>{normalizeHostname(onboardingDraft.primaryDomain) || '—'}</strong>
+            </p>
+            <p className="admin-muted">Domain starts unverified and should be verified after DNS propagation.</p>
+          </article>
+          <article>
+            <h3>Plan</h3>
+            <p>
+              <strong>{onboardingDraft.planCode}</strong>
+            </p>
+            <p className="admin-muted">Features: {wizardFeatures.length > 0 ? wizardFeatures.join(', ') : 'none'}</p>
+          </article>
+        </div>
+
+        <section className="admin-governance-panel">
+          <div className="admin-row admin-space-between">
+            <strong>Setup Package Scope Baseline</strong>
+            <span className="admin-chip">GTM reference</span>
+          </div>
+          <ul className="admin-quick-start-list">
+            {SETUP_PACKAGE_SCOPE_BASELINE.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="admin-governance-panel">
+          <div className="admin-row admin-space-between">
+            <strong>Standard Onboarding SLA (Business Days)</strong>
+            <span className="admin-chip">15-day target</span>
+          </div>
+          <div className="admin-guide-grid admin-guide-grid-compact">
+            {SETUP_PACKAGE_SLA_TIMELINE_BASELINE.map((phase) => (
+              <article key={phase.window} className="admin-guide-card">
+                <strong>{phase.window}</strong>
+                <p className="admin-muted">{phase.label}</p>
+              </article>
+            ))}
+          </div>
+          <ul className="admin-quick-start-list">
+            {SETUP_PACKAGE_SLA_POLICY_NOTES_BASELINE.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="admin-governance-panel">
+          <div className="admin-row admin-space-between">
+            <strong>Managed Services Add-ons (Cross-sell After Launch)</strong>
+            <span className="admin-chip">operator enablement</span>
+          </div>
+          <div className="admin-grid">
+            {MANAGED_SERVICE_BASELINES.map((service) => (
+              <article key={service.id} className="admin-plan-card">
+                <span>{service.label}</span>
+                <small>{service.summary}</small>
+              </article>
+            ))}
+          </div>
+          <ul className="admin-quick-start-list">
+            {MANAGED_SERVICE_OPERATING_MODEL_BASELINES.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
       </div>
     );
   }
@@ -2615,13 +2888,17 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   };
 
   return (
-    <div className="admin-shell">
+    <div
+      className="admin-shell"
+      data-workspace-mode={workspaceMode}
+      data-show-advanced={showAdvancedTools ? 'true' : 'false'}
+    >
       <section className="admin-hero">
         <div>
           <p className="admin-kicker">Admin Portal</p>
-          <h1>Control Plane Onboarding</h1>
+          <h1>Tenant Operations Workspace</h1>
           <p className="admin-muted">
-            A guided provisioning workflow with domain operations and launch readiness controls for tenant onboarding.
+            Create tenants, complete launch setup, and manage support/billing/operations from one control-plane workspace.
           </p>
         </div>
         <div className="admin-row">
@@ -2629,6 +2906,119 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           <span className="admin-chip">Tenant ops workspace</span>
         </div>
       </section>
+
+      <section className="admin-card admin-workspace-guide" aria-label="Workspace guide">
+        <div className="admin-card-head admin-card-head-wrap">
+          <div className="admin-title-block">
+            <h2>Start Here</h2>
+            <p className="admin-muted">
+              Use Guided mode for the common workflow: create/select tenant, finish launch setup, then expand advanced tools
+              only when needed.
+            </p>
+          </div>
+          <div className="admin-segmented" role="tablist" aria-label="Workspace mode">
+            <button
+              type="button"
+              className={`admin-secondary admin-segment ${workspaceMode === 'guided' ? 'is-active' : ''}`}
+              aria-pressed={workspaceMode === 'guided'}
+              onClick={() => {
+                setWorkspaceMode('guided');
+              }}
+            >
+              Guided
+            </button>
+            <button
+              type="button"
+              className={`admin-secondary admin-segment ${workspaceMode === 'full' ? 'is-active' : ''}`}
+              aria-pressed={workspaceMode === 'full'}
+              onClick={() => {
+                setWorkspaceMode('full');
+                setShowAdvancedTools(true);
+              }}
+            >
+              Full Workspace
+            </button>
+          </div>
+        </div>
+
+        <div className="admin-guide-grid">
+          <article className="admin-guide-card">
+            <strong>1. Create or Select Tenant</strong>
+            <p className="admin-muted">
+              Use the onboarding wizard for a new tenant, or pick an existing tenant in the directory.
+            </p>
+          </article>
+          <article className="admin-guide-card">
+            <strong>2. Finish Launch Setup</strong>
+            <p className="admin-muted">
+              Domain verification, plan assignment, and feature flags all live in the Launch Setup panel.
+            </p>
+          </article>
+          <article className="admin-guide-card">
+            <strong>3. Use Advanced Tools as Needed</strong>
+            <p className="admin-muted">
+              Diagnostics, billing, access, platform health, and audit logs are hidden in Guided mode until you need them.
+            </p>
+          </article>
+        </div>
+
+        <div className="admin-workspace-status">
+          {selectedTenant ? (
+            <>
+              <div className="admin-row admin-space-between">
+                <strong>Current Tenant: {selectedTenant.tenant.name}</strong>
+                <span className={`admin-chip ${selectedTenantReadinessPercent >= 75 ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                  launch readiness {selectedTenantReadinessPercent}%
+                </span>
+              </div>
+              <div className="admin-row">
+                <span className={`admin-chip ${selectedTenant.tenant.status === 'active' ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                  tenant {selectedTenant.tenant.status}
+                </span>
+                <span className={`admin-chip ${selectedTenant.settings.status === 'active' ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
+                  settings {selectedTenant.settings.status}
+                </span>
+                <span className="admin-chip">plan {selectedTenant.settings.planCode || 'unassigned'}</span>
+                <span className="admin-chip">
+                  primary domain {selectedPrimaryDomain?.hostname ?? 'not set'}
+                </span>
+                <span
+                  className={`admin-chip ${
+                    sslReadiness.dnsStatus === 'verified'
+                      ? 'admin-chip-ok'
+                      : sslReadiness.dnsStatus === 'missing'
+                        ? 'admin-chip-status-failed'
+                        : 'admin-chip-warn'
+                  }`}
+                >
+                  dns {sslReadiness.dnsStatus}
+                </span>
+              </div>
+              <ul className="admin-quick-start-list">
+                {selectedTenantNextSteps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <>
+              <strong>No tenant selected</strong>
+              <p className="admin-muted">
+                Start with the onboarding wizard on the left, or select a tenant in the directory to unlock launch setup and
+                support tools.
+              </p>
+            </>
+          )}
+        </div>
+      </section>
+
+      <ActionCenterPanel
+        selectedTenantName={selectedTenant?.tenant.name ?? null}
+        items={actionCenterItems}
+        onOpen={(item) => {
+          goToWorkspaceArea(item.tab, item.sectionId);
+        }}
+      />
 
       <section className="admin-kpi-grid" aria-label="Control plane summary">
         <article className="admin-kpi-card">
@@ -2663,14 +3053,52 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       ) : null}
       {workspaceNotice ? <p className="admin-notice">{workspaceNotice}</p> : null}
 
+      {workspaceMode === 'guided' ? (
+        <section className="admin-card admin-advanced-toggle-card" aria-label="Advanced tools visibility">
+          <div className="admin-card-head admin-card-head-wrap">
+            <div className="admin-title-block">
+              <h2>Advanced Tools</h2>
+              <p className="admin-muted">
+                Billing, diagnostics, access management, platform health, and audit logs are optional for the core launch flow.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="admin-secondary"
+              onClick={() => {
+                setShowAdvancedTools((prev) => !prev);
+              }}
+            >
+              {showAdvancedTools ? 'Hide Advanced Tools' : 'Show Advanced Tools'}
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      <WorkspaceTaskTabs
+        activeTab={activeWorkspaceTab}
+        metrics={workspaceTaskMetrics}
+        onSelect={(tabId) => {
+          setActiveWorkspaceTab(tabId);
+          if (tabId !== 'launch') {
+            setShowAdvancedTools(true);
+          }
+        }}
+      />
+
+      {activeWorkspaceTab === 'launch' ? (
       <section className="admin-layout">
         <article className="admin-card admin-onboarding-card">
+          <div id="create-tenant" />
           <div className="admin-card-head">
-            <h2>Guided Tenant Onboarding</h2>
+            <h2>1. Create a Tenant</h2>
             <span className="admin-chip">
               Step {wizardStepIndex + 1} / {onboardingSteps.length}
             </span>
           </div>
+          <p className="admin-muted">
+            Use this wizard for new tenant setup. It creates the tenant record, first domain, and initial plan/settings baseline.
+          </p>
 
           <ol className="admin-stepper">
             {onboardingSteps.map((step, index) => {
@@ -2721,8 +3149,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         </article>
 
         <article className="admin-card admin-tenant-directory">
+          <div id="tenant-directory" />
           <div className="admin-card-head">
-            <h2>Tenant Directory</h2>
+            <h2>2. Choose a Tenant</h2>
             <button
               type="button"
               className="admin-secondary"
@@ -2734,6 +3163,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               Refresh
             </button>
           </div>
+          <p className="admin-muted">
+            Select a tenant to open launch setup, diagnostics, billing, and access-management tools for that workspace.
+          </p>
 
           {snapshots.length === 0 ? (
             <p className="admin-muted">No tenants available yet.</p>
@@ -2805,10 +3237,12 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           )}
         </article>
       </section>
+      ) : null}
 
-      <section className="admin-card admin-ops-card">
+      {activeWorkspaceTab === 'launch' ? (
+      <section id="launch-setup" className="admin-card admin-ops-card">
         <div className="admin-card-head">
-          <h2>Domain Operations & Launch Readiness</h2>
+          <h2>3. Launch Setup (Domain + Plan + Features)</h2>
           {selectedTenant ? (
             <div className="admin-row">
               <span className="admin-chip">{selectedTenant.tenant.name}</span>
@@ -2818,6 +3252,9 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             </div>
           ) : null}
         </div>
+        <p className="admin-muted">
+          This is the main go-live panel for a selected tenant: domain verification, readiness checks, plan governance, and feature flags.
+        </p>
 
         {!selectedTenant ? (
           <p className="admin-muted">Select a tenant from the directory to manage domains and launch settings.</p>
@@ -2927,6 +3364,32 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
                 ))}
               </ul>
             </div>
+
+            <section className="admin-governance-panel">
+              <div className="admin-row admin-space-between">
+                <strong>Plan-Tier Onboarding Checklist Template</strong>
+                <div className="admin-row">
+                  <span className="admin-chip">plan: {selectedTenantPlanCode}</span>
+                  <span className="admin-chip">template default</span>
+                </div>
+              </div>
+              <p className="admin-muted">
+                Default task/status scaffolding tied to the selected plan. Use as the operator baseline during kickoff and launch prep.
+              </p>
+              <ul className="admin-list">
+                {selectedPlanChecklistTemplate.map((item) => (
+                  <li key={item.id} className="admin-list-item">
+                    <div className="admin-row admin-space-between">
+                      <strong>{item.label}</strong>
+                      <span className={`admin-chip ${item.status === 'required' ? 'admin-chip-warn' : ''}`}>
+                        {item.status}
+                      </span>
+                    </div>
+                    <p className="admin-muted">owner: {item.owner}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
 
             <div className="admin-domain-grid">
               {selectedTenant.domains.map((domain) => {
@@ -3263,10 +3726,12 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           </>
         )}
       </section>
+      ) : null}
 
-      <section className="admin-card admin-diagnostics-card">
+      {activeWorkspaceTab === 'support' ? (
+      <section id="tenant-diagnostics" className="admin-card admin-diagnostics-card admin-advanced-panel">
         <div className="admin-card-head">
-          <h2>Tenant Support Diagnostics</h2>
+          <h2>Troubleshooting & Repairs</h2>
           {selectedTenant ? (
             <button
               type="button"
@@ -3280,77 +3745,31 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             </button>
           ) : null}
         </div>
+        <p className="admin-muted">
+          Run tenant-specific checks for auth, domain, and ingestion issues, then execute guided remediation actions.
+        </p>
 
-        {!selectedTenant ? (
-          <p className="admin-muted">Select a tenant to run auth/domain/ingestion diagnostics.</p>
-        ) : (
-          <>
-            {diagnosticsErrorByTenant[selectedTenant.tenant.id] ? (
-              <p className="admin-error">{diagnosticsErrorByTenant[selectedTenant.tenant.id]}</p>
-            ) : null}
-            {diagnosticsLoadingByTenant[selectedTenant.tenant.id] && !selectedTenantDiagnostics ? (
-              <p className="admin-muted">Loading diagnostics...</p>
-            ) : null}
-
-            {selectedTenantDiagnostics ? (
-              <>
-                <div className="admin-row">
-                  <span
-                    className={`admin-chip ${diagnosticStatusChipClass(
-                      selectedTenantDiagnostics.overallStatus
-                    )}`}
-                  >
-                    overall {diagnosticStatusLabel(selectedTenantDiagnostics.overallStatus)}
-                  </span>
-                  <span className="admin-chip">ok: {selectedTenantDiagnostics.counts.ok}</span>
-                  <span className="admin-chip">warning: {selectedTenantDiagnostics.counts.warning}</span>
-                  <span className="admin-chip">failed: {selectedTenantDiagnostics.counts.failed}</span>
-                  <span className="admin-chip">checked: {formatTimestamp(selectedTenantDiagnostics.generatedAt)}</span>
-                </div>
-
-                <div className="admin-diagnostics-grid">
-                  {selectedTenantDiagnostics.checks.map((check) => (
-                    <article key={check.id} className="admin-observability-panel">
-                      <div className="admin-row admin-space-between">
-                        <strong>{check.label}</strong>
-                        <span className={`admin-chip ${diagnosticStatusChipClass(check.status)}`}>
-                          {diagnosticStatusLabel(check.status)}
-                        </span>
-                      </div>
-                      <p className="admin-muted">{check.detail}</p>
-                      <div className="admin-row">
-                        <span className="admin-chip">{check.category}</span>
-                      </div>
-                      {check.remediation.length > 0 ? (
-                        <div className="admin-row">
-                          {check.remediation.map((remediation) => (
-                            <button
-                              key={`${check.id}-${remediation.action}`}
-                              type="button"
-                              className="admin-secondary"
-                              disabled={busy || Boolean(diagnosticsActionBusyByTenant[selectedTenant.tenant.id])}
-                              onClick={() => {
-                                void runDiagnosticRemediation(selectedTenant.tenant.id, remediation.action);
-                              }}
-                              title={remediation.detail}
-                            >
-                              {remediation.label}
-                            </button>
-                          ))}
-                        </div>
-                      ) : null}
-                    </article>
-                  ))}
-                </div>
-              </>
-            ) : null}
-          </>
-        )}
+        <SupportTabBody
+          selectedTenant={selectedTenant}
+          selectedTenantDiagnostics={selectedTenantDiagnostics}
+          diagnosticsError={selectedTenant ? diagnosticsErrorByTenant[selectedTenant.tenant.id] ?? null : null}
+          diagnosticsLoading={selectedTenant ? Boolean(diagnosticsLoadingByTenant[selectedTenant.tenant.id]) : false}
+          diagnosticsActionBusy={selectedTenant ? Boolean(diagnosticsActionBusyByTenant[selectedTenant.tenant.id]) : false}
+          busy={busy}
+          formatTimestamp={formatTimestamp}
+          diagnosticStatusLabel={diagnosticStatusLabel}
+          diagnosticStatusChipClass={diagnosticStatusChipClass}
+          onRunDiagnosticRemediation={(tenantId, action) => {
+            void runDiagnosticRemediation(tenantId, action);
+          }}
+        />
       </section>
+      ) : null}
 
-      <section className="admin-card admin-billing-card">
+      {activeWorkspaceTab === 'billing' ? (
+      <section id="billing" className="admin-card admin-billing-card admin-advanced-panel">
         <div className="admin-card-head">
-          <h2>Billing & Subscription Operations</h2>
+          <h2>Billing & Subscription</h2>
           {selectedTenant ? (
             <button
               type="button"
@@ -3364,307 +3783,48 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             </button>
           ) : null}
         </div>
+        <p className="admin-muted">
+          Manage plan transitions, billing provider IDs, payment status, and entitlement drift remediation for the selected tenant.
+        </p>
 
-        {!selectedTenant ? (
-          <p className="admin-muted">Select a tenant to manage plan transitions, billing status, and entitlement sync.</p>
-        ) : selectedTenantBillingDraft ? (
-          <>
-            <div className="admin-row">
-              <span className="admin-chip">{selectedTenant.tenant.name}</span>
-              {selectedTenantBilling ? <span className="admin-chip">subscription: {selectedTenantBilling.status}</span> : null}
-              {selectedTenantBilling ? (
-                <span className="admin-chip">payment: {selectedTenantBilling.paymentStatus}</span>
-              ) : null}
-              <span className={`admin-chip ${selectedTenantBillingDriftSignals.length > 0 ? 'admin-chip-warn' : 'admin-chip-ok'}`}>
-                entitlement drift: {selectedTenantBillingDriftSignals.length}
-              </span>
-            </div>
-
-            <div className="admin-grid">
-              <label className="admin-field">
-                Plan Code
-                <select
-                  value={selectedTenantBillingDraft.planCode}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(selectedTenant.tenant.id, 'planCode', event.target.value);
-                  }}
-                >
-                  {planOptions.map((plan) => (
-                    <option key={plan.code} value={plan.code}>
-                      {plan.label} ({plan.code})
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="admin-field">
-                Subscription Status
-                <select
-                  value={selectedTenantBillingDraft.status}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(
-                      selectedTenant.tenant.id,
-                      'status',
-                      event.target.value as TenantBillingSubscriptionStatus
-                    );
-                  }}
-                >
-                  {billingSubscriptionStatusOptions.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="admin-field">
-                Payment Status
-                <select
-                  value={selectedTenantBillingDraft.paymentStatus}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(
-                      selectedTenant.tenant.id,
-                      'paymentStatus',
-                      event.target.value as TenantBillingPaymentStatus
-                    );
-                  }}
-                >
-                  {billingPaymentStatusOptions.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div className="admin-grid">
-              <label className="admin-field">
-                Billing Provider
-                <input
-                  value={selectedTenantBillingDraft.billingProvider}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(selectedTenant.tenant.id, 'billingProvider', event.target.value);
-                  }}
-                  placeholder="manual or stripe"
-                />
-              </label>
-              <label className="admin-field">
-                Customer ID
-                <input
-                  value={selectedTenantBillingDraft.billingCustomerId}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(selectedTenant.tenant.id, 'billingCustomerId', event.target.value);
-                  }}
-                  placeholder="cus_xxx"
-                />
-              </label>
-              <label className="admin-field">
-                Subscription ID
-                <input
-                  value={selectedTenantBillingDraft.billingSubscriptionId}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(selectedTenant.tenant.id, 'billingSubscriptionId', event.target.value);
-                  }}
-                  placeholder="sub_xxx"
-                />
-              </label>
-            </div>
-
-            <div className="admin-grid">
-              <label className="admin-field">
-                Trial Ends
-                <input
-                  type="date"
-                  value={selectedTenantBillingDraft.trialEndsAt}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(selectedTenant.tenant.id, 'trialEndsAt', event.target.value);
-                  }}
-                />
-              </label>
-              <label className="admin-field">
-                Current Period Ends
-                <input
-                  type="date"
-                  value={selectedTenantBillingDraft.currentPeriodEndsAt}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(selectedTenant.tenant.id, 'currentPeriodEndsAt', event.target.value);
-                  }}
-                />
-              </label>
-              <label className="admin-inline-field admin-inline-toggle admin-billing-toggle">
-                <input
-                  type="checkbox"
-                  checked={selectedTenantBillingDraft.cancelAtPeriodEnd}
-                  disabled={!settingsEditable || busy}
-                  onChange={(event) => {
-                    setBillingDraftField(selectedTenant.tenant.id, 'cancelAtPeriodEnd', event.target.checked);
-                  }}
-                />
-                Cancel at period end
-              </label>
-            </div>
-
-            <label className="admin-inline-field admin-inline-toggle admin-billing-toggle">
-              <input
-                type="checkbox"
-                checked={selectedTenantBillingDraft.syncEntitlements}
-                disabled={!settingsEditable || busy}
-                onChange={(event) => {
-                  setBillingDraftField(selectedTenant.tenant.id, 'syncEntitlements', event.target.checked);
-                }}
-              />
-              Sync entitlement flags from current settings draft when saving plan transition
-            </label>
-
-            <section className="admin-billing-drift-panel">
-              <div className="admin-row admin-space-between">
-                <strong>Entitlement Drift Triage</strong>
-                <div className="admin-row">
-                  <button
-                    type="button"
-                    className="admin-secondary"
-                    disabled={busy || Boolean(billingDriftLoadingByTenant[selectedTenant.tenant.id])}
-                    onClick={() => {
-                      void loadBillingDriftSignalsForTenant(selectedTenant.tenant.id);
-                    }}
-                  >
-                    {billingDriftLoadingByTenant[selectedTenant.tenant.id] ? 'Refreshing...' : 'Refresh Drift Signals'}
-                  </button>
-                  <button
-                    type="button"
-                    className="admin-secondary"
-                    disabled={busy}
-                    onClick={() => {
-                      void applyBillingDriftAuditPreset(selectedTenant.tenant.id);
-                    }}
-                  >
-                    Open in Audit Timeline
-                  </button>
-                </div>
-              </div>
-              <p className="admin-muted">
-                Drift compares provider entitlement flags against persisted tenant settings. Investigate and remediate
-                missing/extra flag mismatches before billing escalations.
-              </p>
-              {billingDriftErrorByTenant[selectedTenant.tenant.id] ? (
-                <p className="admin-error">{billingDriftErrorByTenant[selectedTenant.tenant.id]}</p>
-              ) : null}
-              {billingDriftLoadingByTenant[selectedTenant.tenant.id] ? (
-                <p className="admin-muted">Loading entitlement drift signals...</p>
-              ) : null}
-              {!billingDriftLoadingByTenant[selectedTenant.tenant.id] && selectedTenantBillingDriftSignals.length === 0 ? (
-                <p className="admin-muted">No entitlement drift signals detected for recent billing sync events.</p>
-              ) : null}
-              {selectedTenantBillingDriftSignals.length > 0 ? (
-                <ul className="admin-billing-drift-list">
-                  {selectedTenantBillingDriftSignals.slice(0, 5).map((signal) => (
-                    <li key={signal.auditEventId} className="admin-billing-drift-item">
-                      <div className="admin-row admin-space-between">
-                        <span className="admin-chip">{formatTimestamp(signal.createdAt)}</span>
-                        <span className={`admin-chip admin-chip-status-${signal.status}`}>{signal.status}</span>
-                      </div>
-                      <div className="admin-row">
-                        <span className="admin-chip admin-chip-warn">mode: {signal.mode}</span>
-                        <span className="admin-chip">missing: {signal.missingCount}</span>
-                        <span className="admin-chip">extra: {signal.extraCount}</span>
-                        {signal.duplicate !== null ? (
-                          <span className="admin-chip">duplicate: {signal.duplicate ? 'yes' : 'no'}</span>
-                        ) : null}
-                        {signal.applied !== null ? (
-                          <span className="admin-chip">applied: {signal.applied ? 'yes' : 'no'}</span>
-                        ) : null}
-                        {signal.requestId ? <span className="admin-chip">request: {signal.requestId}</span> : null}
-                      </div>
-                      {signal.missingFlags.length > 0 ? (
-                        <p className="admin-muted">Missing provider flags: {signal.missingFlags.join(', ')}</p>
-                      ) : null}
-                      {signal.extraFlags.length > 0 ? (
-                        <p className="admin-muted">Extra tenant flags: {signal.extraFlags.join(', ')}</p>
-                      ) : null}
-                      {signal.error ? <p className="admin-error">{signal.error}</p> : null}
-                      <div className="admin-row">
-                        <button
-                          type="button"
-                          className="admin-secondary"
-                          disabled={busy || !settingsEditable || signal.missingFlags.length === 0}
-                          onClick={() => {
-                            applyBillingDriftRemediation(selectedTenant.tenant.id, signal, 'missing');
-                          }}
-                        >
-                          Add Missing Flags
-                        </button>
-                        <button
-                          type="button"
-                          className="admin-secondary"
-                          disabled={busy || !settingsEditable || signal.extraFlags.length === 0}
-                          onClick={() => {
-                            applyBillingDriftRemediation(selectedTenant.tenant.id, signal, 'extra');
-                          }}
-                        >
-                          Remove Extra Flags
-                        </button>
-                        <button
-                          type="button"
-                          className="admin-secondary"
-                          disabled={
-                            busy ||
-                            !settingsEditable ||
-                            (signal.missingFlags.length === 0 && signal.extraFlags.length === 0)
-                          }
-                          onClick={() => {
-                            applyBillingDriftRemediation(selectedTenant.tenant.id, signal, 'all');
-                          }}
-                        >
-                          Apply Both
-                        </button>
-                      </div>
-                      <p className="admin-muted admin-audit-guidance">
-                        Quick actions update the Settings draft and arm Billing entitlement sync. Save Settings, then
-                        Save Billing Workflow to persist corrections.
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </section>
-
-            <div className="admin-row">
-              <button
-                type="button"
-                disabled={busy || !settingsEditable || Boolean(billingLoadingByTenant[selectedTenant.tenant.id])}
-                onClick={() => {
-                  void saveBillingSubscription(selectedTenant.tenant.id);
-                }}
-              >
-                Save Billing Workflow
-              </button>
-            </div>
-
-            {!settingsEditable ? (
-              <p className="admin-warning">
-                Billing mutation controls are disabled while tenant/settings status is archived.
-              </p>
-            ) : null}
-          </>
-        ) : (
-          <p className="admin-muted">
-            {billingLoadingByTenant[selectedTenant.tenant.id] ? 'Loading billing details...' : 'No billing details loaded yet.'}
-          </p>
-        )}
+        <BillingTabBody
+          selectedTenant={selectedTenant}
+          selectedTenantBilling={selectedTenantBilling}
+          selectedTenantBillingDraft={selectedTenantBillingDraft}
+          selectedTenantBillingDriftSignals={selectedTenantBillingDriftSignals}
+          billingLoading={selectedTenant ? Boolean(billingLoadingByTenant[selectedTenant.tenant.id]) : false}
+          billingDriftLoading={selectedTenant ? Boolean(billingDriftLoadingByTenant[selectedTenant.tenant.id]) : false}
+          billingDriftError={selectedTenant ? billingDriftErrorByTenant[selectedTenant.tenant.id] ?? null : null}
+          busy={busy}
+          settingsEditable={settingsEditable}
+          planOptions={planOptions}
+          billingSubscriptionStatusOptions={billingSubscriptionStatusOptions}
+          billingPaymentStatusOptions={billingPaymentStatusOptions}
+          entitlementDriftHelp={<GlossaryHelp term="entitlementDrift" />}
+          formatTimestamp={formatTimestamp}
+          setBillingDraftField={setBillingDraftField}
+          onLoadBillingDriftSignals={(tenantId) => {
+            void loadBillingDriftSignalsForTenant(tenantId);
+          }}
+          onApplyBillingDriftAuditPreset={(tenantId) => {
+            void applyBillingDriftAuditPreset(tenantId);
+          }}
+          onApplyBillingDriftRemediation={(tenantId, signal, mode) => {
+            applyBillingDriftRemediation(tenantId, signal, mode);
+          }}
+          onSaveBillingSubscription={(tenantId) => {
+            void saveBillingSubscription(tenantId);
+          }}
+        />
       </section>
+      ) : null}
 
-      <section className="admin-card admin-rbac-card">
+      {activeWorkspaceTab === 'access' ? (
+      <section id="access" className="admin-card admin-rbac-card admin-advanced-panel">
         <div className="admin-card-head">
-          <h2>RBAC Management & Support Sessions</h2>
+          <h2>
+            Team Access & Support Sessions <GlossaryHelp term="supportSession" />
+          </h2>
           {selectedTenant ? (
             <button
               type="button"
@@ -3678,256 +3838,60 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             </button>
           ) : null}
         </div>
+        <p className="admin-muted">
+          Assign tenant roles and permissions, and start time-boxed support sessions for troubleshooting workflows.
+        </p>
 
-        {!selectedTenant ? (
-          <p className="admin-muted">Select a tenant to manage roles, permissions, and support-session controls.</p>
-        ) : (
-          <>
-            <div className="admin-rbac-add-grid">
-              <label className="admin-field">
-                Actor ID
-                <input
-                  value={selectedTenantActorDraft.actorId}
-                  onChange={(event) => {
-                    setActorDraftField(selectedTenant.tenant.id, 'actorId', event.target.value);
-                  }}
-                  placeholder="user_abc123"
-                />
-              </label>
-              <label className="admin-field">
-                Display Name
-                <input
-                  value={selectedTenantActorDraft.displayName}
-                  onChange={(event) => {
-                    setActorDraftField(selectedTenant.tenant.id, 'displayName', event.target.value);
-                  }}
-                  placeholder="Alex Support"
-                />
-              </label>
-              <label className="admin-field">
-                Email
-                <input
-                  value={selectedTenantActorDraft.email}
-                  onChange={(event) => {
-                    setActorDraftField(selectedTenant.tenant.id, 'email', event.target.value);
-                  }}
-                  placeholder="alex@tenant.com"
-                />
-              </label>
-              <label className="admin-field">
-                Role
-                <select
-                  value={selectedTenantActorDraft.role}
-                  onChange={(event) => {
-                    const role = event.target.value as ControlPlaneActorRole;
-                    setActorDraftField(selectedTenant.tenant.id, 'role', role);
-                    setActorDraftField(
-                      selectedTenant.tenant.id,
-                      'permissions',
-                      uniquePermissions([
-                        ...roleDefaultPermissions[role],
-                        ...selectedTenantActorDraft.permissions,
-                      ])
-                    );
-                  }}
-                >
-                  {actorRoleOptions.map((role) => (
-                    <option key={role.value} value={role.value}>
-                      {role.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <div className="admin-feature-grid">
-              {actorPermissionOptions.map((permission) => {
-                const enabled = selectedTenantActorDraft.permissions.includes(permission.id);
-                return (
-                  <button
-                    key={permission.id}
-                    type="button"
-                    className={`admin-feature-chip ${enabled ? 'is-active' : ''}`}
-                    onClick={() => {
-                      const next = enabled
-                        ? selectedTenantActorDraft.permissions.filter((entry) => entry !== permission.id)
-                        : [...selectedTenantActorDraft.permissions, permission.id];
-                      setActorDraftField(selectedTenant.tenant.id, 'permissions', uniquePermissions(next));
-                    }}
-                  >
-                    <span>{permission.label}</span>
-                    <small>{permission.detail}</small>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="admin-row">
-              <button
-                type="button"
-                disabled={busy || selectedTenantActorDraft.actorId.trim().length === 0}
-                onClick={() => {
-                  void addActor(selectedTenant.tenant.id);
-                }}
-              >
-                Add Actor
-              </button>
-            </div>
-
-            {actorsLoadingByTenant[selectedTenant.tenant.id] ? (
-              <p className="admin-muted">Loading tenant actors...</p>
-            ) : null}
-
-            {selectedTenantActors.length === 0 ? (
-              <p className="admin-muted">No actors configured yet for this tenant.</p>
-            ) : (
-              <ul className="admin-list">
-                {selectedTenantActors.map((actor) => {
-                  const actorKey = toActorKey(selectedTenant.tenant.id, actor.actorId);
-                  const roleDraft = actorRoleDraftByActorKey[actorKey] ?? actor.role;
-                  const permissionDraft = actorPermissionsDraftByActorKey[actorKey] ?? actor.permissions;
-                  const supportSessionDraft =
-                    supportSessionDraftByActorKey[actorKey]?.durationMinutes ?? defaultSupportSessionDurationMinutes;
-
-                  return (
-                    <li key={actor.id} className="admin-list-item">
-                      <div className="admin-row admin-space-between">
-                        <div>
-                          <strong>{actor.displayName || actor.actorId}</strong>
-                          <p className="admin-muted admin-list-subtitle">{actor.actorId}</p>
-                        </div>
-                        <span className="admin-chip">{formatActorRole(actor.role)}</span>
-                      </div>
-                      {actor.email ? <p className="admin-muted">Email: {actor.email}</p> : null}
-
-                      <label className="admin-field">
-                        Role
-                        <select
-                          value={roleDraft}
-                          onChange={(event) => {
-                            setActorRoleDraft(
-                              selectedTenant.tenant.id,
-                              actor.actorId,
-                              event.target.value as ControlPlaneActorRole
-                            );
-                          }}
-                        >
-                          {actorRoleOptions.map((role) => (
-                            <option key={role.value} value={role.value}>
-                              {role.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-
-                      <div className="admin-feature-grid">
-                        {actorPermissionOptions.map((permission) => {
-                          const enabled = permissionDraft.includes(permission.id);
-                          return (
-                            <button
-                              key={`${actor.id}-${permission.id}`}
-                              type="button"
-                              className={`admin-feature-chip ${enabled ? 'is-active' : ''}`}
-                              onClick={() => {
-                                toggleActorPermissionDraft(selectedTenant.tenant.id, actor.actorId, permission.id);
-                              }}
-                            >
-                              <span>{permission.label}</span>
-                              <small>{permission.detail}</small>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <div className="admin-support-session-row">
-                        <span className="admin-chip">
-                          support session: {actor.supportSessionActive ? 'active' : 'inactive'}
-                        </span>
-                        {actor.supportSessionExpiresAt ? (
-                          <span className="admin-chip">
-                            expires {formatTimestamp(actor.supportSessionExpiresAt)}
-                          </span>
-                        ) : null}
-                        <label className="admin-inline-field">
-                          Duration (minutes)
-                          <input
-                            type="number"
-                            min={10}
-                            max={240}
-                            value={supportSessionDraft}
-                            onChange={(event) => {
-                              const parsed = Number.parseInt(event.target.value, 10);
-                              if (Number.isNaN(parsed)) {
-                                return;
-                              }
-                              setSupportSessionDraftByActorKey((prev) => ({
-                                ...prev,
-                                [actorKey]: {
-                                  durationMinutes: Math.min(Math.max(parsed, 10), 240),
-                                },
-                              }));
-                            }}
-                          />
-                        </label>
-                      </div>
-
-                      <div className="admin-row">
-                        <button
-                          type="button"
-                          className="admin-secondary"
-                          disabled={busy}
-                          onClick={() => {
-                            void saveActor(selectedTenant.tenant.id, actor);
-                          }}
-                        >
-                          Save Access
-                        </button>
-                        {actor.supportSessionActive ? (
-                          <button
-                            type="button"
-                            className="admin-secondary"
-                            disabled={busy}
-                            onClick={() => {
-                              void endSupportSession(selectedTenant.tenant.id, actor.actorId);
-                            }}
-                          >
-                            End Support Session
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="admin-secondary"
-                            disabled={busy}
-                            onClick={() => {
-                              void startSupportSession(selectedTenant.tenant.id, actor.actorId);
-                            }}
-                          >
-                            Start Support Session
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          className="admin-secondary"
-                          disabled={busy}
-                          onClick={() => {
-                            void removeActor(selectedTenant.tenant.id, actor.actorId);
-                          }}
-                        >
-                          Remove Actor
-                        </button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </>
-        )}
+        <AccessTabBody
+          selectedTenant={selectedTenant}
+          selectedTenantPlanCode={selectedTenantPlanCode}
+          selectedPlanActorSeedPresets={selectedPlanActorSeedPresets}
+          selectedTenantActorDraft={selectedTenantActorDraft}
+          selectedTenantActors={selectedTenantActors}
+          actorsLoading={selectedTenant ? Boolean(actorsLoadingByTenant[selectedTenant.tenant.id]) : false}
+          actorRoleDraftByActorKey={actorRoleDraftByActorKey}
+          actorPermissionsDraftByActorKey={actorPermissionsDraftByActorKey}
+          supportSessionDraftByActorKey={supportSessionDraftByActorKey}
+          defaultSupportSessionDurationMinutes={defaultSupportSessionDurationMinutes}
+          busy={busy}
+          actorRoleOptions={actorRoleOptions}
+          actorPermissionOptions={actorPermissionOptions}
+          roleDefaultPermissions={roleDefaultPermissions}
+          formatTimestamp={formatTimestamp}
+          formatActorRole={formatActorRole}
+          toActorKey={toActorKey}
+          uniquePermissions={uniquePermissions}
+          resolveActorSeedPresetText={resolveActorSeedPresetText}
+          setActorDraftField={setActorDraftField}
+          setActorRoleDraft={setActorRoleDraft}
+          toggleActorPermissionDraft={toggleActorPermissionDraft}
+          setSupportSessionDraftByActorKey={setSupportSessionDraftByActorKey}
+          onApplyActorSeedPresetToDraft={applyActorSeedPresetToDraft}
+          onAddActor={(tenantId) => {
+            void addActor(tenantId);
+          }}
+          onSaveActor={(tenantId, actor) => {
+            void saveActor(tenantId, actor);
+          }}
+          onStartSupportSession={(tenantId, actorId) => {
+            void startSupportSession(tenantId, actorId);
+          }}
+          onEndSupportSession={(tenantId, actorId) => {
+            void endSupportSession(tenantId, actorId);
+          }}
+          onRemoveActor={(tenantId, actorId) => {
+            void removeActor(tenantId, actorId);
+          }}
+        />
       </section>
+      ) : null}
 
-      <section className="admin-card admin-observability-card">
+      {activeWorkspaceTab === 'health' ? (
+      <section id="platform-health" className="admin-card admin-observability-card admin-advanced-panel">
         <div className="admin-card-head">
-          <h2>Control Plane Observability</h2>
+          <h2>
+            Platform Health <GlossaryHelp term="observability" />
+          </h2>
           <button
             type="button"
             className="admin-secondary"
@@ -3939,155 +3903,25 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
             {observabilityLoading ? 'Refreshing...' : 'Refresh Observability'}
           </button>
         </div>
+        <p className="admin-muted">
+          Cross-tenant operational health summary for readiness, mutation failures, ingestion runtime, and billing drift signals.
+        </p>
 
-        {observabilityError ? <p className="admin-error">{observabilityError}</p> : null}
-        {observabilityLoading && !observabilitySummary ? <p className="admin-muted">Loading observability data...</p> : null}
-
-        {observabilitySummary ? (
-          <>
-            <section className="admin-kpi-grid" aria-label="Observability summary metrics">
-              <article className="admin-kpi-card">
-                <p>Avg Tenant Readiness</p>
-                <strong>{observabilitySummary.totals.averageReadinessScore}%</strong>
-                <span>across tracked tenant readiness checks</span>
-              </article>
-              <article className="admin-kpi-card">
-                <p>Audit Failures (7d)</p>
-                <strong>
-                  {observabilitySummary.mutationTrends.find((entry) => entry.status === 'failed')?.count ?? 0}
-                </strong>
-                <span>admin mutation failures recorded in last seven days</span>
-              </article>
-              <article className="admin-kpi-card">
-                <p>Dead-Letter Queue</p>
-                <strong>{observabilitySummary.ingestion.deadLetterCount}</strong>
-                <span>ingestion jobs awaiting operator action</span>
-              </article>
-              <article className="admin-kpi-card">
-                <p>Billing Drift ({observabilitySummary.billingDrift.windowDays}d)</p>
-                <strong>{observabilitySummary.billingDrift.totals.driftEvents}</strong>
-                <span>billing sync events with entitlement mismatches</span>
-              </article>
-            </section>
-
-            <div className="admin-observability-grid">
-              <article className="admin-observability-panel">
-                <h3>Mutation Trend (7 Days)</h3>
-                <div className="admin-row">
-                  {observabilitySummary.mutationTrends.map((trend) => (
-                    <span key={trend.status} className={`admin-chip admin-chip-status-${trend.status}`}>
-                      {trend.status}: {trend.count}
-                    </span>
-                  ))}
-                </div>
-              </article>
-
-              <article className="admin-observability-panel">
-                <h3>Ingestion Runtime Health</h3>
-                <p className="admin-muted">{observabilitySummary.ingestion.runtimeMessage}</p>
-                <div className="admin-row">
-                  <span
-                    className={`admin-chip ${
-                      observabilitySummary.ingestion.runtimeReady ? 'admin-chip-ok' : 'admin-chip-status-failed'
-                    }`}
-                  >
-                    runtime {observabilitySummary.ingestion.runtimeReady ? 'ready' : 'blocked'}
-                  </span>
-                  {observabilitySummary.ingestion.runtimeReason ? (
-                    <span className="admin-chip">reason: {observabilitySummary.ingestion.runtimeReason}</span>
-                  ) : null}
-                </div>
-                <div className="admin-row">
-                  {observabilitySummary.ingestion.queueStatusCounts.map((entry) => (
-                    <span key={entry.status} className="admin-chip">
-                      {entry.status}: {entry.count}
-                    </span>
-                  ))}
-                </div>
-              </article>
-
-              <article className="admin-observability-panel">
-                <h3>Billing Drift Summary</h3>
-                <p className="admin-muted">
-                  Recent drift totals across billing sync events (window: {observabilitySummary.billingDrift.windowDays} days).
-                </p>
-                <div className="admin-row">
-                  <span className="admin-chip">tenants: {observabilitySummary.billingDrift.totals.tenantsWithDrift}</span>
-                  <span className="admin-chip">missing flags: {observabilitySummary.billingDrift.totals.missingFlagCount}</span>
-                  <span className="admin-chip">extra flags: {observabilitySummary.billingDrift.totals.extraFlagCount}</span>
-                </div>
-                <div className="admin-row">
-                  <span className="admin-chip">compared: {observabilitySummary.billingDrift.totals.modeCounts.compared}</span>
-                  <span className="admin-chip">
-                    provider_missing: {observabilitySummary.billingDrift.totals.modeCounts.provider_missing}
-                  </span>
-                  <span className="admin-chip">
-                    tenant_unresolved: {observabilitySummary.billingDrift.totals.modeCounts.tenant_unresolved}
-                  </span>
-                </div>
-
-                {observabilitySummary.billingDrift.byTenant.length === 0 ? (
-                  <p className="admin-muted">No billing drift events detected in the current window.</p>
-                ) : (
-                  <ul className="admin-list">
-                    {observabilitySummary.billingDrift.byTenant.map((entry) => (
-                      <li key={entry.tenantId} className="admin-list-item">
-                        <div className="admin-row admin-space-between">
-                          <strong>{entry.tenantName}</strong>
-                          <span className="admin-chip admin-chip-warn">drift events: {entry.driftEvents}</span>
-                        </div>
-                        <p className="admin-muted">{entry.tenantSlug}</p>
-                        <div className="admin-row">
-                          <span className="admin-chip">missing: {entry.missingFlagCount}</span>
-                          <span className="admin-chip">extra: {entry.extraFlagCount}</span>
-                          <span className="admin-chip">compared: {entry.modeCounts.compared}</span>
-                          <span className="admin-chip">provider_missing: {entry.modeCounts.provider_missing}</span>
-                          <span className="admin-chip">tenant_unresolved: {entry.modeCounts.tenant_unresolved}</span>
-                        </div>
-                        {entry.latestDriftAt ? (
-                          <p className="admin-muted">latest drift: {formatTimestamp(entry.latestDriftAt)}</p>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </article>
-            </div>
-
-            <article className="admin-observability-panel">
-              <h3>Tenant Readiness Scoreboard</h3>
-              {observabilitySummary.tenantReadiness.length === 0 ? (
-                <p className="admin-muted">No tenant readiness records available yet.</p>
-              ) : (
-                <ul className="admin-list">
-                  {observabilitySummary.tenantReadiness.map((entry) => (
-                    <li key={entry.tenantId} className="admin-list-item">
-                      <div className="admin-row admin-space-between">
-                        <strong>{entry.tenantName}</strong>
-                        <span className={`admin-chip ${entry.score >= 75 ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
-                          {entry.score}%
-                        </span>
-                      </div>
-                      <p className="admin-muted">{entry.tenantSlug}</p>
-                      <div className="admin-row">
-                        {entry.checks.map((check) => (
-                          <span key={`${entry.tenantId}-${check.label}`} className={`admin-chip ${check.ok ? 'admin-chip-ok' : 'admin-chip-warn'}`}>
-                            {check.label}
-                          </span>
-                        ))}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </article>
-          </>
-        ) : null}
+        <PlatformHealthTabBody
+          observabilitySummary={observabilitySummary}
+          observabilityLoading={observabilityLoading}
+          observabilityError={observabilityError}
+          formatTimestamp={formatTimestamp}
+        />
       </section>
+      ) : null}
 
-      <section className="admin-card">
+      {activeWorkspaceTab === 'audit' ? (
+      <section id="audit-log" className="admin-card admin-advanced-panel">
         <div className="admin-card-head">
-          <h2>Audit Timeline</h2>
+          <h2>
+            Activity Log (Audit Timeline) <GlossaryHelp term="auditActions" />
+          </h2>
           <div className="admin-row">
             <button
               type="button"
@@ -4132,245 +3966,49 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           </p>
         ) : null}
 
-        <div className="admin-audit-filter-grid">
-          <label className="admin-field">
-            Tenant Scope
-            <select
-              value={selectedAuditTenantId}
-              onChange={(event) => {
-                setSelectedAuditTenantId(event.target.value);
-              }}
-            >
-              <option value={GLOBAL_AUDIT_SCOPE}>Global Recent Feed</option>
-              {snapshots.map((snapshot) => (
-                <option key={snapshot.tenant.id} value={snapshot.tenant.id}>
-                  {snapshot.tenant.name} ({snapshot.tenant.slug})
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="admin-field">
-            Status
-            <select
-              value={selectedAuditStatus}
-              onChange={(event) => {
-                setSelectedAuditStatus(event.target.value);
-              }}
-            >
-              <option value="all">all</option>
-              {auditStatusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="admin-field">
-            Action
-            <select
-              value={selectedAuditAction}
-              onChange={(event) => {
-                setSelectedAuditAction(event.target.value);
-              }}
-            >
-              <option value="all">all</option>
-              {auditActionOptions.map((action) => (
-                <option key={action} value={action}>
-                  {action}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="admin-field">
-            Actor Role
-            <select
-              value={selectedAuditActorRole}
-              onChange={(event) => {
-                setSelectedAuditActorRole(event.target.value);
-              }}
-            >
-              <option value="all">all</option>
-              {auditActorRoleFilterOptions.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="admin-field">
-            Actor ID
-            <input
-              type="text"
-              value={selectedAuditActorId}
-              onChange={(event) => {
-                setSelectedAuditActorId(event.target.value);
-              }}
-              placeholder="contains actor id"
-            />
-          </label>
-
-          <label className="admin-field">
-            Request ID
-            <input
-              type="text"
-              value={selectedAuditRequestId}
-              onChange={(event) => {
-                setSelectedAuditRequestId(event.target.value);
-              }}
-              placeholder="contains request id"
-            />
-          </label>
-
-          <label className="admin-field">
-            Changed Field
-            <input
-              type="text"
-              value={selectedAuditChangedField}
-              list="audit-changed-fields"
-              onChange={(event) => {
-                setSelectedAuditChangedField(event.target.value);
-              }}
-              placeholder="planCode / featureFlags / ..."
-            />
-            <datalist id="audit-changed-fields">
-              {auditChangedFieldOptions.map((field) => (
-                <option key={field} value={field} />
-              ))}
-            </datalist>
-          </label>
-
-          <label className="admin-field">
-            From
-            <input
-              type="date"
-              value={selectedAuditFromDate}
-              onChange={(event) => {
-                setSelectedAuditFromDate(event.target.value);
-              }}
-            />
-          </label>
-
-          <label className="admin-field">
-            To
-            <input
-              type="date"
-              value={selectedAuditToDate}
-              onChange={(event) => {
-                setSelectedAuditToDate(event.target.value);
-              }}
-            />
-          </label>
-
-          <label className="admin-field">
-            Limit
-            <input
-              type="number"
-              min={1}
-              max={200}
-              value={selectedAuditLimit}
-              onChange={(event) => {
-                setSelectedAuditLimit(parseAuditLimit(event.target.value));
-              }}
-            />
-          </label>
-
-          <label className="admin-field">
-            Search
-            <input
-              type="text"
-              value={selectedAuditSearch}
-              onChange={(event) => {
-                setSelectedAuditSearch(event.target.value);
-              }}
-              placeholder="action, tenant, path, error..."
-            />
-          </label>
-
-          <label className="admin-inline-field admin-audit-toggle">
-            <input
-              type="checkbox"
-              checked={selectedAuditErrorsOnly}
-              onChange={(event) => {
-                setSelectedAuditErrorsOnly(event.target.checked);
-              }}
-            />
-            Show errors only
-          </label>
-        </div>
-
-        {auditError ? <p className="admin-error">{auditError}</p> : null}
-        {auditLoading ? <p className="admin-muted">Loading audit timeline...</p> : null}
-        {!auditLoading && auditEvents.length === 0 ? <p className="admin-muted">No audit events found.</p> : null}
-
-        {auditEvents.length > 0 ? (
-          <ul className="admin-list">
-            {auditEvents.map((event) => (
-              <li key={event.id} className="admin-list-item">
-                {(() => {
-                  const requestAttribution = getAuditRequestAttribution(event);
-                  const changeDetails = getAuditChangeDetails(event);
-                  const billingDriftSummary = getBillingDriftSummaryForAuditRow(event);
-
-                  return (
-                    <>
-                      <div className="admin-row admin-space-between">
-                        <strong>{event.action}</strong>
-                        <span className={`admin-chip admin-chip-status-${event.status}`}>{event.status}</span>
-                      </div>
-                      <div className="admin-row">
-                        <span className="admin-chip">{formatTimestamp(event.createdAt)}</span>
-                        <span className="admin-chip">role: {event.actorRole}</span>
-                        <span className="admin-chip">actor: {event.actorId ?? 'unknown'}</span>
-                        <span className="admin-chip">
-                          tenant: {event.tenantId ? (tenantNameById[event.tenantId] ?? event.tenantId) : 'n/a'}
-                        </span>
-                        {event.domainId ? <span className="admin-chip">domain: {event.domainId}</span> : null}
-                      </div>
-                      {billingDriftSummary ? (
-                        <div className="admin-row">
-                          <span className="admin-chip admin-chip-warn">entitlement drift detected</span>
-                          <span className="admin-chip">mode: {billingDriftSummary.mode}</span>
-                          <span className="admin-chip">missing: {billingDriftSummary.missingCount}</span>
-                          <span className="admin-chip">extra: {billingDriftSummary.extraCount}</span>
-                        </div>
-                      ) : null}
-                      <div className="admin-row">
-                        <span className="admin-chip">request: {requestAttribution.requestId ?? event.id}</span>
-                        {requestAttribution.requestMethod ? (
-                          <span className="admin-chip">method: {requestAttribution.requestMethod}</span>
-                        ) : null}
-                        {requestAttribution.requestPath ? (
-                          <span className="admin-chip">path: {requestAttribution.requestPath}</span>
-                        ) : null}
-                      </div>
-                      {changeDetails.length > 0 ? (
-                        <details className="admin-audit-diff">
-                          <summary>Change detail ({changeDetails.length})</summary>
-                          <ul className="admin-audit-diff-list">
-                            {changeDetails.map((change) => (
-                              <li key={`${event.id}-${change.field}`}>
-                                <strong>{change.field}</strong>
-                                <span>
-                                  {change.before} {'->'} {change.after}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      ) : null}
-                      {event.error ? <p className="admin-error">{event.error}</p> : null}
-                    </>
-                  );
-                })()}
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        <AuditTabBody
+          snapshots={snapshots}
+          globalAuditScope={GLOBAL_AUDIT_SCOPE}
+          auditStatusOptions={auditStatusOptions}
+          auditActionOptions={auditActionOptions}
+          auditActorRoleFilterOptions={auditActorRoleFilterOptions}
+          auditChangedFieldOptions={auditChangedFieldOptions}
+          selectedAuditTenantId={selectedAuditTenantId}
+          selectedAuditStatus={selectedAuditStatus}
+          selectedAuditAction={selectedAuditAction}
+          selectedAuditActorRole={selectedAuditActorRole}
+          selectedAuditActorId={selectedAuditActorId}
+          selectedAuditRequestId={selectedAuditRequestId}
+          selectedAuditChangedField={selectedAuditChangedField}
+          selectedAuditFromDate={selectedAuditFromDate}
+          selectedAuditToDate={selectedAuditToDate}
+          selectedAuditLimit={selectedAuditLimit}
+          selectedAuditSearch={selectedAuditSearch}
+          selectedAuditErrorsOnly={selectedAuditErrorsOnly}
+          setSelectedAuditTenantId={setSelectedAuditTenantId}
+          setSelectedAuditStatus={setSelectedAuditStatus}
+          setSelectedAuditAction={setSelectedAuditAction}
+          setSelectedAuditActorRole={setSelectedAuditActorRole}
+          setSelectedAuditActorId={setSelectedAuditActorId}
+          setSelectedAuditRequestId={setSelectedAuditRequestId}
+          setSelectedAuditChangedField={setSelectedAuditChangedField}
+          setSelectedAuditFromDate={setSelectedAuditFromDate}
+          setSelectedAuditToDate={setSelectedAuditToDate}
+          setSelectedAuditLimit={setSelectedAuditLimit}
+          setSelectedAuditSearch={setSelectedAuditSearch}
+          setSelectedAuditErrorsOnly={setSelectedAuditErrorsOnly}
+          parseAuditLimit={parseAuditLimit}
+          auditError={auditError}
+          auditLoading={auditLoading}
+          auditEvents={auditEvents}
+          tenantNameById={tenantNameById}
+          formatTimestamp={formatTimestamp}
+          getAuditRequestAttribution={getAuditRequestAttribution}
+          getAuditChangeDetails={getAuditChangeDetails}
+          getBillingDriftSummaryForAuditRow={getBillingDriftSummaryForAuditRow}
+        />
       </section>
+      ) : null}
     </div>
   );
 }

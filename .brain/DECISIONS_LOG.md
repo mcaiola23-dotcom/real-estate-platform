@@ -495,3 +495,57 @@
 ### D-121: Duplicate detection via contact email/phone + address matching
 **Decision**: Duplicate detection queries contacts by normalized email/phone and leads by address substring match, excluding the current lead. Results show in a dismissible warning banner.
 **Reason**: Real estate CRMs commonly have duplicate leads from the same person submitting multiple inquiries. Early detection prevents wasted effort and data fragmentation.
+
+## 2026-02-22
+### D-122: Default Admin portal to Guided mode with progressive disclosure for advanced operations
+**Decision**: Add a top-level Guided vs Full workspace mode in `apps/admin`, default to Guided mode, and hide advanced panels (diagnostics, billing, access, platform health, audit log) behind an explicit `Advanced Tools` reveal in Guided mode.
+**Reason**: The Admin portal has accumulated many operator surfaces and is difficult to parse at first glance. Progressive disclosure preserves existing functionality while making the primary tenant onboarding/launch workflow more intuitive for day-to-day use.
+
+### D-123: Scaffold packages/ai/ as shared AI orchestration package
+**Decision**: Create `packages/ai/` with types, config, prompt templates, LLM client abstraction, and CRM-specific orchestration modules (next-action-engine, lead-intelligence, message-drafting, conversation-extractor).
+**Reason**: Centralizes AI logic in a shared package that can be consumed by any app (CRM, admin, web), keeps prompts versioned and testable, and enforces provenance metadata on all AI-generated content per non-negotiable rules.
+
+### D-124: Rule-based next-action engine with optional AI enhancement
+**Decision**: Next Best Action engine uses 6 deterministic rule-based patterns (overdue_followup, active_browser_no_contact, multi_favorite_same_area, declining_frequency, price_range_shift, repeated_listing_views) that always work, with optional AI enhancement via LLM when API key is configured.
+**Reason**: Ensures the feature delivers value immediately without requiring AI service setup. Rule-based patterns cover the highest-impact real estate agent workflows. AI enrichment adds natural language context when available but is never required.
+
+### D-125: AI provenance metadata on all AI-generated content
+**Decision**: Every AI response carries `AiProvenance` metadata: source (ai/rule_engine/fallback), model, promptVersion, generatedAt, latencyMs, cached.
+**Reason**: Required by non-negotiable rules. Enables agents to distinguish AI-generated vs rule-based content, track prompt versions for debugging, and measure AI service latency.
+
+### D-126: Graceful AI degradation — never-throw LLM client
+**Decision**: The LLM client (`packages/ai/src/llm-client.ts`) returns `null` on any failure (rate limit, timeout, network error, missing API key). All orchestration modules fall back to deterministic behavior when AI returns null.
+**Reason**: AI features must never break the CRM workflow. A failed AI call should be invisible to the agent — they get rule-based suggestions instead of an error message.
+
+### D-127: CRM AI routes use factory pattern with dependency injection
+**Decision**: All 5 AI API routes (lead-score-explain, next-action, lead-summary, draft-message, extract-insights) use `create*Handler` factory functions with injectable dependencies, matching the existing CRM route pattern.
+**Reason**: Enables deterministic testing without module mocking, consistent with all other CRM routes (D-034).
+
+## 2026-02-22
+### D-128: Use task-based tabs + Action Center to manage Admin control-plane complexity
+**Decision**: Add task-based Admin workspace tabs (`launch`, `support`, `billing`, `access`, `health`, `audit`) and a prioritized tenant Action Center with one-click navigation into tabbed sections, while keeping Guided mode progressive disclosure.
+**Reason**: The Admin portal now spans many operator workflows; task-focused navigation plus prioritized actions reduces cognitive overload and helps operators focus on the next blocking step for a tenant.
+
+### D-129: Centralize GTM commercial/onboarding baselines for Admin onboarding guidance
+**Decision**: Create `apps/admin/app/lib/commercial-baselines.ts` as the Admin-facing canonical source for plan commercial targets, setup scope/SLA baselines, and managed-service references, and surface these directly in the onboarding wizard/review step.
+**Reason**: GTM definitions in `.brain/PRODUCT_SPEC.md` need to be operationalized in the control plane so plan selection and onboarding expectations stay aligned without repeating hardcoded values across UI sections.
+
+### D-130: Make Admin Action Center prioritization a tested pure helper
+**Decision**: Extract Action Center item prioritization into `apps/admin/app/lib/action-center.ts` with node:test coverage (`action-center.test.ts`) and keep the workspace component responsible only for deriving current tenant/runtime state and rendering.
+**Reason**: Action Center logic will grow as more operational signals are added. A pure helper with focused tests reduces regression risk and decouples prioritization policy from the large workspace UI component.
+
+### D-131: Use plan-tier checklist templates and actor seed presets as operator defaults (not persisted workflow state)
+**Decision**: Add GTM-driven plan-tier onboarding checklist templates and actor seed presets in `apps/admin/app/lib/commercial-baselines.ts`, and surface them in Launch/Access tabs as operator defaults that prefill drafts/reference tasks without introducing new persistence models yet.
+**Reason**: This operationalizes GTM baselines immediately while avoiding a premature database/task-model design. Operators get actionable defaults now, and durable onboarding task persistence can be designed later.
+
+### D-132: Continue Admin decomposition via body-component extraction for lower-risk tab panels first
+**Decision**: Extract `support` and `health` tab bodies into dedicated components (`SupportTabBody`, `PlatformHealthTabBody`) while leaving more prop-heavy `launch`/`billing`/`access`/`audit` panels in the main workspace component for a later pass.
+**Reason**: This preserves delivery momentum and reduces risk during refactor by starting with high-value, lower-coupling sections before tackling the heaviest panels.
+
+### D-133: Define durable onboarding task persistence as a design artifact before schema implementation
+**Decision**: Create `project_tracking/admin_onboarding_task_persistence_design.md` to define the proposed `TenantOnboardingPlan` / `TenantOnboardingTask` schema, API surface, UI rollout, and Action Center integration before adding new Prisma models/routes.
+**Reason**: The current plan-tier checklists are useful as operator defaults, but durable task state introduces new persistence and workflow complexity. A design-first pass reduces rework and clarifies rollout sequencing.
+
+### D-134: Extract Admin `billing` / `access` / `audit` tab bodies as body-only components before persistence MVP work
+**Decision**: Decompose `apps/admin/app/components/control-plane-workspace.tsx` further by extracting `BillingTabBody`, `AccessTabBody`, and `AuditTabBody` into `apps/admin/app/components/control-plane/`, while keeping existing state, helpers, and mutation orchestration in the parent workspace component for now.
+**Reason**: This finishes the highest-noise rendering extraction before onboarding-task persistence implementation, reducing UI-file cognitive load and merge risk without changing tenant-scoped workflow behavior or forcing a larger state-management rewrite.

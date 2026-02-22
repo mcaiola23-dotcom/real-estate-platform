@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Continue Admin control-plane delivery by hardening billing provider ingestion beyond baseline reconciliation, while preserving tenant isolation and shared package boundaries.
+Continue Admin control-plane usability and maintainability improvements while preparing the durable onboarding-task persistence MVP, preserving tenant isolation and shared package boundaries.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -53,12 +53,14 @@ Continue Admin control-plane delivery by hardening billing provider ingestion be
 47. Operator remediation shortcuts from billing drift triage are now in place in `apps/admin/app/components/control-plane-workspace.tsx`, including one-click missing/extra/all flag correction actions that update settings drafts, arm billing entitlement sync, and surface save-order guidance.
 48. Focused automated regression coverage for billing drift remediation is now in place via pure helper tests in `apps/admin/app/api/lib/routes.integration.test.ts` + shared helper `apps/admin/app/lib/billing-drift-remediation.ts`, validating missing/extra/all draft mutation behavior and entitlement-sync arming semantics.
 49. Cross-tenant billing drift reporting summary is now in place in shared observability contracts/aggregation (`packages/types/src/control-plane.ts`, `packages/db/src/control-plane.ts`) and exposed in Admin workspace observability (`apps/admin/app/components/control-plane-workspace.tsx`) with recent totals, drift modes, and per-tenant breakdowns.
+50. AI Integration Foundation (Phase 8) is now in place via `packages/ai/` shared package with types/config/LLM-client/prompt-templates and 4 CRM orchestration modules (next-action-engine, lead-intelligence, message-drafting, conversation-extractor), 5 factory-pattern AI API routes in `apps/crm/app/api/ai/`, 4 AI UI components (AiActionCard, AiLeadSummary, AiNextActions, AiScoreExplanation), and 12 route integration tests (37 total).
+51. Admin task-tab decomposition is now materially advanced in `apps/admin` with extracted navigation surfaces (`ActionCenterPanel`, `WorkspaceTaskTabs`) plus `support`, `health`, `billing`, `access`, and `audit` tab-body components, reducing `control-plane-workspace.tsx` inline rendering complexity without changing tenant-scoped behavior.
 
 ## Immediate Next Steps
+- First next session: implement the durable onboarding-task persistence MVP in Admin control plane using `project_tracking/admin_onboarding_task_persistence_design.md`, starting with shared contracts + Prisma schema/models/helpers before UI mutation wiring.
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes and record trend deltas in this file.
-- Defer full manual browser click-through for Admin and CRM until the next planned UI/UX improvement pass is complete (per current product-direction override).
-- When the product-direction override is lifted, run focused manual browser click-through for Admin onboarding + domain operations on desktop and smaller laptop viewport.
-- Propagate newly-defined GTM plan/onboarding/service baselines into operator-facing enablement artifacts (sales/onboarding runbook + Admin seed defaults where applicable).
+- Keep manual browser click-through for Admin and CRM deferred until buildout stabilizes (per current user override); do not spend time on manual QA next session unless the user explicitly changes direction.
+- Continue Admin decomposition only as needed to support onboarding-task persistence UI integration (prefer targeted extraction over broad rewrites).
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -731,3 +733,94 @@ Continue Admin control-plane delivery by hardening billing provider ingestion be
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run test:routes --workspace @real-estate/admin"` passes (`43/43`).
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run lint --workspace @real-estate/admin"` passes.
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/admin"` passes.
+
+## Session Update (2026-02-22 Admin Workspace UX Clarity Pass)
+
+### Completed This Session
+1. Improved Admin portal information architecture in `apps/admin/app/components/control-plane-workspace.tsx`:
+- renamed core sections in operator language (`Create a Tenant`, `Choose a Tenant`, `Launch Setup`, etc.),
+- added a top-level `Start Here` workspace guide with guided/full workspace mode selection,
+- added a selected-tenant status summary with readiness percentage and plain-language next-step guidance.
+2. Reduced initial operator overwhelm with progressive disclosure:
+- added Guided mode default that hides advanced panels (diagnostics, billing, access, platform health, audit log) until explicitly shown,
+- added a dedicated `Advanced Tools` toggle card to reveal hidden operational panels when needed.
+3. Added supporting Admin UI styles in `apps/admin/app/globals.css` for workspace guide cards, mode controls, and guided-mode panel visibility behavior.
+4. Manual browser QA remains intentionally deferred while active buildout continues (per current product-direction/user override).
+
+### Session Validation (2026-02-22 Admin Workspace UX Clarity Pass)
+- `timeout 60s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes (no diagnostics emitted).
+- WSL direct ESLint invocation remains non-authoritative here (`ESLint` root config discovery mismatch when not using workspace command).
+- Windows-authoritative `cmd.exe` lint invocation from this sandbox could not run due WSL vsock bridge failure (`UtilBindVsockAnyPort socket failed 1`).
+
+## Session Update (2026-02-22 Admin Task Tabs + Action Center + GTM Baseline Propagation)
+
+### Completed This Session
+1. Expanded Admin portal usability in `apps/admin/app/components/control-plane-workspace.tsx` + `apps/admin/app/globals.css`:
+- added task-based workspace tabs (`Create & Launch`, `Support`, `Billing`, `Access`, `Platform Health`, `Audit Log`) to reduce cognitive load,
+- added a tenant `Action Center` with prioritized blocker/warning/info items and one-click navigation into the relevant tab/section,
+- added inline glossary/help tooltips for key operator terms (`guardrails`, `entitlement drift`, `support session`, `observability`, `audit actions`).
+2. Propagated GTM plan/onboarding/service baselines into Admin onboarding defaults/help surfaces:
+- centralized canonical plan pricing/ICP/setup scope/SLA/managed-service references in `apps/admin/app/lib/commercial-baselines.ts`,
+- enriched onboarding plan cards + review/provision step with pricing targets, ICP summaries, setup package scope, SLA timeline/policy notes, and managed-service cross-sell references.
+3. Added operator-facing enablement artifact `project_tracking/operator_onboarding_runbook.md` covering the high-touch sales -> ops -> build -> launch workflow, canonical plan matrix usage, onboarding SLA, change-order triggers, and post-launch managed-services expansion.
+4. Continued Prisma reliability maintenance:
+- re-ran Windows-authoritative `db:generate:sample -- 12 --json --exit-zero` and observed `12/12` pass (`0` `EPERM` lock failures).
+
+### Session Validation (2026-02-22 Admin Task Tabs + Action Center + GTM Baseline Propagation)
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes (no diagnostics emitted) after Admin UI + commercial baseline updates.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run db:generate:sample --workspace @real-estate/db -- 12 --json --exit-zero"` passes (`12/12`, `0` `EPERM` failures).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db && npm run worker:ingestion:drain"` fails in this mixed WSL/Windows dependency state due `esbuild` platform binary mismatch (`@esbuild/linux-x64` vs `@esbuild/win32-x64`); treat as non-authoritative for Windows runtime health.
+
+## Session Update (2026-02-22 Admin Workspace Decomposition + Action Center Tests + GTM Defaults)
+
+### Completed This Session
+1. Started Admin workspace component decomposition by extracting new task-navigation surfaces out of `control-plane-workspace.tsx`:
+- `apps/admin/app/components/control-plane/ActionCenterPanel.tsx`
+- `apps/admin/app/components/control-plane/WorkspaceTaskTabs.tsx`
+2. Extracted Action Center prioritization into a pure helper with focused automated tests:
+- helper: `apps/admin/app/lib/action-center.ts`
+- tests: `apps/admin/app/lib/action-center.test.ts`
+3. Converted GTM baseline propagation from reference-only guidance into operator-usable defaults:
+- added plan-tier onboarding checklist templates and actor seed presets in `apps/admin/app/lib/commercial-baselines.ts`,
+- wired plan-tier onboarding checklist template display into Launch Setup,
+- wired plan-based actor seed preset buttons into Access tab to prefill add-actor drafts.
+4. Continued preserving non-CRM/no-manual-QA scope per current user directive.
+
+### Session Validation (2026-02-22 Admin Workspace Decomposition + Action Center Tests + GTM Defaults)
+- `node --import tsx --test apps/admin/app/lib/action-center.test.ts` passes.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after helper extraction/component split and GTM default wiring.
+
+## Session Update (2026-02-22 Admin Panel Body Extraction + Tab Metrics Helper + Onboarding Task Persistence Design)
+
+### Completed This Session
+1. Continued Admin workspace decomposition by extracting additional tab bodies out of `control-plane-workspace.tsx`:
+- `apps/admin/app/components/control-plane/SupportTabBody.tsx`
+- `apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`
+2. Extracted workspace task-tab metric computation into a tested pure helper:
+- helper: `apps/admin/app/lib/workspace-task-metrics.ts`
+- tests: `apps/admin/app/lib/workspace-task-metrics.test.ts`
+3. Added a durable onboarding-task persistence design proposal for future Admin workflow state:
+- `project_tracking/admin_onboarding_task_persistence_design.md` (schema/API/UI rollout proposal for `TenantOnboardingPlan` + `TenantOnboardingTask`)
+
+### Session Validation (2026-02-22 Admin Panel Body Extraction + Tab Metrics Helper + Onboarding Task Persistence Design)
+- `node --import tsx --test apps/admin/app/lib/action-center.test.ts apps/admin/app/lib/workspace-task-metrics.test.ts` passes.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after support/health body extraction and tab-metrics helper wiring.
+
+## Session Update (2026-02-22 Admin Billing/Access/Audit Body Extraction Completion)
+
+### Completed This Session
+1. Continued Admin workspace decomposition by extracting the remaining task-tab bodies out of `apps/admin/app/components/control-plane-workspace.tsx`:
+- `apps/admin/app/components/control-plane/BillingTabBody.tsx`
+- `apps/admin/app/components/control-plane/AccessTabBody.tsx`
+- `apps/admin/app/components/control-plane/AuditTabBody.tsx`
+2. Rewired `apps/admin/app/components/control-plane-workspace.tsx` to consume the new tab-body components while preserving tenant-scoped operator behavior:
+- billing/subscription editing and entitlement-drift triage/remediation remain tenant-scoped,
+- access/RBAC and support-session controls remain tenant-scoped,
+- audit timeline filters and event rendering/export wiring remain tenant-scoped and behaviorally unchanged.
+3. Preserved current execution constraints per user direction:
+- no CRM work in this stream,
+- manual browser walkthroughs remain deferred until additional buildout is complete.
+
+### Session Validation (2026-02-22 Admin Billing/Access/Audit Body Extraction Completion)
+- `node --import tsx --test apps/admin/app/lib/action-center.test.ts apps/admin/app/lib/workspace-task-metrics.test.ts` passes.
+- `timeout 120s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after billing/access/audit body extraction wiring.

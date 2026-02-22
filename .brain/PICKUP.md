@@ -4,74 +4,42 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Continue CRM UI/UX overhaul. Most phases complete. Next priority: **Phase 8 (AI Integration Foundation)** which unblocks Phases 9A/9B/9D and Phase 13E-13G.
-- Implementation plan: `/home/mc23/.claude/plans/glistening-sniffing-pie.md`
+- Implement the durable onboarding-task persistence MVP for Admin control plane (Task 3), starting from `project_tracking/admin_onboarding_task_persistence_design.md`.
 
 ## Why This Is Next
-- The user's directive is "as many CRM phases as we can get through per session."
-- Phase 8 (AI Integration Foundation) is the largest remaining enabler — it unlocks AI-powered features across CRM.
-- User said "save AI for last" — all non-AI phases are now complete except Phase 14D-14I (advanced features like mobile, offline, calendar sync).
-- Phase 14 items (D-I) are lower priority stretch goals.
+- The Admin usability/decomposition passes are far enough along to support persistence work without further UI-only refactors first.
+- Plan-tier checklist templates and actor seed presets are currently operator defaults only (non-persistent); durable task state is the next functional gap.
+- User explicitly requested this as the first task next session and to defer manual walkthroughs for now.
 
-## Current Snapshot
-- Completed this session (2026-02-21, session 4):
-  - **Phase 3**: Active Transactions — 4 DB models (Transaction, TransactionParty, TransactionDocument, TransactionMilestone), migration `202602210002_add_transaction_models`, 7 API routes (factory pattern), 5 UI components (TransactionsView, TransactionPipeline, TransactionCard, TransactionDetailModal, NewTransactionForm), workspace nav integration.
-  - **Phase 12B**: Lead Source ROI Chart — SourceRoiChart component with editable cost inputs, pure CSS bar chart, ROI tier coloring, wired into AnalyticsView.
-  - **Phase 13A**: Unified Lead Timeline — UnifiedTimeline + TimelineEvent components replacing 3 separate sections. Category filter chips, day grouping, relative timestamps, category-colored left borders.
-  - **Phase 13B**: Lead Tags — DB migration `202602210003_add_lead_tags` (tags TEXT column on Lead), LeadTagInput component with autocomplete + preset suggestions, `GET /api/leads/tags` endpoint, PATCH support, filter-by-tag in list query.
-  - **Phase 13C**: Source Attribution Chain — SourceAttributionChain component with transit-map visualization, auto-computed from lead source + activities, deduplication of consecutive same-type events, overflow indicator.
-  - **Phase 13D**: Duplicate Detection — `findPotentialDuplicateLeads` DB helper (email/phone/address matching), `GET /api/leads/duplicates` route (factory pattern), DuplicateWarning component with View/Dismiss actions, wired into LeadProfileModal.
-- Previously completed (sessions 1-3):
-  - Phase 0: Component Decomposition
-  - Phase 1A-1E: UI Enhancements
-  - Phase 2: Properties Section
-  - Phase 4: Drag-and-Drop Pipeline
-  - Phase 5: Dark Mode
-  - Phase 6A/6B: ICS Calendar + Performance
-  - Phase 7: Auto Lead-to-Property Matching
-  - Phase 10A-10D: My Day, Conversion Funnel, Revenue Pipeline, Breadcrumb
-  - Phase 11A-11C: Command Palette, Notification Center, Pinned Leads
-  - Phase 12A/12C: Analytics View, CSV Export
-  - Phase 14A-14C: Pipeline Swimlanes, Deal Values, Pipeline Aging
-  - Phase 9C (partial): Communication Quick Actions
-- Still pending:
-  - Phase 8: AI Integration Foundation (packages/ai scaffold)
-  - Phase 9A/9B/9D: Reminders, Templates, Escalation (depends on Phase 8)
-  - Phase 13E-13G: AI Market Digest, AI Listing Desc, AI features (depends on Phase 8)
-  - Phase 14D-14I: Win/Loss Analysis, Mobile, Offline, Calendar Sync, MLS Feed, Documents
-
-## Validation (Most Recent)
-- `npx tsc --noEmit -p apps/crm/tsconfig.json` — CLEAN (0 errors).
-- `npm run lint --workspace @real-estate/crm` — 0 errors, 2 warnings (pre-existing unused eslint-disable in seed script).
-- `npm run test:routes --workspace @real-estate/crm` — 25/25 pass.
-- `npm run test:workspace --workspace @real-estate/crm` — 4/4 pass.
-
-## Key New Files This Session
-- `packages/db/prisma/migrations/202602210002_add_transaction_models/migration.sql`
-- `packages/db/prisma/migrations/202602210003_add_lead_tags/migration.sql`
-- `packages/db/src/transactions.ts` — Transaction CRUD helpers
-- `packages/types/src/transactions.ts` — Transaction type contracts
-- `apps/crm/app/api/transactions/**` — 7 transaction API route files
-- `apps/crm/app/components/transactions/**` — 5 transaction UI components
-- `apps/crm/app/components/analytics/SourceRoiChart.tsx` — ROI chart
-- `apps/crm/app/components/leads/UnifiedTimeline.tsx` — Unified timeline
-- `apps/crm/app/components/leads/TimelineEvent.tsx` — Timeline event
-- `apps/crm/app/components/leads/LeadTagInput.tsx` — Tag input with autocomplete
-- `apps/crm/app/components/leads/SourceAttributionChain.tsx` — Attribution chain
-- `apps/crm/app/components/leads/DuplicateWarning.tsx` — Duplicate warning
-- `apps/crm/app/api/leads/tags/route.ts` — Tags listing endpoint
-- `apps/crm/app/api/leads/duplicates/route.ts` — Duplicate detection endpoint
+## Current Snapshot (2026-02-22)
+- Admin portal usability improvements completed: Guided vs Full mode, Start Here guide, task tabs, Action Center, glossary help, clearer section labels.
+- Admin decomposition completed for task-tab rendering surfaces:
+  - `ActionCenterPanel`, `WorkspaceTaskTabs`
+  - `SupportTabBody`, `PlatformHealthTabBody`
+  - `BillingTabBody`, `AccessTabBody`, `AuditTabBody`
+- GTM baselines operationalized in Admin guidance/defaults via `apps/admin/app/lib/commercial-baselines.ts` and `project_tracking/operator_onboarding_runbook.md`.
+- Durable onboarding task persistence is designed but not implemented yet: `project_tracking/admin_onboarding_task_persistence_design.md`.
+- Manual browser QA remains intentionally deferred.
+- CRM is an active parallel stream; do not take CRM work unless the user explicitly redirects.
 
 ## First Actions Next Session
-1. Run `/session-bootstrap`.
-2. Phase 8 (AI Integration Foundation) is the recommended next phase — scaffold `packages/ai/` and create CRM AI endpoints.
-3. Phase 8 requires scaffolding `packages/ai/` package with prompt templates, orchestration logic, and config.
-4. After Phase 8, unlock Phase 9A/9B/9D (reminders, templates, escalation) and Phase 13E-13G (AI features).
+1. Run `$platform-session-bootstrap`.
+2. Re-open `project_tracking/admin_onboarding_task_persistence_design.md` and implement Phase 1 of the MVP:
+   - shared contracts in `packages/types`
+   - Prisma schema/models + migration in `packages/db`
+   - shared DB helpers in `packages/db/src/control-plane.ts`
+3. Add minimal Admin read/write route scaffolding for onboarding plans/tasks (server-side only before UI polish).
+4. Wire the first read surface into Admin (likely Action Center / Launch tab checklist state) only after schema/helpers are stable.
+
+## Validation Context (Most Recent)
+- `node --import tsx --test apps/admin/app/lib/action-center.test.ts apps/admin/app/lib/workspace-task-metrics.test.ts` — PASS
+- `timeout 120s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` — PASS
+- Latest Windows-authoritative Prisma sampling (earlier this session): `db:generate:sample -- 12 --json --exit-zero` — PASS (`12/12`, `0` EPERM failures)
+- `worker:ingestion:drain` from mixed WSL/Windows dependency state remains non-authoritative when `esbuild` platform mismatch appears
 
 ## Constraints To Keep
-- Preserve tenant isolation for all request/event paths and UI data interactions.
-- Keep shared package boundaries strict: no cross-app imports.
-- Follow factory pattern for new API routes.
-- Strict React lint rules: no setState in effects, no ref access during render.
-- Treat Windows-authoritative command results as canonical when WSL sandbox limitations are present.
-- Use `/frontend-design` skill for UI component design work.
+- Preserve tenant isolation for all Admin onboarding task reads/writes (tenant-scoped data only).
+- Keep shared package boundaries strict: contracts in `packages/types`, persistence/helpers in `packages/db`, UI in `apps/admin`.
+- Do not do manual browser walkthroughs unless the user changes direction.
+- Do not take CRM tasks in this stream unless the user explicitly asks.
+- Prefer incremental Admin refactors tied to the persistence MVP over broad UI rewrites.
