@@ -134,3 +134,79 @@ export interface InsightExtractionResult {
   insights: ExtractedInsight[];
   provenance: AiProvenance;
 }
+
+// ---------------------------------------------------------------------------
+// Predictive Lead Scoring
+// ---------------------------------------------------------------------------
+
+export interface PredictiveScoreFeatures {
+  activityFrequency: string; // bucketed: '0' | '1-3' | '4-8' | '9-15' | '16+'
+  recencyBucket: string;     // '0-2d' | '3-7d' | '8-14d' | '15-30d' | '30d+'
+  favoritesRatio: string;    // '0' | '0.01-0.1' | '0.1-0.3' | '0.3+'
+  daysInPipeline: string;    // '0-7' | '8-14' | '15-30' | '31-60' | '60+'
+  source: string;
+  propertyType: string;
+  leadType: string;
+  hasContact: string;        // 'yes' | 'no'
+  profileCompleteness: string; // '0' | '1' | '2' | '3' | '4'
+}
+
+export interface PredictiveScoreFactor {
+  feature: string;
+  direction: 'positive' | 'negative' | 'neutral';
+  impact: number; // log-odds contribution (absolute value)
+  detail: string;
+}
+
+export interface PredictiveScoreResult {
+  leadId: string;
+  tenantId: string;
+  conversionProbability: number; // 0-100
+  confidence: 'high' | 'medium' | 'low';
+  insufficient: boolean;
+  dataStats: { totalWon: number; totalLost: number } | null;
+  topFactors: PredictiveScoreFactor[];
+  explanation: string | null;
+  provenance: AiProvenance;
+}
+
+// ---------------------------------------------------------------------------
+// Smart Lead Routing
+// ---------------------------------------------------------------------------
+
+export interface RoutingFactor {
+  factor: string;
+  weight: number;
+  score: number; // 0-100
+  detail: string;
+}
+
+export interface RoutingRecommendation {
+  agentId: string;
+  agentName: string;
+  compositeScore: number; // 0-100
+  factors: RoutingFactor[];
+  isCurrentAssignee: boolean;
+}
+
+export interface AgentRoutingProfile {
+  actorId: string;
+  displayName: string;
+  activeLeadCount: number;
+  wonCount: number;
+  lostCount: number;
+  avgResponseHours: number | null;
+  leadsByArea: Record<string, number>;
+  leadsByPropertyType: Record<string, number>;
+  wonByArea: Record<string, number>;
+  wonByPropertyType: Record<string, number>;
+}
+
+export interface LeadRoutingResult {
+  leadId: string;
+  tenantId: string;
+  mode: 'team' | 'solo';
+  recommendations: RoutingRecommendation[];
+  explanation: string | null;
+  provenance: AiProvenance;
+}

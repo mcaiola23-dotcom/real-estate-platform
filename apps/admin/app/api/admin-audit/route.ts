@@ -56,6 +56,9 @@ function parseAction(value: string | null): ControlPlaneAdminAuditAction | null 
     value === 'tenant.domain.add' ||
     value === 'tenant.domain.update' ||
     value === 'tenant.settings.update' ||
+    value === 'tenant.onboarding.plan.create' ||
+    value === 'tenant.onboarding.plan.update' ||
+    value === 'tenant.onboarding.task.update' ||
     value === 'tenant.billing.update' ||
     value === 'tenant.billing.sync' ||
     value === 'tenant.diagnostics.remediate' ||

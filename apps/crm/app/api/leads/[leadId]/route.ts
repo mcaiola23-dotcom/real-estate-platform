@@ -138,6 +138,11 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
           priceMin?: number | string | null;
           priceMax?: number | string | null;
           tags?: string[];
+          closeReason?: string | null;
+          closeNotes?: string | null;
+          closedAt?: string | null;
+          assignedTo?: string | null;
+          referredBy?: string | null;
         }
       | null;
 
@@ -172,6 +177,11 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
     const tags = Array.isArray(payload.tags)
       ? payload.tags.filter((t): t is string => typeof t === 'string' && t.trim().length > 0).map((t) => t.trim())
       : undefined;
+    const closeReason = toNullableString(payload.closeReason);
+    const closeNotes = toNullableString(payload.closeNotes);
+    const closedAt = toNullableString(payload.closedAt);
+    const assignedTo = toNullableString(payload.assignedTo);
+    const referredBy = toNullableString(payload.referredBy);
 
     if (
       status === undefined &&
@@ -189,7 +199,12 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       reminderSnoozedUntil === undefined &&
       priceMin === undefined &&
       priceMax === undefined &&
-      tags === undefined
+      tags === undefined &&
+      closeReason === undefined &&
+      closeNotes === undefined &&
+      closedAt === undefined &&
+      assignedTo === undefined &&
+      referredBy === undefined
     ) {
       return NextResponse.json(
         {
@@ -217,6 +232,11 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       priceMin,
       priceMax,
       tags,
+      closeReason,
+      closeNotes,
+      closedAt,
+      assignedTo,
+      referredBy,
     });
 
     if (!updatedLead) {

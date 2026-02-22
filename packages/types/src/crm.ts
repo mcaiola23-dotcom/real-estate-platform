@@ -1,5 +1,5 @@
 export type CrmLeadStatus = 'new' | 'qualified' | 'nurturing' | 'won' | 'lost';
-export type CrmLeadType = 'website_lead' | 'valuation_request';
+export type CrmLeadType = 'buyer' | 'seller' | 'investor' | 'renter' | 'other' | 'website_lead' | 'valuation_request';
 
 export interface CrmContact {
   id: string;
@@ -38,6 +38,11 @@ export interface CrmLead {
   priceMin: number | null;
   priceMax: number | null;
   tags: string[];
+  closeReason: string | null;
+  closeNotes: string | null;
+  closedAt: string | null;
+  assignedTo: string | null;
+  referredBy: string | null;
   createdAt: string;
   updatedAt: string;
 }

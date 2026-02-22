@@ -201,6 +201,41 @@ exports.Prisma.TenantControlActorScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.TenantOnboardingPlanScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  status: 'status',
+  planCode: 'planCode',
+  startedAt: 'startedAt',
+  targetLaunchDate: 'targetLaunchDate',
+  completedAt: 'completedAt',
+  pausedAt: 'pausedAt',
+  pauseReason: 'pauseReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TenantOnboardingTaskScalarFieldEnum = {
+  id: 'id',
+  tenantOnboardingPlanId: 'tenantOnboardingPlanId',
+  tenantId: 'tenantId',
+  taskKey: 'taskKey',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  priority: 'priority',
+  required: 'required',
+  ownerRole: 'ownerRole',
+  ownerActorId: 'ownerActorId',
+  dueAt: 'dueAt',
+  blockedByClient: 'blockedByClient',
+  blockerReason: 'blockerReason',
+  sortOrder: 'sortOrder',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ModuleConfigScalarFieldEnum = {
   id: 'id',
   websiteConfigId: 'websiteConfigId',
@@ -244,9 +279,16 @@ exports.Prisma.LeadScalarFieldEnum = {
   lastContactAt: 'lastContactAt',
   nextActionAt: 'nextActionAt',
   nextActionNote: 'nextActionNote',
+  nextActionChannel: 'nextActionChannel',
+  reminderSnoozedUntil: 'reminderSnoozedUntil',
   priceMin: 'priceMin',
   priceMax: 'priceMax',
   tags: 'tags',
+  closeReason: 'closeReason',
+  closeNotes: 'closeNotes',
+  closedAt: 'closedAt',
+  assignedTo: 'assignedTo',
+  referredBy: 'referredBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -379,6 +421,8 @@ exports.Prisma.ModelName = {
   TenantBillingSubscription: 'TenantBillingSubscription',
   TenantBillingSyncEvent: 'TenantBillingSyncEvent',
   TenantControlActor: 'TenantControlActor',
+  TenantOnboardingPlan: 'TenantOnboardingPlan',
+  TenantOnboardingTask: 'TenantOnboardingTask',
   ModuleConfig: 'ModuleConfig',
   Contact: 'Contact',
   Lead: 'Lead',

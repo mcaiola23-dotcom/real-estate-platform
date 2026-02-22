@@ -1,5 +1,6 @@
 'use client';
 
+import type { ComponentProps } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type {
@@ -14,6 +15,10 @@ import type {
   TenantBillingSubscription,
   TenantBillingSubscriptionStatus,
   TenantControlActor,
+  TenantOnboardingOwnerRole,
+  TenantOnboardingPlanWithTasks,
+  TenantOnboardingTask,
+  TenantOnboardingTaskStatus,
   TenantSupportDiagnosticsSummary,
   TenantSupportDiagnosticStatus,
   TenantSupportRemediationAction,
@@ -45,6 +50,7 @@ import {
   SETUP_PACKAGE_SLA_TIMELINE_BASELINE,
   formatUsd,
 } from '../lib/commercial-baselines';
+import { recordAdminUsageEvent } from '../lib/admin-usage-telemetry';
 import { buildActionCenterItems, type ActionCenterItem, type AdminWorkspaceTab } from '../lib/action-center';
 import { buildWorkspaceTaskMetrics } from '../lib/workspace-task-metrics';
 import { ActionCenterPanel } from './control-plane/ActionCenterPanel';
@@ -94,6 +100,20 @@ interface BillingDraft {
   syncEntitlements: boolean;
 }
 
+interface OnboardingTaskDraft {
+  status: TenantOnboardingTaskStatus;
+  ownerRole: TenantOnboardingOwnerRole;
+  ownerActorId: string;
+  dueAt: string;
+  blockedByClient: boolean;
+  blockerReason: string;
+}
+
+interface OnboardingPlanDraft {
+  targetLaunchDate: string;
+  pauseReason: string;
+}
+
 interface PlanOption {
   code: string;
   label: string;
@@ -121,6 +141,9 @@ const auditActionOptions: ControlPlaneAdminAuditAction[] = [
   'tenant.domain.add',
   'tenant.domain.update',
   'tenant.settings.update',
+  'tenant.onboarding.plan.create',
+  'tenant.onboarding.plan.update',
+  'tenant.onboarding.task.update',
   'tenant.billing.update',
   'tenant.billing.sync',
   'tenant.diagnostics.remediate',
@@ -129,6 +152,7 @@ const auditActionOptions: ControlPlaneAdminAuditAction[] = [
   'tenant.actor.remove',
   'tenant.support-session.start',
   'tenant.support-session.end',
+  'tenant.observability.telemetry.publish',
 ];
 const auditActorRoleFilterOptions = ['admin', 'operator', 'support', 'viewer', 'unknown'];
 
@@ -173,6 +197,13 @@ const roleDefaultPermissions: Record<ControlPlaneActorRole, ControlPlaneActorPer
 const defaultSupportSessionDurationMinutes = 30;
 const billingSubscriptionStatusOptions: TenantBillingSubscriptionStatus[] = ['trialing', 'active', 'past_due', 'canceled'];
 const billingPaymentStatusOptions: TenantBillingPaymentStatus[] = ['pending', 'paid', 'past_due', 'unpaid'];
+const onboardingTaskStatusOptions: TenantOnboardingTaskStatus[] = ['pending', 'in_progress', 'blocked', 'done', 'skipped'];
+const onboardingOwnerRoleOptions: Array<{ value: TenantOnboardingOwnerRole; label: string }> = [
+  { value: 'sales', label: 'Sales' },
+  { value: 'ops', label: 'Ops' },
+  { value: 'build', label: 'Build' },
+  { value: 'client', label: 'Client' },
+];
 
 const onboardingSteps = [
   {
@@ -271,6 +302,16 @@ interface DiagnosticsRemediationResponse {
   };
   summary: TenantSupportDiagnosticsSummary;
   error?: string | null;
+}
+
+interface TenantOnboardingReadResponse {
+  ok: true;
+  onboarding: TenantOnboardingPlanWithTasks | null;
+}
+
+interface TenantOnboardingCreateResponse {
+  ok: true;
+  onboarding: TenantOnboardingPlanWithTasks;
 }
 
 interface AuditRequestAttribution {
@@ -602,6 +643,45 @@ function toBillingDraft(subscription: TenantBillingSubscription): BillingDraft {
   };
 }
 
+function toOnboardingTaskDraft(task: TenantOnboardingTask): OnboardingTaskDraft {
+  return {
+    status: task.status,
+    ownerRole: task.ownerRole,
+    ownerActorId: task.ownerActorId ?? '',
+    dueAt: toDateInputValue(task.dueAt),
+    blockedByClient: task.blockedByClient,
+    blockerReason: task.blockerReason ?? '',
+  };
+}
+
+function isOnboardingTaskDraftDirty(task: TenantOnboardingTask, draft: OnboardingTaskDraft): boolean {
+  return (
+    draft.status !== task.status ||
+    draft.ownerRole !== task.ownerRole ||
+    draft.ownerActorId.trim() !== (task.ownerActorId ?? '').trim() ||
+    draft.dueAt !== toDateInputValue(task.dueAt) ||
+    draft.blockedByClient !== task.blockedByClient ||
+    draft.blockerReason.trim() !== (task.blockerReason ?? '').trim()
+  );
+}
+
+function toOnboardingPlanDraft(plan: TenantOnboardingPlanWithTasks['plan']): OnboardingPlanDraft {
+  return {
+    targetLaunchDate: toDateInputValue(plan.targetLaunchDate),
+    pauseReason: plan.pauseReason ?? '',
+  };
+}
+
+function isOnboardingPlanDraftDirty(
+  plan: TenantOnboardingPlanWithTasks['plan'],
+  draft: OnboardingPlanDraft
+): boolean {
+  return (
+    draft.targetLaunchDate !== toDateInputValue(plan.targetLaunchDate) ||
+    draft.pauseReason.trim() !== (plan.pauseReason ?? '').trim()
+  );
+}
+
 function diagnosticStatusLabel(status: TenantSupportDiagnosticStatus): string {
   if (status === 'failed') {
     return 'failed';
@@ -641,6 +721,22 @@ function formatFeatureLabel(featureId: string): string {
 
 function formatActorRole(role: ControlPlaneActorRole): string {
   return actorRoleOptions.find((entry) => entry.value === role)?.label ?? role;
+}
+
+function canAssignActorToOnboardingOwnerRole(actorRole: ControlPlaneActorRole, ownerRole: TenantOnboardingOwnerRole): boolean {
+  if (ownerRole === 'client') {
+    return false;
+  }
+  if (actorRole === 'admin') {
+    return true;
+  }
+  if (ownerRole === 'ops') {
+    return actorRole === 'operator' || actorRole === 'support';
+  }
+  if (ownerRole === 'sales' || ownerRole === 'build') {
+    return actorRole === 'operator';
+  }
+  return false;
 }
 
 function formatTimestamp(value: string): string {
@@ -777,6 +873,21 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
   const [diagnosticsActionBusyByTenant, setDiagnosticsActionBusyByTenant] = useState<Record<string, boolean>>({});
   const [diagnosticsErrorByTenant, setDiagnosticsErrorByTenant] = useState<Record<string, string | null>>({});
 
+  const [onboardingByTenant, setOnboardingByTenant] = useState<Record<string, TenantOnboardingPlanWithTasks | null>>({});
+  const [onboardingLoadingByTenant, setOnboardingLoadingByTenant] = useState<Record<string, boolean>>({});
+  const [onboardingErrorByTenant, setOnboardingErrorByTenant] = useState<Record<string, string | null>>({});
+  const [onboardingPlanDraftByTenant, setOnboardingPlanDraftByTenant] = useState<Record<string, OnboardingPlanDraft>>({});
+  const [onboardingPlanSavingByTenant, setOnboardingPlanSavingByTenant] = useState<Record<string, boolean>>({});
+  const [onboardingPlanErrorByTenant, setOnboardingPlanErrorByTenant] = useState<Record<string, string | null>>({});
+  const [onboardingTaskDraftById, setOnboardingTaskDraftById] = useState<Record<string, OnboardingTaskDraft>>({});
+  const [onboardingTaskSavingById, setOnboardingTaskSavingById] = useState<Record<string, boolean>>({});
+  const [onboardingTaskErrorById, setOnboardingTaskErrorById] = useState<Record<string, string | null>>({});
+  const [selectedOnboardingTaskIdsByTenant, setSelectedOnboardingTaskIdsByTenant] = useState<Record<string, string[]>>({});
+  const [bulkOnboardingOwnerRoleByTenant, setBulkOnboardingOwnerRoleByTenant] = useState<
+    Record<string, TenantOnboardingOwnerRole>
+  >({});
+  const [bulkOnboardingOwnerActorIdByTenant, setBulkOnboardingOwnerActorIdByTenant] = useState<Record<string, string>>({});
+
   const [observabilitySummary, setObservabilitySummary] = useState<ControlPlaneObservabilitySummary | null>(null);
   const [observabilityLoading, setObservabilityLoading] = useState(false);
   const [observabilityError, setObservabilityError] = useState<string | null>(null);
@@ -814,6 +925,99 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
 
     return diagnosticsByTenant[selectedTenant.tenant.id] ?? null;
   }, [diagnosticsByTenant, selectedTenant]);
+
+  const selectedTenantOnboarding = useMemo(() => {
+    if (!selectedTenant) {
+      return null;
+    }
+
+    return onboardingByTenant[selectedTenant.tenant.id] ?? null;
+  }, [onboardingByTenant, selectedTenant]);
+
+  const selectedTenantOnboardingLoading = selectedTenant
+    ? Boolean(onboardingLoadingByTenant[selectedTenant.tenant.id])
+    : false;
+  const selectedTenantOnboardingError = selectedTenant ? onboardingErrorByTenant[selectedTenant.tenant.id] ?? null : null;
+  const selectedTenantOnboardingTasks = selectedTenantOnboarding?.tasks ?? [];
+  const selectedTenantOnboardingPlanDraft = useMemo(() => {
+    if (!selectedTenant || !selectedTenantOnboarding?.plan) {
+      return null;
+    }
+
+    return onboardingPlanDraftByTenant[selectedTenant.tenant.id] ?? toOnboardingPlanDraft(selectedTenantOnboarding.plan);
+  }, [onboardingPlanDraftByTenant, selectedTenant, selectedTenantOnboarding]);
+  const selectedTenantOnboardingPlanSaving = selectedTenant
+    ? Boolean(onboardingPlanSavingByTenant[selectedTenant.tenant.id])
+    : false;
+  const selectedTenantOnboardingPlanError = selectedTenant
+    ? onboardingPlanErrorByTenant[selectedTenant.tenant.id] ?? null
+    : null;
+  const selectedTenantOnboardingPlanDraftDirty = Boolean(
+    selectedTenantOnboarding?.plan &&
+      selectedTenantOnboardingPlanDraft &&
+      isOnboardingPlanDraftDirty(selectedTenantOnboarding.plan, selectedTenantOnboardingPlanDraft)
+  );
+  const selectedTenantOnboardingLoaded = useMemo(() => {
+    if (!selectedTenant) {
+      return false;
+    }
+    const tenantId = selectedTenant.tenant.id;
+    return (
+      Object.prototype.hasOwnProperty.call(onboardingByTenant, tenantId) ||
+      Object.prototype.hasOwnProperty.call(onboardingErrorByTenant, tenantId)
+    );
+  }, [onboardingByTenant, onboardingErrorByTenant, selectedTenant]);
+
+  const selectedTenantOnboardingTaskSummary = useMemo(() => {
+    const tasks = selectedTenantOnboardingTasks;
+    const requiredTasks = tasks.filter((task) => task.required);
+    const incompleteRequired = requiredTasks.filter((task) => task.status !== 'done' && task.status !== 'skipped');
+    const blockedRequired = requiredTasks.filter((task) => task.status === 'blocked');
+    const now = Date.now();
+    const overdueRequired = requiredTasks.filter((task) => {
+      if (task.status === 'done' || task.status === 'skipped' || !task.dueAt) {
+        return false;
+      }
+      const dueTimestamp = Date.parse(task.dueAt);
+      return Number.isFinite(dueTimestamp) && dueTimestamp < now;
+    });
+    const unassignedRequired = incompleteRequired.filter(
+      (task) => task.ownerRole !== 'client' && (!task.ownerActorId || task.ownerActorId.trim().length === 0)
+    );
+
+    return {
+      total: tasks.length,
+      requiredTotal: requiredTasks.length,
+      requiredCompletedCount: requiredTasks.filter((task) => task.status === 'done').length,
+      incompleteRequiredCount: incompleteRequired.length,
+      blockedRequiredCount: blockedRequired.length,
+      overdueRequiredCount: overdueRequired.length,
+      unassignedRequiredCount: unassignedRequired.length,
+    };
+  }, [selectedTenantOnboardingTasks]);
+  const selectedOnboardingTaskIds = selectedTenant ? selectedOnboardingTaskIdsByTenant[selectedTenant.tenant.id] ?? [] : [];
+  const selectedOnboardingTaskSet = useMemo(() => new Set(selectedOnboardingTaskIds), [selectedOnboardingTaskIds]);
+  const selectedVisibleOnboardingTaskCount = useMemo(
+    () => selectedTenantOnboardingTasks.filter((task) => selectedOnboardingTaskSet.has(task.id)).length,
+    [selectedOnboardingTaskSet, selectedTenantOnboardingTasks]
+  );
+  const selectedBulkOnboardingOwnerRole = selectedTenant
+    ? bulkOnboardingOwnerRoleByTenant[selectedTenant.tenant.id] ?? 'ops'
+    : 'ops';
+  const selectedBulkOnboardingAssignableActors = useMemo(
+    () =>
+      selectedTenantActors.filter((actor) =>
+        canAssignActorToOnboardingOwnerRole(actor.role, selectedBulkOnboardingOwnerRole)
+      ),
+    [selectedBulkOnboardingOwnerRole, selectedTenantActors]
+  );
+  const selectedBulkOnboardingOwnerActorId = selectedTenant
+    ? bulkOnboardingOwnerActorIdByTenant[selectedTenant.tenant.id] ?? ''
+    : '';
+  const selectedBulkOnboardingOwnerActorIdValue =
+    selectedBulkOnboardingAssignableActors.some((actor) => actor.actorId === selectedBulkOnboardingOwnerActorId)
+      ? selectedBulkOnboardingOwnerActorId
+      : '';
 
   const selectedTenantBilling = useMemo(() => {
     if (!selectedTenant) {
@@ -876,7 +1080,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     if (!selectedTenant) {
       return {
         completed: 0,
-        total: 6,
+        total: 10,
         checks: [
           { label: 'Tenant active', ok: false },
           { label: 'Primary domain exists', ok: false },
@@ -884,6 +1088,10 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           { label: 'Settings active', ok: false },
           { label: 'Plan assigned', ok: false },
           { label: 'At least one feature enabled', ok: false },
+          { label: 'Onboarding plan created', ok: false },
+          { label: 'Onboarding plan active (not paused)', ok: false },
+          { label: 'No blocked required onboarding tasks', ok: false },
+          { label: 'No overdue required onboarding tasks', ok: false },
         ],
       };
     }
@@ -906,6 +1114,23 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         label: 'At least one feature enabled',
         ok: selectedTenant.settings.status === 'active' && selectedTenant.settings.featureFlags.length > 0,
       },
+      { label: 'Onboarding plan created', ok: Boolean(selectedTenantOnboarding?.plan) },
+      {
+        label: 'Onboarding plan active (not paused)',
+        ok: Boolean(
+          selectedTenantOnboarding?.plan &&
+            selectedTenantOnboarding.plan.status !== 'paused' &&
+            selectedTenantOnboarding.plan.status !== 'archived'
+        ),
+      },
+      {
+        label: 'No blocked required onboarding tasks',
+        ok: Boolean(selectedTenantOnboarding?.plan) && selectedTenantOnboardingTaskSummary.blockedRequiredCount === 0,
+      },
+      {
+        label: 'No overdue required onboarding tasks',
+        ok: Boolean(selectedTenantOnboarding?.plan) && selectedTenantOnboardingTaskSummary.overdueRequiredCount === 0,
+      },
     ];
 
     const completed = checks.filter((entry) => entry.ok).length;
@@ -914,7 +1139,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       total: checks.length,
       checks,
     };
-  }, [domainProbeByDomainId, selectedTenant]);
+  }, [domainProbeByDomainId, selectedTenant, selectedTenantOnboarding, selectedTenantOnboardingTaskSummary]);
 
   const tenantNameById = useMemo(() => {
     return snapshots.reduce<Record<string, string>>((result, snapshot) => {
@@ -1051,13 +1276,26 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     if (selectedTenant.settings.featureFlags.length === 0) {
       nextSteps.push('Apply a plan template or enable at least one feature flag before launch.');
     }
+    if (!selectedTenantOnboarding?.plan) {
+      nextSteps.push('Create a persisted onboarding plan from the Launch checklist template to track launch work durably.');
+    } else {
+      if (selectedTenantOnboarding.plan.status === 'paused') {
+        nextSteps.push('Resume the onboarding plan after blockers are cleared.');
+      }
+      if (selectedTenantOnboardingTaskSummary.blockedRequiredCount > 0) {
+        nextSteps.push(`Unblock ${selectedTenantOnboardingTaskSummary.blockedRequiredCount} required onboarding task(s).`);
+      }
+      if (selectedTenantOnboardingTaskSummary.overdueRequiredCount > 0) {
+        nextSteps.push(`Complete ${selectedTenantOnboardingTaskSummary.overdueRequiredCount} overdue required onboarding task(s).`);
+      }
+    }
 
     if (nextSteps.length === 0) {
       nextSteps.push('Launch setup is in good shape. Use Billing, Access, and Diagnostics for operational follow-through.');
     }
 
     return nextSteps;
-  }, [domainProbeByDomainId, selectedPrimaryDomain, selectedTenant]);
+  }, [domainProbeByDomainId, selectedPrimaryDomain, selectedTenant, selectedTenantOnboarding, selectedTenantOnboardingTaskSummary]);
 
   const actionCenterItems = useMemo<ActionCenterItem[]>(() => {
     return buildActionCenterItems({
@@ -1072,8 +1310,19 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       diagnosticsFailedCount: selectedTenantDiagnostics?.counts.failed ?? 0,
       diagnosticsWarningCount: selectedTenantDiagnostics?.counts.warning ?? 0,
       actorCount: selectedTenantActors.length,
+      onboardingLoaded: selectedTenantOnboardingLoaded,
+      onboardingPlanExists: Boolean(selectedTenantOnboarding?.plan),
+      onboardingPlanStatus: selectedTenantOnboarding?.plan?.status,
+      onboardingRequiredBlockedCount: selectedTenantOnboardingTaskSummary.blockedRequiredCount,
+      onboardingRequiredOverdueCount: selectedTenantOnboardingTaskSummary.overdueRequiredCount,
+      onboardingRequiredUnassignedCount: selectedTenantOnboardingTaskSummary.unassignedRequiredCount,
     });
   }, [
+    selectedTenantOnboarding,
+    selectedTenantOnboardingLoaded,
+    selectedTenantOnboardingTaskSummary.blockedRequiredCount,
+    selectedTenantOnboardingTaskSummary.overdueRequiredCount,
+    selectedTenantOnboardingTaskSummary.unassignedRequiredCount,
     selectedPrimaryDomain,
     selectedTenant,
     selectedTenantActors.length,
@@ -1093,9 +1342,40 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     }
 
     window.setTimeout(() => {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const element = document.getElementById(sectionId);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (element instanceof HTMLElement) {
+        element.focus({ preventScroll: true });
+      }
     }, 40);
   }, []);
+
+  const publishUsageTelemetryAggregate = useCallback(
+    async (
+      aggregate: Parameters<NonNullable<ComponentProps<typeof PlatformHealthTabBody>['onPublishUsageTelemetryAggregate']>>[0]
+    ): Promise<{ ok: true; accepted: true } | { ok: false; error: string }> => {
+      try {
+        const response = await fetch('/api/observability/usage-telemetry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(aggregate),
+        });
+        if (!response.ok) {
+          return {
+            ok: false,
+            error: await readResponseError(response, 'Unable to publish telemetry aggregate.'),
+          };
+        }
+        return { ok: true, accepted: true };
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error ? error.message : 'Unable to publish telemetry aggregate.',
+        };
+      }
+    },
+    []
+  );
 
   const workspaceTaskMetrics = useMemo(
     () =>
@@ -1429,6 +1709,42 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     }
   }, []);
 
+  const loadOnboardingForTenant = useCallback(async (tenantId: string) => {
+    setOnboardingLoadingByTenant((prev) => ({ ...prev, [tenantId]: true }));
+    setOnboardingErrorByTenant((prev) => ({ ...prev, [tenantId]: null }));
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/onboarding`, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(await readResponseError(response, 'Unable to load tenant onboarding tasks.'));
+      }
+
+      const payload = (await response.json()) as TenantOnboardingReadResponse;
+      setOnboardingByTenant((prev) => ({
+        ...prev,
+        [tenantId]: payload.onboarding,
+      }));
+      setOnboardingPlanDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: payload.onboarding?.plan ? toOnboardingPlanDraft(payload.onboarding.plan) : { targetLaunchDate: '', pauseReason: '' },
+      }));
+      setOnboardingTaskDraftById((prev) => {
+        const next = { ...prev };
+        for (const task of payload.onboarding?.tasks ?? []) {
+          next[task.id] = toOnboardingTaskDraft(task);
+        }
+        return next;
+      });
+    } catch (error) {
+      setOnboardingErrorByTenant((prev) => ({
+        ...prev,
+        [tenantId]: error instanceof Error ? error.message : 'Unable to load tenant onboarding tasks.',
+      }));
+    } finally {
+      setOnboardingLoadingByTenant((prev) => ({ ...prev, [tenantId]: false }));
+    }
+  }, []);
+
   const loadActorsForTenant = useCallback(
     async (tenantId: string) => {
       setActorsLoadingByTenant((prev) => ({ ...prev, [tenantId]: true }));
@@ -1486,7 +1802,15 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
     void loadBillingForTenant(selectedTenantId);
     void loadBillingDriftSignalsForTenant(selectedTenantId);
     void loadDiagnosticsForTenant(selectedTenantId);
-  }, [loadActorsForTenant, loadBillingDriftSignalsForTenant, loadBillingForTenant, loadDiagnosticsForTenant, selectedTenantId]);
+    void loadOnboardingForTenant(selectedTenantId);
+  }, [
+    loadActorsForTenant,
+    loadBillingDriftSignalsForTenant,
+    loadBillingForTenant,
+    loadDiagnosticsForTenant,
+    loadOnboardingForTenant,
+    selectedTenantId,
+  ]);
 
   const loadDomainProbes = useCallback(async (tenantId: string, domainId?: string) => {
     const response = await fetch(`/api/tenants/${tenantId}/domains/probe`, {
@@ -1549,6 +1873,38 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
         return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
       });
+      setOnboardingByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setOnboardingErrorByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setOnboardingPlanDraftByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setOnboardingPlanErrorByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setOnboardingPlanSavingByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setSelectedOnboardingTaskIdsByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setBulkOnboardingOwnerRoleByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
+      setBulkOnboardingOwnerActorIdByTenant((previous) => {
+        const activeTenantIds = new Set(payload.tenants.map((snapshot) => snapshot.tenant.id));
+        return Object.fromEntries(Object.entries(previous).filter(([tenantId]) => activeTenantIds.has(tenantId)));
+      });
 
       const desiredTenantId = preferredTenantId === undefined ? selectedTenantId : preferredTenantId;
       const resolvedTenantId = desiredTenantId && payload.tenants.some((snapshot) => snapshot.tenant.id === desiredTenantId)
@@ -1573,6 +1929,7 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
         await loadBillingForTenant(resolvedTenantId);
         await loadBillingDriftSignalsForTenant(resolvedTenantId);
         await loadDiagnosticsForTenant(resolvedTenantId);
+        await loadOnboardingForTenant(resolvedTenantId);
       }
     },
     [
@@ -1581,11 +1938,741 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
       loadBillingDriftSignalsForTenant,
       loadBillingForTenant,
       loadDiagnosticsForTenant,
+      loadOnboardingForTenant,
       loadObservabilitySummary,
       selectedAuditTenantId,
       selectedTenantId,
     ]
   );
+
+  const createOnboardingPlanForSelectedTenant = useCallback(async () => {
+    if (!selectedTenant) {
+      setWorkspaceNotice('Select a tenant before creating an onboarding plan.');
+      return;
+    }
+
+    const tenantId = selectedTenant.tenant.id;
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/onboarding`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planCode: selectedTenantPlanCode }),
+      });
+      if (!response.ok) {
+        throw new Error(await readResponseError(response, 'Unable to create onboarding plan.'));
+      }
+
+      const payload = (await response.json()) as TenantOnboardingCreateResponse;
+      setOnboardingByTenant((prev) => ({ ...prev, [tenantId]: payload.onboarding }));
+      setOnboardingPlanDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: toOnboardingPlanDraft(payload.onboarding.plan),
+      }));
+      setOnboardingTaskDraftById((prev) => {
+        const next = { ...prev };
+        for (const task of payload.onboarding.tasks) {
+          next[task.id] = toOnboardingTaskDraft(task);
+        }
+        return next;
+      });
+      setWorkspaceNotice(
+        `Created onboarding plan (${payload.onboarding.plan.planCode}) with ${payload.onboarding.tasks.length} tasks.`
+      );
+    } catch (error) {
+      setWorkspaceNotice(error instanceof Error ? error.message : 'Unable to create onboarding plan.');
+    } finally {
+      setBusy(false);
+    }
+  }, [selectedTenant, selectedTenantPlanCode]);
+
+  const setOnboardingPlanDraftForTenant = useCallback(
+    (tenantId: string, updater: (current: OnboardingPlanDraft) => OnboardingPlanDraft) => {
+      setOnboardingPlanDraftByTenant((prev) => {
+        const currentOnboarding = onboardingByTenant[tenantId];
+        const current = prev[tenantId] ?? (currentOnboarding?.plan ? toOnboardingPlanDraft(currentOnboarding.plan) : null);
+        if (!current) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          [tenantId]: updater(current),
+        };
+      });
+      setOnboardingPlanErrorByTenant((prev) => (prev[tenantId] ? { ...prev, [tenantId]: null } : prev));
+    },
+    [onboardingByTenant]
+  );
+
+  const saveOnboardingPlanFieldsForSelectedTenant = useCallback(async () => {
+    if (!selectedTenant || !selectedTenantOnboarding?.plan) {
+      setWorkspaceNotice('Create or load a persisted onboarding plan before saving plan details.');
+      return;
+    }
+
+    const tenantId = selectedTenant.tenant.id;
+    const planId = selectedTenantOnboarding.plan.id;
+    const draft = selectedTenantOnboardingPlanDraft ?? toOnboardingPlanDraft(selectedTenantOnboarding.plan);
+
+    setOnboardingPlanSavingByTenant((prev) => ({ ...prev, [tenantId]: true }));
+    setOnboardingPlanErrorByTenant((prev) => ({ ...prev, [tenantId]: null }));
+    setWorkspaceIssue(null);
+
+    try {
+      const response = await fetch(`/api/tenants/${tenantId}/onboarding/${planId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetLaunchDate: draft.targetLaunchDate.trim().length > 0 ? draft.targetLaunchDate.trim() : null,
+          pauseReason: draft.pauseReason.trim().length > 0 ? draft.pauseReason.trim() : null,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(await readResponseError(response, 'Unable to save onboarding plan details.'));
+      }
+
+      const payload = (await response.json()) as { ok: true; plan: TenantOnboardingPlanWithTasks['plan'] };
+      setOnboardingByTenant((prev) => {
+        const current = prev[tenantId];
+        if (!current) {
+          return prev;
+        }
+        return {
+          ...prev,
+          [tenantId]: {
+            ...current,
+            plan: payload.plan,
+          },
+        };
+      });
+      setOnboardingPlanDraftByTenant((prev) => ({
+        ...prev,
+        [tenantId]: toOnboardingPlanDraft(payload.plan),
+      }));
+      setWorkspaceNotice('Onboarding plan details saved.');
+    } catch (error) {
+      setOnboardingPlanErrorByTenant((prev) => ({
+        ...prev,
+        [tenantId]: error instanceof Error ? error.message : 'Unable to save onboarding plan details.',
+      }));
+    } finally {
+      setOnboardingPlanSavingByTenant((prev) => ({ ...prev, [tenantId]: false }));
+    }
+  }, [selectedTenant, selectedTenantOnboarding, selectedTenantOnboardingPlanDraft]);
+
+  const updateOnboardingPlanStatusForSelectedTenant = useCallback(
+    async (nextStatus: 'active' | 'paused' | 'completed') => {
+      if (!selectedTenant || !selectedTenantOnboarding?.plan) {
+        setWorkspaceNotice('Create or load a persisted onboarding plan before changing lifecycle status.');
+        return;
+      }
+
+      const tenantId = selectedTenant.tenant.id;
+      const planId = selectedTenantOnboarding.plan.id;
+      const planDraft = onboardingPlanDraftByTenant[tenantId] ?? toOnboardingPlanDraft(selectedTenantOnboarding.plan);
+      setBusy(true);
+      setWorkspaceIssue(null);
+      setWorkspaceNotice(null);
+
+      try {
+        const response = await fetch(`/api/tenants/${tenantId}/onboarding/${planId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: nextStatus,
+            pauseReason:
+              nextStatus === 'paused' ? (planDraft.pauseReason.trim().length > 0 ? planDraft.pauseReason.trim() : null) : undefined,
+          }),
+        });
+        if (!response.ok) {
+          throw new Error(await readResponseError(response, 'Unable to update onboarding plan status.'));
+        }
+
+        const payload = (await response.json()) as { ok: true; plan: TenantOnboardingPlanWithTasks['plan'] };
+        setOnboardingByTenant((prev) => {
+          const current = prev[tenantId];
+          if (!current) {
+            return prev;
+          }
+          return {
+            ...prev,
+            [tenantId]: {
+              ...current,
+              plan: payload.plan,
+            },
+          };
+        });
+        setOnboardingPlanDraftByTenant((prev) => ({
+          ...prev,
+          [tenantId]: toOnboardingPlanDraft(payload.plan),
+        }));
+
+        setWorkspaceNotice(
+          nextStatus === 'active'
+            ? 'Onboarding plan resumed.'
+            : nextStatus === 'paused'
+              ? 'Onboarding plan paused.'
+              : 'Onboarding plan marked completed.'
+        );
+      } catch (error) {
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'settings',
+            status: 0,
+            message: error instanceof Error ? error.message : 'Unable to update onboarding plan status.',
+          })
+        );
+      } finally {
+        setBusy(false);
+      }
+    },
+    [onboardingPlanDraftByTenant, selectedTenant, selectedTenantOnboarding]
+  );
+
+  const setOnboardingTaskDraft = useCallback((taskId: string, updater: (current: OnboardingTaskDraft) => OnboardingTaskDraft) => {
+    setOnboardingTaskDraftById((prev) => {
+      const current = prev[taskId];
+      if (!current) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [taskId]: updater(current),
+      };
+    });
+    setOnboardingTaskErrorById((prev) => (prev[taskId] ? { ...prev, [taskId]: null } : prev));
+  }, []);
+
+  const toggleOnboardingTaskSelectionForTenant = useCallback((tenantId: string, taskId: string, selected: boolean) => {
+    setSelectedOnboardingTaskIdsByTenant((prev) => {
+      const current = prev[tenantId] ?? [];
+      const next = selected ? Array.from(new Set([...current, taskId])) : current.filter((entry) => entry !== taskId);
+      return {
+        ...prev,
+        [tenantId]: next,
+      };
+    });
+  }, []);
+
+  const selectAllVisibleOnboardingTasksForSelectedTenant = useCallback(() => {
+    if (!selectedTenant || !selectedTenantOnboarding?.plan) {
+      return;
+    }
+    const tenantId = selectedTenant.tenant.id;
+    setSelectedOnboardingTaskIdsByTenant((prev) => ({
+      ...prev,
+      [tenantId]: selectedTenantOnboardingTasks.map((task) => task.id),
+    }));
+  }, [selectedTenant, selectedTenantOnboarding, selectedTenantOnboardingTasks]);
+
+  const clearSelectedOnboardingTasksForSelectedTenant = useCallback(() => {
+    if (!selectedTenant) {
+      return;
+    }
+    const tenantId = selectedTenant.tenant.id;
+    setSelectedOnboardingTaskIdsByTenant((prev) => ({
+      ...prev,
+      [tenantId]: [],
+    }));
+  }, [selectedTenant]);
+
+  const patchOnboardingTaskForSelectedTenant = useCallback(
+    async (
+      task: TenantOnboardingTask,
+      patch: Partial<{
+        status: TenantOnboardingTaskStatus;
+        ownerRole: TenantOnboardingOwnerRole;
+        ownerActorId: string | null;
+        dueAt: string | null;
+        blockedByClient: boolean;
+        blockerReason: string | null;
+      }>,
+      options?: { successNotice?: string | null; suppressErrorState?: boolean }
+    ): Promise<TenantOnboardingTask> => {
+      if (!selectedTenant) {
+        throw new Error('Select a tenant before updating onboarding tasks.');
+      }
+
+      const tenantId = selectedTenant.tenant.id;
+      setOnboardingTaskSavingById((prev) => ({ ...prev, [task.id]: true }));
+      if (!options?.suppressErrorState) {
+        setOnboardingTaskErrorById((prev) => ({ ...prev, [task.id]: null }));
+      }
+
+      try {
+        const response = await fetch(`/api/tenants/${tenantId}/onboarding/tasks/${task.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: patch.status,
+            ownerRole: patch.ownerRole,
+            ownerActorId: patch.ownerActorId,
+            dueAt: patch.dueAt,
+            blockedByClient: patch.blockedByClient,
+            blockerReason: patch.blockerReason,
+          }),
+        });
+        if (!response.ok) {
+          throw new Error(await readResponseError(response, 'Unable to update onboarding task.'));
+        }
+
+        const payload = (await response.json()) as { ok: true; task: TenantOnboardingTask };
+        setOnboardingByTenant((prev) => {
+          const current = prev[tenantId];
+          if (!current) {
+            return prev;
+          }
+          return {
+            ...prev,
+            [tenantId]: {
+              ...current,
+              tasks: current.tasks.map((entry) => (entry.id === payload.task.id ? payload.task : entry)),
+            },
+          };
+        });
+        setOnboardingTaskDraftById((prev) => ({
+          ...prev,
+          [payload.task.id]: toOnboardingTaskDraft(payload.task),
+        }));
+
+        if (options?.successNotice) {
+          setWorkspaceNotice(options.successNotice);
+        }
+
+        return payload.task;
+      } catch (error) {
+        if (!options?.suppressErrorState) {
+          setOnboardingTaskErrorById((prev) => ({
+            ...prev,
+            [task.id]: error instanceof Error ? error.message : 'Unable to update onboarding task.',
+          }));
+        }
+        throw error;
+      } finally {
+        setOnboardingTaskSavingById((prev) => ({ ...prev, [task.id]: false }));
+      }
+    },
+    [selectedTenant]
+  );
+
+  const saveOnboardingTaskForSelectedTenant = useCallback(
+    async (task: TenantOnboardingTask) => {
+      if (!selectedTenant) {
+        return;
+      }
+
+      const draft = onboardingTaskDraftById[task.id] ?? toOnboardingTaskDraft(task);
+      const trimmedOwnerActorId = draft.ownerActorId.trim();
+      const nextOwnerActorId = draft.ownerRole === 'client' || trimmedOwnerActorId.length === 0 ? null : trimmedOwnerActorId;
+      if (nextOwnerActorId) {
+        const actor = selectedTenantActors.find((entry) => entry.actorId === nextOwnerActorId);
+        if (!actor) {
+          setOnboardingTaskErrorById((prev) => ({
+            ...prev,
+            [task.id]: 'Selected owner actor is no longer available for this tenant.',
+          }));
+          return;
+        }
+        if (!canAssignActorToOnboardingOwnerRole(actor.role, draft.ownerRole)) {
+          setOnboardingTaskErrorById((prev) => ({
+            ...prev,
+            [task.id]: `Actor role ${formatActorRole(actor.role)} is not compatible with owner role ${draft.ownerRole}.`,
+          }));
+          return;
+        }
+      }
+
+      setOnboardingTaskSavingById((prev) => ({ ...prev, [task.id]: true }));
+      setOnboardingTaskErrorById((prev) => ({ ...prev, [task.id]: null }));
+      setWorkspaceIssue(null);
+
+      try {
+        const updatedTask = await patchOnboardingTaskForSelectedTenant(
+          task,
+          {
+            status: draft.status,
+            ownerRole: draft.ownerRole,
+            ownerActorId: nextOwnerActorId,
+            dueAt: draft.dueAt.trim().length > 0 ? draft.dueAt.trim() : null,
+            blockedByClient: draft.blockedByClient,
+            blockerReason: draft.blockerReason.trim().length > 0 ? draft.blockerReason.trim() : null,
+          },
+          { successNotice: null, suppressErrorState: true }
+        );
+        setWorkspaceNotice(`Updated onboarding task: ${updatedTask.title}.`);
+      } catch (error) {
+        setOnboardingTaskErrorById((prev) => ({
+          ...prev,
+          [task.id]: error instanceof Error ? error.message : 'Unable to update onboarding task.',
+        }));
+      } finally {
+        setOnboardingTaskSavingById((prev) => ({ ...prev, [task.id]: false }));
+      }
+    },
+    [onboardingTaskDraftById, patchOnboardingTaskForSelectedTenant, selectedTenant, selectedTenantActors]
+  );
+
+  const applyBulkOnboardingTaskStatusForSelectedTenant = useCallback(
+    async (status: TenantOnboardingTaskStatus) => {
+      if (!selectedTenant || selectedVisibleOnboardingTaskCount === 0) {
+        return;
+      }
+
+      const selectedTasks = selectedTenantOnboardingTasks.filter((task) => selectedOnboardingTaskSet.has(task.id));
+      const startedAt = Date.now();
+      setBusy(true);
+      setWorkspaceIssue(null);
+      setWorkspaceNotice(null);
+
+      let successCount = 0;
+      const failures: string[] = [];
+      for (const task of selectedTasks) {
+        try {
+          await patchOnboardingTaskForSelectedTenant(
+            task,
+            {
+              status,
+              blockedByClient: status === 'blocked' ? task.blockedByClient : false,
+              blockerReason: status === 'blocked' ? task.blockerReason : null,
+            },
+            { successNotice: null, suppressErrorState: false }
+          );
+          successCount += 1;
+        } catch (error) {
+          failures.push(error instanceof Error ? error.message : `Task ${task.title} failed.`);
+        }
+      }
+
+      if (successCount > 0) {
+        setWorkspaceNotice(`Updated ${successCount} onboarding task(s) to ${status}.`);
+      }
+      if (failures.length > 0) {
+        setWorkspaceIssue(
+          createMutationErrorGuidance({
+            scope: 'settings',
+            status: 0,
+            message: failures[0] ?? 'One or more onboarding task updates failed.',
+          })
+        );
+      }
+      recordAdminUsageEvent('onboarding.bulk.status', {
+        status,
+        selectedCount: selectedTasks.length,
+        eligibleCount: selectedTasks.length,
+        successCount,
+        failureCount: failures.length,
+        durationMs: Date.now() - startedAt,
+      });
+      setBusy(false);
+    },
+    [
+      patchOnboardingTaskForSelectedTenant,
+      selectedOnboardingTaskSet,
+      selectedTenant,
+      selectedTenantOnboardingTasks,
+      selectedVisibleOnboardingTaskCount,
+    ]
+  );
+
+  const applyBulkOnboardingOwnerRoleForSelectedTenant = useCallback(async () => {
+    if (!selectedTenant || selectedVisibleOnboardingTaskCount === 0) {
+      return;
+    }
+
+    const tenantId = selectedTenant.tenant.id;
+    const nextOwnerRole = bulkOnboardingOwnerRoleByTenant[tenantId] ?? 'ops';
+    const selectedTasks = selectedTenantOnboardingTasks.filter((task) => selectedOnboardingTaskSet.has(task.id));
+    const startedAt = Date.now();
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+
+    let successCount = 0;
+    const failures: string[] = [];
+    for (const task of selectedTasks) {
+      try {
+        await patchOnboardingTaskForSelectedTenant(
+          task,
+          {
+            ownerRole: nextOwnerRole,
+            ownerActorId: null,
+          },
+          { successNotice: null, suppressErrorState: false }
+        );
+        successCount += 1;
+      } catch (error) {
+        failures.push(error instanceof Error ? error.message : `Task ${task.title} failed.`);
+      }
+    }
+
+    if (successCount > 0) {
+      setWorkspaceNotice(`Updated owner role to ${nextOwnerRole} on ${successCount} task(s).`);
+    }
+    if (failures.length > 0) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: failures[0] ?? 'One or more onboarding task updates failed.',
+        })
+      );
+    }
+    recordAdminUsageEvent('onboarding.bulk.owner_role', {
+      ownerRole: nextOwnerRole,
+      selectedCount: selectedTasks.length,
+      eligibleCount: selectedTasks.length,
+      successCount,
+      failureCount: failures.length,
+      durationMs: Date.now() - startedAt,
+    });
+    setBusy(false);
+  }, [
+    bulkOnboardingOwnerRoleByTenant,
+    patchOnboardingTaskForSelectedTenant,
+    selectedOnboardingTaskSet,
+    selectedTenant,
+    selectedTenantOnboardingTasks,
+    selectedVisibleOnboardingTaskCount,
+  ]);
+
+  const applyBulkOnboardingOwnerActorForSelectedTenant = useCallback(async () => {
+    if (!selectedTenant || selectedVisibleOnboardingTaskCount === 0) {
+      return;
+    }
+
+    const tenantId = selectedTenant.tenant.id;
+    const nextOwnerRole = bulkOnboardingOwnerRoleByTenant[tenantId] ?? 'ops';
+    const nextOwnerActorId = (bulkOnboardingOwnerActorIdByTenant[tenantId] ?? '').trim();
+
+    if (nextOwnerRole === 'client') {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: 'Client-owned onboarding tasks do not support operator actor assignment.',
+        })
+      );
+      return;
+    }
+
+    if (!nextOwnerActorId) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: 'Select a bulk owner actor before applying actor assignment.',
+        })
+      );
+      return;
+    }
+
+    const actor = selectedTenantActors.find((entry) => entry.actorId === nextOwnerActorId);
+    if (!actor) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: 'Selected owner actor is no longer available for this tenant. Refresh actors and try again.',
+        })
+      );
+      return;
+    }
+
+    if (!canAssignActorToOnboardingOwnerRole(actor.role, nextOwnerRole)) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: `Actor role ${formatActorRole(actor.role)} is not compatible with bulk owner role ${nextOwnerRole}.`,
+        })
+      );
+      return;
+    }
+
+    const selectedTasks = selectedTenantOnboardingTasks.filter((task) => selectedOnboardingTaskSet.has(task.id));
+    const eligibleTasks = selectedTasks.filter((task) => task.ownerRole === nextOwnerRole);
+    const skippedCount = selectedTasks.length - eligibleTasks.length;
+
+    if (eligibleTasks.length === 0) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: `No selected tasks matched bulk owner role ${nextOwnerRole}. Apply owner role first or adjust selection.`,
+        })
+      );
+      return;
+    }
+
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+    const startedAt = Date.now();
+
+    let successCount = 0;
+    const failures: string[] = [];
+    for (const task of eligibleTasks) {
+      try {
+        await patchOnboardingTaskForSelectedTenant(
+          task,
+          { ownerActorId: nextOwnerActorId },
+          { successNotice: null, suppressErrorState: false }
+        );
+        successCount += 1;
+      } catch (error) {
+        failures.push(error instanceof Error ? error.message : `Task ${task.title} failed.`);
+      }
+    }
+
+    if (successCount > 0) {
+      const actorLabel = actor.displayName?.trim() || actor.actorId;
+      const skippedText = skippedCount > 0 ? ` Skipped ${skippedCount} mismatched-role task(s).` : '';
+      setWorkspaceNotice(`Assigned ${actorLabel} to ${successCount} task(s).${skippedText}`);
+    }
+    if (failures.length > 0) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: failures[0] ?? 'One or more onboarding task updates failed.',
+        })
+      );
+    }
+    recordAdminUsageEvent('onboarding.bulk.owner_actor', {
+      ownerRole: nextOwnerRole,
+      selectedCount: selectedTasks.length,
+      eligibleCount: eligibleTasks.length,
+      skippedCount,
+      successCount,
+      failureCount: failures.length,
+      durationMs: Date.now() - startedAt,
+    });
+    setBusy(false);
+  }, [
+    bulkOnboardingOwnerActorIdByTenant,
+    bulkOnboardingOwnerRoleByTenant,
+    patchOnboardingTaskForSelectedTenant,
+    selectedOnboardingTaskSet,
+    selectedTenant,
+    selectedTenantActors,
+    selectedTenantOnboardingTasks,
+    selectedVisibleOnboardingTaskCount,
+  ]);
+
+  const applyBulkOnboardingOwnerRoleAndActorForSelectedTenant = useCallback(async () => {
+    if (!selectedTenant || selectedVisibleOnboardingTaskCount === 0) {
+      return;
+    }
+
+    const tenantId = selectedTenant.tenant.id;
+    const nextOwnerRole = bulkOnboardingOwnerRoleByTenant[tenantId] ?? 'ops';
+    const nextOwnerActorId = (bulkOnboardingOwnerActorIdByTenant[tenantId] ?? '').trim();
+
+    if (nextOwnerRole === 'client') {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: 'Use "Apply Owner Role" for client-owned tasks. Client tasks do not support operator actor assignment.',
+        })
+      );
+      return;
+    }
+
+    if (!nextOwnerActorId) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: 'Select a bulk owner actor before applying combined role + actor assignment.',
+        })
+      );
+      return;
+    }
+
+    const actor = selectedTenantActors.find((entry) => entry.actorId === nextOwnerActorId);
+    if (!actor) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: 'Selected owner actor is no longer available for this tenant. Refresh actors and try again.',
+        })
+      );
+      return;
+    }
+
+    if (!canAssignActorToOnboardingOwnerRole(actor.role, nextOwnerRole)) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: `Actor role ${formatActorRole(actor.role)} is not compatible with bulk owner role ${nextOwnerRole}.`,
+        })
+      );
+      return;
+    }
+
+    const selectedTasks = selectedTenantOnboardingTasks.filter((task) => selectedOnboardingTaskSet.has(task.id));
+    setBusy(true);
+    setWorkspaceIssue(null);
+    setWorkspaceNotice(null);
+    const startedAt = Date.now();
+
+    let successCount = 0;
+    const failures: string[] = [];
+    for (const task of selectedTasks) {
+      try {
+        await patchOnboardingTaskForSelectedTenant(
+          task,
+          {
+            ownerRole: nextOwnerRole,
+            ownerActorId: nextOwnerActorId,
+          },
+          { successNotice: null, suppressErrorState: false }
+        );
+        successCount += 1;
+      } catch (error) {
+        failures.push(error instanceof Error ? error.message : `Task ${task.title} failed.`);
+      }
+    }
+
+    if (successCount > 0) {
+      const actorLabel = actor.displayName?.trim() || actor.actorId;
+      setWorkspaceNotice(`Updated owner role to ${nextOwnerRole} and assigned ${actorLabel} on ${successCount} task(s).`);
+    }
+    if (failures.length > 0) {
+      setWorkspaceIssue(
+        createMutationErrorGuidance({
+          scope: 'settings',
+          status: 0,
+          message: failures[0] ?? 'One or more onboarding task updates failed.',
+        })
+      );
+    }
+    recordAdminUsageEvent('onboarding.bulk.owner_role_actor', {
+      ownerRole: nextOwnerRole,
+      selectedCount: selectedTasks.length,
+      eligibleCount: selectedTasks.length,
+      successCount,
+      failureCount: failures.length,
+      durationMs: Date.now() - startedAt,
+    });
+    setBusy(false);
+  }, [
+    bulkOnboardingOwnerActorIdByTenant,
+    bulkOnboardingOwnerRoleByTenant,
+    patchOnboardingTaskForSelectedTenant,
+    selectedOnboardingTaskSet,
+    selectedTenant,
+    selectedTenantActors,
+    selectedTenantOnboardingTasks,
+    selectedVisibleOnboardingTaskCount,
+  ]);
 
   const runDomainOpsRefresh = useCallback(
     async (tenantId: string, reason: 'manual' | 'poll' | 'retry', domainId?: string) => {
@@ -3365,29 +4452,531 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
               </ul>
             </div>
 
-            <section className="admin-governance-panel">
+            <section id="launch-onboarding-checklist" tabIndex={-1} className="admin-governance-panel">
               <div className="admin-row admin-space-between">
-                <strong>Plan-Tier Onboarding Checklist Template</strong>
+                <strong>Onboarding Checklist</strong>
                 <div className="admin-row">
                   <span className="admin-chip">plan: {selectedTenantPlanCode}</span>
-                  <span className="admin-chip">template default</span>
+                  <span className="admin-chip">
+                    {selectedTenantOnboarding?.plan ? `persisted (${selectedTenantOnboarding.plan.status})` : 'template default'}
+                  </span>
                 </div>
               </div>
               <p className="admin-muted">
-                Default task/status scaffolding tied to the selected plan. Use as the operator baseline during kickoff and launch prep.
+                {selectedTenantOnboarding?.plan
+                  ? 'Persisted onboarding tasks for this tenant. Use these task records for launch tracking and operator coordination.'
+                  : 'Default task/status scaffolding tied to the selected plan. Create a persisted plan to track task state durably for this tenant.'}
               </p>
-              <ul className="admin-list">
-                {selectedPlanChecklistTemplate.map((item) => (
-                  <li key={item.id} className="admin-list-item">
-                    <div className="admin-row admin-space-between">
-                      <strong>{item.label}</strong>
-                      <span className={`admin-chip ${item.status === 'required' ? 'admin-chip-warn' : ''}`}>
-                        {item.status}
+              {selectedTenantOnboardingError ? <p className="admin-field-error">{selectedTenantOnboardingError}</p> : null}
+              <div className="admin-row admin-space-between">
+                <span className="admin-muted">
+                  {selectedTenantOnboardingLoading
+                    ? 'Loading onboarding tasks...'
+                    : selectedTenantOnboarding?.plan
+                      ? `Persisted tasks: ${selectedTenantOnboardingTasks.length}`
+                      : 'No persisted onboarding plan yet.'}
+                </span>
+                <button
+                  type="button"
+                  className="admin-secondary"
+                  onClick={() => {
+                    void createOnboardingPlanForSelectedTenant();
+                  }}
+                  disabled={busy || !selectedTenant || Boolean(selectedTenantOnboarding?.plan)}
+                >
+                  {selectedTenantOnboarding?.plan ? 'Plan Created' : 'Create Plan From Template'}
+                </button>
+              </div>
+              {selectedTenantOnboarding?.plan ? (
+                <>
+                  <div className="admin-row admin-space-between">
+                    <div className="admin-row">
+                      <span className="admin-chip">plan status: {selectedTenantOnboarding.plan.status}</span>
+                      <span
+                        className={`admin-chip ${
+                          selectedTenantOnboardingTaskSummary.blockedRequiredCount > 0 ? 'admin-chip-status-failed' : 'admin-chip-ok'
+                        }`}
+                      >
+                        blocked required: {selectedTenantOnboardingTaskSummary.blockedRequiredCount}
+                      </span>
+                      <span
+                        className={`admin-chip ${
+                          selectedTenantOnboardingTaskSummary.overdueRequiredCount > 0 ? 'admin-chip-warn' : 'admin-chip-ok'
+                        }`}
+                      >
+                        overdue required: {selectedTenantOnboardingTaskSummary.overdueRequiredCount}
+                      </span>
+                      <span className="admin-chip">
+                        required done: {selectedTenantOnboardingTaskSummary.requiredCompletedCount}/
+                        {selectedTenantOnboardingTaskSummary.requiredTotal}
                       </span>
                     </div>
-                    <p className="admin-muted">owner: {item.owner}</p>
-                  </li>
-                ))}
+                    <div className="admin-row">
+                      {selectedTenantOnboarding.plan.status === 'active' ? (
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy}
+                          onClick={() => {
+                            void updateOnboardingPlanStatusForSelectedTenant('paused');
+                          }}
+                        >
+                          Pause Plan
+                        </button>
+                      ) : null}
+                      {(selectedTenantOnboarding.plan.status === 'paused' ||
+                        selectedTenantOnboarding.plan.status === 'draft') ? (
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy}
+                          onClick={() => {
+                            void updateOnboardingPlanStatusForSelectedTenant('active');
+                          }}
+                        >
+                          Resume Plan
+                        </button>
+                      ) : null}
+                      {selectedTenantOnboarding.plan.status !== 'completed' ? (
+                        <button
+                          type="button"
+                          className="admin-secondary"
+                          disabled={busy}
+                          onClick={() => {
+                            void updateOnboardingPlanStatusForSelectedTenant('completed');
+                          }}
+                        >
+                          Complete Plan
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="admin-inline-row">
+                    <label className="admin-field">
+                      <span>Target Launch Date</span>
+                      <input
+                        type="date"
+                        value={selectedTenantOnboardingPlanDraft?.targetLaunchDate ?? ''}
+                        disabled={selectedTenantOnboardingPlanSaving}
+                        onChange={(event) => {
+                          if (!selectedTenant) {
+                            return;
+                          }
+                          const nextDate = event.target.value;
+                          setOnboardingPlanDraftForTenant(selectedTenant.tenant.id, (current) => ({
+                            ...current,
+                            targetLaunchDate: nextDate,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <label className="admin-field">
+                      <span>Pause Reason</span>
+                      <input
+                        type="text"
+                        value={selectedTenantOnboardingPlanDraft?.pauseReason ?? ''}
+                        disabled={selectedTenantOnboardingPlanSaving}
+                        placeholder="Waiting on client assets, DNS access, compliance review..."
+                        onChange={(event) => {
+                          if (!selectedTenant) {
+                            return;
+                          }
+                          const nextPauseReason = event.target.value;
+                          setOnboardingPlanDraftForTenant(selectedTenant.tenant.id, (current) => ({
+                            ...current,
+                            pauseReason: nextPauseReason,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className="admin-secondary"
+                      disabled={selectedTenantOnboardingPlanSaving || !selectedTenantOnboardingPlanDraftDirty}
+                      onClick={() => {
+                        void saveOnboardingPlanFieldsForSelectedTenant();
+                      }}
+                    >
+                      {selectedTenantOnboardingPlanSaving ? 'Saving Plan…' : 'Save Plan'}
+                    </button>
+                  </div>
+                  {selectedTenantOnboardingPlanError ? (
+                    <p className="admin-field-error">{selectedTenantOnboardingPlanError}</p>
+                  ) : null}
+                </>
+              ) : null}
+              {selectedTenantOnboarding?.plan ? (
+                <div className="admin-inline-row">
+                  <span className="admin-chip">selected tasks: {selectedVisibleOnboardingTaskCount}</span>
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={busy || selectedTenantOnboardingTasks.length === 0}
+                    onClick={() => {
+                      selectAllVisibleOnboardingTasksForSelectedTenant();
+                    }}
+                  >
+                    Select All
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={busy || selectedVisibleOnboardingTaskCount === 0}
+                    onClick={() => {
+                      clearSelectedOnboardingTasksForSelectedTenant();
+                    }}
+                  >
+                    Clear Selection
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={busy || selectedVisibleOnboardingTaskCount === 0}
+                    onClick={() => {
+                      void applyBulkOnboardingTaskStatusForSelectedTenant('done');
+                    }}
+                  >
+                    Mark Selected Done
+                  </button>
+                  <label className="admin-field">
+                    <span>Bulk Owner Role</span>
+                    <select
+                      value={selectedBulkOnboardingOwnerRole}
+                      disabled={busy}
+                      onChange={(event) => {
+                        if (!selectedTenant) {
+                          return;
+                        }
+                        const nextRole = event.target.value as TenantOnboardingOwnerRole;
+                        const tenantId = selectedTenant.tenant.id;
+                        setBulkOnboardingOwnerRoleByTenant((prev) => ({
+                          ...prev,
+                          [tenantId]: nextRole,
+                        }));
+                        setBulkOnboardingOwnerActorIdByTenant((prev) => {
+                          const currentActorId = prev[tenantId] ?? '';
+                          if (!currentActorId) {
+                            return prev;
+                          }
+                          const currentActor = selectedTenantActors.find((actor) => actor.actorId === currentActorId);
+                          if (!currentActor || canAssignActorToOnboardingOwnerRole(currentActor.role, nextRole)) {
+                            return prev;
+                          }
+                          return {
+                            ...prev,
+                            [tenantId]: '',
+                          };
+                        });
+                      }}
+                    >
+                      {onboardingOwnerRoleOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={busy || selectedVisibleOnboardingTaskCount === 0}
+                    onClick={() => {
+                      void applyBulkOnboardingOwnerRoleForSelectedTenant();
+                    }}
+                  >
+                    Apply Owner Role
+                  </button>
+                  <label className="admin-field">
+                    <span>Bulk Owner Actor</span>
+                    <select
+                      value={selectedBulkOnboardingOwnerActorIdValue}
+                      disabled={
+                        busy ||
+                        selectedBulkOnboardingOwnerRole === 'client' ||
+                        selectedBulkOnboardingAssignableActors.length === 0
+                      }
+                      onChange={(event) => {
+                        if (!selectedTenant) {
+                          return;
+                        }
+                        setBulkOnboardingOwnerActorIdByTenant((prev) => ({
+                          ...prev,
+                          [selectedTenant.tenant.id]: event.target.value,
+                        }));
+                      }}
+                    >
+                      <option value="">
+                        {selectedBulkOnboardingOwnerRole === 'client'
+                          ? 'Client tasks do not use owner actors'
+                          : selectedBulkOnboardingAssignableActors.length === 0
+                            ? 'No compatible actors'
+                            : 'Select actor'}
+                      </option>
+                      {selectedBulkOnboardingAssignableActors.map((actor) => (
+                        <option key={actor.actorId} value={actor.actorId}>
+                          {actor.displayName?.trim() || actor.actorId} ({formatActorRole(actor.role)})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={
+                      busy ||
+                      selectedVisibleOnboardingTaskCount === 0 ||
+                      selectedBulkOnboardingOwnerRole === 'client' ||
+                      selectedBulkOnboardingOwnerActorIdValue.trim().length === 0
+                    }
+                    onClick={() => {
+                      void applyBulkOnboardingOwnerActorForSelectedTenant();
+                    }}
+                  >
+                    Apply Owner Actor
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-secondary"
+                    disabled={
+                      busy ||
+                      selectedVisibleOnboardingTaskCount === 0 ||
+                      selectedBulkOnboardingOwnerRole === 'client' ||
+                      selectedBulkOnboardingOwnerActorIdValue.trim().length === 0
+                    }
+                    onClick={() => {
+                      void applyBulkOnboardingOwnerRoleAndActorForSelectedTenant();
+                    }}
+                  >
+                    Apply Role + Actor
+                  </button>
+                </div>
+              ) : null}
+              <ul className="admin-list">
+                {selectedTenantOnboarding?.plan
+                  ? selectedTenantOnboardingTasks.map((task) => {
+                      const taskDraft = onboardingTaskDraftById[task.id] ?? toOnboardingTaskDraft(task);
+                      const taskSaving = Boolean(onboardingTaskSavingById[task.id]);
+                      const taskError = onboardingTaskErrorById[task.id] ?? null;
+                      const taskDirty = isOnboardingTaskDraftDirty(task, taskDraft);
+                      const taskOwnerAssignableActors =
+                        taskDraft.ownerRole === 'client'
+                          ? []
+                          : selectedTenantActors.filter((actor) =>
+                              canAssignActorToOnboardingOwnerRole(actor.role, taskDraft.ownerRole)
+                            );
+                      const selectedTaskOwnerActor =
+                        taskDraft.ownerActorId.trim().length > 0
+                          ? selectedTenantActors.find((actor) => actor.actorId === taskDraft.ownerActorId.trim()) ?? null
+                          : null;
+                      const taskOwnerActorMissing =
+                        taskDraft.ownerActorId.trim().length > 0 && selectedTaskOwnerActor === null;
+                      const taskOwnerActorCompatible = selectedTaskOwnerActor
+                        ? canAssignActorToOnboardingOwnerRole(selectedTaskOwnerActor.role, taskDraft.ownerRole)
+                        : true;
+                      const taskOwnerActorValue =
+                        taskOwnerActorMissing || (selectedTaskOwnerActor && !taskOwnerActorCompatible)
+                          ? ''
+                          : taskDraft.ownerActorId;
+
+                      return (
+                        <li key={task.id} className="admin-list-item">
+                          <div className="admin-row admin-space-between">
+                            <div className="admin-row">
+                              <label className="admin-inline-field" style={{ minWidth: 'auto' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedOnboardingTaskSet.has(task.id)}
+                                  disabled={busy}
+                                  onChange={(event) => {
+                                    if (!selectedTenant) {
+                                      return;
+                                    }
+                                    toggleOnboardingTaskSelectionForTenant(
+                                      selectedTenant.tenant.id,
+                                      task.id,
+                                      event.target.checked
+                                    );
+                                  }}
+                                />
+                              </label>
+                              <strong>{task.title}</strong>
+                            </div>
+                            <div className="admin-row">
+                              <span className={`admin-chip ${task.required ? 'admin-chip-warn' : ''}`}>
+                                {task.required ? 'required' : 'recommended'}
+                              </span>
+                              <span className="admin-chip">{task.status}</span>
+                              {taskSaving ? <span className="admin-chip">saving…</span> : null}
+                            </div>
+                          </div>
+                          <p className="admin-muted">
+                            owner: {task.ownerRole}
+                            {task.blockedByClient ? ' · client blocker' : ''}
+                            {task.dueAt ? ` · due ${formatTimestamp(task.dueAt)}` : ''}
+                          </p>
+                          <div className="admin-inline-row">
+                            <label className="admin-field">
+                              <span>Status</span>
+                              <select
+                                value={taskDraft.status}
+                                disabled={taskSaving}
+                                onChange={(event) => {
+                                  const nextStatus = event.target.value as TenantOnboardingTaskStatus;
+                                  setOnboardingTaskDraft(task.id, (current) => ({
+                                    ...current,
+                                    status: nextStatus,
+                                    blockedByClient: nextStatus === 'blocked' ? current.blockedByClient : false,
+                                    blockerReason: nextStatus === 'blocked' ? current.blockerReason : '',
+                                  }));
+                                }}
+                              >
+                                {onboardingTaskStatusOptions.map((status) => (
+                                  <option key={status} value={status}>
+                                    {status}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="admin-field">
+                              <span>Owner</span>
+                              <select
+                                value={taskDraft.ownerRole}
+                                disabled={taskSaving}
+                                onChange={(event) => {
+                                  const nextOwnerRole = event.target.value as TenantOnboardingOwnerRole;
+                                  setOnboardingTaskDraft(task.id, (current) => ({
+                                    ...current,
+                                    ownerRole: nextOwnerRole,
+                                    ownerActorId: '',
+                                  }));
+                                }}
+                              >
+                                {onboardingOwnerRoleOptions.map((option) => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="admin-field">
+                              <span>Owner Actor</span>
+                              <select
+                                value={taskOwnerActorValue}
+                                disabled={
+                                  taskSaving || taskOwnerAssignableActors.length === 0 || taskDraft.ownerRole === 'client'
+                                }
+                                onChange={(event) => {
+                                  const nextOwnerActorId = event.target.value;
+                                  setOnboardingTaskDraft(task.id, (current) => ({
+                                    ...current,
+                                    ownerActorId: nextOwnerActorId,
+                                  }));
+                                }}
+                              >
+                                <option value="">
+                                  {taskDraft.ownerRole === 'client'
+                                    ? 'Client tasks do not use owner actors'
+                                    : taskOwnerAssignableActors.length === 0
+                                      ? 'No compatible actors'
+                                      : 'Unassigned'}
+                                </option>
+                                {taskOwnerAssignableActors.map((actor) => (
+                                  <option key={actor.actorId} value={actor.actorId}>
+                                    {actor.displayName?.trim() || actor.actorId} ({formatActorRole(actor.role)})
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="admin-field">
+                              <span>Due Date</span>
+                              <input
+                                type="date"
+                                value={taskDraft.dueAt}
+                                disabled={taskSaving}
+                                onChange={(event) => {
+                                  const nextDueAt = event.target.value;
+                                  setOnboardingTaskDraft(task.id, (current) => ({
+                                    ...current,
+                                    dueAt: nextDueAt,
+                                  }));
+                                }}
+                              />
+                            </label>
+                            <label className="admin-inline-field admin-inline-toggle">
+                              <input
+                                type="checkbox"
+                                checked={taskDraft.blockedByClient}
+                                disabled={taskSaving || taskDraft.status !== 'blocked'}
+                                onChange={(event) => {
+                                  const nextBlocked = event.target.checked;
+                                  setOnboardingTaskDraft(task.id, (current) => ({
+                                    ...current,
+                                    blockedByClient: nextBlocked,
+                                    blockerReason: nextBlocked ? current.blockerReason : '',
+                                  }));
+                                }}
+                              />
+                              Client blocker
+                            </label>
+                            <button
+                              type="button"
+                              className="admin-secondary"
+                              disabled={taskSaving || (!taskDirty && !taskError)}
+                              onClick={() => {
+                                void saveOnboardingTaskForSelectedTenant(task);
+                              }}
+                            >
+                              Save Task
+                            </button>
+                          </div>
+                          {taskDraft.status === 'blocked' ? (
+                            <label className="admin-field">
+                              <span>Blocker Reason</span>
+                              <input
+                                type="text"
+                                value={taskDraft.blockerReason}
+                                disabled={taskSaving}
+                                placeholder="Awaiting client assets, DNS access, legal approval..."
+                                onChange={(event) => {
+                                  const nextBlockerReason = event.target.value;
+                                  setOnboardingTaskDraft(task.id, (current) => ({
+                                    ...current,
+                                    blockerReason: nextBlockerReason,
+                                  }));
+                                }}
+                              />
+                            </label>
+                          ) : null}
+                          {taskOwnerActorMissing ? (
+                            <p className="admin-field-error">
+                              Selected owner actor is no longer available for this tenant. Choose a current actor or leave
+                              unassigned.
+                            </p>
+                          ) : null}
+                          {selectedTaskOwnerActor && !taskOwnerActorCompatible ? (
+                            <p className="admin-field-error">
+                              Selected actor role {formatActorRole(selectedTaskOwnerActor.role)} is not compatible with owner role{' '}
+                              {taskDraft.ownerRole}. Choose a compatible actor or change owner role.
+                            </p>
+                          ) : null}
+                          {taskError ? <p className="admin-field-error">{taskError}</p> : null}
+                          {task.blockerReason && taskDraft.status !== 'blocked' ? (
+                            <p className="admin-muted">Previous blocker note: {task.blockerReason}</p>
+                          ) : null}
+                        </li>
+                      );
+                    })
+                  : selectedPlanChecklistTemplate.map((item) => (
+                      <li key={item.id} className="admin-list-item">
+                        <div className="admin-row admin-space-between">
+                          <strong>{item.label}</strong>
+                          <span className={`admin-chip ${item.status === 'required' ? 'admin-chip-warn' : ''}`}>
+                            {item.status}
+                          </span>
+                        </div>
+                        <p className="admin-muted">owner: {item.owner}</p>
+                      </li>
+                    ))}
               </ul>
             </section>
 
@@ -3912,6 +5501,15 @@ export function ControlPlaneWorkspace({ initialSnapshots, hasClerkKey }: Control
           observabilityLoading={observabilityLoading}
           observabilityError={observabilityError}
           formatTimestamp={formatTimestamp}
+          onPublishUsageTelemetryAggregate={publishUsageTelemetryAggregate}
+          onOpenTenantLaunch={(tenantId, source) => {
+            recordAdminUsageEvent(
+              source === 'triage' ? 'onboarding.triage.open_launch.triage' : 'onboarding.triage.open_launch.readiness',
+              { tenantId }
+            );
+            setSelectedTenantId(tenantId);
+            goToWorkspaceArea('launch', 'launch-onboarding-checklist');
+          }}
         />
       </section>
       ) : null}

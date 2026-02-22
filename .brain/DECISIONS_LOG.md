@@ -565,3 +565,151 @@
 ### D-134: Extract Admin `billing` / `access` / `audit` tab bodies as body-only components before persistence MVP work
 **Decision**: Decompose `apps/admin/app/components/control-plane-workspace.tsx` further by extracting `BillingTabBody`, `AccessTabBody`, and `AuditTabBody` into `apps/admin/app/components/control-plane/`, while keeping existing state, helpers, and mutation orchestration in the parent workspace component for now.
 **Reason**: This finishes the highest-noise rendering extraction before onboarding-task persistence implementation, reducing UI-file cognitive load and merge risk without changing tenant-scoped workflow behavior or forcing a larger state-management rewrite.
+
+### D-138: Seed durable tenant onboarding tasks from Admin plan-tier templates while keeping shared DB helpers template-agnostic
+**Decision**: Keep canonical onboarding checklist templates in `apps/admin/app/lib/commercial-baselines.ts` for now, and have the Admin onboarding `POST` route transform those templates into shared task-seed inputs for `createTenantOnboardingPlanFromTemplate(...)` in `packages/db`.
+**Reason**: This ships durable onboarding task persistence quickly without violating shared package boundaries (`packages/db` does not import app code), while preserving a clean path to move templates into a shared/db-backed source later.
+
+### D-139: Enforce one active onboarding plan per tenant in shared control-plane helper logic
+**Decision**: Implement active-plan uniqueness for onboarding in `packages/db/src/control-plane.ts` application logic (reject create/plan-status updates that would result in multiple `active` plans for the same tenant) instead of relying on a DB-level partial unique index in the initial SQLite Prisma schema.
+**Reason**: Prisma/SQLite schema support for conditional unique constraints is limited for this use case; app-layer enforcement keeps the MVP deterministic and portable while the onboarding workflow model evolves.
+
+### D-140: Use task-local drafts + targeted PATCH saves for onboarding checklist edits in Admin Launch tab
+**Decision**: Implement onboarding checklist task editing in `apps/admin` with per-task local draft/saving/error state and targeted `PATCH /onboarding/tasks/[taskId]` saves that update the local onboarding bundle on success, instead of forcing a full tenant refresh after every task change.
+**Reason**: Task editing is a high-frequency operator workflow. Task-local drafts preserve responsiveness, reduce API/load churn, and keep the large Admin workspace state stable while the onboarding persistence MVP is still being integrated.
+
+### D-141: Add onboarding plan lifecycle controls to Launch tab before full workflow reporting integration
+**Decision**: Surface `Pause Plan`, `Resume Plan`, and `Complete Plan` actions directly in the Launch checklist panel, backed by `PATCH /api/tenants/[tenantId]/onboarding/[planId]`, rather than deferring plan lifecycle state changes to a separate admin sub-panel.
+**Reason**: Plan lifecycle state is operationally coupled to checklist task progress and blockers. Keeping lifecycle controls in the Launch checklist reduces operator context switching and makes paused/completed states visible where task work is actually managed.
+
+### D-142: Feed persisted onboarding-task blockers/overdue state into Action Center and readiness checks immediately (without waiting for deeper reporting)
+**Decision**: Extend Admin Action Center prioritization and launch readiness checks to consume persisted onboarding task signals (missing plan, paused plan, blocked required tasks, overdue required tasks) from the newly persisted onboarding bundle.
+**Reason**: Persisted onboarding tasks become most valuable when they affect operator prioritization, not just checklist display. Early signal integration improves day-to-day workflow value while broader observability/readiness scoring integrations are still pending.
+
+### D-143: Use separate tenant-scoped plan draft state for onboarding plan metadata edits in Launch checklist
+**Decision**: Store onboarding plan field edits (`targetLaunchDate`, `pauseReason`) in a tenant-scoped local plan draft map in `apps/admin/app/components/control-plane-workspace.tsx` and save via an explicit `Save Plan` action, rather than patching plan metadata on every input change.
+**Reason**: Keeps the Launch panel responsive, avoids noisy audit/event writes while operators type, and matches the local-draft pattern already used across other Admin workflows (settings, billing, actor edits).
+
+### D-144: Treat most-relevant non-archived onboarding plan as current plan for refresh/readiness views
+**Decision**: Update shared onboarding plan lookup helpers in `packages/db/src/control-plane.ts` to prefer `active`, then `paused`, `draft`, `completed` plans (excluding `archived`) when determining the tenant’s current onboarding plan, instead of only returning `active`.
+**Reason**: Operators need paused/completed plans to persist across refreshes for lifecycle management, reporting, and historical context. Returning only `active` caused the Launch checklist to appear empty after pausing/completing a plan.
+
+### D-145: Implement onboarding bulk task actions as repeated task PATCH mutations with local bundle sync
+**Decision**: Add bulk onboarding actions in Admin Launch (`mark done`, bulk owner-role apply) by iterating selected task IDs through the existing task PATCH path and updating local onboarding state incrementally, rather than introducing a new bulk API endpoint in the MVP.
+**Reason**: Reuses existing validation/audit logic, keeps the API surface smaller while workflows are still evolving, and is sufficient for current checklist sizes without premature backend complexity.
+
+### D-146: Add onboarding metrics to shared observability summary contract and tenant readiness scoring
+**Decision**: Extend `ControlPlaneObservabilitySummary` with an `onboarding` aggregate block and compute onboarding-based readiness constraints (missing plan, paused plan, blocked/overdue/unassigned required tasks) server-side in `getControlPlaneObservabilitySummary(...)`.
+**Reason**: Onboarding status is now persisted and operationally significant. Computing these signals server-side keeps observability/readiness consistent across Admin surfaces and avoids duplicating aggregation logic in UI components.
+
+### D-147: Enforce onboarding bulk actor-assignment guardrails in Admin UI using owner-role compatibility checks
+**Decision**: Add a UI-side compatibility helper for bulk onboarding owner-actor assignment in `apps/admin/app/components/control-plane-workspace.tsx` that blocks client-role actor assignment, filters incompatible actors by selected onboarding owner role, and skips selected tasks whose current owner role does not match the chosen bulk owner role.
+**Reason**: Tenant control-plane actor roles (`admin`/`operator`/`support`/`viewer`) do not map 1:1 to onboarding owner roles (`sales`/`ops`/`build`/`client`). Guardrails reduce accidental assignment errors while keeping the MVP on the existing task PATCH API (no new bulk endpoint).
+
+### D-148: Surface onboarding observability aggregates in Platform Health dashboard via KPI cards and summary panel
+**Decision**: Display `observability.onboarding` metrics in `PlatformHealthTabBody` as additional KPI cards plus a dedicated `Onboarding Rollout Health` panel, instead of deferring onboarding metrics to a separate dashboard tab.
+**Reason**: Onboarding readiness is now a first-class operational signal and should be visible in the existing cross-tenant Platform Health view alongside ingestion and billing drift, minimizing navigation overhead for operators.
+
+### D-149: Extend tenant readiness scoreboard entries with onboarding triage counts
+**Decision**: Add a nested `onboarding` summary block to each `ControlPlaneTenantReadinessScore` entry (`planStatus`, blocked/overdue/unassigned required task counts) and compute it server-side in `getControlPlaneObservabilitySummary(...)`.
+**Reason**: Operators need per-tenant onboarding risk context directly in the readiness scoreboard to triage which low-scoring tenants are blocked vs overdue vs simply unassigned, without opening each tenant’s Launch tab.
+
+### D-150: Enforce onboarding owner-actor compatibility in Admin Launch UI for per-task edits
+**Decision**: Filter per-task `Owner Actor` dropdown options by onboarding owner-role compatibility and add inline guidance/save-time validation for stale or incompatible actor selections in `apps/admin/app/components/control-plane-workspace.tsx`.
+**Reason**: Bulk owner-assignment guardrails (D-147) reduced assignment errors; applying the same compatibility rules to per-task edits keeps operator behavior consistent and prevents invalid/stale selections from being PATCHed.
+
+### D-151: Add combined bulk onboarding owner role + actor action as UI orchestration (no new API route)
+**Decision**: Implement `Apply Role + Actor` in the Launch checklist by iterating selected tasks through the existing onboarding task PATCH route with both `ownerRole` and `ownerActorId`, rather than adding a new bulk backend endpoint.
+**Reason**: This gives operators a faster triage workflow immediately while preserving the MVP’s small API surface and reusing existing audit/validation behavior. Checklist task volumes remain small enough that repeated PATCH calls are acceptable.
+
+### D-152: Extend tenant readiness entries with onboarding progress counts (completed/required) in addition to risk counts
+**Decision**: Add onboarding required-task progress counts (`requiredTaskCount`, `completedRequiredTaskCount`, `incompleteRequiredTaskCount`) to `ControlPlaneTenantReadinessScore.onboarding` and compute them server-side in `getControlPlaneObservabilitySummary(...)`.
+**Reason**: Risk counts alone (blocked/overdue/unassigned) don’t tell operators how far along a tenant is. Progress counts give immediate context in scoreboard/triage views without opening the tenant Launch checklist.
+
+### D-153: Enforce onboarding owner-actor compatibility in shared DB helper, not only Admin UI
+**Decision**: Validate `ownerActorId` existence + actor-role compatibility inside `updateTenantOnboardingTask(...)` in `packages/db/src/control-plane.ts` whenever owner role/actor changes, and normalize `client` owner-role tasks to `ownerActorId = null`.
+**Reason**: UI guardrails improve UX but are not sufficient for data integrity. Shared helper enforcement ensures compatibility rules hold across all current/future callers of the onboarding task update API and prevents invalid persisted assignments.
+
+### D-154: Add cross-tenant onboarding triage panel to Platform Health instead of creating a separate Admin tab
+**Decision**: Implement an `Onboarding Triage Queue` panel in `PlatformHealthTabBody` with local filter/sort controls over `tenantReadiness` onboarding signals, rather than introducing another top-level workspace tab.
+**Reason**: Operators already use Platform Health for cross-tenant triage. Keeping onboarding triage in the same surface reduces navigation friction and leverages the server-computed readiness/onboarding metrics already available in the observability summary payload.
+
+### D-155: Reuse the onboarding owner-actor compatibility matrix across UI and DB by extracting a focused DB helper module
+**Decision**: Extract the compatibility matrix into `packages/db/src/onboarding-owner-assignment.ts` and have `updateTenantOnboardingTask(...)` consume that helper, with direct unit tests in `packages/db/src/onboarding-owner-assignment.test.ts`.
+**Reason**: The compatibility rules now matter for persisted data integrity (server-side enforcement) and UI guidance. A focused helper with direct tests reduces drift between call sites without requiring a full Prisma-backed DB test harness.
+
+### D-156: Add Platform Health onboarding triage quick actions as tenant+tab navigation (not deep-link scroll yet)
+**Decision**: Add `Open Launch` actions in Platform Health readiness/triage rows that set the selected tenant and switch the Admin workspace tab to `launch`, without implementing panel scroll/focus deep-links yet.
+**Reason**: This delivers immediate operator workflow improvement with minimal coupling. Deep-linking/scroll targeting can be added later if the current tab switch still leaves too much searching in the Launch panel.
+
+### D-157: Use browser-local telemetry for onboarding triage/bulk actions before adding a backend bulk mutation endpoint
+**Decision**: Add best-effort browser-local telemetry (`localStorage` key `admin-usage-telemetry.v1`) for onboarding triage navigation and bulk task actions (batch sizes, durations, success/failure counts), and defer a dedicated bulk API endpoint until telemetry indicates repeated PATCH orchestration is a real bottleneck.
+**Reason**: The current UI orchestration is simpler and reuses existing audited task PATCH behavior. Telemetry gives evidence for when API complexity is justified instead of prematurely expanding the backend surface.
+
+### D-158: Upgrade Platform Health onboarding quick actions to deep-link/scroll-focus the Launch checklist panel
+**Decision**: Extend `Open Launch` actions in Platform Health readiness/triage rows to select the tenant, switch to the `launch` tab, and scroll/focus the `#launch-onboarding-checklist` section.
+**Reason**: Operators need to land directly on the persisted onboarding checklist after triaging risk signals. Deep-link focus reduces hunting inside the Launch tab and improves the triage-to-action loop.
+
+### D-159: Keep onboarding bulk mutations on repeated task PATCH calls until telemetry indicates a bottleneck
+**Decision**: After adding local telemetry instrumentation, continue using repeated onboarding task PATCH calls for bulk actions and do not add a backend bulk mutation endpoint yet.
+**Reason**: The current flow reuses existing validation/audit behavior and is simpler to maintain. The new telemetry inspector now provides concrete evidence (batch size, duration, failure rate) to justify a backend bulk endpoint later if needed.
+
+### D-160: Expose browser-local onboarding usage telemetry in Platform Health as a debug/inspection panel
+**Decision**: Add an `Onboarding Usage Telemetry (Local)` panel to `PlatformHealthTabBody` that reads `admin-usage-telemetry.v1`, supports refresh/clear actions, and shows event counts, recent events, bulk-action aggregates, and a lightweight endpoint recommendation.
+**Reason**: Operators/developers need visibility into triage/bulk-action usage without opening DevTools. In-app inspection makes the telemetry immediately actionable for deciding whether to invest in backend bulk mutation APIs.
+
+### D-161: Promote onboarding usage telemetry to server-side only via manual aggregate publish into Admin audit log
+**Decision**: Add an admin-only route `POST /api/observability/usage-telemetry` that accepts a sanitized aggregate telemetry snapshot (counts + bulk-action stats + policy metadata) and records it as an Admin audit event (`tenant.observability.telemetry.publish`), instead of automatically streaming client telemetry or persisting raw event detail.
+**Reason**: This provides a privacy-aware server-side trail and supports operational review without adding high-volume telemetry ingestion complexity. Manual aggregate publish keeps the feature low risk and aligned with the evidence-first approach for backend expansion.
+
+### D-162: Exclude tenant IDs and raw recent events from promoted onboarding telemetry payloads
+**Decision**: Define explicit telemetry promotion policy constants in `apps/admin/app/lib/admin-usage-telemetry.ts` and build publish payloads with aggregate counts/statistics only; do not include raw `recentEvents` entries or tenant IDs in the server-published payload.
+**Reason**: The telemetry is intended to inform UX/performance decisions (e.g., bulk endpoint justification), not to capture operator behavior exhaustively. Aggregate-only promotion minimizes privacy risk and retention burden while preserving the useful decision signals.
+
+### D-163: Roll up published onboarding telemetry aggregates into observability summary from audit events (14-day window)
+**Decision**: Extend `ControlPlaneObservabilitySummary` with `onboardingUsageTelemetry` and compute it server-side in `getControlPlaneObservabilitySummary(...)` by aggregating successful `tenant.observability.telemetry.publish` audit events over a 14-day window.
+**Reason**: Audit-only persistence is useful for traceability, but operators also need a current summary view in Platform Health. Re-aggregating from sanitized audit payloads avoids a new telemetry storage pipeline while preserving the aggregate-only privacy boundary.
+
+### D-164: Keep local vs published telemetry visually separated in Platform Health inspector
+**Decision**: Show server-side published telemetry rollup and browser-local telemetry as separate sections/signals within the `Onboarding Usage Telemetry (Local)` panel, rather than merging them into a single number.
+**Reason**: The two sources have different scopes and trust semantics (local browser snapshot vs manually published server aggregate). Keeping them distinct avoids accidental overinterpretation and makes debugging/publishing behavior clearer.
+
+### D-165: Centralize bulk-endpoint recommendation thresholds and recommendation logic in telemetry helper
+**Decision**: Move onboarding bulk-endpoint recommendation thresholds and decision logic into `apps/admin/app/lib/admin-usage-telemetry.ts` (`ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS`, `buildAdminBulkEndpointRecommendation(...)`) and have Platform Health use the shared helper for both local and published telemetry sources.
+**Reason**: Threshold tuning should be a single-point change, not duplicated UI logic. Reusing one helper ensures local-vs-published recommendations stay consistent and makes future calibration based on real usage data easier.
+
+### D-166: Surface rollup-window vs retention alignment note in Platform Health telemetry inspector
+**Decision**: Add a helper-driven alignment note (`buildAdminUsageTelemetryRollupAlignmentNote(...)`) that compares the server telemetry rollup window to the recommended retention policy and displays the result in the Platform Health telemetry panel.
+**Reason**: Operators/developers need immediate visibility into whether the current rollup window is coherent with the retention policy guidance before telemetry settings are revisited or expanded.
+
+### D-155: Implement CRM remaining polish as five parallel client-side modules
+**Decision**: Implement #62 (Mobile-First Actions), #63 (Offline Note Capture), #65 (MLS/IDX Feed Status), #66 (Document Management), and #61 (Export & Reporting) as parallel self-contained modules — `MobileActionBar.tsx`, `use-offline-queue.ts`, `FeedStatusChip.tsx`, enhanced `DocumentsPane`, and `crm-export.ts` — integrated into `crm-workspace.tsx`.
+**Reason**: These features are independent, client-side-heavy, and can share the existing factory-pattern API routes and workspace state without new data models.
+
+### D-156: Use localStorage-based offline queue with background sync for CRM notes
+**Decision**: Implement offline note capture via a `useOfflineQueue` hook using `localStorage` with `navigator.onLine` detection and periodic `/api/activities` sync on reconnect, using idempotency keys to prevent duplicates.
+**Reason**: Avoids service worker complexity for the MVP; localStorage persistence is sufficient for note buffering and the existing activities API already handles creation.
+
+### D-157: Document management uses click-to-advance status cycling with stage-based checklists
+**Decision**: Enhanced `DocumentsPane` in `TransactionDetailModal` uses `DOC_STATUS_ORDER` cycling (pending → received → reviewed → approved), `REQUIRED_DOCS_BY_STAGE` checklists, and PATCH `/api/transactions/[id]/documents/[docId]` for status updates.
+**Reason**: Operators need quick status toggling without modal dialogs; stage-based checklists make missing documents immediately visible.
+
+### D-158: MLS feed status derived from ingestion job timestamps
+**Decision**: The `/api/properties/feed-status` route derives feed health from the most recent processed `IngestionQueueJob` record via `getLatestProcessedIngestionJob()`, using a 24-hour staleness threshold.
+**Reason**: Reuses existing ingestion queue data without requiring a separate feed-health table; gives operators immediate visibility into data freshness.
+
+### D-163: AI Market Digest uses listing aggregate stats with narrative + AI enhancement
+**Decision**: Implement `generateMarketDigest()` in `packages/ai/src/crm/market-analysis.ts` with deterministic `computeMarketStats()` (median price, $/sqft, new this week, status distribution) plus rule-based narrative fallback and optional AI-enhanced narrative/highlights/takeaway via `callAiCompletion`.
+**Reason**: Agents need market context alongside lead data. Deterministic stats are always available; AI adds natural language insights when configured. Follows the established rule-based + AI enhancement pattern (D-124).
+
+### D-164: AI Listing Description Generator supports 4 tones with feature-phrase mapping
+**Decision**: Implement `generateListingDescription()` in `packages/ai/src/crm/listing-description.ts` with tone-specific AI prompting (luxury, family-friendly, investment-focused, first-time-buyer) and a rule-based fallback that uses `FEATURE_PHRASES` mapping to generate tone-appropriate descriptions from property attributes.
+**Reason**: MLS descriptions need tone control for different buyer audiences. Feature-phrase mapping ensures coherent fallback descriptions without AI. Four tones cover the primary real estate marketing segments.
+
+### D-165: Predictive Lead Scoring uses Naive Bayes over historical closed leads
+**Decision**: Implement `predictLeadConversion()` in `packages/ai/src/crm/predictive-scoring.ts` using Naive Bayes classification with Laplace smoothing over 9 bucketed features extracted from historical Won/Lost leads. Minimum threshold: 50 closed leads (10+ per outcome). In-memory distribution cache with 1-hour TTL per tenant. AI enhancement provides natural-language explanation of top contributing factors.
+**Reason**: Naive Bayes works well with small categorical datasets, is interpretable (per-feature log-odds contributions), and needs no external ML runtime. The 50-lead minimum prevents unreliable predictions with sparse data. Follows the established rule-based + AI enhancement pattern (D-124).
+
+### D-166: Smart Lead Routing uses 5-factor weighted composite scoring
+**Decision**: Implement `computeLeadRouting()` in `packages/ai/src/crm/lead-routing.ts` with 5 weighted routing factors: geographic specialization (25%), property type expertise (20%), pipeline load (20%), historical conversion rate (20%), and response time (15%). Supports team mode (2+ actors, ranked recommendations) and solo mode (self-assessment). Uses `TenantControlActor` as agent identity. AI enhancement provides rationale for top recommendation.
+**Reason**: Multi-factor composite scoring provides transparent, explainable agent-lead matching. Weight distribution balances specialization signals with operational capacity. Solo mode enables value even before team expansion. Actor model reuse avoids new identity infrastructure.

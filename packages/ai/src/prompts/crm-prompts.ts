@@ -19,6 +19,10 @@ export const PROMPT_VERSIONS = {
   NEXT_ACTION_ENHANCE: 'crm.next_action_enhance.v1',
   DRAFT_MESSAGE: 'crm.draft_message.v1',
   EXTRACT_INSIGHTS: 'crm.extract_insights.v1',
+  MARKET_DIGEST: 'crm.market_digest.v1',
+  LISTING_DESCRIPTION: 'crm.listing_description.v1',
+  PREDICTIVE_SCORE: 'crm.predictive_score.v1',
+  LEAD_ROUTING: 'crm.lead_routing.v1',
 } as const;
 
 // ---------------------------------------------------------------------------

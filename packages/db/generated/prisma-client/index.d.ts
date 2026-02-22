@@ -49,6 +49,16 @@ export type TenantBillingSyncEvent = $Result.DefaultSelection<Prisma.$TenantBill
  */
 export type TenantControlActor = $Result.DefaultSelection<Prisma.$TenantControlActorPayload>
 /**
+ * Model TenantOnboardingPlan
+ * 
+ */
+export type TenantOnboardingPlan = $Result.DefaultSelection<Prisma.$TenantOnboardingPlanPayload>
+/**
+ * Model TenantOnboardingTask
+ * 
+ */
+export type TenantOnboardingTask = $Result.DefaultSelection<Prisma.$TenantOnboardingTaskPayload>
+/**
  * Model ModuleConfig
  * 
  */
@@ -291,6 +301,26 @@ export class PrismaClient<
     * ```
     */
   get tenantControlActor(): Prisma.TenantControlActorDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tenantOnboardingPlan`: Exposes CRUD operations for the **TenantOnboardingPlan** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TenantOnboardingPlans
+    * const tenantOnboardingPlans = await prisma.tenantOnboardingPlan.findMany()
+    * ```
+    */
+  get tenantOnboardingPlan(): Prisma.TenantOnboardingPlanDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tenantOnboardingTask`: Exposes CRUD operations for the **TenantOnboardingTask** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TenantOnboardingTasks
+    * const tenantOnboardingTasks = await prisma.tenantOnboardingTask.findMany()
+    * ```
+    */
+  get tenantOnboardingTask(): Prisma.TenantOnboardingTaskDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.moduleConfig`: Exposes CRUD operations for the **ModuleConfig** model.
@@ -849,6 +879,8 @@ export namespace Prisma {
     TenantBillingSubscription: 'TenantBillingSubscription',
     TenantBillingSyncEvent: 'TenantBillingSyncEvent',
     TenantControlActor: 'TenantControlActor',
+    TenantOnboardingPlan: 'TenantOnboardingPlan',
+    TenantOnboardingTask: 'TenantOnboardingTask',
     ModuleConfig: 'ModuleConfig',
     Contact: 'Contact',
     Lead: 'Lead',
@@ -878,7 +910,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "tenantBillingSubscription" | "tenantBillingSyncEvent" | "tenantControlActor" | "moduleConfig" | "contact" | "lead" | "activity" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent" | "transaction" | "transactionParty" | "transactionDocument" | "transactionMilestone"
+      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "tenantBillingSubscription" | "tenantBillingSyncEvent" | "tenantControlActor" | "tenantOnboardingPlan" | "tenantOnboardingTask" | "moduleConfig" | "contact" | "lead" | "activity" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent" | "transaction" | "transactionParty" | "transactionDocument" | "transactionMilestone"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1397,6 +1429,154 @@ export namespace Prisma {
           count: {
             args: Prisma.TenantControlActorCountArgs<ExtArgs>
             result: $Utils.Optional<TenantControlActorCountAggregateOutputType> | number
+          }
+        }
+      }
+      TenantOnboardingPlan: {
+        payload: Prisma.$TenantOnboardingPlanPayload<ExtArgs>
+        fields: Prisma.TenantOnboardingPlanFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TenantOnboardingPlanFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TenantOnboardingPlanFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>
+          }
+          findFirst: {
+            args: Prisma.TenantOnboardingPlanFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TenantOnboardingPlanFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>
+          }
+          findMany: {
+            args: Prisma.TenantOnboardingPlanFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>[]
+          }
+          create: {
+            args: Prisma.TenantOnboardingPlanCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>
+          }
+          createMany: {
+            args: Prisma.TenantOnboardingPlanCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TenantOnboardingPlanCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>[]
+          }
+          delete: {
+            args: Prisma.TenantOnboardingPlanDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>
+          }
+          update: {
+            args: Prisma.TenantOnboardingPlanUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>
+          }
+          deleteMany: {
+            args: Prisma.TenantOnboardingPlanDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TenantOnboardingPlanUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TenantOnboardingPlanUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>[]
+          }
+          upsert: {
+            args: Prisma.TenantOnboardingPlanUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingPlanPayload>
+          }
+          aggregate: {
+            args: Prisma.TenantOnboardingPlanAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTenantOnboardingPlan>
+          }
+          groupBy: {
+            args: Prisma.TenantOnboardingPlanGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TenantOnboardingPlanGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TenantOnboardingPlanCountArgs<ExtArgs>
+            result: $Utils.Optional<TenantOnboardingPlanCountAggregateOutputType> | number
+          }
+        }
+      }
+      TenantOnboardingTask: {
+        payload: Prisma.$TenantOnboardingTaskPayload<ExtArgs>
+        fields: Prisma.TenantOnboardingTaskFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TenantOnboardingTaskFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TenantOnboardingTaskFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>
+          }
+          findFirst: {
+            args: Prisma.TenantOnboardingTaskFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TenantOnboardingTaskFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>
+          }
+          findMany: {
+            args: Prisma.TenantOnboardingTaskFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>[]
+          }
+          create: {
+            args: Prisma.TenantOnboardingTaskCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>
+          }
+          createMany: {
+            args: Prisma.TenantOnboardingTaskCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TenantOnboardingTaskCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>[]
+          }
+          delete: {
+            args: Prisma.TenantOnboardingTaskDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>
+          }
+          update: {
+            args: Prisma.TenantOnboardingTaskUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>
+          }
+          deleteMany: {
+            args: Prisma.TenantOnboardingTaskDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TenantOnboardingTaskUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TenantOnboardingTaskUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>[]
+          }
+          upsert: {
+            args: Prisma.TenantOnboardingTaskUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantOnboardingTaskPayload>
+          }
+          aggregate: {
+            args: Prisma.TenantOnboardingTaskAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTenantOnboardingTask>
+          }
+          groupBy: {
+            args: Prisma.TenantOnboardingTaskGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TenantOnboardingTaskGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TenantOnboardingTaskCountArgs<ExtArgs>
+            result: $Utils.Optional<TenantOnboardingTaskCountAggregateOutputType> | number
           }
         }
       }
@@ -2317,6 +2497,8 @@ export namespace Prisma {
     tenantBillingSubscription?: TenantBillingSubscriptionOmit
     tenantBillingSyncEvent?: TenantBillingSyncEventOmit
     tenantControlActor?: TenantControlActorOmit
+    tenantOnboardingPlan?: TenantOnboardingPlanOmit
+    tenantOnboardingTask?: TenantOnboardingTaskOmit
     moduleConfig?: ModuleConfigOmit
     contact?: ContactOmit
     lead?: LeadOmit
@@ -2410,6 +2592,8 @@ export namespace Prisma {
   export type TenantCountOutputType = {
     domains: number
     controlActors: number
+    onboardingPlans: number
+    onboardingTasks: number
     contacts: number
     leads: number
     activities: number
@@ -2421,6 +2605,8 @@ export namespace Prisma {
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     domains?: boolean | TenantCountOutputTypeCountDomainsArgs
     controlActors?: boolean | TenantCountOutputTypeCountControlActorsArgs
+    onboardingPlans?: boolean | TenantCountOutputTypeCountOnboardingPlansArgs
+    onboardingTasks?: boolean | TenantCountOutputTypeCountOnboardingTasksArgs
     contacts?: boolean | TenantCountOutputTypeCountContactsArgs
     leads?: boolean | TenantCountOutputTypeCountLeadsArgs
     activities?: boolean | TenantCountOutputTypeCountActivitiesArgs
@@ -2452,6 +2638,20 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountControlActorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TenantControlActorWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountOnboardingPlansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantOnboardingPlanWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountOnboardingTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantOnboardingTaskWhereInput
   }
 
   /**
@@ -2525,6 +2725,37 @@ export namespace Prisma {
    */
   export type WebsiteConfigCountOutputTypeCountModulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ModuleConfigWhereInput
+  }
+
+
+  /**
+   * Count Type TenantOnboardingPlanCountOutputType
+   */
+
+  export type TenantOnboardingPlanCountOutputType = {
+    tasks: number
+  }
+
+  export type TenantOnboardingPlanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tasks?: boolean | TenantOnboardingPlanCountOutputTypeCountTasksArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TenantOnboardingPlanCountOutputType without action
+   */
+  export type TenantOnboardingPlanCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlanCountOutputType
+     */
+    select?: TenantOnboardingPlanCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TenantOnboardingPlanCountOutputType without action
+   */
+  export type TenantOnboardingPlanCountOutputTypeCountTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantOnboardingTaskWhereInput
   }
 
 
@@ -2829,6 +3060,8 @@ export namespace Prisma {
     controlSettings?: boolean | Tenant$controlSettingsArgs<ExtArgs>
     billingSubscription?: boolean | Tenant$billingSubscriptionArgs<ExtArgs>
     controlActors?: boolean | Tenant$controlActorsArgs<ExtArgs>
+    onboardingPlans?: boolean | Tenant$onboardingPlansArgs<ExtArgs>
+    onboardingTasks?: boolean | Tenant$onboardingTasksArgs<ExtArgs>
     contacts?: boolean | Tenant$contactsArgs<ExtArgs>
     leads?: boolean | Tenant$leadsArgs<ExtArgs>
     activities?: boolean | Tenant$activitiesArgs<ExtArgs>
@@ -2872,6 +3105,8 @@ export namespace Prisma {
     controlSettings?: boolean | Tenant$controlSettingsArgs<ExtArgs>
     billingSubscription?: boolean | Tenant$billingSubscriptionArgs<ExtArgs>
     controlActors?: boolean | Tenant$controlActorsArgs<ExtArgs>
+    onboardingPlans?: boolean | Tenant$onboardingPlansArgs<ExtArgs>
+    onboardingTasks?: boolean | Tenant$onboardingTasksArgs<ExtArgs>
     contacts?: boolean | Tenant$contactsArgs<ExtArgs>
     leads?: boolean | Tenant$leadsArgs<ExtArgs>
     activities?: boolean | Tenant$activitiesArgs<ExtArgs>
@@ -2891,6 +3126,8 @@ export namespace Prisma {
       controlSettings: Prisma.$TenantControlSettingsPayload<ExtArgs> | null
       billingSubscription: Prisma.$TenantBillingSubscriptionPayload<ExtArgs> | null
       controlActors: Prisma.$TenantControlActorPayload<ExtArgs>[]
+      onboardingPlans: Prisma.$TenantOnboardingPlanPayload<ExtArgs>[]
+      onboardingTasks: Prisma.$TenantOnboardingTaskPayload<ExtArgs>[]
       contacts: Prisma.$ContactPayload<ExtArgs>[]
       leads: Prisma.$LeadPayload<ExtArgs>[]
       activities: Prisma.$ActivityPayload<ExtArgs>[]
@@ -3304,6 +3541,8 @@ export namespace Prisma {
     controlSettings<T extends Tenant$controlSettingsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$controlSettingsArgs<ExtArgs>>): Prisma__TenantControlSettingsClient<$Result.GetResult<Prisma.$TenantControlSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     billingSubscription<T extends Tenant$billingSubscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$billingSubscriptionArgs<ExtArgs>>): Prisma__TenantBillingSubscriptionClient<$Result.GetResult<Prisma.$TenantBillingSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     controlActors<T extends Tenant$controlActorsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$controlActorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantControlActorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    onboardingPlans<T extends Tenant$onboardingPlansArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$onboardingPlansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    onboardingTasks<T extends Tenant$onboardingTasksArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$onboardingTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     contacts<T extends Tenant$contactsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     leads<T extends Tenant$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activities<T extends Tenant$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3833,6 +4072,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TenantControlActorScalarFieldEnum | TenantControlActorScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.onboardingPlans
+   */
+  export type Tenant$onboardingPlansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    where?: TenantOnboardingPlanWhereInput
+    orderBy?: TenantOnboardingPlanOrderByWithRelationInput | TenantOnboardingPlanOrderByWithRelationInput[]
+    cursor?: TenantOnboardingPlanWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TenantOnboardingPlanScalarFieldEnum | TenantOnboardingPlanScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.onboardingTasks
+   */
+  export type Tenant$onboardingTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    where?: TenantOnboardingTaskWhereInput
+    orderBy?: TenantOnboardingTaskOrderByWithRelationInput | TenantOnboardingTaskOrderByWithRelationInput[]
+    cursor?: TenantOnboardingTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TenantOnboardingTaskScalarFieldEnum | TenantOnboardingTaskScalarFieldEnum[]
   }
 
   /**
@@ -10640,6 +10927,2437 @@ export namespace Prisma {
 
 
   /**
+   * Model TenantOnboardingPlan
+   */
+
+  export type AggregateTenantOnboardingPlan = {
+    _count: TenantOnboardingPlanCountAggregateOutputType | null
+    _min: TenantOnboardingPlanMinAggregateOutputType | null
+    _max: TenantOnboardingPlanMaxAggregateOutputType | null
+  }
+
+  export type TenantOnboardingPlanMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    status: string | null
+    planCode: string | null
+    startedAt: Date | null
+    targetLaunchDate: Date | null
+    completedAt: Date | null
+    pausedAt: Date | null
+    pauseReason: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantOnboardingPlanMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    status: string | null
+    planCode: string | null
+    startedAt: Date | null
+    targetLaunchDate: Date | null
+    completedAt: Date | null
+    pausedAt: Date | null
+    pauseReason: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantOnboardingPlanCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    status: number
+    planCode: number
+    startedAt: number
+    targetLaunchDate: number
+    completedAt: number
+    pausedAt: number
+    pauseReason: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TenantOnboardingPlanMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    status?: true
+    planCode?: true
+    startedAt?: true
+    targetLaunchDate?: true
+    completedAt?: true
+    pausedAt?: true
+    pauseReason?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantOnboardingPlanMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    status?: true
+    planCode?: true
+    startedAt?: true
+    targetLaunchDate?: true
+    completedAt?: true
+    pausedAt?: true
+    pauseReason?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantOnboardingPlanCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    status?: true
+    planCode?: true
+    startedAt?: true
+    targetLaunchDate?: true
+    completedAt?: true
+    pausedAt?: true
+    pauseReason?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TenantOnboardingPlanAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantOnboardingPlan to aggregate.
+     */
+    where?: TenantOnboardingPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingPlans to fetch.
+     */
+    orderBy?: TenantOnboardingPlanOrderByWithRelationInput | TenantOnboardingPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TenantOnboardingPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TenantOnboardingPlans
+    **/
+    _count?: true | TenantOnboardingPlanCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TenantOnboardingPlanMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TenantOnboardingPlanMaxAggregateInputType
+  }
+
+  export type GetTenantOnboardingPlanAggregateType<T extends TenantOnboardingPlanAggregateArgs> = {
+        [P in keyof T & keyof AggregateTenantOnboardingPlan]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTenantOnboardingPlan[P]>
+      : GetScalarType<T[P], AggregateTenantOnboardingPlan[P]>
+  }
+
+
+
+
+  export type TenantOnboardingPlanGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantOnboardingPlanWhereInput
+    orderBy?: TenantOnboardingPlanOrderByWithAggregationInput | TenantOnboardingPlanOrderByWithAggregationInput[]
+    by: TenantOnboardingPlanScalarFieldEnum[] | TenantOnboardingPlanScalarFieldEnum
+    having?: TenantOnboardingPlanScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TenantOnboardingPlanCountAggregateInputType | true
+    _min?: TenantOnboardingPlanMinAggregateInputType
+    _max?: TenantOnboardingPlanMaxAggregateInputType
+  }
+
+  export type TenantOnboardingPlanGroupByOutputType = {
+    id: string
+    tenantId: string
+    status: string
+    planCode: string
+    startedAt: Date | null
+    targetLaunchDate: Date | null
+    completedAt: Date | null
+    pausedAt: Date | null
+    pauseReason: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TenantOnboardingPlanCountAggregateOutputType | null
+    _min: TenantOnboardingPlanMinAggregateOutputType | null
+    _max: TenantOnboardingPlanMaxAggregateOutputType | null
+  }
+
+  type GetTenantOnboardingPlanGroupByPayload<T extends TenantOnboardingPlanGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TenantOnboardingPlanGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TenantOnboardingPlanGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TenantOnboardingPlanGroupByOutputType[P]>
+            : GetScalarType<T[P], TenantOnboardingPlanGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TenantOnboardingPlanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    status?: boolean
+    planCode?: boolean
+    startedAt?: boolean
+    targetLaunchDate?: boolean
+    completedAt?: boolean
+    pausedAt?: boolean
+    pauseReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    tasks?: boolean | TenantOnboardingPlan$tasksArgs<ExtArgs>
+    _count?: boolean | TenantOnboardingPlanCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantOnboardingPlan"]>
+
+  export type TenantOnboardingPlanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    status?: boolean
+    planCode?: boolean
+    startedAt?: boolean
+    targetLaunchDate?: boolean
+    completedAt?: boolean
+    pausedAt?: boolean
+    pauseReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantOnboardingPlan"]>
+
+  export type TenantOnboardingPlanSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    status?: boolean
+    planCode?: boolean
+    startedAt?: boolean
+    targetLaunchDate?: boolean
+    completedAt?: boolean
+    pausedAt?: boolean
+    pauseReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantOnboardingPlan"]>
+
+  export type TenantOnboardingPlanSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    status?: boolean
+    planCode?: boolean
+    startedAt?: boolean
+    targetLaunchDate?: boolean
+    completedAt?: boolean
+    pausedAt?: boolean
+    pauseReason?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TenantOnboardingPlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "status" | "planCode" | "startedAt" | "targetLaunchDate" | "completedAt" | "pausedAt" | "pauseReason" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantOnboardingPlan"]>
+  export type TenantOnboardingPlanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    tasks?: boolean | TenantOnboardingPlan$tasksArgs<ExtArgs>
+    _count?: boolean | TenantOnboardingPlanCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type TenantOnboardingPlanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type TenantOnboardingPlanIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $TenantOnboardingPlanPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TenantOnboardingPlan"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      tasks: Prisma.$TenantOnboardingTaskPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      status: string
+      planCode: string
+      startedAt: Date | null
+      targetLaunchDate: Date | null
+      completedAt: Date | null
+      pausedAt: Date | null
+      pauseReason: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["tenantOnboardingPlan"]>
+    composites: {}
+  }
+
+  type TenantOnboardingPlanGetPayload<S extends boolean | null | undefined | TenantOnboardingPlanDefaultArgs> = $Result.GetResult<Prisma.$TenantOnboardingPlanPayload, S>
+
+  type TenantOnboardingPlanCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TenantOnboardingPlanFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TenantOnboardingPlanCountAggregateInputType | true
+    }
+
+  export interface TenantOnboardingPlanDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TenantOnboardingPlan'], meta: { name: 'TenantOnboardingPlan' } }
+    /**
+     * Find zero or one TenantOnboardingPlan that matches the filter.
+     * @param {TenantOnboardingPlanFindUniqueArgs} args - Arguments to find a TenantOnboardingPlan
+     * @example
+     * // Get one TenantOnboardingPlan
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TenantOnboardingPlanFindUniqueArgs>(args: SelectSubset<T, TenantOnboardingPlanFindUniqueArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TenantOnboardingPlan that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TenantOnboardingPlanFindUniqueOrThrowArgs} args - Arguments to find a TenantOnboardingPlan
+     * @example
+     * // Get one TenantOnboardingPlan
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TenantOnboardingPlanFindUniqueOrThrowArgs>(args: SelectSubset<T, TenantOnboardingPlanFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantOnboardingPlan that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingPlanFindFirstArgs} args - Arguments to find a TenantOnboardingPlan
+     * @example
+     * // Get one TenantOnboardingPlan
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TenantOnboardingPlanFindFirstArgs>(args?: SelectSubset<T, TenantOnboardingPlanFindFirstArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantOnboardingPlan that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingPlanFindFirstOrThrowArgs} args - Arguments to find a TenantOnboardingPlan
+     * @example
+     * // Get one TenantOnboardingPlan
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TenantOnboardingPlanFindFirstOrThrowArgs>(args?: SelectSubset<T, TenantOnboardingPlanFindFirstOrThrowArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TenantOnboardingPlans that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingPlanFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TenantOnboardingPlans
+     * const tenantOnboardingPlans = await prisma.tenantOnboardingPlan.findMany()
+     * 
+     * // Get first 10 TenantOnboardingPlans
+     * const tenantOnboardingPlans = await prisma.tenantOnboardingPlan.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tenantOnboardingPlanWithIdOnly = await prisma.tenantOnboardingPlan.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TenantOnboardingPlanFindManyArgs>(args?: SelectSubset<T, TenantOnboardingPlanFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TenantOnboardingPlan.
+     * @param {TenantOnboardingPlanCreateArgs} args - Arguments to create a TenantOnboardingPlan.
+     * @example
+     * // Create one TenantOnboardingPlan
+     * const TenantOnboardingPlan = await prisma.tenantOnboardingPlan.create({
+     *   data: {
+     *     // ... data to create a TenantOnboardingPlan
+     *   }
+     * })
+     * 
+     */
+    create<T extends TenantOnboardingPlanCreateArgs>(args: SelectSubset<T, TenantOnboardingPlanCreateArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TenantOnboardingPlans.
+     * @param {TenantOnboardingPlanCreateManyArgs} args - Arguments to create many TenantOnboardingPlans.
+     * @example
+     * // Create many TenantOnboardingPlans
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TenantOnboardingPlanCreateManyArgs>(args?: SelectSubset<T, TenantOnboardingPlanCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TenantOnboardingPlans and returns the data saved in the database.
+     * @param {TenantOnboardingPlanCreateManyAndReturnArgs} args - Arguments to create many TenantOnboardingPlans.
+     * @example
+     * // Create many TenantOnboardingPlans
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TenantOnboardingPlans and only return the `id`
+     * const tenantOnboardingPlanWithIdOnly = await prisma.tenantOnboardingPlan.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TenantOnboardingPlanCreateManyAndReturnArgs>(args?: SelectSubset<T, TenantOnboardingPlanCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TenantOnboardingPlan.
+     * @param {TenantOnboardingPlanDeleteArgs} args - Arguments to delete one TenantOnboardingPlan.
+     * @example
+     * // Delete one TenantOnboardingPlan
+     * const TenantOnboardingPlan = await prisma.tenantOnboardingPlan.delete({
+     *   where: {
+     *     // ... filter to delete one TenantOnboardingPlan
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TenantOnboardingPlanDeleteArgs>(args: SelectSubset<T, TenantOnboardingPlanDeleteArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TenantOnboardingPlan.
+     * @param {TenantOnboardingPlanUpdateArgs} args - Arguments to update one TenantOnboardingPlan.
+     * @example
+     * // Update one TenantOnboardingPlan
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TenantOnboardingPlanUpdateArgs>(args: SelectSubset<T, TenantOnboardingPlanUpdateArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TenantOnboardingPlans.
+     * @param {TenantOnboardingPlanDeleteManyArgs} args - Arguments to filter TenantOnboardingPlans to delete.
+     * @example
+     * // Delete a few TenantOnboardingPlans
+     * const { count } = await prisma.tenantOnboardingPlan.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TenantOnboardingPlanDeleteManyArgs>(args?: SelectSubset<T, TenantOnboardingPlanDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantOnboardingPlans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingPlanUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TenantOnboardingPlans
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TenantOnboardingPlanUpdateManyArgs>(args: SelectSubset<T, TenantOnboardingPlanUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantOnboardingPlans and returns the data updated in the database.
+     * @param {TenantOnboardingPlanUpdateManyAndReturnArgs} args - Arguments to update many TenantOnboardingPlans.
+     * @example
+     * // Update many TenantOnboardingPlans
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TenantOnboardingPlans and only return the `id`
+     * const tenantOnboardingPlanWithIdOnly = await prisma.tenantOnboardingPlan.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TenantOnboardingPlanUpdateManyAndReturnArgs>(args: SelectSubset<T, TenantOnboardingPlanUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TenantOnboardingPlan.
+     * @param {TenantOnboardingPlanUpsertArgs} args - Arguments to update or create a TenantOnboardingPlan.
+     * @example
+     * // Update or create a TenantOnboardingPlan
+     * const tenantOnboardingPlan = await prisma.tenantOnboardingPlan.upsert({
+     *   create: {
+     *     // ... data to create a TenantOnboardingPlan
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TenantOnboardingPlan we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TenantOnboardingPlanUpsertArgs>(args: SelectSubset<T, TenantOnboardingPlanUpsertArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TenantOnboardingPlans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingPlanCountArgs} args - Arguments to filter TenantOnboardingPlans to count.
+     * @example
+     * // Count the number of TenantOnboardingPlans
+     * const count = await prisma.tenantOnboardingPlan.count({
+     *   where: {
+     *     // ... the filter for the TenantOnboardingPlans we want to count
+     *   }
+     * })
+    **/
+    count<T extends TenantOnboardingPlanCountArgs>(
+      args?: Subset<T, TenantOnboardingPlanCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TenantOnboardingPlanCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TenantOnboardingPlan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingPlanAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TenantOnboardingPlanAggregateArgs>(args: Subset<T, TenantOnboardingPlanAggregateArgs>): Prisma.PrismaPromise<GetTenantOnboardingPlanAggregateType<T>>
+
+    /**
+     * Group by TenantOnboardingPlan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingPlanGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TenantOnboardingPlanGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TenantOnboardingPlanGroupByArgs['orderBy'] }
+        : { orderBy?: TenantOnboardingPlanGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TenantOnboardingPlanGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTenantOnboardingPlanGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TenantOnboardingPlan model
+   */
+  readonly fields: TenantOnboardingPlanFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TenantOnboardingPlan.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TenantOnboardingPlanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    tasks<T extends TenantOnboardingPlan$tasksArgs<ExtArgs> = {}>(args?: Subset<T, TenantOnboardingPlan$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TenantOnboardingPlan model
+   */
+  interface TenantOnboardingPlanFieldRefs {
+    readonly id: FieldRef<"TenantOnboardingPlan", 'String'>
+    readonly tenantId: FieldRef<"TenantOnboardingPlan", 'String'>
+    readonly status: FieldRef<"TenantOnboardingPlan", 'String'>
+    readonly planCode: FieldRef<"TenantOnboardingPlan", 'String'>
+    readonly startedAt: FieldRef<"TenantOnboardingPlan", 'DateTime'>
+    readonly targetLaunchDate: FieldRef<"TenantOnboardingPlan", 'DateTime'>
+    readonly completedAt: FieldRef<"TenantOnboardingPlan", 'DateTime'>
+    readonly pausedAt: FieldRef<"TenantOnboardingPlan", 'DateTime'>
+    readonly pauseReason: FieldRef<"TenantOnboardingPlan", 'String'>
+    readonly createdAt: FieldRef<"TenantOnboardingPlan", 'DateTime'>
+    readonly updatedAt: FieldRef<"TenantOnboardingPlan", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TenantOnboardingPlan findUnique
+   */
+  export type TenantOnboardingPlanFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingPlan to fetch.
+     */
+    where: TenantOnboardingPlanWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingPlan findUniqueOrThrow
+   */
+  export type TenantOnboardingPlanFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingPlan to fetch.
+     */
+    where: TenantOnboardingPlanWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingPlan findFirst
+   */
+  export type TenantOnboardingPlanFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingPlan to fetch.
+     */
+    where?: TenantOnboardingPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingPlans to fetch.
+     */
+    orderBy?: TenantOnboardingPlanOrderByWithRelationInput | TenantOnboardingPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantOnboardingPlans.
+     */
+    cursor?: TenantOnboardingPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantOnboardingPlans.
+     */
+    distinct?: TenantOnboardingPlanScalarFieldEnum | TenantOnboardingPlanScalarFieldEnum[]
+  }
+
+  /**
+   * TenantOnboardingPlan findFirstOrThrow
+   */
+  export type TenantOnboardingPlanFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingPlan to fetch.
+     */
+    where?: TenantOnboardingPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingPlans to fetch.
+     */
+    orderBy?: TenantOnboardingPlanOrderByWithRelationInput | TenantOnboardingPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantOnboardingPlans.
+     */
+    cursor?: TenantOnboardingPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingPlans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantOnboardingPlans.
+     */
+    distinct?: TenantOnboardingPlanScalarFieldEnum | TenantOnboardingPlanScalarFieldEnum[]
+  }
+
+  /**
+   * TenantOnboardingPlan findMany
+   */
+  export type TenantOnboardingPlanFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingPlans to fetch.
+     */
+    where?: TenantOnboardingPlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingPlans to fetch.
+     */
+    orderBy?: TenantOnboardingPlanOrderByWithRelationInput | TenantOnboardingPlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TenantOnboardingPlans.
+     */
+    cursor?: TenantOnboardingPlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingPlans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingPlans.
+     */
+    skip?: number
+    distinct?: TenantOnboardingPlanScalarFieldEnum | TenantOnboardingPlanScalarFieldEnum[]
+  }
+
+  /**
+   * TenantOnboardingPlan create
+   */
+  export type TenantOnboardingPlanCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TenantOnboardingPlan.
+     */
+    data: XOR<TenantOnboardingPlanCreateInput, TenantOnboardingPlanUncheckedCreateInput>
+  }
+
+  /**
+   * TenantOnboardingPlan createMany
+   */
+  export type TenantOnboardingPlanCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TenantOnboardingPlans.
+     */
+    data: TenantOnboardingPlanCreateManyInput | TenantOnboardingPlanCreateManyInput[]
+  }
+
+  /**
+   * TenantOnboardingPlan createManyAndReturn
+   */
+  export type TenantOnboardingPlanCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * The data used to create many TenantOnboardingPlans.
+     */
+    data: TenantOnboardingPlanCreateManyInput | TenantOnboardingPlanCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantOnboardingPlan update
+   */
+  export type TenantOnboardingPlanUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TenantOnboardingPlan.
+     */
+    data: XOR<TenantOnboardingPlanUpdateInput, TenantOnboardingPlanUncheckedUpdateInput>
+    /**
+     * Choose, which TenantOnboardingPlan to update.
+     */
+    where: TenantOnboardingPlanWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingPlan updateMany
+   */
+  export type TenantOnboardingPlanUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TenantOnboardingPlans.
+     */
+    data: XOR<TenantOnboardingPlanUpdateManyMutationInput, TenantOnboardingPlanUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantOnboardingPlans to update
+     */
+    where?: TenantOnboardingPlanWhereInput
+    /**
+     * Limit how many TenantOnboardingPlans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantOnboardingPlan updateManyAndReturn
+   */
+  export type TenantOnboardingPlanUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * The data used to update TenantOnboardingPlans.
+     */
+    data: XOR<TenantOnboardingPlanUpdateManyMutationInput, TenantOnboardingPlanUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantOnboardingPlans to update
+     */
+    where?: TenantOnboardingPlanWhereInput
+    /**
+     * Limit how many TenantOnboardingPlans to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantOnboardingPlan upsert
+   */
+  export type TenantOnboardingPlanUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TenantOnboardingPlan to update in case it exists.
+     */
+    where: TenantOnboardingPlanWhereUniqueInput
+    /**
+     * In case the TenantOnboardingPlan found by the `where` argument doesn't exist, create a new TenantOnboardingPlan with this data.
+     */
+    create: XOR<TenantOnboardingPlanCreateInput, TenantOnboardingPlanUncheckedCreateInput>
+    /**
+     * In case the TenantOnboardingPlan was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TenantOnboardingPlanUpdateInput, TenantOnboardingPlanUncheckedUpdateInput>
+  }
+
+  /**
+   * TenantOnboardingPlan delete
+   */
+  export type TenantOnboardingPlanDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+    /**
+     * Filter which TenantOnboardingPlan to delete.
+     */
+    where: TenantOnboardingPlanWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingPlan deleteMany
+   */
+  export type TenantOnboardingPlanDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantOnboardingPlans to delete
+     */
+    where?: TenantOnboardingPlanWhereInput
+    /**
+     * Limit how many TenantOnboardingPlans to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantOnboardingPlan.tasks
+   */
+  export type TenantOnboardingPlan$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    where?: TenantOnboardingTaskWhereInput
+    orderBy?: TenantOnboardingTaskOrderByWithRelationInput | TenantOnboardingTaskOrderByWithRelationInput[]
+    cursor?: TenantOnboardingTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TenantOnboardingTaskScalarFieldEnum | TenantOnboardingTaskScalarFieldEnum[]
+  }
+
+  /**
+   * TenantOnboardingPlan without action
+   */
+  export type TenantOnboardingPlanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingPlan
+     */
+    select?: TenantOnboardingPlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingPlan
+     */
+    omit?: TenantOnboardingPlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingPlanInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TenantOnboardingTask
+   */
+
+  export type AggregateTenantOnboardingTask = {
+    _count: TenantOnboardingTaskCountAggregateOutputType | null
+    _avg: TenantOnboardingTaskAvgAggregateOutputType | null
+    _sum: TenantOnboardingTaskSumAggregateOutputType | null
+    _min: TenantOnboardingTaskMinAggregateOutputType | null
+    _max: TenantOnboardingTaskMaxAggregateOutputType | null
+  }
+
+  export type TenantOnboardingTaskAvgAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type TenantOnboardingTaskSumAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type TenantOnboardingTaskMinAggregateOutputType = {
+    id: string | null
+    tenantOnboardingPlanId: string | null
+    tenantId: string | null
+    taskKey: string | null
+    title: string | null
+    description: string | null
+    status: string | null
+    priority: string | null
+    required: boolean | null
+    ownerRole: string | null
+    ownerActorId: string | null
+    dueAt: Date | null
+    blockedByClient: boolean | null
+    blockerReason: string | null
+    sortOrder: number | null
+    completedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantOnboardingTaskMaxAggregateOutputType = {
+    id: string | null
+    tenantOnboardingPlanId: string | null
+    tenantId: string | null
+    taskKey: string | null
+    title: string | null
+    description: string | null
+    status: string | null
+    priority: string | null
+    required: boolean | null
+    ownerRole: string | null
+    ownerActorId: string | null
+    dueAt: Date | null
+    blockedByClient: boolean | null
+    blockerReason: string | null
+    sortOrder: number | null
+    completedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantOnboardingTaskCountAggregateOutputType = {
+    id: number
+    tenantOnboardingPlanId: number
+    tenantId: number
+    taskKey: number
+    title: number
+    description: number
+    status: number
+    priority: number
+    required: number
+    ownerRole: number
+    ownerActorId: number
+    dueAt: number
+    blockedByClient: number
+    blockerReason: number
+    sortOrder: number
+    completedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TenantOnboardingTaskAvgAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type TenantOnboardingTaskSumAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type TenantOnboardingTaskMinAggregateInputType = {
+    id?: true
+    tenantOnboardingPlanId?: true
+    tenantId?: true
+    taskKey?: true
+    title?: true
+    description?: true
+    status?: true
+    priority?: true
+    required?: true
+    ownerRole?: true
+    ownerActorId?: true
+    dueAt?: true
+    blockedByClient?: true
+    blockerReason?: true
+    sortOrder?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantOnboardingTaskMaxAggregateInputType = {
+    id?: true
+    tenantOnboardingPlanId?: true
+    tenantId?: true
+    taskKey?: true
+    title?: true
+    description?: true
+    status?: true
+    priority?: true
+    required?: true
+    ownerRole?: true
+    ownerActorId?: true
+    dueAt?: true
+    blockedByClient?: true
+    blockerReason?: true
+    sortOrder?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantOnboardingTaskCountAggregateInputType = {
+    id?: true
+    tenantOnboardingPlanId?: true
+    tenantId?: true
+    taskKey?: true
+    title?: true
+    description?: true
+    status?: true
+    priority?: true
+    required?: true
+    ownerRole?: true
+    ownerActorId?: true
+    dueAt?: true
+    blockedByClient?: true
+    blockerReason?: true
+    sortOrder?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TenantOnboardingTaskAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantOnboardingTask to aggregate.
+     */
+    where?: TenantOnboardingTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingTasks to fetch.
+     */
+    orderBy?: TenantOnboardingTaskOrderByWithRelationInput | TenantOnboardingTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TenantOnboardingTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TenantOnboardingTasks
+    **/
+    _count?: true | TenantOnboardingTaskCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TenantOnboardingTaskAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TenantOnboardingTaskSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TenantOnboardingTaskMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TenantOnboardingTaskMaxAggregateInputType
+  }
+
+  export type GetTenantOnboardingTaskAggregateType<T extends TenantOnboardingTaskAggregateArgs> = {
+        [P in keyof T & keyof AggregateTenantOnboardingTask]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTenantOnboardingTask[P]>
+      : GetScalarType<T[P], AggregateTenantOnboardingTask[P]>
+  }
+
+
+
+
+  export type TenantOnboardingTaskGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantOnboardingTaskWhereInput
+    orderBy?: TenantOnboardingTaskOrderByWithAggregationInput | TenantOnboardingTaskOrderByWithAggregationInput[]
+    by: TenantOnboardingTaskScalarFieldEnum[] | TenantOnboardingTaskScalarFieldEnum
+    having?: TenantOnboardingTaskScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TenantOnboardingTaskCountAggregateInputType | true
+    _avg?: TenantOnboardingTaskAvgAggregateInputType
+    _sum?: TenantOnboardingTaskSumAggregateInputType
+    _min?: TenantOnboardingTaskMinAggregateInputType
+    _max?: TenantOnboardingTaskMaxAggregateInputType
+  }
+
+  export type TenantOnboardingTaskGroupByOutputType = {
+    id: string
+    tenantOnboardingPlanId: string
+    tenantId: string
+    taskKey: string
+    title: string
+    description: string | null
+    status: string
+    priority: string
+    required: boolean
+    ownerRole: string
+    ownerActorId: string | null
+    dueAt: Date | null
+    blockedByClient: boolean
+    blockerReason: string | null
+    sortOrder: number
+    completedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TenantOnboardingTaskCountAggregateOutputType | null
+    _avg: TenantOnboardingTaskAvgAggregateOutputType | null
+    _sum: TenantOnboardingTaskSumAggregateOutputType | null
+    _min: TenantOnboardingTaskMinAggregateOutputType | null
+    _max: TenantOnboardingTaskMaxAggregateOutputType | null
+  }
+
+  type GetTenantOnboardingTaskGroupByPayload<T extends TenantOnboardingTaskGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TenantOnboardingTaskGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TenantOnboardingTaskGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TenantOnboardingTaskGroupByOutputType[P]>
+            : GetScalarType<T[P], TenantOnboardingTaskGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TenantOnboardingTaskSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantOnboardingPlanId?: boolean
+    tenantId?: boolean
+    taskKey?: boolean
+    title?: boolean
+    description?: boolean
+    status?: boolean
+    priority?: boolean
+    required?: boolean
+    ownerRole?: boolean
+    ownerActorId?: boolean
+    dueAt?: boolean
+    blockedByClient?: boolean
+    blockerReason?: boolean
+    sortOrder?: boolean
+    completedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    onboardingPlan?: boolean | TenantOnboardingPlanDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantOnboardingTask"]>
+
+  export type TenantOnboardingTaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantOnboardingPlanId?: boolean
+    tenantId?: boolean
+    taskKey?: boolean
+    title?: boolean
+    description?: boolean
+    status?: boolean
+    priority?: boolean
+    required?: boolean
+    ownerRole?: boolean
+    ownerActorId?: boolean
+    dueAt?: boolean
+    blockedByClient?: boolean
+    blockerReason?: boolean
+    sortOrder?: boolean
+    completedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    onboardingPlan?: boolean | TenantOnboardingPlanDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantOnboardingTask"]>
+
+  export type TenantOnboardingTaskSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantOnboardingPlanId?: boolean
+    tenantId?: boolean
+    taskKey?: boolean
+    title?: boolean
+    description?: boolean
+    status?: boolean
+    priority?: boolean
+    required?: boolean
+    ownerRole?: boolean
+    ownerActorId?: boolean
+    dueAt?: boolean
+    blockedByClient?: boolean
+    blockerReason?: boolean
+    sortOrder?: boolean
+    completedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    onboardingPlan?: boolean | TenantOnboardingPlanDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantOnboardingTask"]>
+
+  export type TenantOnboardingTaskSelectScalar = {
+    id?: boolean
+    tenantOnboardingPlanId?: boolean
+    tenantId?: boolean
+    taskKey?: boolean
+    title?: boolean
+    description?: boolean
+    status?: boolean
+    priority?: boolean
+    required?: boolean
+    ownerRole?: boolean
+    ownerActorId?: boolean
+    dueAt?: boolean
+    blockedByClient?: boolean
+    blockerReason?: boolean
+    sortOrder?: boolean
+    completedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TenantOnboardingTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantOnboardingPlanId" | "tenantId" | "taskKey" | "title" | "description" | "status" | "priority" | "required" | "ownerRole" | "ownerActorId" | "dueAt" | "blockedByClient" | "blockerReason" | "sortOrder" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantOnboardingTask"]>
+  export type TenantOnboardingTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    onboardingPlan?: boolean | TenantOnboardingPlanDefaultArgs<ExtArgs>
+  }
+  export type TenantOnboardingTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    onboardingPlan?: boolean | TenantOnboardingPlanDefaultArgs<ExtArgs>
+  }
+  export type TenantOnboardingTaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    onboardingPlan?: boolean | TenantOnboardingPlanDefaultArgs<ExtArgs>
+  }
+
+  export type $TenantOnboardingTaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TenantOnboardingTask"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      onboardingPlan: Prisma.$TenantOnboardingPlanPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantOnboardingPlanId: string
+      tenantId: string
+      taskKey: string
+      title: string
+      description: string | null
+      status: string
+      priority: string
+      required: boolean
+      ownerRole: string
+      ownerActorId: string | null
+      dueAt: Date | null
+      blockedByClient: boolean
+      blockerReason: string | null
+      sortOrder: number
+      completedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["tenantOnboardingTask"]>
+    composites: {}
+  }
+
+  type TenantOnboardingTaskGetPayload<S extends boolean | null | undefined | TenantOnboardingTaskDefaultArgs> = $Result.GetResult<Prisma.$TenantOnboardingTaskPayload, S>
+
+  type TenantOnboardingTaskCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TenantOnboardingTaskFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TenantOnboardingTaskCountAggregateInputType | true
+    }
+
+  export interface TenantOnboardingTaskDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TenantOnboardingTask'], meta: { name: 'TenantOnboardingTask' } }
+    /**
+     * Find zero or one TenantOnboardingTask that matches the filter.
+     * @param {TenantOnboardingTaskFindUniqueArgs} args - Arguments to find a TenantOnboardingTask
+     * @example
+     * // Get one TenantOnboardingTask
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TenantOnboardingTaskFindUniqueArgs>(args: SelectSubset<T, TenantOnboardingTaskFindUniqueArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TenantOnboardingTask that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TenantOnboardingTaskFindUniqueOrThrowArgs} args - Arguments to find a TenantOnboardingTask
+     * @example
+     * // Get one TenantOnboardingTask
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TenantOnboardingTaskFindUniqueOrThrowArgs>(args: SelectSubset<T, TenantOnboardingTaskFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantOnboardingTask that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingTaskFindFirstArgs} args - Arguments to find a TenantOnboardingTask
+     * @example
+     * // Get one TenantOnboardingTask
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TenantOnboardingTaskFindFirstArgs>(args?: SelectSubset<T, TenantOnboardingTaskFindFirstArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TenantOnboardingTask that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingTaskFindFirstOrThrowArgs} args - Arguments to find a TenantOnboardingTask
+     * @example
+     * // Get one TenantOnboardingTask
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TenantOnboardingTaskFindFirstOrThrowArgs>(args?: SelectSubset<T, TenantOnboardingTaskFindFirstOrThrowArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TenantOnboardingTasks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingTaskFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TenantOnboardingTasks
+     * const tenantOnboardingTasks = await prisma.tenantOnboardingTask.findMany()
+     * 
+     * // Get first 10 TenantOnboardingTasks
+     * const tenantOnboardingTasks = await prisma.tenantOnboardingTask.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tenantOnboardingTaskWithIdOnly = await prisma.tenantOnboardingTask.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TenantOnboardingTaskFindManyArgs>(args?: SelectSubset<T, TenantOnboardingTaskFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TenantOnboardingTask.
+     * @param {TenantOnboardingTaskCreateArgs} args - Arguments to create a TenantOnboardingTask.
+     * @example
+     * // Create one TenantOnboardingTask
+     * const TenantOnboardingTask = await prisma.tenantOnboardingTask.create({
+     *   data: {
+     *     // ... data to create a TenantOnboardingTask
+     *   }
+     * })
+     * 
+     */
+    create<T extends TenantOnboardingTaskCreateArgs>(args: SelectSubset<T, TenantOnboardingTaskCreateArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TenantOnboardingTasks.
+     * @param {TenantOnboardingTaskCreateManyArgs} args - Arguments to create many TenantOnboardingTasks.
+     * @example
+     * // Create many TenantOnboardingTasks
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TenantOnboardingTaskCreateManyArgs>(args?: SelectSubset<T, TenantOnboardingTaskCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TenantOnboardingTasks and returns the data saved in the database.
+     * @param {TenantOnboardingTaskCreateManyAndReturnArgs} args - Arguments to create many TenantOnboardingTasks.
+     * @example
+     * // Create many TenantOnboardingTasks
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TenantOnboardingTasks and only return the `id`
+     * const tenantOnboardingTaskWithIdOnly = await prisma.tenantOnboardingTask.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TenantOnboardingTaskCreateManyAndReturnArgs>(args?: SelectSubset<T, TenantOnboardingTaskCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TenantOnboardingTask.
+     * @param {TenantOnboardingTaskDeleteArgs} args - Arguments to delete one TenantOnboardingTask.
+     * @example
+     * // Delete one TenantOnboardingTask
+     * const TenantOnboardingTask = await prisma.tenantOnboardingTask.delete({
+     *   where: {
+     *     // ... filter to delete one TenantOnboardingTask
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TenantOnboardingTaskDeleteArgs>(args: SelectSubset<T, TenantOnboardingTaskDeleteArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TenantOnboardingTask.
+     * @param {TenantOnboardingTaskUpdateArgs} args - Arguments to update one TenantOnboardingTask.
+     * @example
+     * // Update one TenantOnboardingTask
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TenantOnboardingTaskUpdateArgs>(args: SelectSubset<T, TenantOnboardingTaskUpdateArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TenantOnboardingTasks.
+     * @param {TenantOnboardingTaskDeleteManyArgs} args - Arguments to filter TenantOnboardingTasks to delete.
+     * @example
+     * // Delete a few TenantOnboardingTasks
+     * const { count } = await prisma.tenantOnboardingTask.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TenantOnboardingTaskDeleteManyArgs>(args?: SelectSubset<T, TenantOnboardingTaskDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantOnboardingTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingTaskUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TenantOnboardingTasks
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TenantOnboardingTaskUpdateManyArgs>(args: SelectSubset<T, TenantOnboardingTaskUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantOnboardingTasks and returns the data updated in the database.
+     * @param {TenantOnboardingTaskUpdateManyAndReturnArgs} args - Arguments to update many TenantOnboardingTasks.
+     * @example
+     * // Update many TenantOnboardingTasks
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TenantOnboardingTasks and only return the `id`
+     * const tenantOnboardingTaskWithIdOnly = await prisma.tenantOnboardingTask.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TenantOnboardingTaskUpdateManyAndReturnArgs>(args: SelectSubset<T, TenantOnboardingTaskUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TenantOnboardingTask.
+     * @param {TenantOnboardingTaskUpsertArgs} args - Arguments to update or create a TenantOnboardingTask.
+     * @example
+     * // Update or create a TenantOnboardingTask
+     * const tenantOnboardingTask = await prisma.tenantOnboardingTask.upsert({
+     *   create: {
+     *     // ... data to create a TenantOnboardingTask
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TenantOnboardingTask we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TenantOnboardingTaskUpsertArgs>(args: SelectSubset<T, TenantOnboardingTaskUpsertArgs<ExtArgs>>): Prisma__TenantOnboardingTaskClient<$Result.GetResult<Prisma.$TenantOnboardingTaskPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TenantOnboardingTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingTaskCountArgs} args - Arguments to filter TenantOnboardingTasks to count.
+     * @example
+     * // Count the number of TenantOnboardingTasks
+     * const count = await prisma.tenantOnboardingTask.count({
+     *   where: {
+     *     // ... the filter for the TenantOnboardingTasks we want to count
+     *   }
+     * })
+    **/
+    count<T extends TenantOnboardingTaskCountArgs>(
+      args?: Subset<T, TenantOnboardingTaskCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TenantOnboardingTaskCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TenantOnboardingTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingTaskAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TenantOnboardingTaskAggregateArgs>(args: Subset<T, TenantOnboardingTaskAggregateArgs>): Prisma.PrismaPromise<GetTenantOnboardingTaskAggregateType<T>>
+
+    /**
+     * Group by TenantOnboardingTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantOnboardingTaskGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TenantOnboardingTaskGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TenantOnboardingTaskGroupByArgs['orderBy'] }
+        : { orderBy?: TenantOnboardingTaskGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TenantOnboardingTaskGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTenantOnboardingTaskGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TenantOnboardingTask model
+   */
+  readonly fields: TenantOnboardingTaskFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TenantOnboardingTask.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TenantOnboardingTaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    onboardingPlan<T extends TenantOnboardingPlanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantOnboardingPlanDefaultArgs<ExtArgs>>): Prisma__TenantOnboardingPlanClient<$Result.GetResult<Prisma.$TenantOnboardingPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TenantOnboardingTask model
+   */
+  interface TenantOnboardingTaskFieldRefs {
+    readonly id: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly tenantOnboardingPlanId: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly tenantId: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly taskKey: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly title: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly description: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly status: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly priority: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly required: FieldRef<"TenantOnboardingTask", 'Boolean'>
+    readonly ownerRole: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly ownerActorId: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly dueAt: FieldRef<"TenantOnboardingTask", 'DateTime'>
+    readonly blockedByClient: FieldRef<"TenantOnboardingTask", 'Boolean'>
+    readonly blockerReason: FieldRef<"TenantOnboardingTask", 'String'>
+    readonly sortOrder: FieldRef<"TenantOnboardingTask", 'Int'>
+    readonly completedAt: FieldRef<"TenantOnboardingTask", 'DateTime'>
+    readonly createdAt: FieldRef<"TenantOnboardingTask", 'DateTime'>
+    readonly updatedAt: FieldRef<"TenantOnboardingTask", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TenantOnboardingTask findUnique
+   */
+  export type TenantOnboardingTaskFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingTask to fetch.
+     */
+    where: TenantOnboardingTaskWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingTask findUniqueOrThrow
+   */
+  export type TenantOnboardingTaskFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingTask to fetch.
+     */
+    where: TenantOnboardingTaskWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingTask findFirst
+   */
+  export type TenantOnboardingTaskFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingTask to fetch.
+     */
+    where?: TenantOnboardingTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingTasks to fetch.
+     */
+    orderBy?: TenantOnboardingTaskOrderByWithRelationInput | TenantOnboardingTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantOnboardingTasks.
+     */
+    cursor?: TenantOnboardingTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantOnboardingTasks.
+     */
+    distinct?: TenantOnboardingTaskScalarFieldEnum | TenantOnboardingTaskScalarFieldEnum[]
+  }
+
+  /**
+   * TenantOnboardingTask findFirstOrThrow
+   */
+  export type TenantOnboardingTaskFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingTask to fetch.
+     */
+    where?: TenantOnboardingTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingTasks to fetch.
+     */
+    orderBy?: TenantOnboardingTaskOrderByWithRelationInput | TenantOnboardingTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantOnboardingTasks.
+     */
+    cursor?: TenantOnboardingTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantOnboardingTasks.
+     */
+    distinct?: TenantOnboardingTaskScalarFieldEnum | TenantOnboardingTaskScalarFieldEnum[]
+  }
+
+  /**
+   * TenantOnboardingTask findMany
+   */
+  export type TenantOnboardingTaskFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantOnboardingTasks to fetch.
+     */
+    where?: TenantOnboardingTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantOnboardingTasks to fetch.
+     */
+    orderBy?: TenantOnboardingTaskOrderByWithRelationInput | TenantOnboardingTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TenantOnboardingTasks.
+     */
+    cursor?: TenantOnboardingTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantOnboardingTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantOnboardingTasks.
+     */
+    skip?: number
+    distinct?: TenantOnboardingTaskScalarFieldEnum | TenantOnboardingTaskScalarFieldEnum[]
+  }
+
+  /**
+   * TenantOnboardingTask create
+   */
+  export type TenantOnboardingTaskCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TenantOnboardingTask.
+     */
+    data: XOR<TenantOnboardingTaskCreateInput, TenantOnboardingTaskUncheckedCreateInput>
+  }
+
+  /**
+   * TenantOnboardingTask createMany
+   */
+  export type TenantOnboardingTaskCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TenantOnboardingTasks.
+     */
+    data: TenantOnboardingTaskCreateManyInput | TenantOnboardingTaskCreateManyInput[]
+  }
+
+  /**
+   * TenantOnboardingTask createManyAndReturn
+   */
+  export type TenantOnboardingTaskCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * The data used to create many TenantOnboardingTasks.
+     */
+    data: TenantOnboardingTaskCreateManyInput | TenantOnboardingTaskCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantOnboardingTask update
+   */
+  export type TenantOnboardingTaskUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TenantOnboardingTask.
+     */
+    data: XOR<TenantOnboardingTaskUpdateInput, TenantOnboardingTaskUncheckedUpdateInput>
+    /**
+     * Choose, which TenantOnboardingTask to update.
+     */
+    where: TenantOnboardingTaskWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingTask updateMany
+   */
+  export type TenantOnboardingTaskUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TenantOnboardingTasks.
+     */
+    data: XOR<TenantOnboardingTaskUpdateManyMutationInput, TenantOnboardingTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantOnboardingTasks to update
+     */
+    where?: TenantOnboardingTaskWhereInput
+    /**
+     * Limit how many TenantOnboardingTasks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantOnboardingTask updateManyAndReturn
+   */
+  export type TenantOnboardingTaskUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * The data used to update TenantOnboardingTasks.
+     */
+    data: XOR<TenantOnboardingTaskUpdateManyMutationInput, TenantOnboardingTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantOnboardingTasks to update
+     */
+    where?: TenantOnboardingTaskWhereInput
+    /**
+     * Limit how many TenantOnboardingTasks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantOnboardingTask upsert
+   */
+  export type TenantOnboardingTaskUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TenantOnboardingTask to update in case it exists.
+     */
+    where: TenantOnboardingTaskWhereUniqueInput
+    /**
+     * In case the TenantOnboardingTask found by the `where` argument doesn't exist, create a new TenantOnboardingTask with this data.
+     */
+    create: XOR<TenantOnboardingTaskCreateInput, TenantOnboardingTaskUncheckedCreateInput>
+    /**
+     * In case the TenantOnboardingTask was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TenantOnboardingTaskUpdateInput, TenantOnboardingTaskUncheckedUpdateInput>
+  }
+
+  /**
+   * TenantOnboardingTask delete
+   */
+  export type TenantOnboardingTaskDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+    /**
+     * Filter which TenantOnboardingTask to delete.
+     */
+    where: TenantOnboardingTaskWhereUniqueInput
+  }
+
+  /**
+   * TenantOnboardingTask deleteMany
+   */
+  export type TenantOnboardingTaskDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantOnboardingTasks to delete
+     */
+    where?: TenantOnboardingTaskWhereInput
+    /**
+     * Limit how many TenantOnboardingTasks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TenantOnboardingTask without action
+   */
+  export type TenantOnboardingTaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantOnboardingTask
+     */
+    select?: TenantOnboardingTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TenantOnboardingTask
+     */
+    omit?: TenantOnboardingTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantOnboardingTaskInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model ModuleConfig
    */
 
@@ -12994,9 +15712,16 @@ export namespace Prisma {
     lastContactAt: Date | null
     nextActionAt: Date | null
     nextActionNote: string | null
+    nextActionChannel: string | null
+    reminderSnoozedUntil: Date | null
     priceMin: number | null
     priceMax: number | null
     tags: string | null
+    closeReason: string | null
+    closeNotes: string | null
+    closedAt: Date | null
+    assignedTo: string | null
+    referredBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -13020,9 +15745,16 @@ export namespace Prisma {
     lastContactAt: Date | null
     nextActionAt: Date | null
     nextActionNote: string | null
+    nextActionChannel: string | null
+    reminderSnoozedUntil: Date | null
     priceMin: number | null
     priceMax: number | null
     tags: string | null
+    closeReason: string | null
+    closeNotes: string | null
+    closedAt: Date | null
+    assignedTo: string | null
+    referredBy: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -13046,9 +15778,16 @@ export namespace Prisma {
     lastContactAt: number
     nextActionAt: number
     nextActionNote: number
+    nextActionChannel: number
+    reminderSnoozedUntil: number
     priceMin: number
     priceMax: number
     tags: number
+    closeReason: number
+    closeNotes: number
+    closedAt: number
+    assignedTo: number
+    referredBy: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -13090,9 +15829,16 @@ export namespace Prisma {
     lastContactAt?: true
     nextActionAt?: true
     nextActionNote?: true
+    nextActionChannel?: true
+    reminderSnoozedUntil?: true
     priceMin?: true
     priceMax?: true
     tags?: true
+    closeReason?: true
+    closeNotes?: true
+    closedAt?: true
+    assignedTo?: true
+    referredBy?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -13116,9 +15862,16 @@ export namespace Prisma {
     lastContactAt?: true
     nextActionAt?: true
     nextActionNote?: true
+    nextActionChannel?: true
+    reminderSnoozedUntil?: true
     priceMin?: true
     priceMax?: true
     tags?: true
+    closeReason?: true
+    closeNotes?: true
+    closedAt?: true
+    assignedTo?: true
+    referredBy?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -13142,9 +15895,16 @@ export namespace Prisma {
     lastContactAt?: true
     nextActionAt?: true
     nextActionNote?: true
+    nextActionChannel?: true
+    reminderSnoozedUntil?: true
     priceMin?: true
     priceMax?: true
     tags?: true
+    closeReason?: true
+    closeNotes?: true
+    closedAt?: true
+    assignedTo?: true
+    referredBy?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -13255,9 +16015,16 @@ export namespace Prisma {
     lastContactAt: Date | null
     nextActionAt: Date | null
     nextActionNote: string | null
+    nextActionChannel: string | null
+    reminderSnoozedUntil: Date | null
     priceMin: number | null
     priceMax: number | null
     tags: string
+    closeReason: string | null
+    closeNotes: string | null
+    closedAt: Date | null
+    assignedTo: string | null
+    referredBy: string | null
     createdAt: Date
     updatedAt: Date
     _count: LeadCountAggregateOutputType | null
@@ -13300,9 +16067,16 @@ export namespace Prisma {
     lastContactAt?: boolean
     nextActionAt?: boolean
     nextActionNote?: boolean
+    nextActionChannel?: boolean
+    reminderSnoozedUntil?: boolean
     priceMin?: boolean
     priceMax?: boolean
     tags?: boolean
+    closeReason?: boolean
+    closeNotes?: boolean
+    closedAt?: boolean
+    assignedTo?: boolean
+    referredBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -13330,9 +16104,16 @@ export namespace Prisma {
     lastContactAt?: boolean
     nextActionAt?: boolean
     nextActionNote?: boolean
+    nextActionChannel?: boolean
+    reminderSnoozedUntil?: boolean
     priceMin?: boolean
     priceMax?: boolean
     tags?: boolean
+    closeReason?: boolean
+    closeNotes?: boolean
+    closedAt?: boolean
+    assignedTo?: boolean
+    referredBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -13358,9 +16139,16 @@ export namespace Prisma {
     lastContactAt?: boolean
     nextActionAt?: boolean
     nextActionNote?: boolean
+    nextActionChannel?: boolean
+    reminderSnoozedUntil?: boolean
     priceMin?: boolean
     priceMax?: boolean
     tags?: boolean
+    closeReason?: boolean
+    closeNotes?: boolean
+    closedAt?: boolean
+    assignedTo?: boolean
+    referredBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -13386,14 +16174,21 @@ export namespace Prisma {
     lastContactAt?: boolean
     nextActionAt?: boolean
     nextActionNote?: boolean
+    nextActionChannel?: boolean
+    reminderSnoozedUntil?: boolean
     priceMin?: boolean
     priceMax?: boolean
     tags?: boolean
+    closeReason?: boolean
+    closeNotes?: boolean
+    closedAt?: boolean
+    assignedTo?: boolean
+    referredBy?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "contactId" | "status" | "leadType" | "source" | "timeframe" | "notes" | "listingId" | "listingUrl" | "listingAddress" | "propertyType" | "beds" | "baths" | "sqft" | "lastContactAt" | "nextActionAt" | "nextActionNote" | "priceMin" | "priceMax" | "tags" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "contactId" | "status" | "leadType" | "source" | "timeframe" | "notes" | "listingId" | "listingUrl" | "listingAddress" | "propertyType" | "beds" | "baths" | "sqft" | "lastContactAt" | "nextActionAt" | "nextActionNote" | "nextActionChannel" | "reminderSnoozedUntil" | "priceMin" | "priceMax" | "tags" | "closeReason" | "closeNotes" | "closedAt" | "assignedTo" | "referredBy" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     contact?: boolean | Lead$contactArgs<ExtArgs>
@@ -13435,9 +16230,16 @@ export namespace Prisma {
       lastContactAt: Date | null
       nextActionAt: Date | null
       nextActionNote: string | null
+      nextActionChannel: string | null
+      reminderSnoozedUntil: Date | null
       priceMin: number | null
       priceMax: number | null
       tags: string
+      closeReason: string | null
+      closeNotes: string | null
+      closedAt: Date | null
+      assignedTo: string | null
+      referredBy: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["lead"]>
@@ -13884,9 +16686,16 @@ export namespace Prisma {
     readonly lastContactAt: FieldRef<"Lead", 'DateTime'>
     readonly nextActionAt: FieldRef<"Lead", 'DateTime'>
     readonly nextActionNote: FieldRef<"Lead", 'String'>
+    readonly nextActionChannel: FieldRef<"Lead", 'String'>
+    readonly reminderSnoozedUntil: FieldRef<"Lead", 'DateTime'>
     readonly priceMin: FieldRef<"Lead", 'Int'>
     readonly priceMax: FieldRef<"Lead", 'Int'>
     readonly tags: FieldRef<"Lead", 'String'>
+    readonly closeReason: FieldRef<"Lead", 'String'>
+    readonly closeNotes: FieldRef<"Lead", 'String'>
+    readonly closedAt: FieldRef<"Lead", 'DateTime'>
+    readonly assignedTo: FieldRef<"Lead", 'String'>
+    readonly referredBy: FieldRef<"Lead", 'String'>
     readonly createdAt: FieldRef<"Lead", 'DateTime'>
     readonly updatedAt: FieldRef<"Lead", 'DateTime'>
   }
@@ -23641,6 +26450,47 @@ export namespace Prisma {
   export type TenantControlActorScalarFieldEnum = (typeof TenantControlActorScalarFieldEnum)[keyof typeof TenantControlActorScalarFieldEnum]
 
 
+  export const TenantOnboardingPlanScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    status: 'status',
+    planCode: 'planCode',
+    startedAt: 'startedAt',
+    targetLaunchDate: 'targetLaunchDate',
+    completedAt: 'completedAt',
+    pausedAt: 'pausedAt',
+    pauseReason: 'pauseReason',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TenantOnboardingPlanScalarFieldEnum = (typeof TenantOnboardingPlanScalarFieldEnum)[keyof typeof TenantOnboardingPlanScalarFieldEnum]
+
+
+  export const TenantOnboardingTaskScalarFieldEnum: {
+    id: 'id',
+    tenantOnboardingPlanId: 'tenantOnboardingPlanId',
+    tenantId: 'tenantId',
+    taskKey: 'taskKey',
+    title: 'title',
+    description: 'description',
+    status: 'status',
+    priority: 'priority',
+    required: 'required',
+    ownerRole: 'ownerRole',
+    ownerActorId: 'ownerActorId',
+    dueAt: 'dueAt',
+    blockedByClient: 'blockedByClient',
+    blockerReason: 'blockerReason',
+    sortOrder: 'sortOrder',
+    completedAt: 'completedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TenantOnboardingTaskScalarFieldEnum = (typeof TenantOnboardingTaskScalarFieldEnum)[keyof typeof TenantOnboardingTaskScalarFieldEnum]
+
+
   export const ModuleConfigScalarFieldEnum: {
     id: 'id',
     websiteConfigId: 'websiteConfigId',
@@ -23690,9 +26540,16 @@ export namespace Prisma {
     lastContactAt: 'lastContactAt',
     nextActionAt: 'nextActionAt',
     nextActionNote: 'nextActionNote',
+    nextActionChannel: 'nextActionChannel',
+    reminderSnoozedUntil: 'reminderSnoozedUntil',
     priceMin: 'priceMin',
     priceMax: 'priceMax',
     tags: 'tags',
+    closeReason: 'closeReason',
+    closeNotes: 'closeNotes',
+    closedAt: 'closedAt',
+    assignedTo: 'assignedTo',
+    referredBy: 'referredBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -23907,6 +26764,8 @@ export namespace Prisma {
     controlSettings?: XOR<TenantControlSettingsNullableScalarRelationFilter, TenantControlSettingsWhereInput> | null
     billingSubscription?: XOR<TenantBillingSubscriptionNullableScalarRelationFilter, TenantBillingSubscriptionWhereInput> | null
     controlActors?: TenantControlActorListRelationFilter
+    onboardingPlans?: TenantOnboardingPlanListRelationFilter
+    onboardingTasks?: TenantOnboardingTaskListRelationFilter
     contacts?: ContactListRelationFilter
     leads?: LeadListRelationFilter
     activities?: ActivityListRelationFilter
@@ -23927,6 +26786,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsOrderByWithRelationInput
     billingSubscription?: TenantBillingSubscriptionOrderByWithRelationInput
     controlActors?: TenantControlActorOrderByRelationAggregateInput
+    onboardingPlans?: TenantOnboardingPlanOrderByRelationAggregateInput
+    onboardingTasks?: TenantOnboardingTaskOrderByRelationAggregateInput
     contacts?: ContactOrderByRelationAggregateInput
     leads?: LeadOrderByRelationAggregateInput
     activities?: ActivityOrderByRelationAggregateInput
@@ -23950,6 +26811,8 @@ export namespace Prisma {
     controlSettings?: XOR<TenantControlSettingsNullableScalarRelationFilter, TenantControlSettingsWhereInput> | null
     billingSubscription?: XOR<TenantBillingSubscriptionNullableScalarRelationFilter, TenantBillingSubscriptionWhereInput> | null
     controlActors?: TenantControlActorListRelationFilter
+    onboardingPlans?: TenantOnboardingPlanListRelationFilter
+    onboardingTasks?: TenantOnboardingTaskListRelationFilter
     contacts?: ContactListRelationFilter
     leads?: LeadListRelationFilter
     activities?: ActivityListRelationFilter
@@ -24444,6 +27307,220 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"TenantControlActor"> | Date | string
   }
 
+  export type TenantOnboardingPlanWhereInput = {
+    AND?: TenantOnboardingPlanWhereInput | TenantOnboardingPlanWhereInput[]
+    OR?: TenantOnboardingPlanWhereInput[]
+    NOT?: TenantOnboardingPlanWhereInput | TenantOnboardingPlanWhereInput[]
+    id?: StringFilter<"TenantOnboardingPlan"> | string
+    tenantId?: StringFilter<"TenantOnboardingPlan"> | string
+    status?: StringFilter<"TenantOnboardingPlan"> | string
+    planCode?: StringFilter<"TenantOnboardingPlan"> | string
+    startedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    targetLaunchDate?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    pausedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    pauseReason?: StringNullableFilter<"TenantOnboardingPlan"> | string | null
+    createdAt?: DateTimeFilter<"TenantOnboardingPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantOnboardingPlan"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    tasks?: TenantOnboardingTaskListRelationFilter
+  }
+
+  export type TenantOnboardingPlanOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    status?: SortOrder
+    planCode?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    targetLaunchDate?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    pausedAt?: SortOrderInput | SortOrder
+    pauseReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    tasks?: TenantOnboardingTaskOrderByRelationAggregateInput
+  }
+
+  export type TenantOnboardingPlanWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TenantOnboardingPlanWhereInput | TenantOnboardingPlanWhereInput[]
+    OR?: TenantOnboardingPlanWhereInput[]
+    NOT?: TenantOnboardingPlanWhereInput | TenantOnboardingPlanWhereInput[]
+    tenantId?: StringFilter<"TenantOnboardingPlan"> | string
+    status?: StringFilter<"TenantOnboardingPlan"> | string
+    planCode?: StringFilter<"TenantOnboardingPlan"> | string
+    startedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    targetLaunchDate?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    pausedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    pauseReason?: StringNullableFilter<"TenantOnboardingPlan"> | string | null
+    createdAt?: DateTimeFilter<"TenantOnboardingPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantOnboardingPlan"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    tasks?: TenantOnboardingTaskListRelationFilter
+  }, "id">
+
+  export type TenantOnboardingPlanOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    status?: SortOrder
+    planCode?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    targetLaunchDate?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    pausedAt?: SortOrderInput | SortOrder
+    pauseReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TenantOnboardingPlanCountOrderByAggregateInput
+    _max?: TenantOnboardingPlanMaxOrderByAggregateInput
+    _min?: TenantOnboardingPlanMinOrderByAggregateInput
+  }
+
+  export type TenantOnboardingPlanScalarWhereWithAggregatesInput = {
+    AND?: TenantOnboardingPlanScalarWhereWithAggregatesInput | TenantOnboardingPlanScalarWhereWithAggregatesInput[]
+    OR?: TenantOnboardingPlanScalarWhereWithAggregatesInput[]
+    NOT?: TenantOnboardingPlanScalarWhereWithAggregatesInput | TenantOnboardingPlanScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TenantOnboardingPlan"> | string
+    tenantId?: StringWithAggregatesFilter<"TenantOnboardingPlan"> | string
+    status?: StringWithAggregatesFilter<"TenantOnboardingPlan"> | string
+    planCode?: StringWithAggregatesFilter<"TenantOnboardingPlan"> | string
+    startedAt?: DateTimeNullableWithAggregatesFilter<"TenantOnboardingPlan"> | Date | string | null
+    targetLaunchDate?: DateTimeNullableWithAggregatesFilter<"TenantOnboardingPlan"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"TenantOnboardingPlan"> | Date | string | null
+    pausedAt?: DateTimeNullableWithAggregatesFilter<"TenantOnboardingPlan"> | Date | string | null
+    pauseReason?: StringNullableWithAggregatesFilter<"TenantOnboardingPlan"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TenantOnboardingPlan"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TenantOnboardingPlan"> | Date | string
+  }
+
+  export type TenantOnboardingTaskWhereInput = {
+    AND?: TenantOnboardingTaskWhereInput | TenantOnboardingTaskWhereInput[]
+    OR?: TenantOnboardingTaskWhereInput[]
+    NOT?: TenantOnboardingTaskWhereInput | TenantOnboardingTaskWhereInput[]
+    id?: StringFilter<"TenantOnboardingTask"> | string
+    tenantOnboardingPlanId?: StringFilter<"TenantOnboardingTask"> | string
+    tenantId?: StringFilter<"TenantOnboardingTask"> | string
+    taskKey?: StringFilter<"TenantOnboardingTask"> | string
+    title?: StringFilter<"TenantOnboardingTask"> | string
+    description?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    status?: StringFilter<"TenantOnboardingTask"> | string
+    priority?: StringFilter<"TenantOnboardingTask"> | string
+    required?: BoolFilter<"TenantOnboardingTask"> | boolean
+    ownerRole?: StringFilter<"TenantOnboardingTask"> | string
+    ownerActorId?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    dueAt?: DateTimeNullableFilter<"TenantOnboardingTask"> | Date | string | null
+    blockedByClient?: BoolFilter<"TenantOnboardingTask"> | boolean
+    blockerReason?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    sortOrder?: IntFilter<"TenantOnboardingTask"> | number
+    completedAt?: DateTimeNullableFilter<"TenantOnboardingTask"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantOnboardingTask"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantOnboardingTask"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    onboardingPlan?: XOR<TenantOnboardingPlanScalarRelationFilter, TenantOnboardingPlanWhereInput>
+  }
+
+  export type TenantOnboardingTaskOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantOnboardingPlanId?: SortOrder
+    tenantId?: SortOrder
+    taskKey?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    required?: SortOrder
+    ownerRole?: SortOrder
+    ownerActorId?: SortOrderInput | SortOrder
+    dueAt?: SortOrderInput | SortOrder
+    blockedByClient?: SortOrder
+    blockerReason?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    onboardingPlan?: TenantOnboardingPlanOrderByWithRelationInput
+  }
+
+  export type TenantOnboardingTaskWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tenantOnboardingPlanId_taskKey?: TenantOnboardingTaskTenantOnboardingPlanIdTaskKeyCompoundUniqueInput
+    AND?: TenantOnboardingTaskWhereInput | TenantOnboardingTaskWhereInput[]
+    OR?: TenantOnboardingTaskWhereInput[]
+    NOT?: TenantOnboardingTaskWhereInput | TenantOnboardingTaskWhereInput[]
+    tenantOnboardingPlanId?: StringFilter<"TenantOnboardingTask"> | string
+    tenantId?: StringFilter<"TenantOnboardingTask"> | string
+    taskKey?: StringFilter<"TenantOnboardingTask"> | string
+    title?: StringFilter<"TenantOnboardingTask"> | string
+    description?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    status?: StringFilter<"TenantOnboardingTask"> | string
+    priority?: StringFilter<"TenantOnboardingTask"> | string
+    required?: BoolFilter<"TenantOnboardingTask"> | boolean
+    ownerRole?: StringFilter<"TenantOnboardingTask"> | string
+    ownerActorId?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    dueAt?: DateTimeNullableFilter<"TenantOnboardingTask"> | Date | string | null
+    blockedByClient?: BoolFilter<"TenantOnboardingTask"> | boolean
+    blockerReason?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    sortOrder?: IntFilter<"TenantOnboardingTask"> | number
+    completedAt?: DateTimeNullableFilter<"TenantOnboardingTask"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantOnboardingTask"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantOnboardingTask"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    onboardingPlan?: XOR<TenantOnboardingPlanScalarRelationFilter, TenantOnboardingPlanWhereInput>
+  }, "id" | "tenantOnboardingPlanId_taskKey">
+
+  export type TenantOnboardingTaskOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantOnboardingPlanId?: SortOrder
+    tenantId?: SortOrder
+    taskKey?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    required?: SortOrder
+    ownerRole?: SortOrder
+    ownerActorId?: SortOrderInput | SortOrder
+    dueAt?: SortOrderInput | SortOrder
+    blockedByClient?: SortOrder
+    blockerReason?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TenantOnboardingTaskCountOrderByAggregateInput
+    _avg?: TenantOnboardingTaskAvgOrderByAggregateInput
+    _max?: TenantOnboardingTaskMaxOrderByAggregateInput
+    _min?: TenantOnboardingTaskMinOrderByAggregateInput
+    _sum?: TenantOnboardingTaskSumOrderByAggregateInput
+  }
+
+  export type TenantOnboardingTaskScalarWhereWithAggregatesInput = {
+    AND?: TenantOnboardingTaskScalarWhereWithAggregatesInput | TenantOnboardingTaskScalarWhereWithAggregatesInput[]
+    OR?: TenantOnboardingTaskScalarWhereWithAggregatesInput[]
+    NOT?: TenantOnboardingTaskScalarWhereWithAggregatesInput | TenantOnboardingTaskScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    tenantOnboardingPlanId?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    tenantId?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    taskKey?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    title?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    description?: StringNullableWithAggregatesFilter<"TenantOnboardingTask"> | string | null
+    status?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    priority?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    required?: BoolWithAggregatesFilter<"TenantOnboardingTask"> | boolean
+    ownerRole?: StringWithAggregatesFilter<"TenantOnboardingTask"> | string
+    ownerActorId?: StringNullableWithAggregatesFilter<"TenantOnboardingTask"> | string | null
+    dueAt?: DateTimeNullableWithAggregatesFilter<"TenantOnboardingTask"> | Date | string | null
+    blockedByClient?: BoolWithAggregatesFilter<"TenantOnboardingTask"> | boolean
+    blockerReason?: StringNullableWithAggregatesFilter<"TenantOnboardingTask"> | string | null
+    sortOrder?: IntWithAggregatesFilter<"TenantOnboardingTask"> | number
+    completedAt?: DateTimeNullableWithAggregatesFilter<"TenantOnboardingTask"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TenantOnboardingTask"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TenantOnboardingTask"> | Date | string
+  }
+
   export type ModuleConfigWhereInput = {
     AND?: ModuleConfigWhereInput | ModuleConfigWhereInput[]
     OR?: ModuleConfigWhereInput[]
@@ -24627,9 +27704,16 @@ export namespace Prisma {
     lastContactAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     nextActionAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     nextActionNote?: StringNullableFilter<"Lead"> | string | null
+    nextActionChannel?: StringNullableFilter<"Lead"> | string | null
+    reminderSnoozedUntil?: DateTimeNullableFilter<"Lead"> | Date | string | null
     priceMin?: IntNullableFilter<"Lead"> | number | null
     priceMax?: IntNullableFilter<"Lead"> | number | null
     tags?: StringFilter<"Lead"> | string
+    closeReason?: StringNullableFilter<"Lead"> | string | null
+    closeNotes?: StringNullableFilter<"Lead"> | string | null
+    closedAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    assignedTo?: StringNullableFilter<"Lead"> | string | null
+    referredBy?: StringNullableFilter<"Lead"> | string | null
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -24656,9 +27740,16 @@ export namespace Prisma {
     lastContactAt?: SortOrderInput | SortOrder
     nextActionAt?: SortOrderInput | SortOrder
     nextActionNote?: SortOrderInput | SortOrder
+    nextActionChannel?: SortOrderInput | SortOrder
+    reminderSnoozedUntil?: SortOrderInput | SortOrder
     priceMin?: SortOrderInput | SortOrder
     priceMax?: SortOrderInput | SortOrder
     tags?: SortOrder
+    closeReason?: SortOrderInput | SortOrder
+    closeNotes?: SortOrderInput | SortOrder
+    closedAt?: SortOrderInput | SortOrder
+    assignedTo?: SortOrderInput | SortOrder
+    referredBy?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
@@ -24688,9 +27779,16 @@ export namespace Prisma {
     lastContactAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     nextActionAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     nextActionNote?: StringNullableFilter<"Lead"> | string | null
+    nextActionChannel?: StringNullableFilter<"Lead"> | string | null
+    reminderSnoozedUntil?: DateTimeNullableFilter<"Lead"> | Date | string | null
     priceMin?: IntNullableFilter<"Lead"> | number | null
     priceMax?: IntNullableFilter<"Lead"> | number | null
     tags?: StringFilter<"Lead"> | string
+    closeReason?: StringNullableFilter<"Lead"> | string | null
+    closeNotes?: StringNullableFilter<"Lead"> | string | null
+    closedAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    assignedTo?: StringNullableFilter<"Lead"> | string | null
+    referredBy?: StringNullableFilter<"Lead"> | string | null
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -24717,9 +27815,16 @@ export namespace Prisma {
     lastContactAt?: SortOrderInput | SortOrder
     nextActionAt?: SortOrderInput | SortOrder
     nextActionNote?: SortOrderInput | SortOrder
+    nextActionChannel?: SortOrderInput | SortOrder
+    reminderSnoozedUntil?: SortOrderInput | SortOrder
     priceMin?: SortOrderInput | SortOrder
     priceMax?: SortOrderInput | SortOrder
     tags?: SortOrder
+    closeReason?: SortOrderInput | SortOrder
+    closeNotes?: SortOrderInput | SortOrder
+    closedAt?: SortOrderInput | SortOrder
+    assignedTo?: SortOrderInput | SortOrder
+    referredBy?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: LeadCountOrderByAggregateInput
@@ -24751,9 +27856,16 @@ export namespace Prisma {
     lastContactAt?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
     nextActionAt?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
     nextActionNote?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    nextActionChannel?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    reminderSnoozedUntil?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
     priceMin?: IntNullableWithAggregatesFilter<"Lead"> | number | null
     priceMax?: IntNullableWithAggregatesFilter<"Lead"> | number | null
     tags?: StringWithAggregatesFilter<"Lead"> | string
+    closeReason?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    closeNotes?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    closedAt?: DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+    assignedTo?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    referredBy?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
   }
@@ -25453,6 +28565,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -25473,6 +28587,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -25493,6 +28609,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -25513,6 +28631,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -26065,6 +29185,252 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TenantOnboardingPlanCreateInput = {
+    id: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tenant: TenantCreateNestedOneWithoutOnboardingPlansInput
+    tasks?: TenantOnboardingTaskCreateNestedManyWithoutOnboardingPlanInput
+  }
+
+  export type TenantOnboardingPlanUncheckedCreateInput = {
+    id: string
+    tenantId: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutOnboardingPlanInput
+  }
+
+  export type TenantOnboardingPlanUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutOnboardingPlansNestedInput
+    tasks?: TenantOnboardingTaskUpdateManyWithoutOnboardingPlanNestedInput
+  }
+
+  export type TenantOnboardingPlanUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutOnboardingPlanNestedInput
+  }
+
+  export type TenantOnboardingPlanCreateManyInput = {
+    id: string
+    tenantId: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingPlanUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantOnboardingPlanUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantOnboardingTaskCreateInput = {
+    id: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tenant: TenantCreateNestedOneWithoutOnboardingTasksInput
+    onboardingPlan: TenantOnboardingPlanCreateNestedOneWithoutTasksInput
+  }
+
+  export type TenantOnboardingTaskUncheckedCreateInput = {
+    id: string
+    tenantOnboardingPlanId: string
+    tenantId: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingTaskUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutOnboardingTasksNestedInput
+    onboardingPlan?: TenantOnboardingPlanUpdateOneRequiredWithoutTasksNestedInput
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantOnboardingPlanId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantOnboardingTaskCreateManyInput = {
+    id: string
+    tenantOnboardingPlanId: string
+    tenantId: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingTaskUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantOnboardingPlanId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ModuleConfigCreateInput = {
     id: string
     tenantId: string
@@ -26256,9 +29622,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
     tenant: TenantCreateNestedOneWithoutLeadsInput
@@ -26285,9 +29658,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
@@ -26310,9 +29690,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutLeadsNestedInput
@@ -26339,9 +29726,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
@@ -26366,9 +29760,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
   }
@@ -26390,9 +29791,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26416,9 +29824,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27241,6 +30656,18 @@ export namespace Prisma {
     none?: TenantControlActorWhereInput
   }
 
+  export type TenantOnboardingPlanListRelationFilter = {
+    every?: TenantOnboardingPlanWhereInput
+    some?: TenantOnboardingPlanWhereInput
+    none?: TenantOnboardingPlanWhereInput
+  }
+
+  export type TenantOnboardingTaskListRelationFilter = {
+    every?: TenantOnboardingTaskWhereInput
+    some?: TenantOnboardingTaskWhereInput
+    none?: TenantOnboardingTaskWhereInput
+  }
+
   export type ContactListRelationFilter = {
     every?: ContactWhereInput
     some?: ContactWhereInput
@@ -27282,6 +30709,14 @@ export namespace Prisma {
   }
 
   export type TenantControlActorOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TenantOnboardingPlanOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TenantOnboardingTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -27688,6 +31123,48 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type TenantOnboardingPlanCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    status?: SortOrder
+    planCode?: SortOrder
+    startedAt?: SortOrder
+    targetLaunchDate?: SortOrder
+    completedAt?: SortOrder
+    pausedAt?: SortOrder
+    pauseReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantOnboardingPlanMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    status?: SortOrder
+    planCode?: SortOrder
+    startedAt?: SortOrder
+    targetLaunchDate?: SortOrder
+    completedAt?: SortOrder
+    pausedAt?: SortOrder
+    pauseReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantOnboardingPlanMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    status?: SortOrder
+    planCode?: SortOrder
+    startedAt?: SortOrder
+    targetLaunchDate?: SortOrder
+    completedAt?: SortOrder
+    pausedAt?: SortOrder
+    pauseReason?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -27697,6 +31174,103 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type TenantOnboardingPlanScalarRelationFilter = {
+    is?: TenantOnboardingPlanWhereInput
+    isNot?: TenantOnboardingPlanWhereInput
+  }
+
+  export type TenantOnboardingTaskTenantOnboardingPlanIdTaskKeyCompoundUniqueInput = {
+    tenantOnboardingPlanId: string
+    taskKey: string
+  }
+
+  export type TenantOnboardingTaskCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantOnboardingPlanId?: SortOrder
+    tenantId?: SortOrder
+    taskKey?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    required?: SortOrder
+    ownerRole?: SortOrder
+    ownerActorId?: SortOrder
+    dueAt?: SortOrder
+    blockedByClient?: SortOrder
+    blockerReason?: SortOrder
+    sortOrder?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantOnboardingTaskAvgOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type TenantOnboardingTaskMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantOnboardingPlanId?: SortOrder
+    tenantId?: SortOrder
+    taskKey?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    required?: SortOrder
+    ownerRole?: SortOrder
+    ownerActorId?: SortOrder
+    dueAt?: SortOrder
+    blockedByClient?: SortOrder
+    blockerReason?: SortOrder
+    sortOrder?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantOnboardingTaskMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantOnboardingPlanId?: SortOrder
+    tenantId?: SortOrder
+    taskKey?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    priority?: SortOrder
+    required?: SortOrder
+    ownerRole?: SortOrder
+    ownerActorId?: SortOrder
+    dueAt?: SortOrder
+    blockedByClient?: SortOrder
+    blockerReason?: SortOrder
+    sortOrder?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantOnboardingTaskSumOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type WebsiteConfigScalarRelationFilter = {
@@ -27748,22 +31322,6 @@ export namespace Prisma {
 
   export type ModuleConfigSumOrderByAggregateInput = {
     sortOrder?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type ContactTenantIdEmailNormalizedCompoundUniqueInput = {
@@ -27850,9 +31408,16 @@ export namespace Prisma {
     lastContactAt?: SortOrder
     nextActionAt?: SortOrder
     nextActionNote?: SortOrder
+    nextActionChannel?: SortOrder
+    reminderSnoozedUntil?: SortOrder
     priceMin?: SortOrder
     priceMax?: SortOrder
     tags?: SortOrder
+    closeReason?: SortOrder
+    closeNotes?: SortOrder
+    closedAt?: SortOrder
+    assignedTo?: SortOrder
+    referredBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27884,9 +31449,16 @@ export namespace Prisma {
     lastContactAt?: SortOrder
     nextActionAt?: SortOrder
     nextActionNote?: SortOrder
+    nextActionChannel?: SortOrder
+    reminderSnoozedUntil?: SortOrder
     priceMin?: SortOrder
     priceMax?: SortOrder
     tags?: SortOrder
+    closeReason?: SortOrder
+    closeNotes?: SortOrder
+    closedAt?: SortOrder
+    assignedTo?: SortOrder
+    referredBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27910,9 +31482,16 @@ export namespace Prisma {
     lastContactAt?: SortOrder
     nextActionAt?: SortOrder
     nextActionNote?: SortOrder
+    nextActionChannel?: SortOrder
+    reminderSnoozedUntil?: SortOrder
     priceMin?: SortOrder
     priceMax?: SortOrder
     tags?: SortOrder
+    closeReason?: SortOrder
+    closeNotes?: SortOrder
+    closedAt?: SortOrder
+    assignedTo?: SortOrder
+    referredBy?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -28368,6 +31947,20 @@ export namespace Prisma {
     connect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
   }
 
+  export type TenantOnboardingPlanCreateNestedManyWithoutTenantInput = {
+    create?: XOR<TenantOnboardingPlanCreateWithoutTenantInput, TenantOnboardingPlanUncheckedCreateWithoutTenantInput> | TenantOnboardingPlanCreateWithoutTenantInput[] | TenantOnboardingPlanUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingPlanCreateOrConnectWithoutTenantInput | TenantOnboardingPlanCreateOrConnectWithoutTenantInput[]
+    createMany?: TenantOnboardingPlanCreateManyTenantInputEnvelope
+    connect?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+  }
+
+  export type TenantOnboardingTaskCreateNestedManyWithoutTenantInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutTenantInput, TenantOnboardingTaskUncheckedCreateWithoutTenantInput> | TenantOnboardingTaskCreateWithoutTenantInput[] | TenantOnboardingTaskUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutTenantInput | TenantOnboardingTaskCreateOrConnectWithoutTenantInput[]
+    createMany?: TenantOnboardingTaskCreateManyTenantInputEnvelope
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+  }
+
   export type ContactCreateNestedManyWithoutTenantInput = {
     create?: XOR<ContactCreateWithoutTenantInput, ContactUncheckedCreateWithoutTenantInput> | ContactCreateWithoutTenantInput[] | ContactUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: ContactCreateOrConnectWithoutTenantInput | ContactCreateOrConnectWithoutTenantInput[]
@@ -28440,6 +32033,20 @@ export namespace Prisma {
     connectOrCreate?: TenantControlActorCreateOrConnectWithoutTenantInput | TenantControlActorCreateOrConnectWithoutTenantInput[]
     createMany?: TenantControlActorCreateManyTenantInputEnvelope
     connect?: TenantControlActorWhereUniqueInput | TenantControlActorWhereUniqueInput[]
+  }
+
+  export type TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<TenantOnboardingPlanCreateWithoutTenantInput, TenantOnboardingPlanUncheckedCreateWithoutTenantInput> | TenantOnboardingPlanCreateWithoutTenantInput[] | TenantOnboardingPlanUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingPlanCreateOrConnectWithoutTenantInput | TenantOnboardingPlanCreateOrConnectWithoutTenantInput[]
+    createMany?: TenantOnboardingPlanCreateManyTenantInputEnvelope
+    connect?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+  }
+
+  export type TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutTenantInput, TenantOnboardingTaskUncheckedCreateWithoutTenantInput> | TenantOnboardingTaskCreateWithoutTenantInput[] | TenantOnboardingTaskUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutTenantInput | TenantOnboardingTaskCreateOrConnectWithoutTenantInput[]
+    createMany?: TenantOnboardingTaskCreateManyTenantInputEnvelope
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
   }
 
   export type ContactUncheckedCreateNestedManyWithoutTenantInput = {
@@ -28548,6 +32155,34 @@ export namespace Prisma {
     update?: TenantControlActorUpdateWithWhereUniqueWithoutTenantInput | TenantControlActorUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: TenantControlActorUpdateManyWithWhereWithoutTenantInput | TenantControlActorUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: TenantControlActorScalarWhereInput | TenantControlActorScalarWhereInput[]
+  }
+
+  export type TenantOnboardingPlanUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<TenantOnboardingPlanCreateWithoutTenantInput, TenantOnboardingPlanUncheckedCreateWithoutTenantInput> | TenantOnboardingPlanCreateWithoutTenantInput[] | TenantOnboardingPlanUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingPlanCreateOrConnectWithoutTenantInput | TenantOnboardingPlanCreateOrConnectWithoutTenantInput[]
+    upsert?: TenantOnboardingPlanUpsertWithWhereUniqueWithoutTenantInput | TenantOnboardingPlanUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: TenantOnboardingPlanCreateManyTenantInputEnvelope
+    set?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    disconnect?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    delete?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    connect?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    update?: TenantOnboardingPlanUpdateWithWhereUniqueWithoutTenantInput | TenantOnboardingPlanUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: TenantOnboardingPlanUpdateManyWithWhereWithoutTenantInput | TenantOnboardingPlanUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: TenantOnboardingPlanScalarWhereInput | TenantOnboardingPlanScalarWhereInput[]
+  }
+
+  export type TenantOnboardingTaskUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutTenantInput, TenantOnboardingTaskUncheckedCreateWithoutTenantInput> | TenantOnboardingTaskCreateWithoutTenantInput[] | TenantOnboardingTaskUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutTenantInput | TenantOnboardingTaskCreateOrConnectWithoutTenantInput[]
+    upsert?: TenantOnboardingTaskUpsertWithWhereUniqueWithoutTenantInput | TenantOnboardingTaskUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: TenantOnboardingTaskCreateManyTenantInputEnvelope
+    set?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    disconnect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    delete?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    update?: TenantOnboardingTaskUpdateWithWhereUniqueWithoutTenantInput | TenantOnboardingTaskUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: TenantOnboardingTaskUpdateManyWithWhereWithoutTenantInput | TenantOnboardingTaskUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: TenantOnboardingTaskScalarWhereInput | TenantOnboardingTaskScalarWhereInput[]
   }
 
   export type ContactUpdateManyWithoutTenantNestedInput = {
@@ -28690,6 +32325,34 @@ export namespace Prisma {
     update?: TenantControlActorUpdateWithWhereUniqueWithoutTenantInput | TenantControlActorUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: TenantControlActorUpdateManyWithWhereWithoutTenantInput | TenantControlActorUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: TenantControlActorScalarWhereInput | TenantControlActorScalarWhereInput[]
+  }
+
+  export type TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<TenantOnboardingPlanCreateWithoutTenantInput, TenantOnboardingPlanUncheckedCreateWithoutTenantInput> | TenantOnboardingPlanCreateWithoutTenantInput[] | TenantOnboardingPlanUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingPlanCreateOrConnectWithoutTenantInput | TenantOnboardingPlanCreateOrConnectWithoutTenantInput[]
+    upsert?: TenantOnboardingPlanUpsertWithWhereUniqueWithoutTenantInput | TenantOnboardingPlanUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: TenantOnboardingPlanCreateManyTenantInputEnvelope
+    set?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    disconnect?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    delete?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    connect?: TenantOnboardingPlanWhereUniqueInput | TenantOnboardingPlanWhereUniqueInput[]
+    update?: TenantOnboardingPlanUpdateWithWhereUniqueWithoutTenantInput | TenantOnboardingPlanUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: TenantOnboardingPlanUpdateManyWithWhereWithoutTenantInput | TenantOnboardingPlanUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: TenantOnboardingPlanScalarWhereInput | TenantOnboardingPlanScalarWhereInput[]
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutTenantInput, TenantOnboardingTaskUncheckedCreateWithoutTenantInput> | TenantOnboardingTaskCreateWithoutTenantInput[] | TenantOnboardingTaskUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutTenantInput | TenantOnboardingTaskCreateOrConnectWithoutTenantInput[]
+    upsert?: TenantOnboardingTaskUpsertWithWhereUniqueWithoutTenantInput | TenantOnboardingTaskUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: TenantOnboardingTaskCreateManyTenantInputEnvelope
+    set?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    disconnect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    delete?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    update?: TenantOnboardingTaskUpdateWithWhereUniqueWithoutTenantInput | TenantOnboardingTaskUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: TenantOnboardingTaskUpdateManyWithWhereWithoutTenantInput | TenantOnboardingTaskUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: TenantOnboardingTaskScalarWhereInput | TenantOnboardingTaskScalarWhereInput[]
   }
 
   export type ContactUncheckedUpdateManyWithoutTenantNestedInput = {
@@ -28900,10 +32563,72 @@ export namespace Prisma {
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutControlActorsInput, TenantUpdateWithoutControlActorsInput>, TenantUncheckedUpdateWithoutControlActorsInput>
   }
 
-  export type WebsiteConfigCreateNestedOneWithoutModulesInput = {
-    create?: XOR<WebsiteConfigCreateWithoutModulesInput, WebsiteConfigUncheckedCreateWithoutModulesInput>
-    connectOrCreate?: WebsiteConfigCreateOrConnectWithoutModulesInput
-    connect?: WebsiteConfigWhereUniqueInput
+  export type TenantCreateNestedOneWithoutOnboardingPlansInput = {
+    create?: XOR<TenantCreateWithoutOnboardingPlansInput, TenantUncheckedCreateWithoutOnboardingPlansInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutOnboardingPlansInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type TenantOnboardingTaskCreateNestedManyWithoutOnboardingPlanInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput> | TenantOnboardingTaskCreateWithoutOnboardingPlanInput[] | TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput | TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput[]
+    createMany?: TenantOnboardingTaskCreateManyOnboardingPlanInputEnvelope
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+  }
+
+  export type TenantOnboardingTaskUncheckedCreateNestedManyWithoutOnboardingPlanInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput> | TenantOnboardingTaskCreateWithoutOnboardingPlanInput[] | TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput | TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput[]
+    createMany?: TenantOnboardingTaskCreateManyOnboardingPlanInputEnvelope
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+  }
+
+  export type TenantUpdateOneRequiredWithoutOnboardingPlansNestedInput = {
+    create?: XOR<TenantCreateWithoutOnboardingPlansInput, TenantUncheckedCreateWithoutOnboardingPlansInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutOnboardingPlansInput
+    upsert?: TenantUpsertWithoutOnboardingPlansInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutOnboardingPlansInput, TenantUpdateWithoutOnboardingPlansInput>, TenantUncheckedUpdateWithoutOnboardingPlansInput>
+  }
+
+  export type TenantOnboardingTaskUpdateManyWithoutOnboardingPlanNestedInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput> | TenantOnboardingTaskCreateWithoutOnboardingPlanInput[] | TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput | TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput[]
+    upsert?: TenantOnboardingTaskUpsertWithWhereUniqueWithoutOnboardingPlanInput | TenantOnboardingTaskUpsertWithWhereUniqueWithoutOnboardingPlanInput[]
+    createMany?: TenantOnboardingTaskCreateManyOnboardingPlanInputEnvelope
+    set?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    disconnect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    delete?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    update?: TenantOnboardingTaskUpdateWithWhereUniqueWithoutOnboardingPlanInput | TenantOnboardingTaskUpdateWithWhereUniqueWithoutOnboardingPlanInput[]
+    updateMany?: TenantOnboardingTaskUpdateManyWithWhereWithoutOnboardingPlanInput | TenantOnboardingTaskUpdateManyWithWhereWithoutOnboardingPlanInput[]
+    deleteMany?: TenantOnboardingTaskScalarWhereInput | TenantOnboardingTaskScalarWhereInput[]
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateManyWithoutOnboardingPlanNestedInput = {
+    create?: XOR<TenantOnboardingTaskCreateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput> | TenantOnboardingTaskCreateWithoutOnboardingPlanInput[] | TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput[]
+    connectOrCreate?: TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput | TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput[]
+    upsert?: TenantOnboardingTaskUpsertWithWhereUniqueWithoutOnboardingPlanInput | TenantOnboardingTaskUpsertWithWhereUniqueWithoutOnboardingPlanInput[]
+    createMany?: TenantOnboardingTaskCreateManyOnboardingPlanInputEnvelope
+    set?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    disconnect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    delete?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    connect?: TenantOnboardingTaskWhereUniqueInput | TenantOnboardingTaskWhereUniqueInput[]
+    update?: TenantOnboardingTaskUpdateWithWhereUniqueWithoutOnboardingPlanInput | TenantOnboardingTaskUpdateWithWhereUniqueWithoutOnboardingPlanInput[]
+    updateMany?: TenantOnboardingTaskUpdateManyWithWhereWithoutOnboardingPlanInput | TenantOnboardingTaskUpdateManyWithWhereWithoutOnboardingPlanInput[]
+    deleteMany?: TenantOnboardingTaskScalarWhereInput | TenantOnboardingTaskScalarWhereInput[]
+  }
+
+  export type TenantCreateNestedOneWithoutOnboardingTasksInput = {
+    create?: XOR<TenantCreateWithoutOnboardingTasksInput, TenantUncheckedCreateWithoutOnboardingTasksInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutOnboardingTasksInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type TenantOnboardingPlanCreateNestedOneWithoutTasksInput = {
+    create?: XOR<TenantOnboardingPlanCreateWithoutTasksInput, TenantOnboardingPlanUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: TenantOnboardingPlanCreateOrConnectWithoutTasksInput
+    connect?: TenantOnboardingPlanWhereUniqueInput
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -28912,6 +32637,28 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type TenantUpdateOneRequiredWithoutOnboardingTasksNestedInput = {
+    create?: XOR<TenantCreateWithoutOnboardingTasksInput, TenantUncheckedCreateWithoutOnboardingTasksInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutOnboardingTasksInput
+    upsert?: TenantUpsertWithoutOnboardingTasksInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutOnboardingTasksInput, TenantUpdateWithoutOnboardingTasksInput>, TenantUncheckedUpdateWithoutOnboardingTasksInput>
+  }
+
+  export type TenantOnboardingPlanUpdateOneRequiredWithoutTasksNestedInput = {
+    create?: XOR<TenantOnboardingPlanCreateWithoutTasksInput, TenantOnboardingPlanUncheckedCreateWithoutTasksInput>
+    connectOrCreate?: TenantOnboardingPlanCreateOrConnectWithoutTasksInput
+    upsert?: TenantOnboardingPlanUpsertWithoutTasksInput
+    connect?: TenantOnboardingPlanWhereUniqueInput
+    update?: XOR<XOR<TenantOnboardingPlanUpdateToOneWithWhereWithoutTasksInput, TenantOnboardingPlanUpdateWithoutTasksInput>, TenantOnboardingPlanUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type WebsiteConfigCreateNestedOneWithoutModulesInput = {
+    create?: XOR<WebsiteConfigCreateWithoutModulesInput, WebsiteConfigUncheckedCreateWithoutModulesInput>
+    connectOrCreate?: WebsiteConfigCreateOrConnectWithoutModulesInput
+    connect?: WebsiteConfigWhereUniqueInput
   }
 
   export type WebsiteConfigUpdateOneRequiredWithoutModulesNestedInput = {
@@ -29704,6 +33451,92 @@ export namespace Prisma {
     data: TenantControlActorCreateManyTenantInput | TenantControlActorCreateManyTenantInput[]
   }
 
+  export type TenantOnboardingPlanCreateWithoutTenantInput = {
+    id: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tasks?: TenantOnboardingTaskCreateNestedManyWithoutOnboardingPlanInput
+  }
+
+  export type TenantOnboardingPlanUncheckedCreateWithoutTenantInput = {
+    id: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutOnboardingPlanInput
+  }
+
+  export type TenantOnboardingPlanCreateOrConnectWithoutTenantInput = {
+    where: TenantOnboardingPlanWhereUniqueInput
+    create: XOR<TenantOnboardingPlanCreateWithoutTenantInput, TenantOnboardingPlanUncheckedCreateWithoutTenantInput>
+  }
+
+  export type TenantOnboardingPlanCreateManyTenantInputEnvelope = {
+    data: TenantOnboardingPlanCreateManyTenantInput | TenantOnboardingPlanCreateManyTenantInput[]
+  }
+
+  export type TenantOnboardingTaskCreateWithoutTenantInput = {
+    id: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    onboardingPlan: TenantOnboardingPlanCreateNestedOneWithoutTasksInput
+  }
+
+  export type TenantOnboardingTaskUncheckedCreateWithoutTenantInput = {
+    id: string
+    tenantOnboardingPlanId: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingTaskCreateOrConnectWithoutTenantInput = {
+    where: TenantOnboardingTaskWhereUniqueInput
+    create: XOR<TenantOnboardingTaskCreateWithoutTenantInput, TenantOnboardingTaskUncheckedCreateWithoutTenantInput>
+  }
+
+  export type TenantOnboardingTaskCreateManyTenantInputEnvelope = {
+    data: TenantOnboardingTaskCreateManyTenantInput | TenantOnboardingTaskCreateManyTenantInput[]
+  }
+
   export type ContactCreateWithoutTenantInput = {
     id: string
     fullName?: string | null
@@ -29758,9 +33591,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
     contact?: ContactCreateNestedOneWithoutLeadsInput
@@ -29785,9 +33625,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
@@ -30117,6 +33964,79 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TenantControlActor"> | Date | string
   }
 
+  export type TenantOnboardingPlanUpsertWithWhereUniqueWithoutTenantInput = {
+    where: TenantOnboardingPlanWhereUniqueInput
+    update: XOR<TenantOnboardingPlanUpdateWithoutTenantInput, TenantOnboardingPlanUncheckedUpdateWithoutTenantInput>
+    create: XOR<TenantOnboardingPlanCreateWithoutTenantInput, TenantOnboardingPlanUncheckedCreateWithoutTenantInput>
+  }
+
+  export type TenantOnboardingPlanUpdateWithWhereUniqueWithoutTenantInput = {
+    where: TenantOnboardingPlanWhereUniqueInput
+    data: XOR<TenantOnboardingPlanUpdateWithoutTenantInput, TenantOnboardingPlanUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantOnboardingPlanUpdateManyWithWhereWithoutTenantInput = {
+    where: TenantOnboardingPlanScalarWhereInput
+    data: XOR<TenantOnboardingPlanUpdateManyMutationInput, TenantOnboardingPlanUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type TenantOnboardingPlanScalarWhereInput = {
+    AND?: TenantOnboardingPlanScalarWhereInput | TenantOnboardingPlanScalarWhereInput[]
+    OR?: TenantOnboardingPlanScalarWhereInput[]
+    NOT?: TenantOnboardingPlanScalarWhereInput | TenantOnboardingPlanScalarWhereInput[]
+    id?: StringFilter<"TenantOnboardingPlan"> | string
+    tenantId?: StringFilter<"TenantOnboardingPlan"> | string
+    status?: StringFilter<"TenantOnboardingPlan"> | string
+    planCode?: StringFilter<"TenantOnboardingPlan"> | string
+    startedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    targetLaunchDate?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    pausedAt?: DateTimeNullableFilter<"TenantOnboardingPlan"> | Date | string | null
+    pauseReason?: StringNullableFilter<"TenantOnboardingPlan"> | string | null
+    createdAt?: DateTimeFilter<"TenantOnboardingPlan"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantOnboardingPlan"> | Date | string
+  }
+
+  export type TenantOnboardingTaskUpsertWithWhereUniqueWithoutTenantInput = {
+    where: TenantOnboardingTaskWhereUniqueInput
+    update: XOR<TenantOnboardingTaskUpdateWithoutTenantInput, TenantOnboardingTaskUncheckedUpdateWithoutTenantInput>
+    create: XOR<TenantOnboardingTaskCreateWithoutTenantInput, TenantOnboardingTaskUncheckedCreateWithoutTenantInput>
+  }
+
+  export type TenantOnboardingTaskUpdateWithWhereUniqueWithoutTenantInput = {
+    where: TenantOnboardingTaskWhereUniqueInput
+    data: XOR<TenantOnboardingTaskUpdateWithoutTenantInput, TenantOnboardingTaskUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type TenantOnboardingTaskUpdateManyWithWhereWithoutTenantInput = {
+    where: TenantOnboardingTaskScalarWhereInput
+    data: XOR<TenantOnboardingTaskUpdateManyMutationInput, TenantOnboardingTaskUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type TenantOnboardingTaskScalarWhereInput = {
+    AND?: TenantOnboardingTaskScalarWhereInput | TenantOnboardingTaskScalarWhereInput[]
+    OR?: TenantOnboardingTaskScalarWhereInput[]
+    NOT?: TenantOnboardingTaskScalarWhereInput | TenantOnboardingTaskScalarWhereInput[]
+    id?: StringFilter<"TenantOnboardingTask"> | string
+    tenantOnboardingPlanId?: StringFilter<"TenantOnboardingTask"> | string
+    tenantId?: StringFilter<"TenantOnboardingTask"> | string
+    taskKey?: StringFilter<"TenantOnboardingTask"> | string
+    title?: StringFilter<"TenantOnboardingTask"> | string
+    description?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    status?: StringFilter<"TenantOnboardingTask"> | string
+    priority?: StringFilter<"TenantOnboardingTask"> | string
+    required?: BoolFilter<"TenantOnboardingTask"> | boolean
+    ownerRole?: StringFilter<"TenantOnboardingTask"> | string
+    ownerActorId?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    dueAt?: DateTimeNullableFilter<"TenantOnboardingTask"> | Date | string | null
+    blockedByClient?: BoolFilter<"TenantOnboardingTask"> | boolean
+    blockerReason?: StringNullableFilter<"TenantOnboardingTask"> | string | null
+    sortOrder?: IntFilter<"TenantOnboardingTask"> | number
+    completedAt?: DateTimeNullableFilter<"TenantOnboardingTask"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantOnboardingTask"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantOnboardingTask"> | Date | string
+  }
+
   export type ContactUpsertWithWhereUniqueWithoutTenantInput = {
     where: ContactWhereUniqueInput
     update: XOR<ContactUpdateWithoutTenantInput, ContactUncheckedUpdateWithoutTenantInput>
@@ -30187,9 +34107,16 @@ export namespace Prisma {
     lastContactAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     nextActionAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
     nextActionNote?: StringNullableFilter<"Lead"> | string | null
+    nextActionChannel?: StringNullableFilter<"Lead"> | string | null
+    reminderSnoozedUntil?: DateTimeNullableFilter<"Lead"> | Date | string | null
     priceMin?: IntNullableFilter<"Lead"> | number | null
     priceMax?: IntNullableFilter<"Lead"> | number | null
     tags?: StringFilter<"Lead"> | string
+    closeReason?: StringNullableFilter<"Lead"> | string | null
+    closeNotes?: StringNullableFilter<"Lead"> | string | null
+    closedAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    assignedTo?: StringNullableFilter<"Lead"> | string | null
+    referredBy?: StringNullableFilter<"Lead"> | string | null
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
   }
@@ -30341,6 +34268,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -30360,6 +34289,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -30395,6 +34326,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -30414,6 +34347,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -30433,6 +34368,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -30452,6 +34389,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -30516,6 +34455,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -30535,6 +34476,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -30584,6 +34527,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -30603,6 +34548,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -30638,6 +34585,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -30657,6 +34606,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -30676,6 +34627,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -30695,6 +34648,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -30730,6 +34685,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -30749,6 +34706,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -30768,6 +34727,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -30787,6 +34748,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -30822,6 +34785,8 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -30841,12 +34806,351 @@ export namespace Prisma {
     websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
     ingestionQueueJobs?: IngestionQueueJobUncheckedUpdateManyWithoutTenantNestedInput
     transactions?: TransactionUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutOnboardingPlansInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
+    contacts?: ContactCreateNestedManyWithoutTenantInput
+    leads?: LeadCreateNestedManyWithoutTenantInput
+    activities?: ActivityCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobCreateNestedManyWithoutTenantInput
+    transactions?: TransactionCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutOnboardingPlansInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
+    leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedCreateNestedManyWithoutTenantInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutOnboardingPlansInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutOnboardingPlansInput, TenantUncheckedCreateWithoutOnboardingPlansInput>
+  }
+
+  export type TenantOnboardingTaskCreateWithoutOnboardingPlanInput = {
+    id: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tenant: TenantCreateNestedOneWithoutOnboardingTasksInput
+  }
+
+  export type TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput = {
+    id: string
+    tenantId: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingTaskCreateOrConnectWithoutOnboardingPlanInput = {
+    where: TenantOnboardingTaskWhereUniqueInput
+    create: XOR<TenantOnboardingTaskCreateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput>
+  }
+
+  export type TenantOnboardingTaskCreateManyOnboardingPlanInputEnvelope = {
+    data: TenantOnboardingTaskCreateManyOnboardingPlanInput | TenantOnboardingTaskCreateManyOnboardingPlanInput[]
+  }
+
+  export type TenantUpsertWithoutOnboardingPlansInput = {
+    update: XOR<TenantUpdateWithoutOnboardingPlansInput, TenantUncheckedUpdateWithoutOnboardingPlansInput>
+    create: XOR<TenantCreateWithoutOnboardingPlansInput, TenantUncheckedCreateWithoutOnboardingPlansInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutOnboardingPlansInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutOnboardingPlansInput, TenantUncheckedUpdateWithoutOnboardingPlansInput>
+  }
+
+  export type TenantUpdateWithoutOnboardingPlansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUpdateManyWithoutTenantNestedInput
+    leads?: LeadUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutOnboardingPlansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantOnboardingTaskUpsertWithWhereUniqueWithoutOnboardingPlanInput = {
+    where: TenantOnboardingTaskWhereUniqueInput
+    update: XOR<TenantOnboardingTaskUpdateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedUpdateWithoutOnboardingPlanInput>
+    create: XOR<TenantOnboardingTaskCreateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedCreateWithoutOnboardingPlanInput>
+  }
+
+  export type TenantOnboardingTaskUpdateWithWhereUniqueWithoutOnboardingPlanInput = {
+    where: TenantOnboardingTaskWhereUniqueInput
+    data: XOR<TenantOnboardingTaskUpdateWithoutOnboardingPlanInput, TenantOnboardingTaskUncheckedUpdateWithoutOnboardingPlanInput>
+  }
+
+  export type TenantOnboardingTaskUpdateManyWithWhereWithoutOnboardingPlanInput = {
+    where: TenantOnboardingTaskScalarWhereInput
+    data: XOR<TenantOnboardingTaskUpdateManyMutationInput, TenantOnboardingTaskUncheckedUpdateManyWithoutOnboardingPlanInput>
+  }
+
+  export type TenantCreateWithoutOnboardingTasksInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    contacts?: ContactCreateNestedManyWithoutTenantInput
+    leads?: LeadCreateNestedManyWithoutTenantInput
+    activities?: ActivityCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobCreateNestedManyWithoutTenantInput
+    transactions?: TransactionCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutOnboardingTasksInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
+    leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedCreateNestedManyWithoutTenantInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutOnboardingTasksInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutOnboardingTasksInput, TenantUncheckedCreateWithoutOnboardingTasksInput>
+  }
+
+  export type TenantOnboardingPlanCreateWithoutTasksInput = {
+    id: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tenant: TenantCreateNestedOneWithoutOnboardingPlansInput
+  }
+
+  export type TenantOnboardingPlanUncheckedCreateWithoutTasksInput = {
+    id: string
+    tenantId: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingPlanCreateOrConnectWithoutTasksInput = {
+    where: TenantOnboardingPlanWhereUniqueInput
+    create: XOR<TenantOnboardingPlanCreateWithoutTasksInput, TenantOnboardingPlanUncheckedCreateWithoutTasksInput>
+  }
+
+  export type TenantUpsertWithoutOnboardingTasksInput = {
+    update: XOR<TenantUpdateWithoutOnboardingTasksInput, TenantUncheckedUpdateWithoutOnboardingTasksInput>
+    create: XOR<TenantCreateWithoutOnboardingTasksInput, TenantUncheckedCreateWithoutOnboardingTasksInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutOnboardingTasksInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutOnboardingTasksInput, TenantUncheckedUpdateWithoutOnboardingTasksInput>
+  }
+
+  export type TenantUpdateWithoutOnboardingTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUpdateManyWithoutTenantNestedInput
+    leads?: LeadUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutOnboardingTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantOnboardingPlanUpsertWithoutTasksInput = {
+    update: XOR<TenantOnboardingPlanUpdateWithoutTasksInput, TenantOnboardingPlanUncheckedUpdateWithoutTasksInput>
+    create: XOR<TenantOnboardingPlanCreateWithoutTasksInput, TenantOnboardingPlanUncheckedCreateWithoutTasksInput>
+    where?: TenantOnboardingPlanWhereInput
+  }
+
+  export type TenantOnboardingPlanUpdateToOneWithWhereWithoutTasksInput = {
+    where?: TenantOnboardingPlanWhereInput
+    data: XOR<TenantOnboardingPlanUpdateWithoutTasksInput, TenantOnboardingPlanUncheckedUpdateWithoutTasksInput>
+  }
+
+  export type TenantOnboardingPlanUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutOnboardingPlansNestedInput
+  }
+
+  export type TenantOnboardingPlanUncheckedUpdateWithoutTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type WebsiteConfigCreateWithoutModulesInput = {
@@ -30905,6 +35209,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
@@ -30924,6 +35230,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
@@ -30953,9 +35261,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
     tenant: TenantCreateNestedOneWithoutLeadsInput
@@ -30980,9 +35295,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
@@ -31051,6 +35373,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
@@ -31070,6 +35394,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
@@ -31121,6 +35447,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
@@ -31140,6 +35468,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
@@ -31239,6 +35569,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
@@ -31258,6 +35590,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
@@ -31332,6 +35666,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
@@ -31351,6 +35687,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
@@ -31413,9 +35751,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
     tenant: TenantCreateNestedOneWithoutLeadsInput
@@ -31441,9 +35786,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
   }
@@ -31476,6 +35828,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
@@ -31495,6 +35849,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
@@ -31569,9 +35925,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutLeadsNestedInput
@@ -31597,9 +35960,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31616,6 +35986,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -31635,6 +36007,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -31670,6 +36044,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -31689,6 +36065,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -31708,6 +36086,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -31727,6 +36107,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -31762,6 +36144,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -31781,6 +36165,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -31800,6 +36186,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
     contacts?: ContactCreateNestedManyWithoutTenantInput
     leads?: LeadCreateNestedManyWithoutTenantInput
     activities?: ActivityCreateNestedManyWithoutTenantInput
@@ -31819,6 +36207,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
     billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
     controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
     contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
     leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
     activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
@@ -31947,6 +36337,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
     contacts?: ContactUpdateManyWithoutTenantNestedInput
     leads?: LeadUpdateManyWithoutTenantNestedInput
     activities?: ActivityUpdateManyWithoutTenantNestedInput
@@ -31966,6 +36358,8 @@ export namespace Prisma {
     controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
     billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
     controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
     contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
     leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
     activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
@@ -32404,6 +36798,39 @@ export namespace Prisma {
     updatedAt: Date | string
   }
 
+  export type TenantOnboardingPlanCreateManyTenantInput = {
+    id: string
+    status?: string
+    planCode: string
+    startedAt?: Date | string | null
+    targetLaunchDate?: Date | string | null
+    completedAt?: Date | string | null
+    pausedAt?: Date | string | null
+    pauseReason?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingTaskCreateManyTenantInput = {
+    id: string
+    tenantOnboardingPlanId: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
   export type ContactCreateManyTenantInput = {
     id: string
     fullName?: string | null
@@ -32434,9 +36861,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
   }
@@ -32575,6 +37009,107 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TenantOnboardingPlanUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TenantOnboardingTaskUpdateManyWithoutOnboardingPlanNestedInput
+  }
+
+  export type TenantOnboardingPlanUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutOnboardingPlanNestedInput
+  }
+
+  export type TenantOnboardingPlanUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetLaunchDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pauseReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantOnboardingTaskUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingPlan?: TenantOnboardingPlanUpdateOneRequiredWithoutTasksNestedInput
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantOnboardingPlanId?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantOnboardingPlanId?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ContactUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     fullName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32632,9 +37167,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contact?: ContactUpdateOneWithoutLeadsNestedInput
@@ -32659,9 +37201,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
@@ -32685,9 +37234,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32906,6 +37462,86 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TenantOnboardingTaskCreateManyOnboardingPlanInput = {
+    id: string
+    tenantId: string
+    taskKey: string
+    title: string
+    description?: string | null
+    status?: string
+    priority?: string
+    required?: boolean
+    ownerRole?: string
+    ownerActorId?: string | null
+    dueAt?: Date | string | null
+    blockedByClient?: boolean
+    blockerReason?: string | null
+    sortOrder?: number
+    completedAt?: Date | string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+  }
+
+  export type TenantOnboardingTaskUpdateWithoutOnboardingPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutOnboardingTasksNestedInput
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateWithoutOnboardingPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantOnboardingTaskUncheckedUpdateManyWithoutOnboardingPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    taskKey?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    required?: BoolFieldUpdateOperationsInput | boolean
+    ownerRole?: StringFieldUpdateOperationsInput | string
+    ownerActorId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    blockedByClient?: BoolFieldUpdateOperationsInput | boolean
+    blockerReason?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type LeadCreateManyContactInput = {
     id: string
     tenantId: string
@@ -32924,9 +37560,16 @@ export namespace Prisma {
     lastContactAt?: Date | string | null
     nextActionAt?: Date | string | null
     nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
     priceMin?: number | null
     priceMax?: number | null
     tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    assignedTo?: string | null
+    referredBy?: string | null
     createdAt: Date | string
     updatedAt: Date | string
   }
@@ -32959,9 +37602,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutLeadsNestedInput
@@ -32986,9 +37636,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
@@ -33012,9 +37669,16 @@ export namespace Prisma {
     lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     priceMin?: NullableIntFieldUpdateOperationsInput | number | null
     priceMax?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

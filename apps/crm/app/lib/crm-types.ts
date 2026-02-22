@@ -30,6 +30,10 @@ export interface LeadDraft {
   reminderSnoozedUntil: string;
   priceMin: string;
   priceMax: string;
+  closeReason: string;
+  closeNotes: string;
+  assignedTo: string;
+  referredBy: string;
 }
 
 export interface ContactDraft {

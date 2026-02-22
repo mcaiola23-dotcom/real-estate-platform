@@ -10,6 +10,92 @@ export interface TenantControlSettings {
   updatedAt: string;
 }
 
+export type TenantOnboardingPlanStatus = 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+
+export type TenantOnboardingTaskStatus = 'pending' | 'in_progress' | 'blocked' | 'done' | 'skipped';
+
+export type TenantOnboardingTaskPriority = 'critical' | 'high' | 'normal' | 'low';
+
+export type TenantOnboardingOwnerRole = 'sales' | 'ops' | 'build' | 'client';
+
+export interface TenantOnboardingPlan {
+  id: string;
+  tenantId: string;
+  status: TenantOnboardingPlanStatus;
+  planCode: string;
+  startedAt: string | null;
+  targetLaunchDate: string | null;
+  completedAt: string | null;
+  pausedAt: string | null;
+  pauseReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TenantOnboardingTask {
+  id: string;
+  tenantOnboardingPlanId: string;
+  tenantId: string;
+  taskKey: string;
+  title: string;
+  description: string | null;
+  status: TenantOnboardingTaskStatus;
+  priority: TenantOnboardingTaskPriority;
+  required: boolean;
+  ownerRole: TenantOnboardingOwnerRole;
+  ownerActorId: string | null;
+  dueAt: string | null;
+  blockedByClient: boolean;
+  blockerReason: string | null;
+  sortOrder: number;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TenantOnboardingPlanTaskSeedInput {
+  taskKey: string;
+  title: string;
+  description?: string | null;
+  required: boolean;
+  ownerRole: TenantOnboardingOwnerRole;
+  priority?: TenantOnboardingTaskPriority;
+  sortOrder?: number;
+  dueAt?: string | null;
+}
+
+export interface CreateTenantOnboardingPlanFromTemplateInput {
+  planCode: string;
+  status?: TenantOnboardingPlanStatus;
+  startedAt?: string | null;
+  targetLaunchDate?: string | null;
+  pauseReason?: string | null;
+  tasks: TenantOnboardingPlanTaskSeedInput[];
+}
+
+export interface UpdateTenantOnboardingPlanInput {
+  status?: TenantOnboardingPlanStatus;
+  targetLaunchDate?: string | null;
+  pauseReason?: string | null;
+}
+
+export interface UpdateTenantOnboardingTaskInput {
+  status?: TenantOnboardingTaskStatus;
+  priority?: TenantOnboardingTaskPriority;
+  ownerRole?: TenantOnboardingOwnerRole;
+  ownerActorId?: string | null;
+  dueAt?: string | null;
+  blockedByClient?: boolean;
+  blockerReason?: string | null;
+  title?: string;
+  description?: string | null;
+}
+
+export interface TenantOnboardingPlanWithTasks {
+  plan: TenantOnboardingPlan;
+  tasks: TenantOnboardingTask[];
+}
+
 export interface ControlPlaneTenantSnapshot {
   tenant: Tenant;
   domains: TenantDomain[];
@@ -228,6 +314,9 @@ export type ControlPlaneAdminAuditAction =
   | 'tenant.domain.add'
   | 'tenant.domain.update'
   | 'tenant.settings.update'
+  | 'tenant.onboarding.plan.create'
+  | 'tenant.onboarding.plan.update'
+  | 'tenant.onboarding.task.update'
   | 'tenant.billing.update'
   | 'tenant.billing.sync'
   | 'tenant.diagnostics.remediate'
@@ -235,7 +324,8 @@ export type ControlPlaneAdminAuditAction =
   | 'tenant.actor.update'
   | 'tenant.actor.remove'
   | 'tenant.support-session.start'
-  | 'tenant.support-session.end';
+  | 'tenant.support-session.end'
+  | 'tenant.observability.telemetry.publish';
 
 export type ControlPlaneAdminAuditStatus = 'allowed' | 'denied' | 'succeeded' | 'failed';
 
@@ -278,10 +368,29 @@ export interface ControlPlaneTenantReadinessScore {
   tenantName: string;
   tenantSlug: string;
   score: number;
+  onboarding: {
+    planStatus: TenantOnboardingPlanStatus | 'none';
+    requiredTaskCount: number;
+    completedRequiredTaskCount: number;
+    incompleteRequiredTaskCount: number;
+    blockedRequiredTasks: number;
+    overdueRequiredTasks: number;
+    unassignedRequiredTasks: number;
+  };
   checks: Array<{
     label: string;
     ok: boolean;
   }>;
+}
+
+export interface ControlPlaneOnboardingObservabilitySummary {
+  tenantsWithPersistedPlan: number;
+  activePlans: number;
+  pausedPlans: number;
+  completedPlans: number;
+  blockedRequiredTasks: number;
+  overdueRequiredTasks: number;
+  unassignedRequiredTasks: number;
 }
 
 export interface ControlPlaneBillingDriftModeCounts {
@@ -314,6 +423,30 @@ export interface ControlPlaneBillingDriftSummary {
   byTenant: ControlPlaneBillingDriftTenantSummary[];
 }
 
+export interface ControlPlaneOnboardingUsageTelemetryObservabilitySummary {
+  windowDays: number;
+  publishCount: number;
+  latestPublishedAt: string | null;
+  totals: {
+    recentEventCount: number;
+    publishedEventTypeCount: number;
+    publishedBulkActionTypeCount: number;
+  };
+  bulkActionStats: Partial<
+    Record<
+      'status' | 'owner_role' | 'owner_actor' | 'owner_role_actor',
+      {
+        count: number;
+        totalSelectedCount: number;
+        totalEligibleCount: number;
+        totalSuccessCount: number;
+        totalFailureCount: number;
+        totalDurationMs: number;
+      }
+    >
+  >;
+}
+
 export interface ControlPlaneObservabilitySummary {
   generatedAt: string;
   totals: {
@@ -331,5 +464,7 @@ export interface ControlPlaneObservabilitySummary {
     deadLetterCount: number;
   };
   billingDrift: ControlPlaneBillingDriftSummary;
+  onboarding: ControlPlaneOnboardingObservabilitySummary;
+  onboardingUsageTelemetry: ControlPlaneOnboardingUsageTelemetryObservabilitySummary;
   tenantReadiness: ControlPlaneTenantReadinessScore[];
 }

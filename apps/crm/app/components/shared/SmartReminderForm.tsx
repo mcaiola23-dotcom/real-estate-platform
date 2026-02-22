@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useState, useEffect, useCallback } from 'react';
-import type { ReminderChannel } from '@real-estate/ai/crm/reminder-engine';
+import type { ReminderChannel, SnoozeOption } from '@real-estate/ai/crm/reminder-engine';
 
 // ---------------------------------------------------------------------------
 // Types

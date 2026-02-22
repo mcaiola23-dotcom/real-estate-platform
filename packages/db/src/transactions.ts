@@ -312,6 +312,25 @@ export async function listTransactionDocuments(
   return (rows as Array<Record<string, unknown>>).map((r) => mapDocument(r));
 }
 
+export async function updateTransactionDocument(
+  tenantId: string,
+  documentId: string,
+  input: { status?: string; notes?: string | null; fileName?: string }
+): Promise<CrmTransactionDocument | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+  const existing = await prisma.transactionDocument.findFirst({ where: { id: documentId, tenantId } });
+  if (!existing) return null;
+
+  const data: Record<string, unknown> = { updatedAt: new Date() };
+  if (input.status !== undefined) data.status = input.status;
+  if (input.notes !== undefined) data.notes = input.notes;
+  if (input.fileName !== undefined) data.fileName = input.fileName;
+
+  const row = await prisma.transactionDocument.update({ where: { id: documentId }, data });
+  return mapDocument(row as unknown as Record<string, unknown>);
+}
+
 export async function addTransactionMilestone(
   tenantId: string,
   transactionId: string,

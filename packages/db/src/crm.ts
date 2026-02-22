@@ -267,6 +267,11 @@ function toCrmLead(record: {
   priceMin?: number | null;
   priceMax?: number | null;
   tags?: string;
+  closeReason?: string | null;
+  closeNotes?: string | null;
+  closedAt?: string | Date | null;
+  assignedTo?: string | null;
+  referredBy?: string | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 }): CrmLead {
@@ -298,6 +303,11 @@ function toCrmLead(record: {
     priceMin: record.priceMin ?? null,
     priceMax: record.priceMax ?? null,
     tags: parsedTags,
+    closeReason: record.closeReason ?? null,
+    closeNotes: record.closeNotes ?? null,
+    closedAt: toNullableIso(record.closedAt),
+    assignedTo: record.assignedTo ?? null,
+    referredBy: record.referredBy ?? null,
     createdAt: toIsoString(record.createdAt),
     updatedAt: toIsoString(record.updatedAt),
   };
@@ -355,6 +365,11 @@ export interface UpdateCrmLeadInput {
   priceMin?: number | null;
   priceMax?: number | null;
   tags?: string[];
+  closeReason?: string | null;
+  closeNotes?: string | null;
+  closedAt?: string | Date | null;
+  assignedTo?: string | null;
+  referredBy?: string | null;
 }
 
 export interface UpdateCrmContactInput {
@@ -386,6 +401,8 @@ export interface CreateCrmLeadInput {
   beds?: number | null;
   baths?: number | null;
   sqft?: number | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
   tags?: string[];
 }
 
@@ -763,6 +780,28 @@ export async function processWebsiteEventQueueBatch(limit = 25): Promise<Website
     requeuedCount,
     deadLetteredCount,
   };
+}
+
+export async function getLatestProcessedIngestionJob(
+  tenantId: string
+): Promise<WebsiteIngestionJob | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return null;
+  }
+
+  try {
+    const job = await prisma.ingestionQueueJob.findFirst({
+      where: {
+        tenantId,
+        processedAt: { not: null },
+      },
+      orderBy: { processedAt: 'desc' },
+    });
+    return job ? toWebsiteIngestionJob(job) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function listDeadLetterQueueJobs(
@@ -1364,6 +1403,8 @@ export async function createLeadForTenant(tenantId: string, input: CreateCrmLead
         beds: input.beds ?? null,
         baths: input.baths ?? null,
         sqft: input.sqft ?? null,
+        priceMin: input.priceMin ?? null,
+        priceMax: input.priceMax ?? null,
         tags: JSON.stringify(input.tags ?? []),
         createdAt: now,
         updatedAt: now,
@@ -1437,6 +1478,21 @@ export async function updateLeadForTenant(
   }
   if (input.tags !== undefined) {
     data.tags = JSON.stringify(input.tags);
+  }
+  if (input.closeReason !== undefined) {
+    data.closeReason = input.closeReason;
+  }
+  if (input.closeNotes !== undefined) {
+    data.closeNotes = input.closeNotes;
+  }
+  if (input.closedAt !== undefined) {
+    data.closedAt = input.closedAt ? new Date(input.closedAt) : null;
+  }
+  if (input.assignedTo !== undefined) {
+    data.assignedTo = input.assignedTo;
+  }
+  if (input.referredBy !== undefined) {
+    data.referredBy = input.referredBy;
   }
 
   try {

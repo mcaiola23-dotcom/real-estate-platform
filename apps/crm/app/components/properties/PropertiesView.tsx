@@ -7,6 +7,8 @@ import { PropertyCard } from './PropertyCard';
 import { PropertyFilters } from './PropertyFilters';
 import { PropertyDetailModal, type LeadOption } from './PropertyDetailModal';
 import { EmptyState } from '../shared/EmptyState';
+import { FeedStatusChip } from './FeedStatusChip';
+import { ListingDescriptionGenerator } from './ListingDescriptionGenerator';
 
 interface PropertiesViewProps {
   leadOptions: LeadOption[];
@@ -40,6 +42,7 @@ export function PropertiesView({
   const [page, setPage] = useState(1);
   const [detailListing, setDetailListing] = useState<Listing | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showDescGenerator, setShowDescGenerator] = useState(false);
 
   const fetchProperties = useCallback(async () => {
     setLoading(true);
@@ -139,7 +142,8 @@ export function PropertiesView({
 
   return (
     <div className="crm-properties-view">
-      {/* Toolbar */}
+      {/* Feed Status + Toolbar */}
+      <FeedStatusChip />
       <div className="crm-properties-toolbar">
         <form className="crm-properties-search" onSubmit={handleSearch}>
           <input
@@ -156,6 +160,13 @@ export function PropertiesView({
         </form>
 
         <div className="crm-properties-toolbar__controls">
+          <button
+            className="crm-btn crm-btn-ghost crm-btn-sm"
+            onClick={() => setShowDescGenerator(true)}
+            title="AI Listing Description Generator"
+          >
+            <span className="crm-ai-glyph">◆</span> Write Description
+          </button>
           <button
             className={`crm-properties-toolbar__filter-btn ${showFilters ? 'crm-properties-toolbar__filter-btn--active' : ''}`}
             onClick={() => setShowFilters(!showFilters)}
@@ -285,6 +296,14 @@ export function PropertiesView({
           onClose={() => setDetailListing(null)}
           onAssignToLead={handleAssignToLead}
           onSendToClient={handleSendToClient}
+        />
+      )}
+
+      {/* AI Listing Description Generator */}
+      {showDescGenerator && (
+        <ListingDescriptionGenerator
+          onClose={() => setShowDescGenerator(false)}
+          pushToast={pushToast}
         />
       )}
     </div>

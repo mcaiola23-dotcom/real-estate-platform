@@ -20,6 +20,8 @@ model Tenant {
   controlSettings     TenantControlSettings?
   billingSubscription TenantBillingSubscription?
   controlActors       TenantControlActor[]
+  onboardingPlans     TenantOnboardingPlan[]
+  onboardingTasks     TenantOnboardingTask[]
   contacts            Contact[]
   leads               Lead[]
   activities          Activity[]
@@ -116,6 +118,53 @@ model TenantControlActor {
   @@index([tenantId, role])
 }
 
+model TenantOnboardingPlan {
+  id               String                 @id
+  tenantId         String
+  status           String                 @default("active")
+  planCode         String
+  startedAt        DateTime?
+  targetLaunchDate DateTime?
+  completedAt      DateTime?
+  pausedAt         DateTime?
+  pauseReason      String?
+  createdAt        DateTime
+  updatedAt        DateTime
+  tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tasks            TenantOnboardingTask[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+}
+
+model TenantOnboardingTask {
+  id                     String               @id
+  tenantOnboardingPlanId String
+  tenantId               String
+  taskKey                String
+  title                  String
+  description            String?
+  status                 String               @default("pending")
+  priority               String               @default("normal")
+  required               Boolean              @default(true)
+  ownerRole              String               @default("ops")
+  ownerActorId           String?
+  dueAt                  DateTime?
+  blockedByClient        Boolean              @default(false)
+  blockerReason          String?
+  sortOrder              Int                  @default(0)
+  completedAt            DateTime?
+  createdAt              DateTime
+  updatedAt              DateTime
+  tenant                 Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  onboardingPlan         TenantOnboardingPlan @relation(fields: [tenantOnboardingPlanId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantOnboardingPlanId, taskKey])
+  @@index([tenantId, status])
+  @@index([tenantId, dueAt])
+  @@index([tenantOnboardingPlanId, sortOrder])
+}
+
 model ModuleConfig {
   id              String        @id
   websiteConfigId String
@@ -152,32 +201,39 @@ model Contact {
 }
 
 model Lead {
-  id             String     @id
-  tenantId       String
-  contactId      String?
-  status         String
-  leadType       String
-  source         String
-  timeframe      String?
-  notes          String?
-  listingId      String?
-  listingUrl     String?
-  listingAddress String?
-  propertyType   String?
-  beds           Int?
-  baths          Int?
-  sqft           Int?
-  lastContactAt  DateTime?
-  nextActionAt   DateTime?
-  nextActionNote String?
-  priceMin       Int?
-  priceMax       Int?
-  tags           String     @default("[]")
-  createdAt      DateTime
-  updatedAt      DateTime
-  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  contact        Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
-  activities     Activity[]
+  id                   String     @id
+  tenantId             String
+  contactId            String?
+  status               String
+  leadType             String
+  source               String
+  timeframe            String?
+  notes                String?
+  listingId            String?
+  listingUrl           String?
+  listingAddress       String?
+  propertyType         String?
+  beds                 Int?
+  baths                Int?
+  sqft                 Int?
+  lastContactAt        DateTime?
+  nextActionAt         DateTime?
+  nextActionNote       String?
+  nextActionChannel    String?
+  reminderSnoozedUntil DateTime?
+  priceMin             Int?
+  priceMax             Int?
+  tags                 String     @default("[]")
+  closeReason          String?
+  closeNotes           String?
+  closedAt             DateTime?
+  assignedTo           String?
+  referredBy           String?
+  createdAt            DateTime
+  updatedAt            DateTime
+  tenant               Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact              Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  activities           Activity[]
 
   @@index([tenantId, createdAt])
   @@index([contactId])

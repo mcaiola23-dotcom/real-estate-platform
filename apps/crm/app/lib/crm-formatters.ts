@@ -55,6 +55,10 @@ export function buildLeadDraft(lead: CrmLead): LeadDraft {
     reminderSnoozedUntil: lead.reminderSnoozedUntil ?? '',
     priceMin: lead.priceMin === null ? '' : String(lead.priceMin),
     priceMax: lead.priceMax === null ? '' : String(lead.priceMax),
+    closeReason: lead.closeReason ?? '',
+    closeNotes: lead.closeNotes ?? '',
+    assignedTo: lead.assignedTo ?? '',
+    referredBy: lead.referredBy ?? '',
   };
 }
 

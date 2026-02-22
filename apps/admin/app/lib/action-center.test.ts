@@ -65,7 +65,60 @@ test('returns launch-track info item when no blockers exist', () => {
     diagnosticsFailedCount: 0,
     diagnosticsWarningCount: 0,
     actorCount: 2,
+    onboardingLoaded: true,
+    onboardingPlanExists: true,
+    onboardingPlanStatus: 'active',
+    onboardingRequiredBlockedCount: 0,
+    onboardingRequiredOverdueCount: 0,
+    onboardingRequiredUnassignedCount: 0,
   });
 
   assert.deepEqual(items.map((item) => item.id), ['launch-track']);
+});
+
+test('adds onboarding task blockers and assignment items to launch priorities', () => {
+  const items = buildActionCenterItems({
+    hasSelectedTenant: true,
+    tenantStatus: 'active',
+    settingsStatus: 'active',
+    hasPrimaryDomain: true,
+    dnsStatus: 'verified',
+    certificateStatus: 'ready',
+    billingDriftCount: 0,
+    diagnosticsLoaded: true,
+    diagnosticsFailedCount: 0,
+    diagnosticsWarningCount: 0,
+    actorCount: 1,
+    onboardingLoaded: true,
+    onboardingPlanExists: true,
+    onboardingPlanStatus: 'paused',
+    onboardingRequiredBlockedCount: 2,
+    onboardingRequiredOverdueCount: 1,
+    onboardingRequiredUnassignedCount: 3,
+  });
+
+  assert.ok(items.some((item) => item.id === 'onboarding-plan-paused'));
+  assert.ok(items.some((item) => item.id === 'onboarding-blocked-tasks'));
+  assert.ok(items.some((item) => item.id === 'onboarding-overdue-tasks'));
+  assert.ok(items.some((item) => item.id === 'onboarding-unassigned-tasks'));
+});
+
+test('adds persisted-onboarding-plan missing warning when onboarding has not been created yet', () => {
+  const items = buildActionCenterItems({
+    hasSelectedTenant: true,
+    tenantStatus: 'active',
+    settingsStatus: 'active',
+    hasPrimaryDomain: true,
+    dnsStatus: 'verified',
+    certificateStatus: 'ready',
+    billingDriftCount: 0,
+    diagnosticsLoaded: true,
+    diagnosticsFailedCount: 0,
+    diagnosticsWarningCount: 0,
+    actorCount: 1,
+    onboardingLoaded: true,
+    onboardingPlanExists: false,
+  });
+
+  assert.ok(items.some((item) => item.id === 'onboarding-plan-missing'));
 });

@@ -1,0 +1,16 @@
+{
+  "name": "@real-estate/integrations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./google": "./src/google/index.ts"
+  },
+  "dependencies": {
+    "googleapis": "^144.0.0",
+    "@real-estate/db": "*",
+    "@real-estate/types": "*"
+  },
+  "types": "./src/index.ts"
+}

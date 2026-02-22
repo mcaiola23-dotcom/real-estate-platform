@@ -10,6 +10,8 @@ import type {
   ControlPlaneBillingDriftTenantSummary,
   ControlPlaneIngestionStatusCount,
   ControlPlaneMutationTrend,
+  ControlPlaneOnboardingObservabilitySummary,
+  ControlPlaneOnboardingUsageTelemetryObservabilitySummary,
   ControlPlaneObservabilitySummary,
   TenantBillingEntitlementDriftSummary,
   TenantBillingPaymentStatus,
@@ -18,6 +20,14 @@ import type {
   TenantBillingProviderEventResult,
   TenantBillingSubscription,
   TenantBillingSubscriptionStatus,
+  TenantOnboardingPlan,
+  TenantOnboardingPlanStatus,
+  TenantOnboardingPlanTaskSeedInput,
+  TenantOnboardingPlanWithTasks,
+  TenantOnboardingTask,
+  TenantOnboardingTaskPriority,
+  TenantOnboardingTaskStatus,
+  TenantOnboardingOwnerRole,
   TenantSupportDiagnosticCheck,
   TenantSupportDiagnosticStatus,
   TenantSupportDiagnosticsSummary,
@@ -28,10 +38,13 @@ import type {
   TenantControlActor,
   TenantSupportSessionUpdateInput,
   TenantControlSettings,
+  UpdateTenantOnboardingPlanInput,
+  UpdateTenantOnboardingTaskInput,
   UpdateTenantBillingSubscriptionInput,
   UpdateTenantControlActorInput,
   UpdateTenantControlSettingsInput,
   UpsertTenantControlActorInput,
+  CreateTenantOnboardingPlanFromTemplateInput,
 } from '@real-estate/types/control-plane';
 import type { Tenant, TenantDomain } from '@real-estate/types/tenant';
 
@@ -43,6 +56,7 @@ import {
   scheduleIngestionQueueJobNow,
 } from './crm';
 import { DEFAULT_WEBSITE_MODULE_ORDER, SEED_TENANT_DOMAINS, SEED_TENANTS } from './seed-data';
+import { isTenantActorRoleCompatibleWithOnboardingOwnerRole } from './onboarding-owner-assignment';
 
 function toIsoString(value: string | Date): string {
   return typeof value === 'string' ? value : value.toISOString();
@@ -300,6 +314,27 @@ const VALID_BILLING_SUBSCRIPTION_STATUS = new Set<TenantBillingSubscriptionStatu
 ]);
 const VALID_BILLING_PAYMENT_STATUS = new Set<TenantBillingPaymentStatus>(['pending', 'paid', 'past_due', 'unpaid']);
 const VALID_BILLING_PROVIDERS = new Set<TenantBillingProvider>(['manual', 'stripe']);
+const VALID_ONBOARDING_PLAN_STATUSES = new Set<TenantOnboardingPlanStatus>([
+  'draft',
+  'active',
+  'paused',
+  'completed',
+  'archived',
+]);
+const VALID_ONBOARDING_TASK_STATUSES = new Set<TenantOnboardingTaskStatus>([
+  'pending',
+  'in_progress',
+  'blocked',
+  'done',
+  'skipped',
+]);
+const VALID_ONBOARDING_TASK_PRIORITIES = new Set<TenantOnboardingTaskPriority>([
+  'critical',
+  'high',
+  'normal',
+  'low',
+]);
+const VALID_ONBOARDING_OWNER_ROLES = new Set<TenantOnboardingOwnerRole>(['sales', 'ops', 'build', 'client']);
 
 function normalizeBillingStatus(value: string | null | undefined): TenantBillingSubscriptionStatus {
   const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
@@ -323,6 +358,38 @@ function normalizeBillingProvider(value: string | null | undefined): TenantBilli
     return normalized as TenantBillingProvider;
   }
   return 'manual';
+}
+
+function normalizeOnboardingPlanStatus(value: string | null | undefined): TenantOnboardingPlanStatus {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (VALID_ONBOARDING_PLAN_STATUSES.has(normalized as TenantOnboardingPlanStatus)) {
+    return normalized as TenantOnboardingPlanStatus;
+  }
+  return 'active';
+}
+
+function normalizeOnboardingTaskStatus(value: string | null | undefined): TenantOnboardingTaskStatus {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (VALID_ONBOARDING_TASK_STATUSES.has(normalized as TenantOnboardingTaskStatus)) {
+    return normalized as TenantOnboardingTaskStatus;
+  }
+  return 'pending';
+}
+
+function normalizeOnboardingTaskPriority(value: string | null | undefined): TenantOnboardingTaskPriority {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (VALID_ONBOARDING_TASK_PRIORITIES.has(normalized as TenantOnboardingTaskPriority)) {
+    return normalized as TenantOnboardingTaskPriority;
+  }
+  return 'normal';
+}
+
+function normalizeOnboardingOwnerRole(value: string | null | undefined): TenantOnboardingOwnerRole {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (VALID_ONBOARDING_OWNER_ROLES.has(normalized as TenantOnboardingOwnerRole)) {
+    return normalized as TenantOnboardingOwnerRole;
+  }
+  return 'ops';
 }
 
 function parseOptionalIsoDate(value: string | null | undefined): Date | null {
@@ -425,6 +492,76 @@ function toTenantControlActor(record: {
     supportSessionActive: record.supportSessionActive,
     supportSessionStartedAt: record.supportSessionStartedAt ? toIsoString(record.supportSessionStartedAt) : null,
     supportSessionExpiresAt: record.supportSessionExpiresAt ? toIsoString(record.supportSessionExpiresAt) : null,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+function toTenantOnboardingPlan(record: {
+  id: string;
+  tenantId: string;
+  status: string;
+  planCode: string;
+  startedAt: string | Date | null;
+  targetLaunchDate: string | Date | null;
+  completedAt: string | Date | null;
+  pausedAt: string | Date | null;
+  pauseReason: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): TenantOnboardingPlan {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    status: normalizeOnboardingPlanStatus(record.status),
+    planCode: record.planCode,
+    startedAt: record.startedAt ? toIsoString(record.startedAt) : null,
+    targetLaunchDate: record.targetLaunchDate ? toIsoString(record.targetLaunchDate) : null,
+    completedAt: record.completedAt ? toIsoString(record.completedAt) : null,
+    pausedAt: record.pausedAt ? toIsoString(record.pausedAt) : null,
+    pauseReason: record.pauseReason ?? null,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+function toTenantOnboardingTask(record: {
+  id: string;
+  tenantOnboardingPlanId: string;
+  tenantId: string;
+  taskKey: string;
+  title: string;
+  description: string | null;
+  status: string;
+  priority: string;
+  required: boolean;
+  ownerRole: string;
+  ownerActorId: string | null;
+  dueAt: string | Date | null;
+  blockedByClient: boolean;
+  blockerReason: string | null;
+  sortOrder: number;
+  completedAt: string | Date | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): TenantOnboardingTask {
+  return {
+    id: record.id,
+    tenantOnboardingPlanId: record.tenantOnboardingPlanId,
+    tenantId: record.tenantId,
+    taskKey: record.taskKey,
+    title: record.title,
+    description: record.description ?? null,
+    status: normalizeOnboardingTaskStatus(record.status),
+    priority: normalizeOnboardingTaskPriority(record.priority),
+    required: Boolean(record.required),
+    ownerRole: normalizeOnboardingOwnerRole(record.ownerRole),
+    ownerActorId: record.ownerActorId ?? null,
+    dueAt: record.dueAt ? toIsoString(record.dueAt) : null,
+    blockedByClient: Boolean(record.blockedByClient),
+    blockerReason: record.blockerReason ?? null,
+    sortOrder: Number(record.sortOrder) || 0,
+    completedAt: record.completedAt ? toIsoString(record.completedAt) : null,
     createdAt: toIsoString(record.createdAt),
     updatedAt: toIsoString(record.updatedAt),
   };
@@ -572,6 +709,23 @@ function buildEmptyBillingDriftSummary(generatedAt: string, windowDays: number):
       modeCounts: defaultBillingDriftModeCounts(),
     },
     byTenant: [],
+  };
+}
+
+function buildEmptyOnboardingUsageTelemetrySummary(
+  generatedAt: string,
+  windowDays: number
+): ControlPlaneOnboardingUsageTelemetryObservabilitySummary {
+  return {
+    windowDays,
+    publishCount: 0,
+    latestPublishedAt: null,
+    totals: {
+      recentEventCount: 0,
+      publishedEventTypeCount: 0,
+      publishedBulkActionTypeCount: 0,
+    },
+    bulkActionStats: {},
   };
 }
 
@@ -798,6 +952,403 @@ export async function updateTenantDomainStatus(
   });
 
   return toTenantDomain(updated);
+}
+
+export async function listTenantOnboardingPlansByTenantId(tenantId: string): Promise<TenantOnboardingPlan[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return [];
+  }
+  const prismaAny = prisma as any;
+
+  const rows = await prismaAny.tenantOnboardingPlan.findMany({
+    where: { tenantId },
+    orderBy: [{ createdAt: 'desc' }],
+  });
+
+  return rows.map(toTenantOnboardingPlan);
+}
+
+export async function getActiveTenantOnboardingPlanByTenantId(tenantId: string): Promise<TenantOnboardingPlan | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return null;
+  }
+  const prismaAny = prisma as any;
+
+  const rows = await prismaAny.tenantOnboardingPlan.findMany({
+    where: { tenantId, status: { not: 'archived' } },
+    orderBy: [{ createdAt: 'desc' }],
+  });
+  const preferred =
+    rows.find((row: any) => row.status === 'active') ??
+    rows.find((row: any) => row.status === 'paused') ??
+    rows.find((row: any) => row.status === 'draft') ??
+    rows[0] ??
+    null;
+
+  return preferred ? toTenantOnboardingPlan(preferred) : null;
+}
+
+export async function listTenantOnboardingTasksByPlanId(
+  tenantId: string,
+  tenantOnboardingPlanId: string
+): Promise<TenantOnboardingTask[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return [];
+  }
+  const prismaAny = prisma as any;
+
+  const rows = await prismaAny.tenantOnboardingTask.findMany({
+    where: { tenantId, tenantOnboardingPlanId },
+    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+  });
+
+  return rows.map(toTenantOnboardingTask);
+}
+
+export async function getActiveTenantOnboardingPlanWithTasks(tenantId: string): Promise<TenantOnboardingPlanWithTasks | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return null;
+  }
+  const prismaAny = prisma as any;
+
+  const planRows = await prismaAny.tenantOnboardingPlan.findMany({
+    where: { tenantId, status: { not: 'archived' } },
+    orderBy: [{ createdAt: 'desc' }],
+  });
+  const planRow =
+    planRows.find((row: any) => row.status === 'active') ??
+    planRows.find((row: any) => row.status === 'paused') ??
+    planRows.find((row: any) => row.status === 'draft') ??
+    planRows[0] ??
+    null;
+  if (!planRow) {
+    return null;
+  }
+
+  const taskRows = await prismaAny.tenantOnboardingTask.findMany({
+    where: { tenantId, tenantOnboardingPlanId: planRow.id },
+    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+  });
+
+  return {
+    plan: toTenantOnboardingPlan(planRow),
+    tasks: taskRows.map(toTenantOnboardingTask),
+  };
+}
+
+function normalizeOnboardingTemplateTasks(tasks: TenantOnboardingPlanTaskSeedInput[]): Array<{
+  taskKey: string;
+  title: string;
+  description: string | null;
+  required: boolean;
+  ownerRole: TenantOnboardingOwnerRole;
+  priority: TenantOnboardingTaskPriority;
+  sortOrder: number;
+  dueAt: Date | null;
+}> {
+  if (!Array.isArray(tasks) || tasks.length === 0) {
+    throw new Error('At least one onboarding task is required to create a plan.');
+  }
+
+  const seenTaskKeys = new Set<string>();
+
+  return tasks.map((task, index) => {
+    const taskKey = normalizeOptionalString(task.taskKey);
+    if (!taskKey) {
+      throw new Error(`Task at index ${index} is missing a taskKey.`);
+    }
+    if (seenTaskKeys.has(taskKey)) {
+      throw new Error(`Duplicate onboarding taskKey: ${taskKey}.`);
+    }
+    seenTaskKeys.add(taskKey);
+
+    const title = normalizeOptionalString(task.title);
+    if (!title) {
+      throw new Error(`Task ${taskKey} is missing a title.`);
+    }
+
+    const parsedDueAt =
+      task.dueAt === undefined ? null : task.dueAt === null ? null : parseOptionalIsoDate(task.dueAt);
+    if (task.dueAt !== undefined && task.dueAt !== null && !parsedDueAt) {
+      throw new Error(`Task ${taskKey} dueAt must be a valid ISO date or null.`);
+    }
+
+    return {
+      taskKey,
+      title,
+      description: normalizeOptionalString(task.description ?? null),
+      required: Boolean(task.required),
+      ownerRole: normalizeOnboardingOwnerRole(task.ownerRole),
+      priority: normalizeOnboardingTaskPriority(task.priority),
+      sortOrder: Number.isFinite(task.sortOrder as number) ? Math.trunc(task.sortOrder as number) : index,
+      dueAt: parsedDueAt,
+    };
+  });
+}
+
+export async function createTenantOnboardingPlanFromTemplate(
+  tenantId: string,
+  input: CreateTenantOnboardingPlanFromTemplateInput
+): Promise<TenantOnboardingPlanWithTasks> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    throw new Error('Onboarding task persistence requires Prisma runtime availability.');
+  }
+  const prismaAny = prisma as any;
+
+  const tenant = await prismaAny.tenant.findUnique({ where: { id: tenantId }, select: { id: true } });
+  if (!tenant) {
+    throw new Error('Tenant not found.');
+  }
+
+  const planCode = normalizeOptionalString(input.planCode) ?? 'starter';
+  const status = normalizeOnboardingPlanStatus(input.status);
+  const startedAtInput = input.startedAt === undefined ? undefined : input.startedAt;
+  const startedAt =
+    startedAtInput === undefined
+      ? status === 'active' || status === 'paused' || status === 'completed'
+        ? new Date()
+        : null
+      : startedAtInput === null
+        ? null
+        : parseOptionalIsoDate(startedAtInput);
+  if (startedAtInput !== undefined && startedAtInput !== null && !startedAt) {
+    throw new Error('startedAt must be a valid ISO date or null.');
+  }
+
+  const targetLaunchDate =
+    input.targetLaunchDate === undefined
+      ? null
+      : input.targetLaunchDate === null
+        ? null
+        : parseOptionalIsoDate(input.targetLaunchDate);
+  if (input.targetLaunchDate !== undefined && input.targetLaunchDate !== null && !targetLaunchDate) {
+    throw new Error('targetLaunchDate must be a valid ISO date or null.');
+  }
+
+  const normalizedTasks = normalizeOnboardingTemplateTasks(input.tasks);
+  const now = new Date();
+
+  const result = await prisma.$transaction(async (tx: any) => {
+    if (status === 'active') {
+      const activeExisting = await tx.tenantOnboardingPlan.findFirst({
+        where: { tenantId, status: 'active' },
+        select: { id: true },
+      });
+      if (activeExisting) {
+        throw new Error('An active onboarding plan already exists for this tenant.');
+      }
+    }
+
+    const planId = `tenant_onboarding_plan_${tenantId}_${randomUUID().slice(0, 8)}`;
+    const planRow = await tx.tenantOnboardingPlan.create({
+      data: {
+        id: planId,
+        tenantId,
+        status,
+        planCode,
+        startedAt,
+        targetLaunchDate,
+        completedAt: status === 'completed' ? now : null,
+        pausedAt: status === 'paused' ? now : null,
+        pauseReason: normalizeOptionalString(input.pauseReason),
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+
+    const taskRows: any[] = [];
+    for (const [index, task] of normalizedTasks.entries()) {
+      const createdTask = await tx.tenantOnboardingTask.create({
+        data: {
+          id: `tenant_onboarding_task_${planId}_${String(index + 1).padStart(2, '0')}`,
+          tenantOnboardingPlanId: planId,
+          tenantId,
+          taskKey: task.taskKey,
+          title: task.title,
+          description: task.description,
+          status: 'pending',
+          priority: task.priority,
+          required: task.required,
+          ownerRole: task.ownerRole,
+          ownerActorId: null,
+          dueAt: task.dueAt,
+          blockedByClient: false,
+          blockerReason: null,
+          sortOrder: task.sortOrder,
+          completedAt: null,
+          createdAt: now,
+          updatedAt: now,
+        },
+      });
+      taskRows.push(createdTask);
+    }
+
+    return {
+      plan: toTenantOnboardingPlan(planRow),
+      tasks: taskRows.map(toTenantOnboardingTask),
+    } satisfies TenantOnboardingPlanWithTasks;
+  });
+
+  return result;
+}
+
+export async function updateTenantOnboardingPlan(
+  tenantId: string,
+  planId: string,
+  input: UpdateTenantOnboardingPlanInput
+): Promise<TenantOnboardingPlan | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    throw new Error('Onboarding task persistence requires Prisma runtime availability.');
+  }
+  const prismaAny = prisma as any;
+
+  const existing = await prismaAny.tenantOnboardingPlan.findFirst({
+    where: { id: planId, tenantId },
+  });
+  if (!existing) {
+    return null;
+  }
+
+  const nextStatus = input.status ? normalizeOnboardingPlanStatus(input.status) : normalizeOnboardingPlanStatus(existing.status);
+  const parsedTargetLaunchDate =
+    input.targetLaunchDate === undefined
+      ? existing.targetLaunchDate
+      : input.targetLaunchDate === null
+        ? null
+        : parseOptionalIsoDate(input.targetLaunchDate);
+  if (input.targetLaunchDate !== undefined && input.targetLaunchDate !== null && !parsedTargetLaunchDate) {
+    throw new Error('targetLaunchDate must be a valid ISO date or null.');
+  }
+
+  const now = new Date();
+  const updated = await prisma.$transaction(async (tx: any) => {
+    if (nextStatus === 'active') {
+      const activeOther = await tx.tenantOnboardingPlan.findFirst({
+        where: { tenantId, status: 'active', id: { not: planId } },
+        select: { id: true },
+      });
+      if (activeOther) {
+        throw new Error('Another active onboarding plan already exists for this tenant.');
+      }
+    }
+
+    return tx.tenantOnboardingPlan.update({
+      where: { id: planId },
+      data: {
+        status: nextStatus,
+        targetLaunchDate: parsedTargetLaunchDate,
+        pauseReason: input.pauseReason === undefined ? existing.pauseReason : normalizeOptionalString(input.pauseReason),
+        pausedAt:
+          nextStatus === 'paused'
+            ? existing.pausedAt ?? now
+            : input.status && existing.status === 'paused'
+              ? null
+              : existing.pausedAt,
+        completedAt:
+          nextStatus === 'completed'
+            ? existing.completedAt ?? now
+            : input.status && existing.status === 'completed'
+              ? null
+              : existing.completedAt,
+        startedAt:
+          existing.startedAt ?? (nextStatus === 'active' || nextStatus === 'paused' || nextStatus === 'completed' ? now : null),
+        updatedAt: now,
+      },
+    });
+  });
+
+  return toTenantOnboardingPlan(updated);
+}
+
+export async function updateTenantOnboardingTask(
+  tenantId: string,
+  taskId: string,
+  input: UpdateTenantOnboardingTaskInput
+): Promise<TenantOnboardingTask | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    throw new Error('Onboarding task persistence requires Prisma runtime availability.');
+  }
+  const prismaAny = prisma as any;
+
+  const existing = await prismaAny.tenantOnboardingTask.findFirst({
+    where: { id: taskId, tenantId },
+  });
+  if (!existing) {
+    return null;
+  }
+
+  const nextStatus = input.status ? normalizeOnboardingTaskStatus(input.status) : normalizeOnboardingTaskStatus(existing.status);
+  const nextPriority = input.priority
+    ? normalizeOnboardingTaskPriority(input.priority)
+    : normalizeOnboardingTaskPriority(existing.priority);
+  const nextOwnerRole = input.ownerRole
+    ? normalizeOnboardingOwnerRole(input.ownerRole)
+    : normalizeOnboardingOwnerRole(existing.ownerRole);
+  const requestedOwnerActorId =
+    input.ownerActorId === undefined ? existing.ownerActorId : normalizeOptionalString(input.ownerActorId);
+  const nextOwnerActorId = nextOwnerRole === 'client' ? null : requestedOwnerActorId;
+  const shouldValidateOwnerActor = Boolean(nextOwnerActorId) && (input.ownerActorId !== undefined || input.ownerRole !== undefined);
+  if (shouldValidateOwnerActor && nextOwnerActorId) {
+    const actor = await prismaAny.tenantControlActor.findFirst({
+      where: { tenantId, actorId: nextOwnerActorId },
+      select: { actorId: true, role: true },
+    });
+    if (!actor) {
+      throw new Error('ownerActorId must reference an existing tenant actor for the tenant.');
+    }
+    if (!isTenantActorRoleCompatibleWithOnboardingOwnerRole(actor.role as ControlPlaneActorRole, nextOwnerRole)) {
+      throw new Error(`Actor role ${String(actor.role)} is not compatible with onboarding owner role ${nextOwnerRole}.`);
+    }
+  }
+  const nextDueAt =
+    input.dueAt === undefined ? existing.dueAt : input.dueAt === null ? null : parseOptionalIsoDate(input.dueAt);
+  if (input.dueAt !== undefined && input.dueAt !== null && !nextDueAt) {
+    throw new Error('dueAt must be a valid ISO date or null.');
+  }
+
+  const nextTitle =
+    input.title === undefined
+      ? existing.title
+      : (() => {
+          const title = normalizeOptionalString(input.title);
+          if (!title) {
+            throw new Error('title must not be empty.');
+          }
+          return title;
+        })();
+
+  const now = new Date();
+  const updated = await prismaAny.tenantOnboardingTask.update({
+    where: { id: taskId },
+    data: {
+      status: nextStatus,
+      priority: nextPriority,
+      ownerRole: nextOwnerRole,
+      ownerActorId: nextOwnerActorId,
+      dueAt: nextDueAt,
+      blockedByClient: input.blockedByClient ?? existing.blockedByClient,
+      blockerReason:
+        input.blockerReason === undefined ? existing.blockerReason : normalizeOptionalString(input.blockerReason),
+      title: nextTitle,
+      description: input.description === undefined ? existing.description : normalizeOptionalString(input.description),
+      completedAt:
+        nextStatus === 'done'
+          ? existing.completedAt ?? now
+          : input.status !== undefined
+            ? null
+            : existing.completedAt,
+      updatedAt: now,
+    },
+  });
+
+  return toTenantOnboardingTask(updated);
 }
 
 export async function getTenantControlSettings(tenantId: string): Promise<TenantControlSettings> {
@@ -1701,11 +2252,151 @@ export async function getControlPlaneObservabilitySummary(
   const runtime = await getIngestionRuntimeReadiness();
   const safeTenantLimit = Math.max(1, Math.min(Math.trunc(tenantLimit), 100));
   const generatedAt = new Date().toISOString();
+  const nowTimestamp = Date.now();
+  let onboardingSummary: ControlPlaneOnboardingObservabilitySummary = {
+    tenantsWithPersistedPlan: 0,
+    activePlans: 0,
+    pausedPlans: 0,
+    completedPlans: 0,
+    blockedRequiredTasks: 0,
+    overdueRequiredTasks: 0,
+    unassignedRequiredTasks: 0,
+  };
 
-  const tenantReadiness = snapshots
-    .map((snapshot) => {
+  const onboardingCurrentPlanByTenantId = new Map<
+    string,
+    { id: string; status: TenantOnboardingPlanStatus; createdAt: Date | string }
+  >();
+  const onboardingTasksByPlanId = new Map<
+    string,
+    Array<{
+      status: string;
+      required: boolean;
+      dueAt: Date | string | null;
+      ownerRole: string;
+      ownerActorId: string | null;
+    }>
+  >();
+
+  if (prisma && snapshots.length > 0) {
+    const tenantIds = snapshots.map((snapshot) => snapshot.tenant.id);
+    const planRows = await prisma.tenantOnboardingPlan.findMany({
+      where: {
+        tenantId: { in: tenantIds },
+        status: { not: 'archived' },
+      },
+      select: {
+        id: true,
+        tenantId: true,
+        status: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const choosePreferredPlan = (rows: typeof planRows) =>
+      rows.find((row: { status: string }) => row.status === 'active') ??
+      rows.find((row: { status: string }) => row.status === 'paused') ??
+      rows.find((row: { status: string }) => row.status === 'draft') ??
+      rows.find((row: { status: string }) => row.status === 'completed') ??
+      rows[0] ??
+      null;
+
+    const groupedByTenant = new Map<string, typeof planRows>();
+    for (const row of planRows) {
+      const list = groupedByTenant.get(row.tenantId) ?? [];
+      list.push(row);
+      groupedByTenant.set(row.tenantId, list);
+    }
+    for (const [tenantId, rows] of groupedByTenant.entries()) {
+      const selected = choosePreferredPlan(rows);
+      if (selected) {
+        onboardingCurrentPlanByTenantId.set(tenantId, selected);
+      }
+    }
+
+    const currentPlanIds = Array.from(onboardingCurrentPlanByTenantId.values()).map((plan) => plan.id);
+    if (currentPlanIds.length > 0) {
+      const taskRows = await prisma.tenantOnboardingTask.findMany({
+        where: {
+          tenantOnboardingPlanId: { in: currentPlanIds },
+        },
+        select: {
+          tenantOnboardingPlanId: true,
+          status: true,
+          required: true,
+          dueAt: true,
+          ownerRole: true,
+          ownerActorId: true,
+        },
+      });
+
+      for (const row of taskRows) {
+        const list = onboardingTasksByPlanId.get(row.tenantOnboardingPlanId) ?? [];
+        list.push(row);
+        onboardingTasksByPlanId.set(row.tenantOnboardingPlanId, list);
+      }
+    }
+
+    onboardingSummary.tenantsWithPersistedPlan = onboardingCurrentPlanByTenantId.size;
+    for (const plan of onboardingCurrentPlanByTenantId.values()) {
+      if (plan.status === 'active') {
+        onboardingSummary.activePlans += 1;
+      } else if (plan.status === 'paused') {
+        onboardingSummary.pausedPlans += 1;
+      } else if (plan.status === 'completed') {
+        onboardingSummary.completedPlans += 1;
+      }
+
+      const tasks = onboardingTasksByPlanId.get(plan.id) ?? [];
+      for (const task of tasks) {
+        if (!task.required || task.status === 'done' || task.status === 'skipped') {
+          continue;
+        }
+        if (task.status === 'blocked') {
+          onboardingSummary.blockedRequiredTasks += 1;
+        }
+        if (task.dueAt) {
+          const dueAtTimestamp = Date.parse(toIsoString(task.dueAt));
+          if (Number.isFinite(dueAtTimestamp) && dueAtTimestamp < nowTimestamp) {
+            onboardingSummary.overdueRequiredTasks += 1;
+          }
+        }
+        if (task.ownerRole !== 'client' && (!task.ownerActorId || task.ownerActorId.trim().length === 0)) {
+          onboardingSummary.unassignedRequiredTasks += 1;
+        }
+      }
+    }
+  }
+
+  const tenantReadiness: ControlPlaneObservabilitySummary['tenantReadiness'] = snapshots
+    .map((snapshot): ControlPlaneObservabilitySummary['tenantReadiness'][number] => {
       const activeDomains = snapshot.domains.filter((domain) => domain.status === 'active');
       const primaryDomain = activeDomains.find((domain) => domain.isPrimary) ?? null;
+      const onboardingPlan = onboardingCurrentPlanByTenantId.get(snapshot.tenant.id) ?? null;
+      const onboardingTasks = onboardingPlan ? onboardingTasksByPlanId.get(onboardingPlan.id) ?? [] : [];
+      const onboardingPlanStatus: TenantOnboardingPlanStatus | 'none' = onboardingPlan
+        ? (onboardingPlan.status as TenantOnboardingPlanStatus)
+        : 'none';
+      const requiredOnboardingTasks = onboardingTasks.filter((task) => task.required);
+      const completedRequiredOnboardingCount = requiredOnboardingTasks.filter((task) => task.status === 'done').length;
+      const incompleteRequiredOnboardingCount = requiredOnboardingTasks.filter(
+        (task) => task.status !== 'done' && task.status !== 'skipped'
+      ).length;
+      const blockedRequiredOnboardingCount = requiredOnboardingTasks.filter((task) => task.status === 'blocked').length;
+      const overdueRequiredOnboardingCount = requiredOnboardingTasks.filter((task) => {
+        if (task.status === 'done' || task.status === 'skipped' || !task.dueAt) {
+          return false;
+        }
+        const dueAtTimestamp = Date.parse(toIsoString(task.dueAt));
+        return Number.isFinite(dueAtTimestamp) && dueAtTimestamp < nowTimestamp;
+      }).length;
+      const unassignedRequiredOnboardingCount = requiredOnboardingTasks.filter((task) => {
+        if (task.status === 'done' || task.status === 'skipped') {
+          return false;
+        }
+        return task.ownerRole !== 'client' && (!task.ownerActorId || task.ownerActorId.trim().length === 0);
+      }).length;
       const checks = [
         { label: 'Tenant active', ok: snapshot.tenant.status === 'active' },
         { label: 'Primary domain exists', ok: Boolean(primaryDomain) },
@@ -1719,6 +2410,23 @@ export async function getControlPlaneObservabilitySummary(
           label: 'Feature flags configured',
           ok: snapshot.settings.status === 'active' && snapshot.settings.featureFlags.length > 0,
         },
+        { label: 'Onboarding plan created', ok: Boolean(onboardingPlan) },
+        {
+          label: 'Onboarding plan active (not paused)',
+          ok: Boolean(onboardingPlan) && onboardingPlan?.status !== 'paused' && onboardingPlan?.status !== 'archived',
+        },
+        {
+          label: 'No blocked required onboarding tasks',
+          ok: Boolean(onboardingPlan) && blockedRequiredOnboardingCount === 0,
+        },
+        {
+          label: 'No overdue required onboarding tasks',
+          ok: Boolean(onboardingPlan) && overdueRequiredOnboardingCount === 0,
+        },
+        {
+          label: 'Required onboarding tasks assigned',
+          ok: Boolean(onboardingPlan) && unassignedRequiredOnboardingCount === 0,
+        },
       ];
 
       const completed = checks.filter((entry) => entry.ok).length;
@@ -1729,6 +2437,15 @@ export async function getControlPlaneObservabilitySummary(
         tenantName: snapshot.tenant.name,
         tenantSlug: snapshot.tenant.slug,
         score,
+        onboarding: {
+          planStatus: onboardingPlanStatus,
+          requiredTaskCount: requiredOnboardingTasks.length,
+          completedRequiredTaskCount: completedRequiredOnboardingCount,
+          incompleteRequiredTaskCount: incompleteRequiredOnboardingCount,
+          blockedRequiredTasks: blockedRequiredOnboardingCount,
+          overdueRequiredTasks: overdueRequiredOnboardingCount,
+          unassignedRequiredTasks: unassignedRequiredOnboardingCount,
+        },
         checks,
       };
     })
@@ -1752,9 +2469,15 @@ export async function getControlPlaneObservabilitySummary(
   let deadLetterCount = 0;
   const billingDriftWindowDays = 7;
   let billingDriftSummary = buildEmptyBillingDriftSummary(generatedAt, billingDriftWindowDays);
+  const onboardingUsageTelemetryWindowDays = 14;
+  let onboardingUsageTelemetrySummary = buildEmptyOnboardingUsageTelemetrySummary(
+    generatedAt,
+    onboardingUsageTelemetryWindowDays
+  );
 
   if (prisma) {
     const sevenDaysAgo = new Date(Date.now() - billingDriftWindowDays * 24 * 60 * 60 * 1000);
+    const telemetryWindowStart = new Date(Date.now() - onboardingUsageTelemetryWindowDays * 24 * 60 * 60 * 1000);
 
     const auditRows = await prisma.adminAuditEvent.findMany({
       where: {
@@ -1898,6 +2621,99 @@ export async function getControlPlaneObservabilitySummary(
         })
         .slice(0, safeTenantLimit),
     };
+
+    const telemetryRows = await prisma.adminAuditEvent.findMany({
+      where: {
+        action: 'tenant.observability.telemetry.publish',
+        status: 'succeeded',
+        createdAt: {
+          gte: telemetryWindowStart,
+        },
+      },
+      select: {
+        metadataJson: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    onboardingUsageTelemetrySummary.publishCount = telemetryRows.length;
+    for (const row of telemetryRows) {
+      const metadata = parseAuditMetadataJson(row.metadataJson);
+      const telemetryAggregate =
+        metadata &&
+        typeof metadata.telemetryAggregate === 'object' &&
+        metadata.telemetryAggregate &&
+        !Array.isArray(metadata.telemetryAggregate)
+          ? (metadata.telemetryAggregate as Record<string, unknown>)
+          : null;
+
+      const createdAt = toIsoString(row.createdAt);
+      if (!onboardingUsageTelemetrySummary.latestPublishedAt || createdAt > onboardingUsageTelemetrySummary.latestPublishedAt) {
+        onboardingUsageTelemetrySummary.latestPublishedAt = createdAt;
+      }
+      if (!telemetryAggregate) {
+        continue;
+      }
+
+      onboardingUsageTelemetrySummary.totals.recentEventCount += toIntegerValue(telemetryAggregate.recentEventCount) ?? 0;
+
+      const countsByEvent =
+        telemetryAggregate.countsByEvent &&
+        typeof telemetryAggregate.countsByEvent === 'object' &&
+        !Array.isArray(telemetryAggregate.countsByEvent)
+          ? (telemetryAggregate.countsByEvent as Record<string, unknown>)
+          : null;
+      if (countsByEvent) {
+        onboardingUsageTelemetrySummary.totals.publishedEventTypeCount += Object.keys(countsByEvent).length;
+      }
+
+      const bulkActionStats =
+        telemetryAggregate.bulkActionStats &&
+        typeof telemetryAggregate.bulkActionStats === 'object' &&
+        !Array.isArray(telemetryAggregate.bulkActionStats)
+          ? (telemetryAggregate.bulkActionStats as Record<string, unknown>)
+          : null;
+      if (!bulkActionStats) {
+        continue;
+      }
+
+      onboardingUsageTelemetrySummary.totals.publishedBulkActionTypeCount += Object.keys(bulkActionStats).length;
+      for (const [actionKey, rawStats] of Object.entries(bulkActionStats)) {
+        if (
+          actionKey !== 'status' &&
+          actionKey !== 'owner_role' &&
+          actionKey !== 'owner_actor' &&
+          actionKey !== 'owner_role_actor'
+        ) {
+          continue;
+        }
+
+        const statsRecord =
+          rawStats && typeof rawStats === 'object' && !Array.isArray(rawStats)
+            ? (rawStats as Record<string, unknown>)
+            : null;
+        if (!statsRecord) {
+          continue;
+        }
+
+        const current = onboardingUsageTelemetrySummary.bulkActionStats[actionKey] ?? {
+          count: 0,
+          totalSelectedCount: 0,
+          totalEligibleCount: 0,
+          totalSuccessCount: 0,
+          totalFailureCount: 0,
+          totalDurationMs: 0,
+        };
+        current.count += toIntegerValue(statsRecord.count) ?? 0;
+        current.totalSelectedCount += toIntegerValue(statsRecord.totalSelectedCount) ?? 0;
+        current.totalEligibleCount += toIntegerValue(statsRecord.totalEligibleCount) ?? 0;
+        current.totalSuccessCount += toIntegerValue(statsRecord.totalSuccessCount) ?? 0;
+        current.totalFailureCount += toIntegerValue(statsRecord.totalFailureCount) ?? 0;
+        current.totalDurationMs += toIntegerValue(statsRecord.totalDurationMs) ?? 0;
+        onboardingUsageTelemetrySummary.bulkActionStats[actionKey] = current;
+      }
+    }
   }
 
   return {
@@ -1917,6 +2733,8 @@ export async function getControlPlaneObservabilitySummary(
       deadLetterCount,
     },
     billingDrift: billingDriftSummary,
+    onboarding: onboardingSummary,
+    onboardingUsageTelemetry: onboardingUsageTelemetrySummary,
     tenantReadiness,
   };
 }

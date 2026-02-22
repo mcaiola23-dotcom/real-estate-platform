@@ -1,6 +1,11 @@
 import type { CrmLeadType, CrmLeadStatus } from '@real-estate/types/crm';
 
 const LEAD_TYPE_LABELS: Record<CrmLeadType, string> = {
+  buyer: 'Buyer',
+  seller: 'Seller',
+  investor: 'Investor',
+  renter: 'Renter',
+  other: 'Other',
   website_lead: 'Website Lead',
   valuation_request: 'Valuation Request',
 };
@@ -9,6 +14,7 @@ const SOURCE_LABELS: Record<string, string> = {
   website: 'Website',
   website_valuation: 'Valuation Request',
   crm_manual: 'CRM Manual',
+  csv_import: 'CSV Import',
 };
 
 const ACTIVITY_LABELS: Record<string, string> = {

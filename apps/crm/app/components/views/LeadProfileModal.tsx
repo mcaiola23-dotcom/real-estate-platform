@@ -28,7 +28,12 @@ import { LeadTagInput } from '../leads/LeadTagInput';
 import { SourceAttributionChain } from '../leads/SourceAttributionChain';
 import { UnifiedTimeline } from '../leads/UnifiedTimeline';
 import { SmartReminderForm } from '../shared/SmartReminderForm';
+import { AiPredictiveScore } from '../shared/AiPredictiveScore';
+import { AiLeadRouting } from '../shared/AiLeadRouting';
 import { TemplateLibrary } from '../shared/TemplateLibrary';
+import { AiDraftComposer } from '../shared/AiDraftComposer';
+import { GmailComposer } from '../shared/GmailComposer';
+import { GmailThreads } from '../shared/GmailThreads';
 import type { MergeFieldContext } from '../../lib/crm-templates';
 
 interface LeadProfileModalProps {
@@ -83,6 +88,27 @@ export function LeadProfileModal({
   onSnoozeReminder,
 }: LeadProfileModalProps) {
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showAiComposer, setShowAiComposer] = useState(false);
+  const [showGmailComposer, setShowGmailComposer] = useState(false);
+  const [showGmailThreads, setShowGmailThreads] = useState(false);
+  const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
+  const [addingToCalendar, setAddingToCalendar] = useState(false);
+  const [calendarAdded, setCalendarAdded] = useState(false);
+
+  // Check Google connection status
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/integrations/google/status', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setGoogleConnected(data.connected ?? false);
+      })
+      .catch(() => {
+        if (!cancelled) setGoogleConnected(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   // Suggested property matches — derive loading from data staleness to avoid synchronous setState in effect body
   interface MatchEntry { listing: Listing; score: number; matchReasons: string[] }
   const [matchData, setMatchData] = useState<{ leadId: string; data: MatchEntry[] } | null>(null);
@@ -126,6 +152,30 @@ export function LeadProfileModal({
             <p className="crm-muted">
               Created {formatDateTime(lead.createdAt)} • Updated {formatDateTime(lead.updatedAt)}
             </p>
+            {activeContact && (activeContact.phone || activeContact.email) ? (
+              <div className="crm-quick-actions" style={{ marginTop: '0.5rem' }}>
+                {activeContact.phone ? (
+                  <a href={`tel:${activeContact.phone}`} className="crm-quick-action" title={`Call ${activeContact.phone}`} aria-label="Call lead">
+                    📞
+                  </a>
+                ) : null}
+                {activeContact.email ? (
+                  <a
+                    href={`mailto:${activeContact.email}?subject=${encodeURIComponent(`Re: ${leadDraft.listingAddress || 'Your inquiry'}`)}`}
+                    className="crm-quick-action"
+                    title={`Email ${activeContact.email}`}
+                    aria-label="Email lead"
+                  >
+                    ✉️
+                  </a>
+                ) : null}
+                {activeContact.phone ? (
+                  <a href={`sms:${activeContact.phone}`} className="crm-quick-action" title={`Text ${activeContact.phone}`} aria-label="Text lead">
+                    💬
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
           </div>
           <button type="button" className="crm-modal-close" onClick={onClose} aria-label="Close lead profile">
             ✕
@@ -419,6 +469,10 @@ export function LeadProfileModal({
                   leadId={lead.id}
                   tenantId={lead.tenantId}
                 />
+                <AiPredictiveScore
+                  leadId={lead.id}
+                  tenantId={lead.tenantId}
+                />
               </div>
               <div className="crm-lead-insights-charts">
                 <LeadActivityChart activities={activities} />
@@ -427,6 +481,11 @@ export function LeadProfileModal({
             </div>
             <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
             <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
+            <AiLeadRouting
+              leadId={lead.id}
+              tenantId={lead.tenantId}
+              currentAssignee={lead.assignedTo}
+            />
             <SmartReminderForm
               leadId={lead.id}
               tenantId={lead.tenantId}
@@ -436,11 +495,48 @@ export function LeadProfileModal({
               onSave={(data) => onSaveReminder?.(lead.id, data)}
               onSnooze={(ms) => onSnoozeReminder?.(lead.id, ms)}
             />
-            <div className="crm-template-toggle">
+            {lead.nextActionAt && (
+              <div className="crm-calendar-add-row">
+                {googleConnected ? (
+                  <button
+                    type="button"
+                    className="crm-secondary-button"
+                    disabled={addingToCalendar || calendarAdded}
+                    onClick={async () => {
+                      setAddingToCalendar(true);
+                      try {
+                        const res = await fetch('/api/integrations/google/calendar/sync', { method: 'POST' });
+                        const data = await res.json();
+                        if (data.ok) setCalendarAdded(true);
+                      } catch { /* handled by sync result */ }
+                      setAddingToCalendar(false);
+                    }}
+                  >
+                    {calendarAdded ? '✓ Synced to Calendar' : addingToCalendar ? 'Adding...' : '📅 Add to Google Calendar'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="crm-secondary-button"
+                    onClick={() => {
+                      const { downloadIcsFile } = require('../../lib/crm-calendar');
+                      downloadIcsFile({
+                        title: `Follow up: ${activeContact?.fullName ?? 'Lead'} — ${lead.nextActionNote || 'Follow up'}`,
+                        startDate: new Date(lead.nextActionAt!),
+                        description: lead.notes || undefined,
+                      });
+                    }}
+                  >
+                    📅 Download .ics
+                  </button>
+                )}
+              </div>
+            )}
+            <div className="crm-template-toggle" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 className="crm-template-toggle__btn"
-                onClick={() => setShowTemplates(!showTemplates)}
+                onClick={() => { setShowTemplates(!showTemplates); setShowAiComposer(false); }}
               >
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                   <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
@@ -448,6 +544,32 @@ export function LeadProfileModal({
                 </svg>
                 {showTemplates ? 'Hide Templates' : 'Message Templates'}
               </button>
+              <button
+                type="button"
+                className="crm-template-toggle__btn"
+                onClick={() => { setShowAiComposer(!showAiComposer); setShowTemplates(false); setShowGmailComposer(false); }}
+              >
+                <span style={{ marginRight: '0.25rem' }}>◆</span>
+                {showAiComposer ? 'Hide Composer' : 'Draft with AI'}
+              </button>
+              {activeContact?.email && (
+                <button
+                  type="button"
+                  className="crm-template-toggle__btn"
+                  onClick={() => { setShowGmailComposer(!showGmailComposer); setShowTemplates(false); setShowAiComposer(false); }}
+                >
+                  ✉️ {showGmailComposer ? 'Hide Email' : googleConnected ? 'Send via Gmail' : 'Email'}
+                </button>
+              )}
+              {activeContact?.email && googleConnected && (
+                <button
+                  type="button"
+                  className="crm-template-toggle__btn"
+                  onClick={() => setShowGmailThreads(!showGmailThreads)}
+                >
+                  📧 {showGmailThreads ? 'Hide Threads' : 'Email History'}
+                </button>
+              )}
             </div>
             {showTemplates && (
               <TemplateLibrary
@@ -476,14 +598,58 @@ export function LeadProfileModal({
                 onClose={() => setShowTemplates(false)}
               />
             )}
+            {showAiComposer && (
+              <AiDraftComposer
+                leadId={lead.id}
+                tenantId={lead.tenantId}
+                contactName={activeContact?.fullName ?? null}
+                contactEmail={activeContact?.email ?? null}
+                contactPhone={activeContact?.phone ?? null}
+                propertyAddress={lead.listingAddress}
+                onClose={() => setShowAiComposer(false)}
+                onSend={() => setShowAiComposer(false)}
+              />
+            )}
+            {showGmailComposer && activeContact?.email && (
+              <GmailComposer
+                to={activeContact.email}
+                leadId={lead.id}
+                contactName={activeContact.fullName ?? undefined}
+                propertyAddress={lead.listingAddress ?? undefined}
+                googleConnected={googleConnected ?? false}
+                onClose={() => setShowGmailComposer(false)}
+                onSent={() => {
+                  setShowGmailComposer(false);
+                  void onLogContact('email_sent', `Email sent to ${activeContact.email}`);
+                }}
+              />
+            )}
+            {showGmailThreads && activeContact?.email && googleConnected && (
+              <GmailThreads
+                email={activeContact.email}
+                onReply={(threadId, subject) => {
+                  setShowGmailComposer(true);
+                  setShowGmailThreads(false);
+                }}
+                onClose={() => setShowGmailThreads(false)}
+              />
+            )}
           </section>
         </div>
 
         <ContactHistoryLog
           leadId={lead.id}
+          tenantId={lead.tenantId}
           contactId={lead.contactId}
           activities={activities}
           onLogContact={onLogContact}
+          onApplyInsights={(insights) => {
+            const insightText = insights.map((i) => `[${i.category}] ${i.value}`).join('\n');
+            const existing = leadDraft.notes?.trim() || '';
+            const separator = existing ? '\n---\n' : '';
+            onSetLeadDraftField(lead.id, 'notes', existing + separator + insightText);
+            void onUpdateLead(lead.id);
+          }}
         />
 
         {(propertyMatches.length > 0 || matchesLoading) ? (

@@ -21,6 +21,12 @@ export interface ActionCenterInput {
   diagnosticsFailedCount: number;
   diagnosticsWarningCount: number;
   actorCount: number;
+  onboardingLoaded?: boolean;
+  onboardingPlanExists?: boolean;
+  onboardingPlanStatus?: 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+  onboardingRequiredBlockedCount?: number;
+  onboardingRequiredOverdueCount?: number;
+  onboardingRequiredUnassignedCount?: number;
 }
 
 const severityRank: Record<ActionCenterItem['severity'], number> = {
@@ -145,6 +151,63 @@ export function buildActionCenterItems(input: ActionCenterInput): ActionCenterIt
       tab: 'access',
       sectionId: 'access',
     });
+  }
+
+  if (input.onboardingLoaded) {
+    if (!input.onboardingPlanExists) {
+      items.push({
+        id: 'onboarding-plan-missing',
+        severity: 'warning',
+        title: 'No persisted onboarding plan',
+        detail: 'Create a tenant onboarding plan from the Launch checklist template to track task completion durably.',
+        tab: 'launch',
+        sectionId: 'launch-setup',
+      });
+    } else {
+      if (input.onboardingPlanStatus === 'paused') {
+        items.push({
+          id: 'onboarding-plan-paused',
+          severity: 'warning',
+          title: 'Onboarding plan is paused',
+          detail: 'Resume onboarding when blockers are cleared so launch task tracking stays current.',
+          tab: 'launch',
+          sectionId: 'launch-setup',
+        });
+      }
+
+      if ((input.onboardingRequiredBlockedCount ?? 0) > 0) {
+        items.push({
+          id: 'onboarding-blocked-tasks',
+          severity: 'critical',
+          title: `Blocked onboarding tasks (${input.onboardingRequiredBlockedCount})`,
+          detail: 'Resolve blocked required onboarding tasks before go-live readiness review.',
+          tab: 'launch',
+          sectionId: 'launch-setup',
+        });
+      }
+
+      if ((input.onboardingRequiredOverdueCount ?? 0) > 0) {
+        items.push({
+          id: 'onboarding-overdue-tasks',
+          severity: 'critical',
+          title: `Overdue onboarding tasks (${input.onboardingRequiredOverdueCount})`,
+          detail: 'Review due dates and complete overdue required onboarding tasks.',
+          tab: 'launch',
+          sectionId: 'launch-setup',
+        });
+      }
+
+      if ((input.onboardingRequiredUnassignedCount ?? 0) > 0) {
+        items.push({
+          id: 'onboarding-unassigned-tasks',
+          severity: 'warning',
+          title: `Unassigned onboarding tasks (${input.onboardingRequiredUnassignedCount})`,
+          detail: 'Assign owners to required onboarding tasks so launch responsibilities are clear.',
+          tab: 'launch',
+          sectionId: 'launch-setup',
+        });
+      }
+    }
   }
 
   if (items.length === 0) {

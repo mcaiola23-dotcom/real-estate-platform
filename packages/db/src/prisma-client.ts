@@ -1,6 +1,9 @@
-let prismaClientPromise: Promise<any | null> | null = null;
-let prismaRuntimeReason: 'edge_runtime' | 'missing_engine' | 'import_failed' | null = null;
-let prismaRuntimeMessage: string | null = null;
+// Use globalThis for promise/state cache to survive ESM dual-module loading (tsx/Node)
+const _g = globalThis as {
+  __realEstatePrismaPromise?: Promise<any | null> | null;
+  __realEstatePrismaReason?: 'edge_runtime' | 'missing_engine' | 'import_failed' | null;
+  __realEstatePrismaMessage?: string | null;
+};
 
 function isEdgeRuntime(): boolean {
   return typeof (globalThis as { EdgeRuntime?: string }).EdgeRuntime !== 'undefined' || process.env.NEXT_RUNTIME === 'edge';
@@ -94,38 +97,37 @@ function isMissingEngineDatasourceError(error: unknown): boolean {
 
 export function getPrismaClientAvailability(): PrismaClientAvailability {
   return {
-    available: prismaRuntimeReason === null,
-    reason: prismaRuntimeReason,
-    message: prismaRuntimeMessage,
+    available: (_g.__realEstatePrismaReason ?? null) === null,
+    reason: _g.__realEstatePrismaReason ?? null,
+    message: _g.__realEstatePrismaMessage ?? null,
   };
 }
 
 export async function getPrismaClient(): Promise<any | null> {
   if (isEdgeRuntime()) {
-    prismaRuntimeReason = 'edge_runtime';
-    prismaRuntimeMessage = 'Prisma client is unavailable in edge runtime.';
+    _g.__realEstatePrismaReason = 'edge_runtime';
+    _g.__realEstatePrismaMessage = 'Prisma client is unavailable in edge runtime.';
     return null;
   }
 
-  if (!prismaClientPromise) {
-    prismaClientPromise = (async () => {
+  if (!_g.__realEstatePrismaPromise) {
+    _g.__realEstatePrismaPromise = (async () => {
       try {
         if (!process.env.DATABASE_URL) {
           process.env.DATABASE_URL = await resolveDefaultDatabaseUrl();
         }
-
         const hasEngineBinary = await hasPrismaQueryEngineArtifact();
         if (!hasEngineBinary) {
-          prismaRuntimeReason = 'missing_engine';
-          prismaRuntimeMessage =
+          _g.__realEstatePrismaReason = 'missing_engine';
+          _g.__realEstatePrismaMessage =
             'Prisma query engine artifacts are missing. Ingestion scripts require full-engine generation; run npm run db:generate:direct --workspace @real-estate/db.';
           return null;
         }
 
         const generatedClientEntry = await resolveGeneratedClientEntry();
         if (!generatedClientEntry) {
-          prismaRuntimeReason = 'missing_engine';
-          prismaRuntimeMessage =
+          _g.__realEstatePrismaReason = 'missing_engine';
+          _g.__realEstatePrismaMessage =
             'Generated Prisma client was not found. Run npm run db:generate:direct --workspace @real-estate/db.';
           return null;
         }
@@ -136,8 +138,8 @@ export async function getPrismaClient(): Promise<any | null> {
         ) => Promise<{ PrismaClient?: new () => any }>;
         const prismaModule = await dynamicImport(pathToFileURL(generatedClientEntry).href);
         if (!prismaModule.PrismaClient) {
-          prismaRuntimeReason = 'import_failed';
-          prismaRuntimeMessage = 'Unable to resolve PrismaClient from generated Prisma client output.';
+          _g.__realEstatePrismaReason = 'import_failed';
+          _g.__realEstatePrismaMessage = 'Unable to resolve PrismaClient from generated Prisma client output.';
           return null;
         }
 
@@ -148,24 +150,24 @@ export async function getPrismaClient(): Promise<any | null> {
           await globalWithPrisma.__realEstatePrismaClient.$queryRawUnsafe('SELECT 1');
         } catch (error) {
           if (isMissingEngineDatasourceError(error)) {
-            prismaRuntimeReason = 'missing_engine';
-            prismaRuntimeMessage =
+            _g.__realEstatePrismaReason = 'missing_engine';
+            _g.__realEstatePrismaMessage =
               'Prisma client is generated without local query engine support in this environment. Ingestion scripts require full-engine generation; run npm run db:generate:direct --workspace @real-estate/db.';
             return null;
           }
           throw error;
         }
-        prismaRuntimeReason = null;
-        prismaRuntimeMessage = null;
+        _g.__realEstatePrismaReason = null;
+        _g.__realEstatePrismaMessage = null;
         return globalWithPrisma.__realEstatePrismaClient;
       } catch (error) {
-        prismaRuntimeReason = 'import_failed';
-        prismaRuntimeMessage =
+        _g.__realEstatePrismaReason = 'import_failed';
+        _g.__realEstatePrismaMessage =
           error instanceof Error ? error.message : 'Prisma client import/initialization failed.';
         return null;
       }
     })();
   }
 
-  return prismaClientPromise;
+  return _g.__realEstatePrismaPromise;
 }

@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Continue Admin control-plane usability and maintainability improvements while preparing the durable onboarding-task persistence MVP, preserving tenant isolation and shared package boundaries.
+All CRM AI roadmap items are now complete: #50/#53 (Score Explain/Summary), #55 (Market Digest), #56 (Listing Description), #57 (Predictive Lead Scoring), #58 (Smart Lead Routing). 53/53 CRM route tests passing. Next: continue Admin post-MVP onboarding polish, Calendar Sync Phase 2 (#64), team/brokerage hierarchy, or marketing attribution.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -58,12 +58,15 @@ Continue Admin control-plane usability and maintainability improvements while pr
 52. CRM Phase 9A (AI-Powered Reminders) is now in place via DB migration `202602220001_add_reminder_fields` (`nextActionChannel` TEXT, `reminderSnoozedUntil` DATETIME), smart reminder engine in `packages/ai/src/crm/reminder-engine.ts` (5 rule-based patterns + AI enhancement), factory-pattern API route `/api/ai/reminders/[leadId]`, and `SmartReminderForm` UI component with AI suggestion chips, channel selector, and quick snooze buttons.
 53. CRM Phase 9B (AI Message Templates) is now in place via template library `apps/crm/app/lib/crm-templates.ts` (9 pre-built templates, merge field resolution, category/channel taxonomy) and `TemplateLibrary` UI component with two-panel browse/preview layout, AI tone adjustment via existing `/api/ai/draft-message`, and use-template actions (mailto/clipboard).
 54. CRM Phase 9D (AI Escalation) is now in place via escalation engine in `packages/ai/src/crm/escalation-engine.ts` (4 triggers, 5 escalation levels 0-4, score decay computation), factory-pattern API route `/api/ai/escalation/[leadId]`, `EscalationBanner` + `EscalationAlertBanner` UI components with level-specific styling and dashboard integration, and score decay integration in `apps/crm/app/lib/crm-scoring.ts`.
+55. CRM remaining polish items are now fully implemented: #62 Mobile-First Actions (`MobileActionBar.tsx` with 4 quick actions, responsive CSS, 44px touch targets), #63 Offline Note Capture (`use-offline-queue.ts` with localStorage queue + background sync + amber offline badge), #65 MLS/IDX Feed Status (`FeedStatusChip.tsx` + factory-pattern feed-status API route), #66 Document Management (enhanced `DocumentsPane` with status cycling/checklists/progress + PATCH document route), #61 Export & Reporting (`crm-export.ts` with CSV/print utilities + Lead Tracker export button).
 
 ## Immediate Next Steps
-- First next session: implement the durable onboarding-task persistence MVP in Admin control plane using `project_tracking/admin_onboarding_task_persistence_design.md`, starting with shared contracts + Prisma schema/models/helpers before UI mutation wiring.
-- Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes and record trend deltas in this file.
-- Keep manual browser click-through for Admin and CRM deferred until buildout stabilizes (per current user override); do not spend time on manual QA next session unless the user explicitly changes direction.
-- Continue Admin decomposition only as needed to support onboarding-task persistence UI integration (prefer targeted extraction over broad rewrites).
+- CRM feature work is fully complete — no remaining CRM items.
+- AI Market Digest (#55) and AI Listing Description Generator (#56) are done with orchestration modules, API routes, UI components, and route tests.
+- Continue Admin post-MVP onboarding polish: bulk mutation API evaluation, telemetry-to-observability promotion.
+- OR advance remaining AI roadmap: AI content generation pipeline for website onboarding, feedback loops, quality scoring.
+- Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes.
+- Keep manual browser click-through deferred until buildout stabilizes (per current user override).
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -827,3 +830,295 @@ Continue Admin control-plane usability and maintainability improvements while pr
 ### Session Validation (2026-02-22 Admin Billing/Access/Audit Body Extraction Completion)
 - `node --import tsx --test apps/admin/app/lib/action-center.test.ts apps/admin/app/lib/workspace-task-metrics.test.ts` passes.
 - `timeout 120s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after billing/access/audit body extraction wiring.
+
+## Session Update (2026-02-22 Admin Onboarding Task Persistence MVP Slice)
+
+### Completed This Session
+1. Implemented durable onboarding task persistence foundation in shared contracts/db:
+- added onboarding plan/task contracts and mutation input types in `packages/types/src/control-plane.ts`,
+- added Prisma models + migration `202602220002_add_tenant_onboarding_persistence` for `TenantOnboardingPlan` and `TenantOnboardingTask`,
+- added tenant-scoped onboarding helpers in `packages/db/src/control-plane.ts` (list/get active plan, list tasks, create plan from template, plan update, task update).
+2. Added Admin onboarding API scaffolding (factory-pattern + admin audit integration):
+- `GET/POST /api/tenants/[tenantId]/onboarding`,
+- `PATCH /api/tenants/[tenantId]/onboarding/[planId]`,
+- `PATCH /api/tenants/[tenantId]/onboarding/tasks/[taskId]`.
+3. Added first Admin UI integration in Launch Setup (`apps/admin/app/components/control-plane-workspace.tsx`):
+- loads persisted onboarding bundle per selected tenant,
+- shows persisted onboarding tasks in the existing checklist panel when present,
+- adds `Create Plan From Template` action to seed tenant tasks from plan-tier defaults.
+4. Extended Admin audit action filter parsing/options to include onboarding audit actions (`tenant.onboarding.plan.create`, `tenant.onboarding.plan.update`, `tenant.onboarding.task.update`).
+5. Added onboarding route integration coverage in `apps/admin/app/api/lib/routes.integration.test.ts` for onboarding GET/POST and plan/task PATCH behavior.
+
+### Session Validation (2026-02-22 Admin Onboarding Task Persistence MVP Slice)
+- `npm run test:routes --workspace @real-estate/admin` remains non-authoritative in this sandbox due `tsx` IPC socket permission (`listen EPERM /tmp/tsx-1000/*.pipe`).
+- `./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json` reports a pre-existing module resolution issue unrelated to this slice (`@real-estate/types/website-config` in `packages/db/src/seed-data.ts` / `packages/db/src/website-config.ts`).
+- WSL `./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json` did not produce a timely result in this mixed filesystem/sandbox session, so no authoritative Admin typecheck result was captured here.
+
+## Session Update (2026-02-22 Admin Onboarding Task Persistence MVP Task-Mutation UI)
+
+### Completed This Session
+1. Added persisted onboarding task mutation UI to the Admin Launch checklist panel in `apps/admin/app/components/control-plane-workspace.tsx`:
+- per-task draft state for `status`, `ownerRole`, `dueAt`, `blockedByClient`, and `blockerReason`,
+- inline controls and `Save Task` action for persisted onboarding tasks,
+- task-level saving/error state with local UI feedback.
+2. Wired Launch checklist task saves to `PATCH /api/tenants/[tenantId]/onboarding/tasks/[taskId]` and update local onboarding task state on success (without requiring a full workspace refresh).
+3. Fixed onboarding route TypeScript issues discovered during validation:
+- corrected relative imports to `admin-access.ts` in onboarding plan/task route files,
+- replaced `as typeof body` self-referential casts with explicit request-body object casts.
+
+### Session Validation (2026-02-22 Admin Onboarding Task Persistence MVP Task-Mutation UI)
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after onboarding task mutation UI and onboarding route type fixes.
+- `npm run test:routes --workspace @real-estate/admin` remains non-authoritative in this sandbox due `tsx` IPC socket permission (`listen EPERM /tmp/tsx-1000/*.pipe`).
+
+## Session Update (2026-02-22 Admin Onboarding Plan Lifecycle + Action Center/Readiness Integration)
+
+### Completed This Session
+1. Added onboarding plan lifecycle controls to the Admin Launch checklist panel in `apps/admin/app/components/control-plane-workspace.tsx`:
+- plan status summary chips (status, blocked required count, overdue required count, required completion count),
+- `Pause Plan`, `Resume Plan`, and `Complete Plan` actions wired to `PATCH /api/tenants/[tenantId]/onboarding/[planId]`.
+2. Integrated persisted onboarding task signals into Admin launch readiness and next-step guidance:
+- readiness checks now include onboarding-plan presence/status plus blocked/overdue required task checks,
+- tenant next-step guidance now calls out missing persisted onboarding plan, paused plan state, and blocked/overdue required onboarding tasks.
+3. Integrated persisted onboarding task signals into Action Center prioritization:
+- added Launch warnings/critical items for missing persisted onboarding plan, paused onboarding plan, blocked required onboarding tasks, overdue required onboarding tasks (with helper/test coverage updates in `apps/admin/app/lib/action-center.ts` + `action-center.test.ts`).
+4. Ran Windows-authoritative validation attempts and fallback route validation:
+- Prisma `db:generate` and `db:migrate:deploy` executed via Windows `cmd.exe` and applied onboarding migration successfully,
+- Admin production build executed via Windows `cmd.exe` and includes new onboarding API routes,
+- Admin route-test command in Windows `cmd.exe` failed due mixed-node_modules `esbuild` platform mismatch (Linux binary present in Windows run),
+- WSL fallback route test (`node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts`) passes.
+
+### Session Validation (2026-02-22 Admin Onboarding Plan Lifecycle + Action Center/Readiness Integration)
+- `node --import tsx --test apps/admin/app/lib/action-center.test.ts` passes after onboarding Action Center signal additions.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after Launch plan-lifecycle + readiness integration changes.
+- `cmd.exe /c "... && npm run db:generate --workspace @real-estate/db"` passes via safe-generate wrapper (observed Windows Prisma engine lock retries then `engine=none` fallback).
+- `cmd.exe /c "... && npm run db:migrate:deploy --workspace @real-estate/db"` passes and applies `202602220002_add_tenant_onboarding_persistence` (plus pending local migration `202602230001_add_lead_close_and_assignment` already present in repo state).
+- `cmd.exe /c "... && npm run build --workspace @real-estate/admin"` passes and lists onboarding routes:
+  - `/api/tenants/[tenantId]/onboarding`
+  - `/api/tenants/[tenantId]/onboarding/[planId]`
+  - `/api/tenants/[tenantId]/onboarding/tasks/[taskId]`
+- `cmd.exe /c "... && npm run test:routes --workspace @real-estate/admin"` fails due mixed-platform `esbuild` binary mismatch (`@esbuild/linux-x64` present, Windows command needs `@esbuild/win32-x64`); treat as environment-state failure, not route-behavior evidence.
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes in WSL as functional fallback route validation.
+
+## Session Update (2026-02-22 Admin Onboarding Plan Field Editing UI)
+
+### Completed This Session
+1. Added plan-level editable onboarding fields in the Launch checklist panel (`apps/admin/app/components/control-plane-workspace.tsx`):
+- `targetLaunchDate` date input,
+- `pauseReason` input,
+- `Save Plan` action with tenant-scoped local draft/saving/error state.
+2. Wired `Save Plan` to the existing onboarding plan PATCH route (`/api/tenants/[tenantId]/onboarding/[planId]`) and update local onboarding bundle/draft state on success without full refresh.
+3. Extended onboarding plan status actions (`Pause/Resume/Complete`) to preserve/sync plan draft state (including pause reason) when lifecycle mutations succeed.
+4. Added onboarding plan PATCH happy-path route coverage for `targetLaunchDate` / `pauseReason` updates in `apps/admin/app/api/lib/routes.integration.test.ts`.
+
+### Session Validation (2026-02-22 Admin Onboarding Plan Field Editing UI)
+- `node --import tsx --test apps/admin/app/lib/action-center.test.ts` passes.
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after onboarding plan PATCH happy-path test addition.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after plan-field draft/save UI wiring.
+
+## Session Update (2026-02-22 Admin Onboarding Bulk Actions + Actor Assignment + Server-Side Onboarding Metrics)
+
+### Completed This Session
+1. Added bulk onboarding task actions to the Admin Launch checklist in `apps/admin/app/components/control-plane-workspace.tsx`:
+- tenant-scoped task selection state (`select all`, `clear`),
+- bulk `Mark Done` for selected tasks,
+- bulk owner-role apply for selected tasks via the existing task PATCH API,
+- local onboarding bundle sync after each bulk mutation without full tenant refresh.
+2. Added actor-specific onboarding task assignment UI in the Launch checklist:
+- per-task `ownerActorId` draft/save support,
+- actor dropdown sourced from tenant actors (`selectedTenantActors`),
+- onboarding "unassigned required tasks" signal now keys off missing `ownerActorId` for non-client required tasks.
+3. Fixed persisted onboarding plan refresh behavior for non-active plan states in `packages/db/src/control-plane.ts`:
+- active onboarding plan lookup now prefers `active`, then `paused`, `draft`, `completed` (non-archived), preventing paused/completed plans from disappearing after refresh.
+4. Integrated server-side onboarding metrics into `getControlPlaneObservabilitySummary(...)` and readiness scoring in `packages/db/src/control-plane.ts`:
+- added aggregated onboarding summary counts (persisted plans, active/paused/completed plans, blocked/overdue/unassigned required tasks),
+- extended tenant readiness checks with onboarding plan presence/status and required-task blocker/overdue/assignment conditions.
+5. Extended shared observability contracts and test fixtures for onboarding metrics:
+- added `onboarding` summary to `ControlPlaneObservabilitySummary` in `packages/types/src/control-plane.ts`,
+- updated Admin route integration test fixture in `apps/admin/app/api/lib/routes.integration.test.ts`.
+
+### Session Validation (2026-02-22 Admin Onboarding Bulk Actions + Actor Assignment + Server-Side Onboarding Metrics)
+- `node --import tsx --test apps/admin/app/lib/action-center.test.ts` passes.
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after observability fixture update.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after Launch bulk action/actor assignment UI changes.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json --pretty false` shows only the pre-existing `@real-estate/types/website-config` module-resolution errors in `packages/db/src/seed-data.ts` and `packages/db/src/website-config.ts`; no new onboarding persistence/observability type errors.
+
+## Session Update (2026-02-22 Admin Onboarding Observability UI + Bulk Owner-Actor Assignment + Windows Route-Test Recovery)
+
+### Completed This Session
+1. Surfaced server-side onboarding observability metrics in the Admin Platform Health dashboard (`apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`):
+- added onboarding KPI cards (persisted plans, blocked required tasks, overdue required tasks),
+- added `Onboarding Rollout Health` panel with plan-state counts and blocked/overdue/unassigned required task totals.
+2. Added bulk onboarding task owner-actor assignment workflow in Admin Launch checklist (`apps/admin/app/components/control-plane-workspace.tsx`):
+- tenant-scoped bulk owner-actor selector + `Apply Owner Actor` action,
+- bulk assignment reuses existing task PATCH route and updates local onboarding state incrementally,
+- guardrails for invalid client-role assignment and actor/owner-role compatibility mismatches (including stale actor selection).
+3. Resolved the Windows-authoritative Admin route-test environment blocker caused by mixed-platform `esbuild` state:
+- ran Windows-side `npm rebuild esbuild`,
+- reran `npm run test:routes --workspace @real-estate/admin` successfully in Windows.
+
+### Session Validation (2026-02-22 Admin Onboarding Observability UI + Bulk Owner-Actor Assignment + Windows Route-Test Recovery)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after UI/workspace changes.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after bulk owner-actor assignment UI/logic changes.
+- `cmd.exe /c "... && npm rebuild esbuild"` passes and repairs Windows-side `tsx/esbuild` execution for this repo state.
+- `cmd.exe /c "... && npm run test:routes --workspace @real-estate/admin"` passes (`50/50`) including onboarding route coverage.
+
+## Session Update (2026-02-22 Admin Onboarding Readiness Scoreboard Metrics + Per-Task Assignment Guardrails + Combined Bulk Assignment)
+
+### Completed This Session
+1. Added tenant-level onboarding triage metrics to the Platform Health readiness scoreboard:
+- extended `ControlPlaneTenantReadinessScore` with per-tenant onboarding fields (`planStatus`, `blockedRequiredTasks`, `overdueRequiredTasks`, `unassignedRequiredTasks`) in `packages/types/src/control-plane.ts`,
+- computed these values server-side in `getControlPlaneObservabilitySummary(...)` (`packages/db/src/control-plane.ts`),
+- surfaced them in the tenant readiness scoreboard rows in `apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`.
+2. Improved per-task onboarding `Owner Actor` UX guardrails in the Launch checklist (`apps/admin/app/components/control-plane-workspace.tsx`):
+- per-task owner-actor dropdown now filters to actors compatible with the selected onboarding owner role,
+- stale/missing actor selections and incompatible role selections render inline error guidance,
+- task save path validates owner-actor availability/compatibility before PATCHing.
+3. Added combined bulk onboarding owner assignment action in Launch checklist:
+- new `Apply Role + Actor` action applies both `ownerRole` and `ownerActorId` in one PATCH per selected task,
+- preserves existing bulk role-only and actor-only actions for flexible operator workflows.
+4. Updated Admin observability route integration test fixture for the new readiness payload shape (`tenantReadiness[].onboarding`) in `apps/admin/app/api/lib/routes.integration.test.ts`.
+
+### Session Validation (2026-02-22 Admin Onboarding Readiness Scoreboard Metrics + Per-Task Assignment Guardrails + Combined Bulk Assignment)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after observability readiness fixture update.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after Launch assignment guardrail + combined bulk action changes.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json --pretty false` shows only the pre-existing `@real-estate/types/website-config` module-resolution errors (no new onboarding observability/readiness type errors).
+
+## Session Update (2026-02-22 Admin Onboarding Progress Metrics + Cross-Tenant Triage Panel + Server-Side OwnerActor Validation)
+
+### Completed This Session
+1. Extended per-tenant readiness onboarding metrics with progress context in shared contracts/server summary:
+- added `requiredTaskCount`, `completedRequiredTaskCount`, and `incompleteRequiredTaskCount` to `ControlPlaneTenantReadinessScore.onboarding` (`packages/types/src/control-plane.ts`),
+- computed the new counts server-side in `getControlPlaneObservabilitySummary(...)` (`packages/db/src/control-plane.ts`).
+2. Added cross-tenant onboarding triage UI in the Platform Health tab (`apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`):
+- new `Onboarding Triage Queue` panel with filter controls (`all`, `blocked`, `overdue`, `unassigned`, `paused`, `no plan`),
+- sort controls (`risk`, readiness score, blocked count, overdue count, unassigned count),
+- readiness scoreboard rows now also show onboarding progress chips (`completed/required`).
+3. Enforced onboarding `ownerActorId` compatibility server-side in `updateTenantOnboardingTask(...)` (`packages/db/src/control-plane.ts`):
+- validates referenced actor exists in the tenant when owner role/actor changes,
+- enforces actor-role vs onboarding-owner-role compatibility (same rules as Admin UI guardrails),
+- automatically clears `ownerActorId` for `client` owner-role tasks.
+4. Added route integration coverage for task PATCH compatibility-style validation message passthrough and updated observability fixture shape in `apps/admin/app/api/lib/routes.integration.test.ts`.
+
+### Session Validation (2026-02-22 Admin Onboarding Progress Metrics + Cross-Tenant Triage Panel + Server-Side OwnerActor Validation)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after onboarding route-test additions and observability fixture updates.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after Platform Health triage panel + UI updates.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json --pretty false` shows only the pre-existing `@real-estate/types/website-config` module-resolution errors; onboarding DB helper changes are type-clean.
+
+## Session Update (2026-02-22 Admin Onboarding Triage Quick Actions + Direct DB Compatibility Rule Tests)
+
+### Completed This Session
+1. Added quick navigation actions from Platform Health onboarding triage/readiness rows into tenant Launch workflow:
+- `Open Launch` buttons now appear in the readiness scoreboard and `Onboarding Triage Queue` rows in `apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`,
+- wired into `apps/admin/app/components/control-plane-workspace.tsx` to set the selected tenant and switch to the `launch` workspace tab.
+2. Added direct DB-layer unit coverage for onboarding owner-actor compatibility rules by extracting the compatibility matrix into a focused helper module:
+- new helper `packages/db/src/onboarding-owner-assignment.ts`,
+- new tests `packages/db/src/onboarding-owner-assignment.test.ts` covering admin/operator/support/viewer vs onboarding owner-role compatibility (including `client` role rejection).
+3. Updated `packages/db/src/control-plane.ts` to consume the extracted compatibility helper for server-side onboarding task assignment validation (no behavior change beyond shared-rule reuse).
+
+### Session Validation (2026-02-22 Admin Onboarding Triage Quick Actions + Direct DB Compatibility Rule Tests)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after triage quick-action wiring.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after Platform Health callback prop wiring.
+- `node --import tsx --test packages/db/src/onboarding-owner-assignment.test.ts` passes (direct DB-layer compatibility rule coverage).
+
+## Session Update (2026-02-22 Admin Onboarding Triage Deep-Link Focus + Browser-Local Usage Telemetry)
+
+### Completed This Session
+1. Upgraded Platform Health onboarding triage/readiness quick actions from tab-switch-only to Launch checklist deep-link navigation:
+- added `Open Launch` callbacks with source tagging (`readiness` vs `triage`) in `apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`,
+- wired `apps/admin/app/components/control-plane-workspace.tsx` to select tenant, switch to `launch` tab, and scroll/focus `#launch-onboarding-checklist`.
+2. Added browser-local lightweight usage telemetry for onboarding triage + bulk actions in `apps/admin/app/lib/admin-usage-telemetry.ts`:
+- records per-event counts, last-seen timestamps, recent events, and aggregated bulk-action batch-size/duration/success stats in `localStorage` key `admin-usage-telemetry.v1`,
+- best-effort/no-throw behavior (safe in privacy/quota-constrained environments).
+3. Instrumented onboarding workflows in `apps/admin/app/components/control-plane-workspace.tsx`:
+- triage `Open Launch` actions (`readiness` / `triage` sources),
+- bulk status updates,
+- bulk owner-role updates,
+- bulk owner-actor updates,
+- bulk combined owner-role+actor updates.
+4. Chose not to add a new backend bulk mutation endpoint yet; telemetry instrumentation now provides usage evidence (batch sizes/durations/failure rates) to justify or avoid that API expansion later.
+
+### Session Validation (2026-02-22 Admin Onboarding Triage Deep-Link Focus + Browser-Local Usage Telemetry)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after triage callback signature updates.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after telemetry helper integration and Launch deep-link/focus wiring.
+
+## Session Update (2026-02-22 Admin Telemetry Inspector UI + Evidence-First Bulk Endpoint Decision)
+
+### Completed This Session
+1. Added an in-app debug/inspection surface for browser-local onboarding usage telemetry in `apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`:
+- `Onboarding Usage Telemetry (Local)` panel with `Refresh Local` / `Clear Local` controls,
+- event counters, recent local events, bulk-action aggregate stats (avg selected size, avg duration, failures),
+- local-only storage disclosure (`admin-usage-telemetry.v1`).
+2. Added telemetry-backed bulk-endpoint recommendation messaging in the same panel:
+- computes a lightweight recommendation (`insufficient data`, `PATCH acceptable`, or `bulk endpoint may be justified`) from recorded batch sizes/durations/failure rates.
+3. Extended telemetry helper in `apps/admin/app/lib/admin-usage-telemetry.ts` with `clearAdminUsageTelemetrySnapshot()` for UI reset support.
+4. Reaffirmed decision to keep current repeated PATCH bulk orchestration for onboarding tasks until telemetry evidence shows throughput bottlenecks (no backend bulk endpoint added this session).
+
+### Session Validation (2026-02-22 Admin Telemetry Inspector UI + Evidence-First Bulk Endpoint Decision)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes after Platform Health UI changes (route layer unaffected).
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after telemetry inspector panel + local storage helper integration.
+
+## Session Update (2026-02-22 Opt-In Server-Side Telemetry Promotion (Aggregate Only) + Privacy/Retention Policy Surfacing)
+
+### Completed This Session
+1. Added an opt-in server-side telemetry promotion route for aggregate onboarding usage telemetry:
+- new admin-only endpoint `POST /api/observability/usage-telemetry` in `apps/admin/app/api/observability/usage-telemetry/route.ts`,
+- accepts/sanitizes aggregate-only payloads (counts + bulk-action stats + policy metadata),
+- records a persisted Admin audit event (`tenant.observability.telemetry.publish`) with sanitized aggregate metadata (no raw recent events required).
+2. Added route integration coverage for the new telemetry publish route in `apps/admin/app/api/lib/routes.integration.test.ts`:
+- admin success path,
+- non-admin denial path.
+3. Extended browser-local telemetry helper (`apps/admin/app/lib/admin-usage-telemetry.ts`) with:
+- explicit policy constants (`ADMIN_USAGE_TELEMETRY_POLICY`),
+- aggregate publish payload builder (`buildAdminUsageTelemetryPublishAggregate(...)`),
+- local snapshot clear helper (already added prior session, now used by UI + publish flow).
+4. Upgraded the Platform Health telemetry inspector UI (`apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`) to support server-side promotion and policy visibility:
+- `Publish Aggregate Snapshot` action,
+- privacy/retention policy chips (local storage, manual opt-in aggregate publish, excludes tenant IDs/recent events, suggested server retention window),
+- local publish success/error feedback.
+5. Wired publish callback in `apps/admin/app/components/control-plane-workspace.tsx` and added the new audit action to Admin audit action filter options.
+
+### Session Validation (2026-02-22 Opt-In Server-Side Telemetry Promotion (Aggregate Only) + Privacy/Retention Policy Surfacing)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes with telemetry publish route coverage added.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after telemetry publish route/UI callback/policy integration.
+
+## Session Update (2026-02-22 Server-Side Observability Rollup For Published Onboarding Telemetry Aggregates)
+
+### Completed This Session
+1. Extended `ControlPlaneObservabilitySummary` with a server-side onboarding usage telemetry rollup (`onboardingUsageTelemetry`) in `packages/types/src/control-plane.ts`:
+- windowed publish counts,
+- latest published timestamp,
+- aggregate totals (recentEventCount, published event-type counts, published bulk-action-type counts),
+- rolled-up bulk-action aggregate stats.
+2. Aggregated manually published telemetry snapshots into the observability summary in `packages/db/src/control-plane.ts`:
+- reads `tenant.observability.telemetry.publish` audit events (succeeded) from a 14-day window,
+- parses/sums sanitized aggregate payloads only (no raw recent events / no tenant IDs required),
+- exposes the rollup as `summary.onboardingUsageTelemetry`.
+3. Surfaced server-side published telemetry rollup in the Platform Health telemetry inspector (`apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`):
+- published window + publish count + latest publish,
+- published event/bulk-action type counts,
+- rolled-up published bulk-action aggregate stats,
+- keeps local telemetry and published telemetry clearly separated.
+4. Updated observability route integration fixture for the new summary shape in `apps/admin/app/api/lib/routes.integration.test.ts`.
+
+### Session Validation (2026-02-22 Server-Side Observability Rollup For Published Onboarding Telemetry Aggregates)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes with observability summary fixture and telemetry publish route coverage.
+- `timeout 180s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after Platform Health telemetry rollup UI additions.
+- `timeout 90s ./node_modules/.bin/tsc --noEmit --project packages/db/tsconfig.json --pretty false` shows only the pre-existing `@real-estate/types/website-config` module-resolution errors; telemetry rollup changes are type-clean.
+
+## Session Update (2026-02-22 Centralized Telemetry Recommendation Thresholds + Local-vs-Published Recommendation UI)
+
+### Completed This Session
+1. Centralized onboarding bulk-endpoint recommendation thresholds and evaluation logic in `apps/admin/app/lib/admin-usage-telemetry.ts`:
+- added `ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS`,
+- added `buildAdminBulkEndpointRecommendation(...)`,
+- added `buildAdminUsageTelemetryRollupAlignmentNote(...)`,
+- standardized recommendation output metrics (`runCount`, avg selected count, avg duration, failure rate).
+2. Updated Platform Health telemetry inspector (`apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`) to use shared recommendation helpers:
+- separate recommendation messages for **local browser telemetry** vs **published server rollup telemetry**,
+- explicit rollup-window vs retention alignment note,
+- surfaced the current threshold baseline (`min runs`) in policy chips.
+3. Preserved evidence-first bulk-endpoint posture while making threshold tuning a single helper-constant change (no backend behavior changes this session).
+
+### Session Validation (2026-02-22 Centralized Telemetry Recommendation Thresholds + Local-vs-Published Recommendation UI)
+- `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes (route layer unaffected by helper/UI threshold centralization).
+- `timeout 180s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after telemetry helper export additions and Platform Health recommendation/alignment UI updates.

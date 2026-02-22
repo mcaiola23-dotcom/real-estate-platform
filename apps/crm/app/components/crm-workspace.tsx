@@ -74,7 +74,9 @@ import { SevenDayPulse } from './dashboard/SevenDayPulse';
 import { MyDayPanel } from './dashboard/MyDayPanel';
 import { ConversionFunnel } from './dashboard/ConversionFunnel';
 import { RevenuePipeline } from './dashboard/RevenuePipeline';
+import { MarketDigest } from './dashboard/MarketDigest';
 import { PipelineView } from './pipeline/PipelineView';
+import { WinLossModal } from './pipeline/WinLossModal';
 import { AnalyticsView } from './analytics/AnalyticsView';
 import { CommandPalette } from './shared/CommandPalette';
 import { NotificationCenter } from './header/NotificationCenter';
@@ -82,7 +84,11 @@ import { useCrmTheme } from '../lib/use-theme';
 import { useNotifications } from '../lib/use-notifications';
 import { usePinnedLeads } from '../lib/use-pinned-leads';
 import { EscalationAlertBanner } from './shared/EscalationBanner';
+import { CsvImportModal } from './shared/CsvImportModal';
+import { MobileActionBar } from './shared/MobileActionBar';
 import { computeLeadEscalationLevel } from '@real-estate/ai/crm/escalation-engine';
+import { useOfflineQueue } from '../lib/use-offline-queue';
+import { exportLeadsCsv, exportActivitiesCsv } from '../lib/crm-export';
 
 const ProfileView = dynamic(() => import('./views/ProfileView').then(m => ({ default: m.ProfileView })), { ssr: false });
 const SettingsView = dynamic(() => import('./views/SettingsView').then(m => ({ default: m.SettingsView })), { ssr: false });
@@ -120,6 +126,7 @@ export function CrmWorkspace({
   const [activitySortMode, setActivitySortMode] = useState<'recent' | 'alpha'>('recent');
 
   const [showNewLeadForm, setShowNewLeadForm] = useState(false);
+  const [showCsvImport, setShowCsvImport] = useState(false);
   const [newLeadAddress, setNewLeadAddress] = useState('');
   const [newLeadSource, setNewLeadSource] = useState('crm_manual');
   const [newLeadType, setNewLeadType] = useState<'buyer' | 'seller'>('buyer');
@@ -146,6 +153,7 @@ export function CrmWorkspace({
   const [activeView, setActiveView] = useState<WorkspaceView>('dashboard');
   const [activeLeadProfileId, setActiveLeadProfileId] = useState<string | null>(null);
 
+  const [winLossPrompt, setWinLossPrompt] = useState<{ leadId: string; outcome: 'won' | 'lost' } | null>(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [logoLoadErrored, setLogoLoadErrored] = useState(false);
@@ -245,6 +253,7 @@ export function CrmWorkspace({
   const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false);
   const { notifications, unreadCount } = useNotifications({ leads, activities, contactById });
   const { pinnedIds, togglePin, isPinned } = usePinnedLeads(tenantContext.tenantId);
+  const { isOnline, pendingCount: offlinePendingCount, enqueue: enqueueOffline } = useOfflineQueue(tenantContext.tenantId);
 
   // Cmd+K / Ctrl+K keyboard shortcut for command palette
   useEffect(() => {
@@ -1058,6 +1067,8 @@ export function CrmWorkspace({
       reminderSnoozedUntil?: string | null;
       priceMin?: number | null;
       priceMax?: number | null;
+      assignedTo?: string | null;
+      referredBy?: string | null;
     } = {};
 
     if (draft.status !== lead.status) {
@@ -1141,6 +1152,13 @@ export function CrmWorkspace({
       payload.priceMax = priceMax;
     }
 
+    if (normalizeOptionalString(draft.assignedTo) !== normalizeOptionalString(lead.assignedTo)) {
+      payload.assignedTo = normalizeOptionalString(draft.assignedTo);
+    }
+    if (normalizeOptionalString(draft.referredBy) !== normalizeOptionalString(lead.referredBy)) {
+      payload.referredBy = normalizeOptionalString(draft.referredBy);
+    }
+
     if (Object.keys(payload).length === 0) {
       pushToast('success', 'No unsaved lead changes.');
       return;
@@ -1189,6 +1207,11 @@ export function CrmWorkspace({
 
       clearLeadDraft(leadId);
       pushToast('success', `Saved ${lead.listingAddress || 'lead'} updates.`);
+
+      // Trigger Win/Loss survey when status changes to won or lost (and no reason recorded yet)
+      if (payload.status && (payload.status === 'won' || payload.status === 'lost') && !lead.closeReason) {
+        setWinLossPrompt({ leadId, outcome: payload.status });
+      }
     } catch (mutationError) {
       setLeads((prev) => prev.map((entry) => (entry.id === leadId ? lead : entry)));
       const message = mutationError instanceof Error ? mutationError.message : 'Unknown lead update error.';
@@ -1526,6 +1549,11 @@ export function CrmWorkspace({
       priceMin: null,
       priceMax: null,
       tags: [],
+      closeReason: null,
+      closeNotes: null,
+      closedAt: null,
+      assignedTo: null,
+      referredBy: null,
       createdAt: nowIso,
       updatedAt: nowIso,
     };
@@ -1857,6 +1885,11 @@ export function CrmWorkspace({
             </h2>
           </div>
           <div className="crm-header-tools">
+            {!isOnline && (
+              <span className="crm-offline-badge" title={offlinePendingCount > 0 ? `${offlinePendingCount} items queued` : 'You are offline'}>
+                ⚡ Offline{offlinePendingCount > 0 ? ` (${offlinePendingCount})` : ''}
+              </span>
+            )}
             <div className="crm-search-wrap" ref={searchPanelRef}>
               <label className="crm-search">
                 <span className="crm-search-icon" aria-hidden="true">
@@ -1970,19 +2003,31 @@ export function CrmWorkspace({
         </header>
 
         <nav className="crm-breadcrumb" aria-label="Breadcrumb">
-          <button type="button" className="crm-breadcrumb-item" onClick={() => handleNav('dashboard')}>Dashboard</button>
+          <button type="button" className="crm-breadcrumb-item" onClick={() => { closeLeadProfile(); handleNav('dashboard'); }}>Dashboard</button>
           {activeView !== 'dashboard' ? (
             <>
               <span className="crm-breadcrumb-sep">/</span>
-              <span className="crm-breadcrumb-item crm-breadcrumb-item--current">{
-                activeView === 'pipeline' ? 'Pipeline' :
-                activeView === 'leads' ? 'Leads' :
-                activeView === 'properties' ? 'Properties' :
-                activeView === 'transactions' ? 'Transactions' :
-                activeView === 'analytics' ? 'Analytics' :
-                activeView === 'settings' ? 'Settings' :
-                activeView === 'profile' ? 'Profile' : ''
-              }</span>
+              {activeLeadProfile ? (
+                <button type="button" className="crm-breadcrumb-item" onClick={closeLeadProfile}>{
+                  activeView === 'pipeline' ? 'Pipeline' :
+                  activeView === 'leads' ? 'Leads' :
+                  activeView === 'properties' ? 'Properties' :
+                  activeView === 'transactions' ? 'Transactions' :
+                  activeView === 'analytics' ? 'Analytics' :
+                  activeView === 'settings' ? 'Settings' :
+                  activeView === 'profile' ? 'Profile' : ''
+                }</button>
+              ) : (
+                <span className="crm-breadcrumb-item crm-breadcrumb-item--current">{
+                  activeView === 'pipeline' ? 'Pipeline' :
+                  activeView === 'leads' ? 'Leads' :
+                  activeView === 'properties' ? 'Properties' :
+                  activeView === 'transactions' ? 'Transactions' :
+                  activeView === 'analytics' ? 'Analytics' :
+                  activeView === 'settings' ? 'Settings' :
+                  activeView === 'profile' ? 'Profile' : ''
+                }</span>
+              )}
             </>
           ) : null}
           {activeLeadProfile ? (
@@ -2106,6 +2151,8 @@ export function CrmWorkspace({
               <ConversionFunnel leads={leads} />
               <RevenuePipeline leads={leads} />
             </div>
+
+            <MarketDigest />
 
             <section className="crm-overview-grid">
               <article className="crm-panel">
@@ -2540,13 +2587,29 @@ export function CrmWorkspace({
                 <h3>Lead Tracker</h3>
                 <span className="crm-muted">Track, sort, and manage all your leads in one place.</span>
               </div>
-              <button
-                type="button"
-                className="crm-primary-button"
-                onClick={() => setShowNewLeadForm((prev) => !prev)}
-              >
-                {showNewLeadForm ? '✕ Cancel' : '＋ New Lead'}
-              </button>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="crm-btn crm-btn-ghost"
+                  onClick={() => exportLeadsCsv(leads, contactById)}
+                >
+                  ⬇ Export
+                </button>
+                <button
+                  type="button"
+                  className="crm-btn crm-btn-ghost"
+                  onClick={() => setShowCsvImport(true)}
+                >
+                  📄 Import CSV
+                </button>
+                <button
+                  type="button"
+                  className="crm-primary-button"
+                  onClick={() => setShowNewLeadForm((prev) => !prev)}
+                >
+                  {showNewLeadForm ? '✕ Cancel' : '＋ New Lead'}
+                </button>
+              </div>
             </div>
 
             {showNewLeadForm && (
@@ -2713,6 +2776,7 @@ export function CrmWorkspace({
                           Email
                         </button>
                       </th>
+                      <th>Actions</th>
                       <th>
                         <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('source')}>
                           Source
@@ -2758,6 +2822,21 @@ export function CrmWorkspace({
                         </td>
                         <td>
                           {row.email ? <a href={`mailto:${row.email}`} className="crm-inline-link">{row.email}</a> : '-'}
+                        </td>
+                        <td>
+                          {row.phone || row.email ? (
+                            <div className="crm-quick-actions">
+                              {row.phone ? (
+                                <a href={`tel:${row.phone}`} className="crm-quick-action" title={`Call ${row.phone}`} aria-label="Call lead">📞</a>
+                              ) : null}
+                              {row.email ? (
+                                <a href={`mailto:${row.email}?subject=${encodeURIComponent(`Re: ${row.lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${row.email}`} aria-label="Email lead">✉️</a>
+                              ) : null}
+                              {row.phone ? (
+                                <a href={`sms:${row.phone}`} className="crm-quick-action" title={`Text ${row.phone}`} aria-label="Text lead">💬</a>
+                              ) : null}
+                            </div>
+                          ) : '-'}
                         </td>
                         <td>{formatLeadSourceLabel(row.lead.source)}</td>
                         <td>{formatDateTime(row.lead.updatedAt)}</td>
@@ -2909,6 +2988,45 @@ export function CrmWorkspace({
         />
       ) : null}
 
+      {showCsvImport ? (
+        <CsvImportModal
+          tenantId={tenantContext.tenantId}
+          onClose={() => setShowCsvImport(false)}
+          onImportComplete={(imported, errors) => {
+            pushToast('success', `Imported ${imported} lead${imported !== 1 ? 's' : ''}${errors > 0 ? ` (${errors} error${errors !== 1 ? 's' : ''})` : ''}.`);
+            void loadWorkspace();
+          }}
+        />
+      ) : null}
+
+      {winLossPrompt ? (
+        <WinLossModal
+          leadName={(() => {
+            const l = leadById.get(winLossPrompt.leadId);
+            return l ? getLeadContactLabel(l, contactById) : 'Lead';
+          })()}
+          outcome={winLossPrompt.outcome}
+          onSubmit={async (data) => {
+            try {
+              await fetch(`/api/leads/${winLossPrompt.leadId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  closeReason: data.closeReason || null,
+                  closeNotes: data.closeNotes || null,
+                  closedAt: new Date().toISOString(),
+                }),
+              });
+              pushToast('success', 'Close reason saved.');
+            } catch {
+              pushToast('error', 'Failed to save close reason.');
+            }
+            setWinLossPrompt(null);
+          }}
+          onSkip={() => setWinLossPrompt(null)}
+        />
+      ) : null}
+
       <CommandPalette
         open={cmdPaletteOpen}
         onClose={() => setCmdPaletteOpen(false)}
@@ -2926,6 +3044,20 @@ export function CrmWorkspace({
         onClose={() => setNotificationsOpen(false)}
         notifications={notifications}
         onOpenLead={openLeadProfile}
+      />
+
+      <MobileActionBar
+        onSearchClick={() => {
+          const input = document.querySelector<HTMLInputElement>('.crm-search input');
+          input?.focus();
+        }}
+        onNewLeadClick={() => {
+          handleNav('leads');
+          setShowNewLeadForm(true);
+        }}
+        onLogActivityClick={() => handleNav('activity')}
+        onNotificationsClick={() => setNotificationsOpen(true)}
+        notificationCount={unreadCount}
       />
 
       <div className="crm-toast-stack" aria-live="polite" aria-label="CRM notifications">

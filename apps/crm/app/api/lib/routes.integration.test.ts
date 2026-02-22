@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import type { CrmActivity, CrmContact, CrmLead, TenantContext } from '@real-estate/types';
 
-import type { LeadScoreExplanation, NextActionResult, LeadSummary } from '@real-estate/ai/types';
+import type { LeadScoreExplanation, NextActionResult, LeadSummary, PredictiveScoreResult, LeadRoutingResult } from '@real-estate/ai/types';
 
 import { createActivitiesGetHandler, createActivitiesPostHandler } from '../activities/route';
 import { createContactsGetHandler, createContactsPostHandler } from '../contacts/route';
@@ -17,6 +17,10 @@ import { createDraftMessagePostHandler } from '../ai/draft-message/route';
 import { createExtractInsightsPostHandler } from '../ai/extract-insights/route';
 import { createRemindersGetHandler } from '../ai/reminders/[leadId]/route';
 import { createEscalationGetHandler } from '../ai/escalation/[leadId]/route';
+import { createMarketDigestGetHandler } from '../ai/market-digest/route';
+import { createListingDescriptionPostHandler } from '../ai/listing-description/route';
+import { createPredictiveScoreGetHandler } from '../ai/predictive-score/[leadId]/route';
+import { createLeadRoutingGetHandler } from '../ai/lead-routing/[leadId]/route';
 
 const tenantContext: TenantContext = {
   tenantId: 'tenant_fairfield',
@@ -78,6 +82,11 @@ test('leads GET returns tenant-scoped pagination payload', async () => {
     priceMin: null,
     priceMax: null,
     tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -458,6 +467,11 @@ test('lead PATCH writes status-change activity when status is updated', async ()
     priceMin: null,
     priceMax: null,
     tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -510,6 +524,11 @@ test('lead PATCH does not write status-change activity when only notes are updat
     priceMin: null,
     priceMax: null,
     tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -585,6 +604,11 @@ test('lead GET returns tenant-scoped lead payload', async () => {
     priceMin: null,
     priceMax: null,
     tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -649,6 +673,11 @@ const testLead: CrmLead = {
   priceMin: null,
   priceMax: null,
   tags: [],
+  closeReason: null,
+  closeNotes: null,
+  closedAt: null,
+  assignedTo: null,
+  referredBy: null,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -999,6 +1028,11 @@ test('AI reminders GET returns tenant-scoped suggestions', async () => {
     priceMin: null,
     priceMax: null,
     tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -1095,6 +1129,11 @@ test('AI escalation GET returns tenant-scoped escalation result', async () => {
     priceMin: null,
     priceMax: null,
     tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -1132,4 +1171,299 @@ test('AI escalation GET returns tenant-scoped escalation result', async () => {
   assert.equal(body.escalation.scoreDecayPercent, 20);
   assert.equal(body.escalation.triggers.length, 1);
   assert.equal(body.escalation.triggers[0]!.trigger, 'overdue_followup');
+});
+
+// ---------------------------------------------------------------------------
+// AI Market Digest
+// ---------------------------------------------------------------------------
+
+test('AI market-digest GET returns 401 when unauthorized', async () => {
+  const handler = createMarketDigestGetHandler({
+    requireTenantContext: unauthorizedContext,
+    searchCrmListings: () => ({ listings: [], total: 0, page: 1, pageSize: 12, totalPages: 0 }),
+    generateMarketDigest: async () => ({
+      tenantId: '', stats: {} as never, narrative: '', highlights: [], agentTakeaway: null,
+      provenance: { source: 'fallback' as const, model: null, promptVersion: '', generatedAt: '', latencyMs: 0, cached: false },
+    }),
+  });
+  const response = await handler(new Request('http://crm.local/api/ai/market-digest'));
+  assert.equal(response.status, 401);
+});
+
+test('AI market-digest GET returns tenant-scoped digest', async () => {
+  let receivedTenantId = '';
+  const handler = createMarketDigestGetHandler({
+    requireTenantContext: authorizedContext,
+    searchCrmListings: () => ({
+      listings: [
+        {
+          id: 'prop-1', status: 'active' as const, price: 500000, beds: 3, baths: 2, sqft: 2000,
+          propertyType: 'single-family' as const,
+          address: { street: '1 Main St', city: 'Fairfield', state: 'CT', zip: '06824' },
+          photos: [], listedAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+        },
+      ],
+      total: 1, page: 1, pageSize: 200, totalPages: 1,
+    }),
+    generateMarketDigest: async (tenantId, input) => {
+      receivedTenantId = tenantId;
+      return {
+        tenantId,
+        stats: { totalActive: 1, totalPending: 0, totalSold: 0, medianPrice: 500000, averagePrice: 500000, medianSqft: 2000, pricePerSqft: 250, newListingsThisWeek: 0, priceRange: { min: 500000, max: 500000 }, byPropertyType: { 'single-family': 1 }, byCity: { Fairfield: 1 }, highestPrice: { price: 500000, city: 'Fairfield' }, lowestPrice: { price: 500000, city: 'Fairfield' } },
+        narrative: 'Test digest narrative.',
+        highlights: ['1 active listing'],
+        agentTakeaway: 'Review matches.',
+        provenance: { source: 'fallback' as const, model: null, promptVersion: 'crm.market_digest.v1', generatedAt: new Date().toISOString(), latencyMs: 5, cached: false },
+      };
+    },
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/market-digest'));
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; digest: { narrative: string; highlights: string[] } };
+  assert.equal(body.ok, true);
+  assert.equal(body.digest.narrative, 'Test digest narrative.');
+  assert.equal(body.digest.highlights.length, 1);
+});
+
+// ---------------------------------------------------------------------------
+// AI Listing Description Generator
+// ---------------------------------------------------------------------------
+
+test('AI listing-description POST returns 400 when required fields missing', async () => {
+  const handler = createListingDescriptionPostHandler({
+    requireTenantContext: authorizedContext,
+    generateListingDescription: async () => ({
+      tenantId: '', description: '', wordCount: 0, tone: 'luxury' as const,
+      provenance: { source: 'fallback' as const, model: null, promptVersion: '', generatedAt: '', latencyMs: 0, cached: false },
+    }),
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/listing-description', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: '123 Main St' }),
+    }),
+  );
+  assert.equal(response.status, 400);
+});
+
+test('AI listing-description POST returns tenant-scoped result', async () => {
+  let receivedTenantId = '';
+  let receivedTone = '';
+  const handler = createListingDescriptionPostHandler({
+    requireTenantContext: authorizedContext,
+    generateListingDescription: async (tenantId, input) => {
+      receivedTenantId = tenantId;
+      receivedTone = input.tone;
+      return {
+        tenantId,
+        description: 'Beautiful home at 123 Main Street.',
+        wordCount: 6,
+        tone: input.tone,
+        provenance: { source: 'fallback' as const, model: null, promptVersion: 'crm.listing_description.v1', generatedAt: new Date().toISOString(), latencyMs: 3, cached: false },
+      };
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/listing-description', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        address: '123 Main Street',
+        propertyType: 'single-family',
+        beds: 3,
+        baths: 2,
+        sqft: 2000,
+        tone: 'family-friendly',
+        features: ['pool', 'garage'],
+      }),
+    }),
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  assert.equal(receivedTone, 'family-friendly');
+  const body = (await response.json()) as { ok: boolean; result: { description: string; wordCount: number; tone: string } };
+  assert.equal(body.ok, true);
+  assert.equal(body.result.description, 'Beautiful home at 123 Main Street.');
+  assert.equal(body.result.tone, 'family-friendly');
+});
+
+// ---------------------------------------------------------------------------
+// AI Predictive Score
+// ---------------------------------------------------------------------------
+
+test('AI predictive-score GET returns 401 when unauthorized', async () => {
+  const handler = createPredictiveScoreGetHandler({
+    requireTenantContext: unauthorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+    predictLeadConversion: async () => ({
+      leadId: '', tenantId: '', conversionProbability: 0, confidence: 'low' as const,
+      insufficient: true, dataStats: null, topFactors: [], explanation: null,
+      provenance: { source: 'rule_engine' as const, model: null, promptVersion: '', generatedAt: '', latencyMs: 0, cached: false },
+    }),
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/ai/predictive-score/lead_1'),
+    { params: Promise.resolve({ leadId: 'lead_1' }) },
+  );
+  assert.equal(response.status, 401);
+});
+
+test('AI predictive-score GET returns 404 for missing lead', async () => {
+  const handler = createPredictiveScoreGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+    predictLeadConversion: async () => ({
+      leadId: '', tenantId: '', conversionProbability: 0, confidence: 'low' as const,
+      insufficient: true, dataStats: null, topFactors: [], explanation: null,
+      provenance: { source: 'rule_engine' as const, model: null, promptVersion: '', generatedAt: '', latencyMs: 0, cached: false },
+    }),
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/ai/predictive-score/lead_missing'),
+    { params: Promise.resolve({ leadId: 'lead_missing' }) },
+  );
+  assert.equal(response.status, 404);
+});
+
+test('AI predictive-score GET returns tenant-scoped prediction', async () => {
+  let receivedTenantId = '';
+  const testLead: CrmLead = {
+    id: 'lead_ps1', tenantId: tenantContext.tenantId, contactId: null, status: 'new',
+    leadType: 'buyer', source: 'website', timeframe: null, notes: null,
+    listingId: null, listingUrl: null, listingAddress: '123 Elm St, Fairfield, CT',
+    propertyType: 'single-family', beds: null, baths: null, sqft: null,
+    lastContactAt: null, nextActionAt: null, nextActionNote: null, nextActionChannel: null,
+    reminderSnoozedUntil: null, priceMin: null, priceMax: null, tags: [],
+    closeReason: null, closeNotes: null, closedAt: null,
+    assignedTo: null, referredBy: null,
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+  };
+
+  const handler = createPredictiveScoreGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+    predictLeadConversion: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return {
+        leadId: 'lead_ps1', tenantId, conversionProbability: 65, confidence: 'medium' as const,
+        insufficient: false, dataStats: { totalWon: 30, totalLost: 25 },
+        topFactors: [{ feature: 'Activity Frequency', direction: 'positive' as const, impact: 0.4, detail: 'Activity Frequency: 4-8' }],
+        explanation: 'This lead shows moderate conversion potential.',
+        provenance: { source: 'fallback' as const, model: null, promptVersion: 'crm.predictive_score.v1', generatedAt: new Date().toISOString(), latencyMs: 8, cached: false },
+      };
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/predictive-score/lead_ps1'),
+    { params: Promise.resolve({ leadId: 'lead_ps1' }) },
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; prediction: PredictiveScoreResult };
+  assert.equal(body.ok, true);
+  assert.equal(body.prediction.conversionProbability, 65);
+  assert.equal(body.prediction.confidence, 'medium');
+  assert.equal(body.prediction.topFactors.length, 1);
+});
+
+// ---------------------------------------------------------------------------
+// AI Lead Routing
+// ---------------------------------------------------------------------------
+
+test('AI lead-routing GET returns 401 when unauthorized', async () => {
+  const handler = createLeadRoutingGetHandler({
+    requireTenantContext: unauthorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+    listTenantControlActors: async () => [],
+    computeLeadRouting: async () => ({
+      leadId: '', tenantId: '', mode: 'solo' as const, recommendations: [], explanation: null,
+      provenance: { source: 'rule_engine' as const, model: null, promptVersion: '', generatedAt: '', latencyMs: 0, cached: false },
+    }),
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/ai/lead-routing/lead_1'),
+    { params: Promise.resolve({ leadId: 'lead_1' }) },
+  );
+  assert.equal(response.status, 401);
+});
+
+test('AI lead-routing GET returns 404 for missing lead', async () => {
+  const handler = createLeadRoutingGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => null,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+    listTenantControlActors: async () => [],
+    computeLeadRouting: async () => ({
+      leadId: '', tenantId: '', mode: 'solo' as const, recommendations: [], explanation: null,
+      provenance: { source: 'rule_engine' as const, model: null, promptVersion: '', generatedAt: '', latencyMs: 0, cached: false },
+    }),
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/ai/lead-routing/lead_missing'),
+    { params: Promise.resolve({ leadId: 'lead_missing' }) },
+  );
+  assert.equal(response.status, 404);
+});
+
+test('AI lead-routing GET returns tenant-scoped routing (solo mode)', async () => {
+  let receivedTenantId = '';
+  const testLead: CrmLead = {
+    id: 'lead_rt1', tenantId: tenantContext.tenantId, contactId: null, status: 'new',
+    leadType: 'buyer', source: 'website', timeframe: null, notes: null,
+    listingId: null, listingUrl: null, listingAddress: '10 Oak Ave, Fairfield, CT',
+    propertyType: 'condo', beds: null, baths: null, sqft: null,
+    lastContactAt: null, nextActionAt: null, nextActionNote: null, nextActionChannel: null,
+    reminderSnoozedUntil: null, priceMin: null, priceMax: null, tags: [],
+    closeReason: null, closeNotes: null, closedAt: null,
+    assignedTo: null, referredBy: null,
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+  };
+
+  const handler = createLeadRoutingGetHandler({
+    requireTenantContext: authorizedContext,
+    getLeadByIdForTenant: async () => testLead,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+    listTenantControlActors: async () => [],
+    computeLeadRouting: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return {
+        leadId: 'lead_rt1', tenantId, mode: 'solo' as const,
+        recommendations: [{
+          agentId: 'actor_1', agentName: 'Agent One', compositeScore: 72,
+          factors: [{ factor: 'Pipeline Load', weight: 0.2, score: 80, detail: '3 active leads' }],
+          isCurrentAssignee: false,
+        }],
+        explanation: 'Self-assessment: strong pipeline capacity.',
+        provenance: { source: 'fallback' as const, model: null, promptVersion: 'crm.lead_routing.v1', generatedAt: new Date().toISOString(), latencyMs: 5, cached: false },
+      };
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/lead-routing/lead_rt1'),
+    { params: Promise.resolve({ leadId: 'lead_rt1' }) },
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; routing: LeadRoutingResult };
+  assert.equal(body.ok, true);
+  assert.equal(body.routing.mode, 'solo');
+  assert.equal(body.routing.recommendations.length, 1);
+  assert.equal(body.routing.recommendations[0]!.compositeScore, 72);
 });

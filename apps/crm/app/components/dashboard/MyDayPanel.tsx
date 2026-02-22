@@ -120,23 +120,39 @@ export const MyDayPanel = memo(function MyDayPanel({
                 <span className="crm-myday__section-count">{overdueLeads.length}</span>
               </h3>
               <ul className="crm-myday__list">
-                {overdueLeads.slice(0, 5).map((lead) => (
-                  <li key={lead.id} className="crm-myday__item">
-                    <button
-                      type="button"
-                      className="crm-myday__item-link"
-                      onClick={() => onOpenLead(lead.id)}
-                    >
-                      <span className="crm-myday__item-name">{getLeadLabel(lead, contactById)}</span>
-                      <span className="crm-myday__item-note">{lead.nextActionNote || 'Follow-up needed'}</span>
-                      {lead.nextActionAt && (
-                        <span className="crm-myday__item-due crm-myday__item-due--overdue">
-                          {formatDueDate(lead.nextActionAt)}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                ))}
+                {overdueLeads.slice(0, 5).map((lead) => {
+                  const contact = lead.contactId ? contactById.get(lead.contactId) : undefined;
+                  return (
+                    <li key={lead.id} className="crm-myday__item">
+                      <button
+                        type="button"
+                        className="crm-myday__item-link"
+                        onClick={() => onOpenLead(lead.id)}
+                      >
+                        <span className="crm-myday__item-name">{getLeadLabel(lead, contactById)}</span>
+                        <span className="crm-myday__item-note">{lead.nextActionNote || 'Follow-up needed'}</span>
+                        {lead.nextActionAt && (
+                          <span className="crm-myday__item-due crm-myday__item-due--overdue">
+                            {formatDueDate(lead.nextActionAt)}
+                          </span>
+                        )}
+                      </button>
+                      {contact && (contact.phone || contact.email) ? (
+                        <div className="crm-quick-actions crm-quick-actions--compact">
+                          {contact.phone ? (
+                            <a href={`tel:${contact.phone}`} className="crm-quick-action" title={`Call ${contact.phone}`} aria-label="Call lead">📞</a>
+                          ) : null}
+                          {contact.email ? (
+                            <a href={`mailto:${contact.email}?subject=${encodeURIComponent(`Re: ${lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${contact.email}`} aria-label="Email lead">✉️</a>
+                          ) : null}
+                          {contact.phone ? (
+                            <a href={`sms:${contact.phone}`} className="crm-quick-action" title={`Text ${contact.phone}`} aria-label="Text lead">💬</a>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
@@ -148,19 +164,35 @@ export const MyDayPanel = memo(function MyDayPanel({
                 <span className="crm-myday__section-count">{todayLeads.length}</span>
               </h3>
               <ul className="crm-myday__list">
-                {todayLeads.slice(0, 5).map((lead) => (
-                  <li key={lead.id} className="crm-myday__item">
-                    <button
-                      type="button"
-                      className="crm-myday__item-link"
-                      onClick={() => onOpenLead(lead.id)}
-                    >
-                      <span className="crm-myday__item-name">{getLeadLabel(lead, contactById)}</span>
-                      <span className="crm-myday__item-note">{lead.nextActionNote || 'Follow-up scheduled'}</span>
-                      <span className="crm-myday__item-due crm-myday__item-due--today">Today</span>
-                    </button>
-                  </li>
-                ))}
+                {todayLeads.slice(0, 5).map((lead) => {
+                  const contact = lead.contactId ? contactById.get(lead.contactId) : undefined;
+                  return (
+                    <li key={lead.id} className="crm-myday__item">
+                      <button
+                        type="button"
+                        className="crm-myday__item-link"
+                        onClick={() => onOpenLead(lead.id)}
+                      >
+                        <span className="crm-myday__item-name">{getLeadLabel(lead, contactById)}</span>
+                        <span className="crm-myday__item-note">{lead.nextActionNote || 'Follow-up scheduled'}</span>
+                        <span className="crm-myday__item-due crm-myday__item-due--today">Today</span>
+                      </button>
+                      {contact && (contact.phone || contact.email) ? (
+                        <div className="crm-quick-actions crm-quick-actions--compact">
+                          {contact.phone ? (
+                            <a href={`tel:${contact.phone}`} className="crm-quick-action" title={`Call ${contact.phone}`} aria-label="Call lead">📞</a>
+                          ) : null}
+                          {contact.email ? (
+                            <a href={`mailto:${contact.email}?subject=${encodeURIComponent(`Re: ${lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${contact.email}`} aria-label="Email lead">✉️</a>
+                          ) : null}
+                          {contact.phone ? (
+                            <a href={`sms:${contact.phone}`} className="crm-quick-action" title={`Text ${contact.phone}`} aria-label="Text lead">💬</a>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
@@ -172,19 +204,35 @@ export const MyDayPanel = memo(function MyDayPanel({
                 <span className="crm-myday__section-count">{hotLeads.length}</span>
               </h3>
               <ul className="crm-myday__list">
-                {hotLeads.map((lead) => (
-                  <li key={lead.id} className="crm-myday__item">
-                    <button
-                      type="button"
-                      className="crm-myday__item-link"
-                      onClick={() => onOpenLead(lead.id)}
-                    >
-                      <span className="crm-myday__item-name">{getLeadLabel(lead, contactById)}</span>
-                      <span className="crm-myday__item-note">Recent activity detected</span>
-                      <span className="crm-myday__item-due crm-myday__item-due--hot">Active</span>
-                    </button>
-                  </li>
-                ))}
+                {hotLeads.map((lead) => {
+                  const contact = lead.contactId ? contactById.get(lead.contactId) : undefined;
+                  return (
+                    <li key={lead.id} className="crm-myday__item">
+                      <button
+                        type="button"
+                        className="crm-myday__item-link"
+                        onClick={() => onOpenLead(lead.id)}
+                      >
+                        <span className="crm-myday__item-name">{getLeadLabel(lead, contactById)}</span>
+                        <span className="crm-myday__item-note">Recent activity detected</span>
+                        <span className="crm-myday__item-due crm-myday__item-due--hot">Active</span>
+                      </button>
+                      {contact && (contact.phone || contact.email) ? (
+                        <div className="crm-quick-actions crm-quick-actions--compact">
+                          {contact.phone ? (
+                            <a href={`tel:${contact.phone}`} className="crm-quick-action" title={`Call ${contact.phone}`} aria-label="Call lead">📞</a>
+                          ) : null}
+                          {contact.email ? (
+                            <a href={`mailto:${contact.email}?subject=${encodeURIComponent(`Re: ${lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${contact.email}`} aria-label="Email lead">✉️</a>
+                          ) : null}
+                          {contact.phone ? (
+                            <a href={`sms:${contact.phone}`} className="crm-quick-action" title={`Text ${contact.phone}`} aria-label="Text lead">💬</a>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

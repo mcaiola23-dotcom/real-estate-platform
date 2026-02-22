@@ -9,6 +9,9 @@ import type {
   TenantBillingProviderEventResult,
   TenantBillingSubscription,
   TenantControlActor,
+  TenantOnboardingPlan,
+  TenantOnboardingPlanWithTasks,
+  TenantOnboardingTask,
   TenantSupportDiagnosticsSummary,
   TenantSupportRemediationResult,
 } from '@real-estate/types/control-plane';
@@ -17,6 +20,7 @@ import { computeBillingDriftRemediation } from '../../lib/billing-drift-remediat
 import { createAdminAuditGetHandler } from '../admin-audit/route';
 import { createBillingWebhookPostHandler } from '../billing/webhooks/route';
 import { createObservabilityGetHandler } from '../observability/route';
+import { createObservabilityUsageTelemetryPostHandler } from '../observability/usage-telemetry/route';
 import { createTenantsGetHandler, createTenantsPostHandler } from '../tenants/route';
 import { createTenantStatusPatchHandler } from '../tenants/[tenantId]/status/route';
 import { createActorsGetHandler, createActorsPostHandler } from '../tenants/[tenantId]/actors/route';
@@ -30,6 +34,9 @@ import { createDomainPatchHandler } from '../tenants/[tenantId]/domains/[domainI
 import { createDomainProbePostHandler } from '../tenants/[tenantId]/domains/probe/route';
 import { createBillingGetHandler, createBillingPatchHandler } from '../tenants/[tenantId]/billing/route';
 import { createDiagnosticsGetHandler, createDiagnosticsPostHandler } from '../tenants/[tenantId]/diagnostics/route';
+import { createTenantOnboardingPlanPatchHandler } from '../tenants/[tenantId]/onboarding/[planId]/route';
+import { createTenantOnboardingGetHandler, createTenantOnboardingPostHandler } from '../tenants/[tenantId]/onboarding/route';
+import { createTenantOnboardingTaskPatchHandler } from '../tenants/[tenantId]/onboarding/tasks/[taskId]/route';
 import { createSettingsGetHandler, createSettingsPatchHandler } from '../tenants/[tenantId]/settings/route';
 
 const snapshotFixture: ControlPlaneTenantSnapshot = {
@@ -109,6 +116,55 @@ function buildActorFixture(overrides: Partial<TenantControlActor> = {}): TenantC
   };
 }
 
+function buildOnboardingPlanFixture(overrides: Partial<TenantOnboardingPlan> = {}): TenantOnboardingPlan {
+  return {
+    id: 'tenant_onboarding_plan_alpha_1',
+    tenantId: 'tenant_alpha',
+    status: 'active',
+    planCode: 'starter',
+    startedAt: '2026-02-22T00:00:00.000Z',
+    targetLaunchDate: null,
+    completedAt: null,
+    pausedAt: null,
+    pauseReason: null,
+    createdAt: '2026-02-22T00:00:00.000Z',
+    updatedAt: '2026-02-22T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+function buildOnboardingTaskFixture(overrides: Partial<TenantOnboardingTask> = {}): TenantOnboardingTask {
+  return {
+    id: 'tenant_onboarding_task_alpha_1',
+    tenantOnboardingPlanId: 'tenant_onboarding_plan_alpha_1',
+    tenantId: 'tenant_alpha',
+    taskKey: 'starter-kickoff',
+    title: 'Kickoff + intake packet completed',
+    description: null,
+    status: 'pending',
+    priority: 'high',
+    required: true,
+    ownerRole: 'sales',
+    ownerActorId: null,
+    dueAt: null,
+    blockedByClient: false,
+    blockerReason: null,
+    sortOrder: 0,
+    completedAt: null,
+    createdAt: '2026-02-22T00:00:00.000Z',
+    updatedAt: '2026-02-22T00:00:00.000Z',
+    ...overrides,
+  };
+}
+
+function buildOnboardingBundleFixture(overrides: Partial<TenantOnboardingPlanWithTasks> = {}): TenantOnboardingPlanWithTasks {
+  return {
+    plan: buildOnboardingPlanFixture(),
+    tasks: [buildOnboardingTaskFixture()],
+    ...overrides,
+  };
+}
+
 function buildObservabilitySummaryFixture(): ControlPlaneObservabilitySummary {
   return {
     generatedAt: '2026-02-20T00:00:00.000Z',
@@ -167,12 +223,50 @@ function buildObservabilitySummaryFixture(): ControlPlaneObservabilitySummary {
         },
       ],
     },
+    onboarding: {
+      tenantsWithPersistedPlan: 1,
+      activePlans: 1,
+      pausedPlans: 0,
+      completedPlans: 0,
+      blockedRequiredTasks: 1,
+      overdueRequiredTasks: 0,
+      unassignedRequiredTasks: 2,
+    },
+    onboardingUsageTelemetry: {
+      windowDays: 14,
+      publishCount: 2,
+      latestPublishedAt: '2026-02-22T12:00:00.000Z',
+      totals: {
+        recentEventCount: 20,
+        publishedEventTypeCount: 5,
+        publishedBulkActionTypeCount: 3,
+      },
+      bulkActionStats: {
+        status: {
+          count: 3,
+          totalSelectedCount: 12,
+          totalEligibleCount: 12,
+          totalSuccessCount: 12,
+          totalFailureCount: 0,
+          totalDurationMs: 1500,
+        },
+      },
+    },
     tenantReadiness: [
       {
         tenantId: 'tenant_alpha',
         tenantName: 'Alpha Realty',
         tenantSlug: 'alpha',
         score: 75,
+        onboarding: {
+          planStatus: 'active',
+          requiredTaskCount: 4,
+          completedRequiredTaskCount: 1,
+          incompleteRequiredTaskCount: 3,
+          blockedRequiredTasks: 1,
+          overdueRequiredTasks: 0,
+          unassignedRequiredTasks: 2,
+        },
         checks: [
           { label: 'Primary domain exists', ok: true },
           { label: 'Primary domain verified', ok: true },
@@ -702,6 +796,191 @@ test('settings PATCH supports lifecycle status updates', async () => {
   assert.equal(json.settings.status, 'archived');
 });
 
+test('onboarding GET returns active plan with tasks', async () => {
+  const get = createTenantOnboardingGetHandler({
+    getActiveTenantOnboardingPlanWithTasks: async () => buildOnboardingBundleFixture(),
+    createTenantOnboardingPlanFromTemplate: async () => buildOnboardingBundleFixture(),
+  });
+
+  const response = await get(new Request('http://localhost/api/tenants/tenant_alpha/onboarding'), {
+    params: Promise.resolve({ tenantId: 'tenant_alpha' }),
+  });
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; onboarding: TenantOnboardingPlanWithTasks | null };
+  assert.equal(json.ok, true);
+  assert.ok(json.onboarding);
+  assert.equal(json.onboarding?.plan.tenantId, 'tenant_alpha');
+  assert.equal(json.onboarding?.tasks.length, 1);
+});
+
+test('onboarding POST creates a persisted plan from template', async () => {
+  let receivedPlanCode: string | null = null;
+  let receivedTaskCount = 0;
+
+  const post = createTenantOnboardingPostHandler({
+    getActiveTenantOnboardingPlanWithTasks: async () => null,
+    createTenantOnboardingPlanFromTemplate: async (_tenantId, input) => {
+      receivedPlanCode = input.planCode;
+      receivedTaskCount = input.tasks.length;
+      return buildOnboardingBundleFixture({
+        plan: buildOnboardingPlanFixture({ planCode: input.planCode }),
+      });
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/tenants/tenant_alpha/onboarding', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({ planCode: 'growth' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; onboarding: TenantOnboardingPlanWithTasks };
+  assert.equal(json.ok, true);
+  assert.equal(receivedPlanCode, 'growth');
+  assert.ok(receivedTaskCount > 0);
+  assert.equal(json.onboarding.plan.planCode, 'growth');
+});
+
+test('onboarding POST denies non-admin mutations', async () => {
+  const post = createTenantOnboardingPostHandler({
+    getActiveTenantOnboardingPlanWithTasks: async () => null,
+    createTenantOnboardingPlanFromTemplate: async () => buildOnboardingBundleFixture(),
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/tenants/tenant_alpha/onboarding', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'operator' },
+      body: JSON.stringify({ planCode: 'starter' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha' }) }
+  );
+
+  assert.equal(response.status, 403);
+});
+
+test('onboarding plan PATCH returns 404 when plan is missing', async () => {
+  const patch = createTenantOnboardingPlanPatchHandler({
+    updateTenantOnboardingPlan: async () => null,
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/onboarding/plan_missing', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({ status: 'paused' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha', planId: 'plan_missing' }) }
+  );
+
+  assert.equal(response.status, 404);
+});
+
+test('onboarding plan PATCH updates target launch date and pause reason', async () => {
+  const patch = createTenantOnboardingPlanPatchHandler({
+    updateTenantOnboardingPlan: async (_tenantId, planId, input) =>
+      buildOnboardingPlanFixture({
+        id: planId,
+        status: input.status ?? 'paused',
+        targetLaunchDate: input.targetLaunchDate ?? '2026-03-15T00:00:00.000Z',
+        pauseReason: input.pauseReason ?? 'Awaiting client approvals',
+      }),
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/onboarding/plan_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({
+        targetLaunchDate: '2026-03-15',
+        pauseReason: 'Awaiting client approvals',
+      }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha', planId: 'plan_1' }) }
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; plan: TenantOnboardingPlan };
+  assert.equal(json.ok, true);
+  assert.equal(json.plan.id, 'plan_1');
+  assert.equal(json.plan.pauseReason, 'Awaiting client approvals');
+});
+
+test('onboarding task PATCH updates task status and blocker fields', async () => {
+  const patch = createTenantOnboardingTaskPatchHandler({
+    updateTenantOnboardingTask: async (_tenantId, taskId, input) =>
+      buildOnboardingTaskFixture({
+        id: taskId,
+        status: input.status ?? 'pending',
+        blockedByClient: input.blockedByClient ?? false,
+        blockerReason: input.blockerReason ?? null,
+      }),
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/onboarding/tasks/task_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({ status: 'blocked', blockedByClient: true, blockerReason: 'Awaiting DNS access' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha', taskId: 'task_1' }) }
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; task: TenantOnboardingTask };
+  assert.equal(json.ok, true);
+  assert.equal(json.task.status, 'blocked');
+  assert.equal(json.task.blockedByClient, true);
+  assert.equal(json.task.blockerReason, 'Awaiting DNS access');
+});
+
+test('onboarding task PATCH maps helper errors to 400', async () => {
+  const patch = createTenantOnboardingTaskPatchHandler({
+    updateTenantOnboardingTask: async () => {
+      throw new Error('invalid due date');
+    },
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/onboarding/tasks/task_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({ dueAt: 'not-a-date' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha', taskId: 'task_1' }) }
+  );
+
+  assert.equal(response.status, 400);
+  const json = (await response.json()) as { ok: false; error: string };
+  assert.equal(json.error, 'invalid due date');
+});
+
+test('onboarding task PATCH surfaces owner actor compatibility validation errors', async () => {
+  const patch = createTenantOnboardingTaskPatchHandler({
+    updateTenantOnboardingTask: async () => {
+      throw new Error('Actor role support is not compatible with onboarding owner role build.');
+    },
+  });
+
+  const response = await patch(
+    new Request('http://localhost/api/tenants/tenant_alpha/onboarding/tasks/task_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({ ownerRole: 'build', ownerActorId: 'user_alpha_support_1' }),
+    }),
+    { params: Promise.resolve({ tenantId: 'tenant_alpha', taskId: 'task_1' }) }
+  );
+
+  assert.equal(response.status, 400);
+  const json = (await response.json()) as { ok: false; error: string };
+  assert.equal(json.error, 'Actor role support is not compatible with onboarding owner role build.');
+});
+
 test('actors GET returns tenant-scoped actor list', async () => {
   const get = createActorsGetHandler({
     listTenantControlActors: async () => [buildActorFixture()],
@@ -842,6 +1121,78 @@ test('observability GET returns summary payload', async () => {
   assert.equal(json.summary.ingestion.deadLetterCount, 2);
   assert.equal(json.summary.billingDrift.totals.driftEvents, 3);
   assert.equal(json.summary.billingDrift.byTenant[0]?.tenantId, 'tenant_alpha');
+});
+
+test('observability usage telemetry POST records aggregate payload for admin', async () => {
+  let receivedAction: string | null = null;
+  let receivedTelemetryAggregate: Record<string, unknown> | null = null;
+  const post = createObservabilityUsageTelemetryPostHandler({
+    writeAdminAuditLog: async (event) => {
+      if (event.status === 'succeeded') {
+        receivedAction = event.action;
+        receivedTelemetryAggregate = (event.metadata?.telemetryAggregate as Record<string, unknown>) ?? null;
+      }
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/observability/usage-telemetry', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'admin' },
+      body: JSON.stringify({
+        version: 1,
+        generatedAt: '2026-02-22T00:00:00.000Z',
+        localSnapshotUpdatedAt: '2026-02-22T00:00:00.000Z',
+        recentEventCount: 12,
+        countsByEvent: {
+          'onboarding.bulk.status': 3,
+          'onboarding.triage.open_launch.triage': 5,
+        },
+        bulkActionStats: {
+          status: {
+            count: 3,
+            totalSelectedCount: 8,
+            totalEligibleCount: 8,
+            totalSuccessCount: 8,
+            totalFailureCount: 0,
+            totalDurationMs: 1200,
+          },
+        },
+        policy: {
+          storage: 'browser_local',
+          promotionMode: 'manual_aggregate_opt_in',
+          includesRecentEvents: false,
+          includesTenantIds: false,
+          retention: 'server_audit_retention_policy',
+        },
+      }),
+    })
+  );
+
+  assert.equal(response.status, 200);
+  const json = (await response.json()) as { ok: true; accepted: true; publishedEventTypeCount: number };
+  assert.equal(json.ok, true);
+  assert.equal(json.accepted, true);
+  assert.equal(json.publishedEventTypeCount, 2);
+  assert.equal(receivedAction, 'tenant.observability.telemetry.publish');
+  assert.equal(
+    (receivedTelemetryAggregate as { recentEventCount?: number } | null)?.recentEventCount ?? null,
+    12
+  );
+});
+
+test('observability usage telemetry POST denies non-admin actor', async () => {
+  const post = createObservabilityUsageTelemetryPostHandler();
+
+  const response = await post(
+    new Request('http://localhost/api/observability/usage-telemetry', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-admin-role': 'viewer' },
+      body: JSON.stringify({ version: 1 }),
+    })
+  );
+
+  assert.equal(response.status, 403);
 });
 
 test('billing webhook POST rejects unauthorized requests when secret is configured', async () => {

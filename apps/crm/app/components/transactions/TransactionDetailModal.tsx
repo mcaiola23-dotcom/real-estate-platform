@@ -122,7 +122,7 @@ export function TransactionDetailModal({
     }
   }
 
-  async function handleAddDocument(data: { documentType: string; fileName: string }) {
+  async function handleAddDocument(data: { documentType: string; fileName: string; notes?: string }) {
     try {
       const res = await fetch(`/api/transactions/${transactionId}/documents`, {
         method: 'POST',
@@ -136,6 +136,28 @@ export function TransactionDetailModal({
       pushToast('success', 'Document added.');
     } catch {
       pushToast('error', 'Failed to add document.');
+    }
+  }
+
+  async function handleDocumentStatusUpdate(docId: string, newStatus: string) {
+    try {
+      const res = await fetch(`/api/transactions/${transactionId}/documents/${docId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) throw new Error('update failed');
+      const json = await res.json();
+      setTxn((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          documents: prev.documents.map((d) => d.id === docId ? json.document : d),
+        };
+      });
+      pushToast('success', `Document status: ${newStatus}.`);
+    } catch {
+      pushToast('error', 'Failed to update document status.');
     }
   }
 
@@ -239,6 +261,8 @@ export function TransactionDetailModal({
                   adding={addingDoc}
                   onToggleAdd={() => setAddingDoc((p) => !p)}
                   onAdd={handleAddDocument}
+                  onStatusUpdate={handleDocumentStatusUpdate}
+                  txnStatus={txn.status}
                 />
               ) : null}
               {activeTab === 'milestones' ? (
@@ -419,19 +443,66 @@ function PartiesPane({
   );
 }
 
+const DOC_STATUS_ORDER: string[] = ['pending', 'received', 'reviewed', 'approved'];
+const DOC_STATUS_GLYPHS: Record<string, string> = {
+  pending: '○',
+  received: '◑',
+  reviewed: '◕',
+  approved: '●',
+};
+
+const REQUIRED_DOCS_BY_STAGE: Record<string, string[]> = {
+  under_contract: ['contract', 'disclosure'],
+  inspection: ['contract', 'disclosure', 'inspection_report'],
+  appraisal: ['contract', 'disclosure', 'inspection_report', 'appraisal_report'],
+  title: ['contract', 'disclosure', 'inspection_report', 'appraisal_report', 'title_report'],
+  closing: ['contract', 'disclosure', 'inspection_report', 'appraisal_report', 'title_report', 'loan_docs'],
+  closed: ['contract', 'disclosure', 'inspection_report', 'appraisal_report', 'title_report', 'loan_docs'],
+};
+
+const DOC_TYPE_LABELS: Record<string, string> = {
+  contract: 'Contract',
+  addendum: 'Addendum',
+  disclosure: 'Disclosure',
+  inspection_report: 'Inspection Report',
+  appraisal_report: 'Appraisal Report',
+  title_report: 'Title Report',
+  loan_docs: 'Loan Documents',
+  hoa_docs: 'HOA Documents',
+  insurance: 'Insurance',
+  mortgage_commitment: 'Mortgage Commitment',
+  other: 'Other',
+};
+
 function DocumentsPane({
   documents,
   adding,
   onToggleAdd,
   onAdd,
+  onStatusUpdate,
+  txnStatus,
 }: {
   documents: CrmTransactionDocument[];
   adding: boolean;
   onToggleAdd: () => void;
-  onAdd: (data: { documentType: string; fileName: string }) => void;
+  onAdd: (data: { documentType: string; fileName: string; notes?: string }) => void;
+  onStatusUpdate: (docId: string, newStatus: string) => void;
+  txnStatus: string;
 }) {
   const [docType, setDocType] = useState('contract');
   const [fileName, setFileName] = useState('');
+  const [docNotes, setDocNotes] = useState('');
+
+  const requiredDocs = REQUIRED_DOCS_BY_STAGE[txnStatus] ?? [];
+  const existingDocTypes = new Set(documents.map((d) => d.documentType));
+  const missingDocs = requiredDocs.filter((dt) => !existingDocTypes.has(dt));
+
+  function cycleStatus(doc: CrmTransactionDocument) {
+    const currentIdx = DOC_STATUS_ORDER.indexOf(doc.status);
+    const nextIdx = (currentIdx + 1) % DOC_STATUS_ORDER.length;
+    const nextStatus = DOC_STATUS_ORDER[nextIdx];
+    if (nextStatus) onStatusUpdate(doc.id, nextStatus);
+  }
 
   return (
     <div className="crm-txn-documents">
@@ -439,6 +510,11 @@ function DocumentsPane({
         <button type="button" className="crm-btn crm-btn-primary crm-btn-sm" onClick={onToggleAdd}>
           {adding ? 'Cancel' : '+ Add Document'}
         </button>
+        {documents.length > 0 && (
+          <span className="crm-txn-doc-progress">
+            {documents.filter((d) => d.status === 'approved').length}/{documents.length} approved
+          </span>
+        )}
       </div>
 
       {adding ? (
@@ -452,20 +528,40 @@ function DocumentsPane({
             <option value="title_report">Title Report</option>
             <option value="loan_docs">Loan Documents</option>
             <option value="hoa_docs">HOA Documents</option>
+            <option value="insurance">Insurance</option>
+            <option value="mortgage_commitment">Mortgage Commitment</option>
             <option value="other">Other</option>
           </select>
-          <input className="crm-form-input" placeholder="File name *" value={fileName} onChange={(e) => setFileName(e.target.value)} />
+          <input className="crm-form-input" placeholder="File name or URL *" value={fileName} onChange={(e) => setFileName(e.target.value)} />
+          <input className="crm-form-input" placeholder="Notes (optional)" value={docNotes} onChange={(e) => setDocNotes(e.target.value)} />
           <button
             type="button"
             className="crm-btn crm-btn-primary crm-btn-sm"
             disabled={!fileName.trim()}
             onClick={() => {
-              onAdd({ documentType: docType, fileName: fileName.trim() });
+              onAdd({ documentType: docType, fileName: fileName.trim(), notes: docNotes.trim() || undefined });
               setFileName('');
+              setDocNotes('');
             }}
           >
             Save
           </button>
+        </div>
+      ) : null}
+
+      {missingDocs.length > 0 ? (
+        <div className="crm-txn-doc-checklist">
+          <p className="crm-txn-doc-checklist-label">Required for {STATUS_LABELS[txnStatus as TransactionStatus] ?? txnStatus}:</p>
+          <div className="crm-txn-doc-checklist-items">
+            {requiredDocs.map((dt) => {
+              const exists = existingDocTypes.has(dt);
+              return (
+                <span key={dt} className={`crm-txn-doc-check-item ${exists ? 'is-complete' : 'is-missing'}`}>
+                  {exists ? '✓' : '○'} {DOC_TYPE_LABELS[dt] ?? dt}
+                </span>
+              );
+            })}
+          </div>
         </div>
       ) : null}
 
@@ -475,8 +571,23 @@ function DocumentsPane({
         <div className="crm-txn-doc-list">
           {documents.map((d) => (
             <div key={d.id} className="crm-txn-doc-row">
-              <span className="crm-txn-doc-type">{d.documentType.replace(/_/g, ' ')}</span>
-              <span className="crm-txn-doc-name">{d.fileName}</span>
+              <button
+                type="button"
+                className="crm-txn-doc-status-toggle"
+                onClick={() => cycleStatus(d)}
+                title={`Status: ${DOC_STATUS_LABELS[d.status] ?? d.status} — click to advance`}
+              >
+                {DOC_STATUS_GLYPHS[d.status] ?? '○'}
+              </button>
+              <div className="crm-txn-doc-info">
+                <span className="crm-txn-doc-type">{DOC_TYPE_LABELS[d.documentType] ?? d.documentType.replace(/_/g, ' ')}</span>
+                <span className="crm-txn-doc-name">
+                  {d.fileName.startsWith('http') ? (
+                    <a href={d.fileName} target="_blank" rel="noopener noreferrer">{d.fileName}</a>
+                  ) : d.fileName}
+                </span>
+                {d.notes ? <span className="crm-txn-doc-notes">{d.notes}</span> : null}
+              </div>
               <span className={`crm-txn-doc-status crm-txn-doc-status--${d.status}`}>
                 {DOC_STATUS_LABELS[d.status] ?? d.status}
               </span>
