@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-All CRM AI roadmap items are now complete: #50/#53 (Score Explain/Summary), #55 (Market Digest), #56 (Listing Description), #57 (Predictive Lead Scoring), #58 (Smart Lead Routing). 53/53 CRM route tests passing. Admin onboarding telemetry/bulk-endpoint polish follow-up is now complete. User temporarily deferred Calendar Sync Phase 2 (#64), team/brokerage hierarchy, and marketing attribution for the next session. Next non-CRM candidate: AI content generation pipeline for website onboarding.
+CRM Elite Overhaul is fully implemented (8 sprints, ~35 new files, ~3,700 lines of changes). 89/89 CRM route tests + 4/4 workspace tests passing, 0 type errors. All CRM AI roadmap items remain complete. Admin onboarding telemetry work is unaffected. Next non-CRM candidate: AI content generation pipeline for website onboarding.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -58,13 +58,13 @@ All CRM AI roadmap items are now complete: #50/#53 (Score Explain/Summary), #55 
 52. CRM Phase 9A (AI-Powered Reminders) is now in place via DB migration `202602220001_add_reminder_fields` (`nextActionChannel` TEXT, `reminderSnoozedUntil` DATETIME), smart reminder engine in `packages/ai/src/crm/reminder-engine.ts` (5 rule-based patterns + AI enhancement), factory-pattern API route `/api/ai/reminders/[leadId]`, and `SmartReminderForm` UI component with AI suggestion chips, channel selector, and quick snooze buttons.
 53. CRM Phase 9B (AI Message Templates) is now in place via template library `apps/crm/app/lib/crm-templates.ts` (9 pre-built templates, merge field resolution, category/channel taxonomy) and `TemplateLibrary` UI component with two-panel browse/preview layout, AI tone adjustment via existing `/api/ai/draft-message`, and use-template actions (mailto/clipboard).
 54. CRM Phase 9D (AI Escalation) is now in place via escalation engine in `packages/ai/src/crm/escalation-engine.ts` (4 triggers, 5 escalation levels 0-4, score decay computation), factory-pattern API route `/api/ai/escalation/[leadId]`, `EscalationBanner` + `EscalationAlertBanner` UI components with level-specific styling and dashboard integration, and score decay integration in `apps/crm/app/lib/crm-scoring.ts`.
-55. CRM remaining polish items are now fully implemented: #62 Mobile-First Actions (`MobileActionBar.tsx` with 4 quick actions, responsive CSS, 44px touch targets), #63 Offline Note Capture (`use-offline-queue.ts` with localStorage queue + background sync + amber offline badge), #65 MLS/IDX Feed Status (`FeedStatusChip.tsx` + factory-pattern feed-status API route), #66 Document Management (enhanced `DocumentsPane` with status cycling/checklists/progress + PATCH document route), #61 Export & Reporting (`crm-export.ts` with CSV/print utilities + Lead Tracker export button).
+55. CRM Elite Overhaul is fully implemented in `apps/crm` across 8 sprints: Zustand/React Query state management, quick-add lead/universal search/pipeline density, speed-to-lead timer/floating activity log/push notifications, showing scheduling/commission tracker/voice notes, Outfit+JetBrains Mono typography/density toggle/motion system, drip campaigns/ad spend/team roster, AI workflows/NL query/daily digest/forecast/benchmarks, SSE real-time/36 new route tests/DOMPurify/rate limiter/DB indexes, client portal/MLS cards/e-signatures. 8 new Prisma models, 12 new API routes, ~20 new UI components, 1,359 lines of new CSS. 89/89 route tests, 4/4 workspace tests, 0 type errors.
+56. CRM remaining polish items are now fully implemented: #62 Mobile-First Actions (`MobileActionBar.tsx` with 4 quick actions, responsive CSS, 44px touch targets), #63 Offline Note Capture (`use-offline-queue.ts` with localStorage queue + background sync + amber offline badge), #65 MLS/IDX Feed Status (`FeedStatusChip.tsx` + factory-pattern feed-status API route), #66 Document Management (enhanced `DocumentsPane` with status cycling/checklists/progress + PATCH document route), #61 Export & Reporting (`crm-export.ts` with CSV/print utilities + Lead Tracker export button).
 
 ## Immediate Next Steps
-- CRM feature work is fully complete — no remaining CRM items.
-- AI Market Digest (#55) and AI Listing Description Generator (#56) are done with orchestration modules, API routes, UI components, and route tests.
-- Continue Admin post-MVP onboarding polish: bulk mutation API evaluation, telemetry-to-observability promotion.
-- OR advance remaining AI roadmap: AI content generation pipeline for website onboarding, feedback loops, quality scoring.
+- CRM Elite Overhaul complete — state management, agent features, design system, AI differentiators, infrastructure, and client-facing features all implemented.
+- Commit the overhaul (~3,700 lines across 49 files).
+- Next candidate: AI content generation pipeline for website onboarding, OR manual CRM feature walkthrough.
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes.
 - Keep manual browser click-through deferred until buildout stabilizes (per current user override).
 

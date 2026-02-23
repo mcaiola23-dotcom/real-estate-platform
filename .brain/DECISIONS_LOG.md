@@ -722,3 +722,23 @@
 ### D-168: Standardize onboarding telemetry review policy around weekly cadence + biweekly rollup and retune endpoint recommendation thresholds conservatively
 **Decision**: Keep the server-side onboarding usage telemetry observability rollup at `14` days (covering two weekly operator review cycles), keep the suggested server retention guidance at `30` days, expose cadence/rollup policy metadata in the Admin telemetry helper/UI, and retune `ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS` to `minRunsForDecision=12`, `avgSelectedWarnAt=18`, `avgDurationWarnMs=12000`, and `failureRateWarnRatio=0.10`.
 **Reason**: The prior 14-day rollup already fits the intended operator review cadence, but the policy was implicit. Making cadence/rollup expectations explicit improves operator clarity, and the tuned thresholds reduce premature endpoint recommendations while making reliability regressions trigger review sooner.
+
+### D-169: CRM Elite Overhaul — Zustand + React Query replaces 28 useState calls
+**Decision**: Introduce Zustand store (`use-crm-store.ts`) and React Query hooks (`use-query-hooks.ts`) to replace the 28 `useState` calls in `crm-workspace.tsx`. Store slices: leads, contacts, activities, UI state (navigation, modals, filters, toasts), drafts.
+**Reason**: The monolithic state in `crm-workspace.tsx` was the #1 technical debt item, causing excessive prop drilling and making every new feature harder to wire. Centralized store makes all subsequent sprint work cleaner.
+
+### D-170: CRM uses HMAC-signed tokens for client portal auth (no JWT library)
+**Decision**: Client portal uses HMAC-SHA256 signed tokens (`portal-token.ts`) with `base64url(payload).base64url(signature)` format instead of JWT. Token contains `tenantId`, `leadId`, and `exp` (7-day expiry). Secret from `PORTAL_SECRET` env var with dev fallback.
+**Reason**: Avoids adding a JWT library dependency for a simple read-only portal. HMAC signing provides equivalent security for this use case. Portal routes (`/portal/*`, `/api/portal/*`) are added to Clerk public route matchers.
+
+### D-171: CRM SSE uses in-memory pub/sub event bus for real-time updates
+**Decision**: Implement SSE endpoint (`/api/events/stream`) with an in-memory `RealtimeEventBus` singleton for tenant-scoped event broadcast. Client hook (`use-realtime.ts`) connects via EventSource with exponential backoff reconnect (1s-30s).
+**Reason**: In-memory pub/sub is sufficient for single-instance deployment. Can be replaced with Redis pub/sub for multi-instance later. SSE chosen over WebSocket for simpler server implementation in Next.js API routes.
+
+### D-172: CRM security hardening — DOMPurify for Gmail HTML + in-memory rate limiter
+**Decision**: Add DOMPurify sanitization for Gmail thread HTML bodies in `GmailThreads.tsx` (replaces raw `dangerouslySetInnerHTML`). Add simple in-memory rate limiter class in `tenant-route.ts` with Map-based sliding window + prune method.
+**Reason**: Gmail HTML bodies are untrusted external content that could contain XSS vectors. DOMPurify strips malicious elements while preserving email formatting. Rate limiter provides basic protection against abuse without external infrastructure.
+
+### D-173: CRM uses 8 new Prisma models for Elite Overhaul features
+**Decision**: Add Prisma models: Showing, CommissionSetting, Commission, Campaign, CampaignEnrollment, AdSpend, TeamMember, ESignatureRequest. All tenant-scoped with cascade delete on tenant. Composite indexes on high-query-volume paths.
+**Reason**: Each model maps to a distinct CRM feature area (showings, commissions, campaigns, team, ad spend, e-signatures). Follows existing patterns: UUID primary keys, tenant relation with cascade, timestamp fields, optional foreign keys with SetNull.

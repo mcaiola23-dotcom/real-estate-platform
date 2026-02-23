@@ -94,12 +94,14 @@ import { useWorkspaceData, refreshLead } from '../lib/stores/use-query-hooks';
 import { FloatingActivityLog } from './shared/FloatingActivityLog';
 import { SpeedToLeadTimer } from './dashboard/SpeedToLeadTimer';
 import { usePushNotifications } from '../lib/use-push-notifications';
+import { DensityToggle } from './shared/DensityToggle';
 
 const ProfileView = dynamic(() => import('./views/ProfileView').then(m => ({ default: m.ProfileView })), { ssr: false });
 const SettingsView = dynamic(() => import('./views/SettingsView').then(m => ({ default: m.SettingsView })), { ssr: false });
 const LeadProfileModal = dynamic(() => import('./views/LeadProfileModal').then(m => ({ default: m.LeadProfileModal })), { ssr: false });
 const PropertiesView = dynamic(() => import('./properties/PropertiesView').then(m => ({ default: m.PropertiesView })), { ssr: false });
 const TransactionsView = dynamic(() => import('./transactions/TransactionsView').then(m => ({ default: m.TransactionsView })), { ssr: false });
+const CampaignsView = dynamic(() => import('./views/CampaignsView').then(m => ({ default: m.CampaignsView })), { ssr: false });
 
 export function CrmWorkspace({
   tenantContext,
@@ -1642,6 +1644,7 @@ export function CrmWorkspace({
     { id: 'activity', label: 'Activity', icon: '↻' },
     { id: 'profile', label: 'Profile', icon: '◯' },
     { id: 'analytics', label: 'Analytics', icon: '◫' },
+    { id: 'campaigns', label: 'Campaigns', icon: '✉' },
     { id: 'settings', label: 'Settings', icon: '⚙' },
   ];
 
@@ -1796,6 +1799,7 @@ export function CrmWorkspace({
             </h2>
           </div>
           <div className="crm-header-tools">
+            <DensityToggle density={density} onChangeDensity={setDensity} />
             {!isOnline && (
               <span className="crm-offline-badge" title={offlinePendingCount > 0 ? `${offlinePendingCount} items queued` : 'You are offline'}>
                 ⚡ Offline{offlinePendingCount > 0 ? ` (${offlinePendingCount})` : ''}
@@ -1925,6 +1929,7 @@ export function CrmWorkspace({
                   activeView === 'properties' ? 'Properties' :
                   activeView === 'transactions' ? 'Transactions' :
                   activeView === 'analytics' ? 'Analytics' :
+                  activeView === 'campaigns' ? 'Campaigns' :
                   activeView === 'settings' ? 'Settings' :
                   activeView === 'profile' ? 'Profile' : ''
                 }</button>
@@ -1935,6 +1940,7 @@ export function CrmWorkspace({
                   activeView === 'properties' ? 'Properties' :
                   activeView === 'transactions' ? 'Transactions' :
                   activeView === 'analytics' ? 'Analytics' :
+                  activeView === 'campaigns' ? 'Campaigns' :
                   activeView === 'settings' ? 'Settings' :
                   activeView === 'profile' ? 'Profile' : ''
                 }</span>
@@ -2824,6 +2830,8 @@ export function CrmWorkspace({
             contactById={contactById}
           />
         ) : null}
+
+        {activeView === 'campaigns' ? <CampaignsView /> : null}
 
         {activeView === 'profile' ? (
           <ProfileView

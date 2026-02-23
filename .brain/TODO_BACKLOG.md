@@ -183,12 +183,24 @@
 - [x] Revisit onboarding usage telemetry rollup window/retention alignment (currently 14-day observability rollup over audit events) and confirm it matches operator review cadence. (Completed 2026-02-23: kept the 14-day server rollup in `packages/db/src/control-plane.ts` as a biweekly window covering two weekly operator review cycles; codified cadence/rollup/retention policy metadata + alignment messaging in `apps/admin/app/lib/admin-usage-telemetry.ts` and surfaced it in `apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`.)
 - [x] Tune onboarding bulk-endpoint recommendation thresholds (`ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS`) after collecting real local/published telemetry usage data. (Completed 2026-02-23: local dev DB had no published telemetry aggregates yet (`0` publishes), so thresholds were tuned conservatively to avoid premature backend expansion while reacting faster to reliability issues: `minRunsForDecision=12`, `avgSelectedWarnAt=18`, `avgDurationWarnMs=12000`, `failureRateWarnRatio=0.10`; helper coverage added in `apps/admin/app/lib/admin-usage-telemetry.test.ts`.)
 
+## CRM Elite Overhaul (Completed 2026-02-23)
+- [x] Sprint 1: State management (Zustand + React Query), Quick-Add Lead, Universal Search, Pipeline Card Density.
+- [x] Sprint 2: Speed-to-Lead Timer, Floating Activity Log, Browser Push Notifications.
+- [x] Sprint 3: Showing Scheduling, Commission Tracker, Voice Notes. DB models: Showing, CommissionSetting, Commission.
+- [x] Sprint 4: Typography (Outfit/JetBrains Mono), Motion/Micro-interactions, DensityToggle, Color System Enhancement.
+- [x] Sprint 5: Drip Campaigns, Ad Spend Tracker, Team Roster. DB models: Campaign, CampaignEnrollment, AdSpend, TeamMember.
+- [x] Sprint 6: AI Workflow Panel, NL Query in CommandPalette, NotificationDigest, ForecastPanel, BenchmarkPanel.
+- [x] Sprint 7: SSE Real-Time, 36 New Route Tests (89 total), DOMPurify Security, Rate Limiter, Composite DB Indexes.
+- [x] Sprint 8: Client Portal (HMAC tokens), MLS Property Cards, E-Signature Panel. DB model: ESignatureRequest.
+- [ ] Generate and apply Prisma migrations for 8 new models (Showing, CommissionSetting, Commission, Campaign, CampaignEnrollment, AdSpend, TeamMember, ESignatureRequest) when targeting production DB.
+
 ## AI Roadmap
 - [x] Create prompt registry and versioning. (Completed — `PROMPT_VERSIONS` registry in `packages/ai/src/prompts/crm-prompts.ts` with per-prompt version tracking.)
 - [x] Implement AI Market Digest (#55) — Dashboard market analytics widget with KPI strip, narrative, highlights, and agent takeaway. Rule-based baseline + AI enhancement. (Completed 2026-02-22.)
 - [x] Implement AI Listing Description Generator (#56) — Modal with property details form, tone selector (4 tones), feature chips, MLS-ready description output with copy/regenerate. Rule-based baseline + AI enhancement. (Completed 2026-02-22.)
 - [x] Implement Predictive Lead Scoring (#57) — Naive Bayes conversion prediction from historical Won/Lost patterns. 9 bucketed features, Laplace smoothing, 50-lead minimum threshold, in-memory distribution cache. API route + UI widget in Lead Profile Modal. (Completed 2026-02-22.)
 - [x] Implement Smart Lead Routing (#58) — Advisory agent-to-lead matching with 5 weighted factors (geo specialization, property type expertise, pipeline load, conversion rate, response time). Solo self-assessment + team ranking modes. API route + UI widget in Lead Profile Modal. (Completed 2026-02-22.)
+- [x] Implement CRM AI differentiators — NL query endpoint, daily digest, AI workflow toggles, revenue forecast, performance benchmarks. (Completed 2026-02-23 as Sprint 6 of Elite Overhaul.)
 - [ ] Implement AI content generation pipeline for website onboarding.
 - [ ] Implement CRM next-best-action service.
 - [ ] Add AI result feedback loop and quality scoring.

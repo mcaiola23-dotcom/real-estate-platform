@@ -4,7 +4,13 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { isDevAuthBypassEnabled } from './app/lib/auth/mode';
 import { resolveTenantFromHost, TENANT_HEADER_NAMES } from './app/lib/tenant/resolve-tenant';
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/health']);
+const isPublicRoute = createRouteMatcher([
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/health',
+  '/portal(.*)',
+  '/api/portal(.*)',
+]);
 
 export const proxy = clerkMiddleware(async (auth, req: NextRequest) => {
   if (!isPublicRoute(req) && !isDevAuthBypassEnabled()) {

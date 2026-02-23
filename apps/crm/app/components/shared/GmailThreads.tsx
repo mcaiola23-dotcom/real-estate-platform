@@ -1,5 +1,6 @@
 'use client';
 
+import DOMPurify from 'dompurify';
 import { useEffect, useState, useCallback } from 'react';
 
 interface ThreadSummary {
@@ -146,7 +147,7 @@ export function GmailThreads({ email, onReply, onClose }: GmailThreadsProps) {
                 </div>
                 <div
                   className="crm-gmail-message-body"
-                  dangerouslySetInnerHTML={msg.isHtml ? { __html: msg.body } : undefined}
+                  dangerouslySetInnerHTML={msg.isHtml ? { __html: DOMPurify.sanitize(msg.body) } : undefined}
                 >
                   {msg.isHtml ? undefined : msg.body}
                 </div>

@@ -2,6 +2,7 @@
 
 import { memo, useState } from 'react';
 import type { CrmLead, CrmContact, CrmActivity } from '@real-estate/types/crm';
+import { NotificationDigest } from '../shared/NotificationDigest';
 
 interface MyDayPanelProps {
   greeting: string;
@@ -244,6 +245,8 @@ export const MyDayPanel = memo(function MyDayPanel({
           All caught up. No overdue follow-ups or hot leads today.
         </div>
       )}
+
+      {!collapsed && <NotificationDigest onOpenLead={onOpenLead} />}
     </section>
   );
 });

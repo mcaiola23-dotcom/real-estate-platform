@@ -9,6 +9,10 @@ import { passthroughImageLoader } from '../../lib/crm-formatters';
 import { CalendarSync } from '../shared/CalendarSync';
 import type { NotificationPrefs } from '../../lib/use-push-notifications';
 import { NotificationPreferences } from '../shared/NotificationPreferences';
+import { CommissionSettingsPanel } from './CommissionSettingsPanel';
+import { AdSpendTracker } from '../shared/AdSpendTracker';
+import { TeamRoster } from '../shared/TeamRoster';
+import { AiWorkflowPanel } from '../shared/AiWorkflowPanel';
 
 interface SettingsViewProps {
   brandPreferences: BrandPreferences;
@@ -315,6 +319,26 @@ export function SettingsView({
       </div>
 
       <div className="crm-panel-head" style={{ marginTop: '1.5rem' }}>
+        <h3>Commissions</h3>
+        <span className="crm-muted">Configure your default commission structure for transactions.</span>
+      </div>
+      <div className="crm-settings-grid">
+        <article>
+          <CommissionSettingsPanel tenantId={tenantContext.tenantId} />
+        </article>
+      </div>
+
+      <div className="crm-panel-head" style={{ marginTop: '1.5rem' }}>
+        <h3>Team</h3>
+        <span className="crm-muted">Manage your team members and lead assignment rules.</span>
+      </div>
+      <div className="crm-settings-grid">
+        <article>
+          <TeamRoster />
+        </article>
+      </div>
+
+      <div className="crm-panel-head" style={{ marginTop: '1.5rem' }}>
         <h3>Notifications</h3>
         <span className="crm-muted">Configure how and when you receive alerts.</span>
       </div>
@@ -328,6 +352,27 @@ export function SettingsView({
           />
         </article>
       </div>
+
+      <div className="crm-panel-head" style={{ marginTop: '1.5rem' }}>
+        <h3>AI Workflows</h3>
+        <span className="crm-muted">Configure AI-powered automation for your pipeline.</span>
+      </div>
+      <div className="crm-settings-grid">
+        <article>
+          <AiWorkflowPanel />
+        </article>
+      </div>
+
+      <details className="crm-settings-advanced" style={{ marginTop: '1.5rem' }}>
+        <summary className="crm-panel-head" style={{ cursor: 'pointer' }}>
+          <h3>Advanced: Ad Spend Tracking</h3>
+        </summary>
+        <div className="crm-settings-grid" style={{ marginTop: '0.5rem' }}>
+          <article>
+            <AdSpendTracker />
+          </article>
+        </div>
+      </details>
     </section>
   );
 }

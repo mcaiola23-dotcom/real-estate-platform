@@ -5,6 +5,8 @@ import type { CrmLead, CrmActivity, CrmContact } from '@real-estate/types/crm';
 import { estimateDealValue } from '../../lib/crm-aging';
 import { exportLeadsCsv } from '../../lib/crm-export';
 import { SourceRoiChart, type SourceRoiData } from './SourceRoiChart';
+import { ForecastPanel } from './ForecastPanel';
+import { BenchmarkPanel } from './BenchmarkPanel';
 
 interface AnalyticsViewProps {
   leads: CrmLead[];
@@ -200,6 +202,11 @@ export function AnalyticsView({ leads, activities, contactById }: AnalyticsViewP
       </div>
 
       <SourceRoiChart sourceData={sourceRoiData} />
+
+      <div className="crm-analytics-section crm-analytics-forecast-benchmark">
+        <ForecastPanel leads={leads} />
+        <BenchmarkPanel leads={leads} activities={activities} />
+      </div>
     </section>
   );
 }

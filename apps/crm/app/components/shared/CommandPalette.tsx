@@ -65,6 +65,8 @@ function CommandPaletteInner({
 }: Omit<CommandPaletteProps, 'open'>) {
   const [query, setQueryRaw] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [nlResult, setNlResult] = useState<{ description: string; intent: Record<string, unknown> } | null>(null);
+  const [nlLoading, setNlLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const activities = useCrmStore((s) => s.activities);
@@ -167,6 +169,31 @@ function CommandPaletteInner({
     );
   }, [query, allItems, navItems, actionItems]);
 
+  const handleNlQuery = useCallback(async (q: string) => {
+    setNlLoading(true);
+    setNlResult(null);
+    try {
+      const res = await fetch('/api/ai/natural-language', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q }),
+      });
+      const data = await res.json();
+      if (data.ok && data.intent) {
+        setNlResult({ description: data.intent.description, intent: data.intent });
+        // Auto-navigate if the intent is navigation
+        if (data.intent.action === 'navigate' && data.intent.view) {
+          onNavigate(data.intent.view as WorkspaceNav);
+          onClose();
+        }
+      }
+    } catch {
+      // NL query failed silently
+    } finally {
+      setNlLoading(false);
+    }
+  }, [onNavigate, onClose]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -174,13 +201,18 @@ function CommandPaletteInner({
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setSelectedIndex((prev) => Math.max(prev - 1, 0));
-    } else if (e.key === 'Enter' && filtered[selectedIndex]) {
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      filtered[selectedIndex].action();
+      if (filtered[selectedIndex]) {
+        filtered[selectedIndex].action();
+      } else if (query.trim().length > 3 && filtered.length === 0) {
+        // No fuzzy matches — try NL query
+        void handleNlQuery(query.trim());
+      }
     } else if (e.key === 'Escape') {
       onClose();
     }
-  }, [filtered, selectedIndex, onClose]);
+  }, [filtered, selectedIndex, onClose, query, handleNlQuery]);
 
   // Scroll selected item into view
   useEffect(() => {
@@ -218,9 +250,18 @@ function CommandPaletteInner({
         </div>
 
         <div ref={listRef} className="crm-cmdpal__results">
-          {filtered.length === 0 ? (
-            <div className="crm-cmdpal__empty">No results found</div>
-          ) : (
+          {nlLoading && (
+            <div className="crm-cmdpal__nl-loading">AI interpreting...</div>
+          )}
+          {nlResult && !nlLoading && (
+            <div className="crm-cmdpal__nl-result">
+              <span className="crm-cmdpal__nl-icon">✦</span>
+              <span>{nlResult.description}</span>
+            </div>
+          )}
+          {filtered.length === 0 && !nlLoading && !nlResult ? (
+            <div className="crm-cmdpal__empty">No results found — press Enter to ask AI</div>
+          ) : filtered.length === 0 ? null : (
             Array.from(sections.entries()).map(([section, items]) => (
               <div key={section} className="crm-cmdpal__section">
                 <div className="crm-cmdpal__section-label">

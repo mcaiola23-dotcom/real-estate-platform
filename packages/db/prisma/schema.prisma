@@ -29,6 +29,13 @@ model Tenant {
   ingestionQueueJobs IngestionQueueJob[]
   transactions       Transaction[]
   integrationTokens  IntegrationToken[]
+  showings           Showing[]
+  commissionSettings CommissionSetting?
+  commissions        Commission[]
+  campaigns          Campaign[]
+  adSpends           AdSpend[]
+  teamMembers        TeamMember[]
+  esignatureRequests ESignatureRequest[]
 }
 
 model TenantDomain {
@@ -195,6 +202,7 @@ model Contact {
   tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   leads           Lead[]
   activities      Activity[]
+  showings        Showing[]
 
   @@index([tenantId, createdAt])
   @@unique([tenantId, emailNormalized])
@@ -235,8 +243,11 @@ model Lead {
   tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   contact        Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
   activities     Activity[]
+  showings       Showing[]
+  commissions    Commission[]
 
   @@index([tenantId, createdAt])
+  @@index([tenantId, status])
   @@index([contactId])
 }
 
@@ -255,6 +266,7 @@ model Activity {
   lead         Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, occurredAt])
+  @@index([tenantId, leadId, createdAt])
   @@index([contactId])
   @@index([leadId])
 }
@@ -336,6 +348,7 @@ model Transaction {
   parties         TransactionParty[]
   documents       TransactionDocument[]
   milestones      TransactionMilestone[]
+  commissions     Commission[]
 
   @@index([tenantId, status])
   @@index([tenantId, createdAt])
@@ -404,4 +417,140 @@ model IntegrationToken {
 
   @@unique([tenantId, actorId, provider])
   @@index([tenantId, provider])
+}
+
+model Showing {
+  id              String    @id
+  tenantId        String
+  leadId          String?
+  contactId       String?
+  propertyAddress String
+  scheduledAt     DateTime
+  duration        Int?
+  status          String    @default("scheduled")
+  notes           String?
+  calendarEventId String?
+  createdAt       DateTime
+  updatedAt       DateTime
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lead            Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  contact         Contact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, scheduledAt])
+  @@index([tenantId, status])
+  @@index([leadId])
+  @@index([contactId])
+}
+
+model CommissionSetting {
+  id               String   @id
+  tenantId         String   @unique
+  defaultCommPct   Float    @default(3.0)
+  brokerageSplitPct Float   @default(70.0)
+  marketingFee     Int      @default(0)
+  referralFee      Int      @default(0)
+  createdAt        DateTime
+  updatedAt        DateTime
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Commission {
+  id               String      @id
+  tenantId         String
+  transactionId    String
+  leadId           String?
+  salePrice        Int
+  commPct          Float
+  brokerageSplitPct Float
+  marketingFees    Int         @default(0)
+  referralFees     Int         @default(0)
+  netAmount        Int
+  notes            String?
+  createdAt        DateTime
+  updatedAt        DateTime
+  tenant           Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transaction      Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  lead             Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([transactionId])
+  @@index([leadId])
+}
+
+model Campaign {
+  id          String   @id
+  tenantId    String
+  name        String
+  status      String   @default("draft")
+  stepsJson   String   @default("[]")
+  createdAt   DateTime
+  updatedAt   DateTime
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  enrollments CampaignEnrollment[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+}
+
+model CampaignEnrollment {
+  id          String    @id
+  tenantId    String
+  campaignId  String
+  leadId      String
+  currentStep Int       @default(0)
+  status      String    @default("active")
+  nextSendAt  DateTime?
+  createdAt   DateTime
+  updatedAt   DateTime
+  campaign    Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, campaignId])
+  @@index([tenantId, status])
+  @@index([leadId])
+}
+
+model AdSpend {
+  id        String   @id
+  tenantId  String
+  platform  String
+  amount    Int
+  startDate DateTime
+  endDate   DateTime
+  notes     String?
+  createdAt DateTime
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, platform])
+  @@index([tenantId, createdAt])
+}
+
+model TeamMember {
+  id        String   @id
+  tenantId  String
+  name      String
+  email     String?
+  role      String   @default("agent")
+  isActive  Boolean  @default(true)
+  leadCap   Int?
+  createdAt DateTime
+  updatedAt DateTime
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, isActive])
+  @@unique([tenantId, email])
+}
+
+model ESignatureRequest {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transactionId   String?
+  documentName    String
+  recipientEmail  String
+  status          String   @default("pending")
+  sentAt          DateTime?
+  signedAt        DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@index([tenantId, status])
 }

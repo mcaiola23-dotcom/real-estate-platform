@@ -10424,3 +10424,1362 @@ textarea:focus {
   border-color: rgba(248, 113, 113, 0.2);
   color: #f87171;
 }
+
+/* =========================================================================
+   Sprint 3A: Showing Scheduler
+   ========================================================================= */
+
+.crm-showing-scheduler {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crm-showing-scheduler-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.crm-showing-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.crm-showing-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.crm-showing-upcoming {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--crm-border, #e2e0dc);
+  padding-top: 0.5rem;
+}
+
+.crm-showing-upcoming h5 {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--crm-text-muted, #8c8579);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.crm-showing-upcoming-item {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.crm-showing-upcoming-item:last-child {
+  border-bottom: none;
+}
+
+.crm-showing-upcoming-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.crm-showing-upcoming-info strong {
+  font-size: 0.82rem;
+}
+
+.crm-showing-upcoming-notes {
+  font-size: 0.75rem;
+  margin: 0.15rem 0 0;
+  font-style: italic;
+}
+
+/* =========================================================================
+   Sprint 3B: Commission Calculator
+   ========================================================================= */
+
+.crm-commission-calc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crm-commission-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crm-commission-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.crm-commission-breakdown {
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--crm-bg-soft, #faf8f5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.crm-commission-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.8rem;
+  padding: 0.15rem 0;
+}
+
+.crm-commission-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.crm-commission-net {
+  border-top: 1px solid var(--crm-border, #e2e0dc);
+  padding-top: 0.4rem;
+  margin-top: 0.2rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.crm-commission-net .crm-commission-value {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.crm-commission-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crm-commission-settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.crm-commission-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* =========================================================================
+   Sprint 3C: Voice Note Recorder
+   ========================================================================= */
+
+.crm-voice-recorder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crm-voice-recorder-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px dashed var(--crm-border, #e2e0dc);
+  border-radius: 0.4rem;
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--crm-text-secondary, #6b6560);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.crm-voice-recorder-start:hover {
+  border-color: var(--crm-accent, #a08060);
+  background: rgba(160, 128, 96, 0.04);
+}
+
+.crm-voice-recorder-mic {
+  font-size: 1rem;
+}
+
+.crm-voice-recorder-active {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #dc2626;
+  border-radius: 0.4rem;
+  background: rgba(220, 38, 38, 0.04);
+}
+
+.crm-voice-recorder-pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #dc2626;
+  animation: crm-rec-pulse 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes crm-rec-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.crm-voice-recorder-timer {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex: 1;
+}
+
+.crm-voice-recorder-stop {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid #dc2626;
+  border-radius: 0.3rem;
+  background: #dc2626;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.crm-voice-recorder-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.4rem;
+}
+
+.crm-voice-recorder-audio {
+  width: 100%;
+  height: 32px;
+}
+
+.crm-voice-recorder-preview-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+/* ─── Dark mode overrides for Sprint 3 ─── */
+
+[data-theme="dark"] .crm-commission-breakdown {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--crm-border, #333);
+}
+
+[data-theme="dark"] .crm-commission-net .crm-commission-value {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .crm-voice-recorder-start:hover {
+  background: rgba(160, 128, 96, 0.08);
+}
+
+[data-theme="dark"] .crm-voice-recorder-active {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+/* =========================================================================
+   Sprint 4A: Typography Upgrade
+   ========================================================================= */
+
+:root {
+  --crm-font-heading: var(--font-outfit, 'Outfit', 'Inter', sans-serif);
+  --crm-font-mono: var(--font-jetbrains, 'JetBrains Mono', 'Menlo', monospace);
+  --crm-font-body: var(--font-inter, 'Inter', system-ui, sans-serif);
+  --crm-font-serif: var(--font-cormorant, 'Cormorant Garamond', serif);
+}
+
+.crm-shell-app h1,
+.crm-shell-app h2,
+.crm-shell-app h3 {
+  font-family: var(--crm-font-heading);
+  font-weight: 600;
+}
+
+.crm-kpi-value,
+.crm-speed-timer-elapsed,
+.crm-pipeline-days-in-stage,
+.crm-pipeline-score-badge,
+.crm-commission-value {
+  font-family: var(--crm-font-mono);
+}
+
+/* =========================================================================
+   Sprint 4B: Motion & Micro-Interactions
+   ========================================================================= */
+
+.crm-panel,
+.crm-card,
+.crm-kpi-card,
+.crm-pipeline-card,
+.crm-lead-card {
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.crm-pipeline-card:hover,
+.crm-lead-card:hover,
+.crm-kpi-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.crm-primary-button,
+.crm-secondary-button {
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.crm-primary-button:hover:not(:disabled),
+.crm-secondary-button:hover:not(:disabled) {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.crm-primary-button:active:not(:disabled),
+.crm-secondary-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.crm-toast-stack .crm-toast {
+  animation: crm-toast-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes crm-toast-slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.crm-modal {
+  animation: crm-modal-enter 0.2s ease-out;
+}
+
+@keyframes crm-modal-enter {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.crm-skeleton-pulse {
+  animation: crm-skeleton 1.8s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--crm-bg-soft) 0%,
+    var(--crm-surface) 50%,
+    var(--crm-bg-soft) 100%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes crm-skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .crm-panel,
+  .crm-card,
+  .crm-kpi-card,
+  .crm-pipeline-card,
+  .crm-lead-card,
+  .crm-primary-button,
+  .crm-secondary-button,
+  .crm-toast-stack .crm-toast,
+  .crm-modal,
+  .crm-floating-activity-panel,
+  .crm-quick-add-modal,
+  .crm-speed-timer--red {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .crm-pipeline-card:hover,
+  .crm-lead-card:hover,
+  .crm-kpi-card:hover,
+  .crm-primary-button:hover:not(:disabled),
+  .crm-secondary-button:hover:not(:disabled) {
+    transform: none !important;
+  }
+}
+
+/* =========================================================================
+   Sprint 4C: Density Toggle Component
+   ========================================================================= */
+
+.crm-density-toggle {
+  display: inline-flex;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.4rem;
+  overflow: hidden;
+}
+
+.crm-density-option {
+  padding: 0.2rem 0.5rem;
+  border: none;
+  background: transparent;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--crm-text-secondary, #5f5549);
+  transition: background 0.12s, color 0.12s;
+}
+
+.crm-density-option:not(:last-child) {
+  border-right: 1px solid var(--crm-border, #e2e0dc);
+}
+
+.crm-density-option.is-active {
+  background: var(--crm-accent, #1c1917);
+  color: #fff;
+}
+
+.crm-density-option:hover:not(.is-active) {
+  background: var(--crm-hover-soft, rgba(0,0,0,0.04));
+}
+
+/* Extended density overrides */
+[data-density="compact"] .crm-shell-app {
+  font-size: 0.85rem;
+}
+
+[data-density="compact"] .crm-sidebar-nav li button {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.78rem;
+}
+
+[data-density="compact"] .crm-modal-section {
+  padding: 0.5rem;
+}
+
+[data-density="compact"] .crm-table td,
+[data-density="compact"] .crm-table th {
+  padding: 0.3rem 0.5rem;
+}
+
+[data-density="comfortable"] .crm-shell-app {
+  font-size: 1rem;
+}
+
+[data-density="comfortable"] .crm-sidebar-nav li button {
+  padding: 0.6rem 1rem;
+  font-size: 0.92rem;
+}
+
+[data-density="comfortable"] .crm-modal-section {
+  padding: 1.25rem;
+}
+
+[data-density="comfortable"] .crm-table td,
+[data-density="comfortable"] .crm-table th {
+  padding: 0.65rem 0.75rem;
+}
+
+/* =========================================================================
+   Sprint 4E: Color System Enhancement
+   ========================================================================= */
+
+:root {
+  --crm-success: #16a34a;
+  --crm-success-soft: rgba(22, 163, 74, 0.08);
+  --crm-warning: #ca8a04;
+  --crm-warning-soft: rgba(202, 138, 4, 0.08);
+  --crm-danger: #dc2626;
+  --crm-danger-soft: rgba(220, 38, 38, 0.06);
+  --crm-info: #0284c7;
+  --crm-info-soft: rgba(2, 132, 199, 0.06);
+  --crm-focus-ring: 0 0 0 2px var(--crm-accent), 0 0 0 4px rgba(28, 25, 23, 0.15);
+  --crm-gradient-accent: linear-gradient(135deg, #1c1917, #3f3a34);
+}
+
+[data-theme="dark"] {
+  --crm-success: #4ade80;
+  --crm-success-soft: rgba(74, 222, 128, 0.1);
+  --crm-warning: #fbbf24;
+  --crm-warning-soft: rgba(251, 191, 36, 0.1);
+  --crm-danger: #f87171;
+  --crm-danger-soft: rgba(248, 113, 113, 0.08);
+  --crm-info: #38bdf8;
+  --crm-info-soft: rgba(56, 189, 248, 0.08);
+  --crm-focus-ring: 0 0 0 2px var(--crm-accent), 0 0 0 4px rgba(201, 169, 110, 0.2);
+  --crm-gradient-accent: linear-gradient(135deg, #c9a96e, #d4b87e);
+}
+
+/* Focus visible ring for interactive elements */
+.crm-primary-button:focus-visible,
+.crm-secondary-button:focus-visible,
+.crm-sort-toggle:focus-visible,
+.crm-icon-button:focus-visible {
+  outline: none;
+  box-shadow: var(--crm-focus-ring);
+}
+
+/* Dark mode density toggle */
+[data-theme="dark"] .crm-density-option.is-active {
+  background: var(--crm-accent, #c9a96e);
+  color: #1a1a1a;
+}
+
+/* =========================================================================
+   Sprint 5A: Drip Campaign Builder & Campaigns View
+   ========================================================================= */
+
+.crm-campaign-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.crm-campaign-builder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crm-campaign-builder-header h3 {
+  margin: 0;
+}
+
+.crm-campaign-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crm-campaign-steps h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.crm-campaign-step {
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  position: relative;
+}
+
+.crm-campaign-step--email {
+  border-left: 3px solid var(--crm-info, #0284c7);
+}
+
+.crm-campaign-step--wait {
+  border-left: 3px solid var(--crm-warning, #ca8a04);
+}
+
+.crm-campaign-step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.crm-campaign-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--crm-bg-soft, #f2efea);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.crm-campaign-step-type {
+  font-size: 0.78rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+.crm-campaign-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.crm-campaign-add-steps {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.crm-campaign-builder-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  border-top: 1px solid var(--crm-border, #e2e0dc);
+  padding-top: 0.75rem;
+}
+
+.crm-campaigns-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.crm-campaign-card {
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.crm-campaign-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.crm-campaign-card-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.crm-campaign-card-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+/* =========================================================================
+   Sprint 5B: Ad Spend Tracker
+   ========================================================================= */
+
+.crm-ad-spend-tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crm-ad-spend-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.crm-ad-spend-header h4 {
+  margin: 0;
+}
+
+.crm-ad-spend-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+}
+
+.crm-ad-spend-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.crm-ad-spend-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: var(--crm-bg-soft, #f2efea);
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.crm-ad-spend-list {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.crm-ad-spend-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  font-size: 0.82rem;
+}
+
+.crm-ad-spend-item:last-child {
+  border-bottom: none;
+}
+
+.crm-ad-spend-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* =========================================================================
+   Sprint 5C: Team Roster
+   ========================================================================= */
+
+.crm-team-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crm-team-roster-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.crm-team-roster-header h4 {
+  margin: 0;
+}
+
+.crm-team-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+}
+
+.crm-team-add-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.crm-team-list {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.crm-team-member-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.4rem;
+  font-size: 0.82rem;
+}
+
+.crm-team-member-inactive {
+  opacity: 0.5;
+}
+
+.crm-team-member-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.crm-settings-advanced summary {
+  list-style: none;
+}
+
+.crm-settings-advanced summary::-webkit-details-marker {
+  display: none;
+}
+
+.crm-settings-advanced summary .crm-panel-head h3::after {
+  content: ' ▸';
+  font-size: 0.8em;
+}
+
+.crm-settings-advanced[open] summary .crm-panel-head h3::after {
+  content: ' ▾';
+}
+
+/* =========================================================================
+   Sprint 6A: AI Workflow Panel
+   ========================================================================= */
+
+.crm-ai-workflow-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crm-ai-workflow-panel .crm-panel-head {
+  padding: 0;
+  margin: 0;
+}
+
+.crm-ai-workflow-list {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.crm-ai-workflow-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.crm-ai-workflow-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.crm-ai-workflow-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.82rem;
+}
+
+.crm-ai-workflow-info strong {
+  font-size: 0.85rem;
+}
+
+.crm-ai-workflow-toggle {
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.1rem;
+  accent-color: var(--crm-accent, #1c1917);
+}
+
+/* =========================================================================
+   Sprint 6B: NL Query Mode in Command Palette
+   ========================================================================= */
+
+.crm-cmdpal__nl-loading {
+  padding: 0.75rem 1rem;
+  color: var(--crm-text-muted, #8c8579);
+  font-size: 0.82rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.crm-cmdpal__nl-loading::before {
+  content: '';
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid var(--crm-border, #e2e0dc);
+  border-top-color: var(--crm-accent, #1c1917);
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  animation: crm-spin 0.6s linear infinite;
+}
+
+@keyframes crm-spin {
+  to { transform: rotate(360deg); }
+}
+
+.crm-cmdpal__nl-result {
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(212, 175, 55, 0.06);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  font-size: 0.82rem;
+  color: var(--crm-text, #2c2c2c);
+}
+
+.crm-cmdpal__nl-icon {
+  font-size: 1rem;
+  color: var(--crm-gold, #d4af37);
+}
+
+/* =========================================================================
+   Sprint 6C: Notification Digest
+   ========================================================================= */
+
+.crm-digest {
+  margin-top: 0.75rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+
+.crm-digest-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  background: rgba(212, 175, 55, 0.04);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.crm-digest-header h4 {
+  margin: 0;
+  font-size: 0.82rem;
+  flex: 1;
+}
+
+.crm-digest-count {
+  font-size: 0.72rem;
+  color: var(--crm-text-muted, #8c8579);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+}
+
+.crm-digest-toggle {
+  font-size: 0.75rem;
+  color: var(--crm-text-muted, #8c8579);
+}
+
+.crm-digest-list {
+  padding: 0.25rem 0;
+}
+
+.crm-digest-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.crm-digest-item--overdue {
+  border-left: 3px solid var(--crm-status-overdue, #dc2626);
+}
+
+.crm-digest-item--new_lead {
+  border-left: 3px solid var(--crm-gold, #d4af37);
+}
+
+.crm-digest-item--hot_lead {
+  border-left: 3px solid #f97316;
+}
+
+.crm-digest-item--milestone {
+  border-left: 3px solid #22c55e;
+}
+
+.crm-digest-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.crm-digest-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.crm-digest-label {
+  font-weight: 500;
+}
+
+/* =========================================================================
+   Sprint 6D: Forecast Panel
+   ========================================================================= */
+
+.crm-forecast-panel {
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.7rem;
+  padding: 0.75rem;
+  background: var(--crm-surface, #f5f0eb);
+}
+
+.crm-forecast-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.crm-forecast-header h4 {
+  margin: 0;
+}
+
+.crm-forecast-totals {
+  display: flex;
+  gap: 1rem;
+  text-align: right;
+}
+
+.crm-forecast-total {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.75rem;
+}
+
+.crm-forecast-total strong {
+  font-size: 0.95rem;
+}
+
+.crm-forecast-bars {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.crm-forecast-bar-row {
+  display: grid;
+  grid-template-columns: 6rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.crm-forecast-bar-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.78rem;
+}
+
+.crm-forecast-bar-track {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.crm-forecast-bar-fill {
+  height: 100%;
+  background: var(--crm-gold, #d4af37);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+
+.crm-forecast-bar-value {
+  font-size: 0.78rem;
+  font-weight: 600;
+  min-width: 4rem;
+  text-align: right;
+}
+
+/* =========================================================================
+   Sprint 6E: Benchmark Panel
+   ========================================================================= */
+
+.crm-benchmark-panel {
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.7rem;
+  padding: 0.75rem;
+  background: var(--crm-surface, #f5f0eb);
+}
+
+.crm-benchmark-panel h4 {
+  margin: 0 0 0.1rem;
+}
+
+.crm-benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.crm-benchmark-item {
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.crm-benchmark-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--crm-text-muted, #8c8579);
+}
+
+.crm-benchmark-values {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.crm-benchmark-yours,
+.crm-benchmark-industry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  flex: 1;
+}
+
+.crm-benchmark-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--crm-font-mono, monospace);
+}
+
+.crm-benchmark-vs {
+  font-size: 0.65rem;
+  color: var(--crm-text-muted, #8c8579);
+}
+
+.crm-benchmark-indicator {
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+}
+
+.crm-benchmark-indicator--better {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.crm-benchmark-indicator--worse {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.crm-benchmark-indicator--same {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--crm-text-muted, #8c8579);
+}
+
+/* Analytics Forecast + Benchmark two-column layout */
+.crm-analytics-forecast-benchmark {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .crm-analytics-forecast-benchmark {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Sprint 6 Dark Mode Overrides ─── */
+
+[data-theme="dark"] .crm-ai-workflow-item {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .crm-ai-workflow-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .crm-cmdpal__nl-result {
+  background: rgba(212, 175, 55, 0.1);
+  border-bottom-color: rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="dark"] .crm-digest {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .crm-digest-header {
+  background: rgba(212, 175, 55, 0.06);
+}
+
+[data-theme="dark"] .crm-digest-count {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .crm-forecast-panel,
+[data-theme="dark"] .crm-benchmark-panel {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--crm-surface);
+}
+
+[data-theme="dark"] .crm-benchmark-item {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .crm-forecast-bar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .crm-benchmark-indicator--better {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+[data-theme="dark"] .crm-benchmark-indicator--worse {
+  background: rgba(220, 38, 38, 0.15);
+}
+
+[data-theme="dark"] .crm-benchmark-indicator--same {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* =========================================================================
+   Sprint 8B: MLS Property Card
+   ========================================================================= */
+
+.crm-mls-card {
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.7rem;
+  padding: 0.75rem;
+  background: var(--crm-surface, #f5f0eb);
+  margin-top: 0.5rem;
+}
+
+.crm-mls-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.crm-mls-card-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: 0.4rem;
+}
+
+.crm-mls-card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.8rem;
+}
+
+.crm-mls-card-detail-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--crm-text-muted, #8c8579);
+  font-weight: 600;
+}
+
+.crm-mls-card-detail-value {
+  font-weight: 600;
+  font-family: var(--crm-font-mono, monospace);
+}
+
+/* =========================================================================
+   Sprint 8C: E-Signature Panel
+   ========================================================================= */
+
+.crm-esig-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crm-esig-list {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.crm-esig-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.4rem;
+  font-size: 0.82rem;
+}
+
+.crm-esig-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.crm-esig-item-doc {
+  font-weight: 500;
+}
+
+.crm-esig-item-email {
+  font-size: 0.72rem;
+  color: var(--crm-text-muted, #8c8579);
+}
+
+.crm-esig-badge {
+  font-size: 0.68rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.crm-esig-badge-pending {
+  background: rgba(234, 179, 8, 0.12);
+  color: #b45309;
+}
+
+.crm-esig-badge-sent {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.crm-esig-badge-signed {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.crm-esig-badge-expired {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.crm-esig-form {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+}
+
+.crm-esig-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+/* Modal header actions */
+.crm-modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ─── Sprint 8 Dark Mode Overrides ─── */
+
+[data-theme="dark"] .crm-mls-card {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--crm-surface);
+}
+
+[data-theme="dark"] .crm-esig-item {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .crm-esig-form {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .crm-esig-badge-pending {
+  background: rgba(234, 179, 8, 0.2);
+}
+
+[data-theme="dark"] .crm-esig-badge-sent {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .crm-esig-badge-signed {
+  background: rgba(34, 197, 94, 0.2);
+}
+
+[data-theme="dark"] .crm-esig-badge-expired {
+  background: rgba(220, 38, 38, 0.2);
+}

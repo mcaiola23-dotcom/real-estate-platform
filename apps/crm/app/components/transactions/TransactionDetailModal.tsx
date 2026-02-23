@@ -8,6 +8,7 @@ import type {
   CrmTransactionMilestone,
   TransactionStatus,
 } from '@real-estate/types';
+import { ESignaturePanel } from '../shared/ESignaturePanel';
 
 const STATUS_LABELS: Record<TransactionStatus, string> = {
   under_contract: 'Under Contract',
@@ -274,6 +275,11 @@ export function TransactionDetailModal({
                   onComplete={handleCompleteMilestone}
                 />
               ) : null}
+            </div>
+
+            <div className="crm-txn-section" style={{ marginTop: '0.75rem' }}>
+              <h4>E-Signatures</h4>
+              <ESignaturePanel transactionId={txn.id} />
             </div>
           </>
         ) : loading ? (
@@ -689,6 +695,7 @@ function MilestonesPane({
           ))}
         </div>
       )}
+
     </div>
   );
 }

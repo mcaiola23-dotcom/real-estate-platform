@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import type { CrmActivity, CrmContact, CrmLead, TenantContext } from '@real-estate/types';
+import type { CrmActivity, CrmContact, CrmLead, CrmShowing, CrmCommission, CrmCommissionSetting, CrmCampaign, CrmAdSpend, CrmTeamMember, TenantContext } from '@real-estate/types';
 
 import type { LeadScoreExplanation, NextActionResult, LeadSummary, PredictiveScoreResult, LeadRoutingResult } from '@real-estate/ai/types';
 
@@ -21,6 +21,13 @@ import { createMarketDigestGetHandler } from '../ai/market-digest/route';
 import { createListingDescriptionPostHandler } from '../ai/listing-description/route';
 import { createPredictiveScoreGetHandler } from '../ai/predictive-score/[leadId]/route';
 import { createLeadRoutingGetHandler } from '../ai/lead-routing/[leadId]/route';
+import { createShowingsGetHandler, createShowingsPostHandler } from '../showings/route';
+import { createCommissionsGetHandler, createCommissionsPostHandler } from '../commissions/route';
+import { createCampaignsGetHandler, createCampaignsPostHandler } from '../campaigns/route';
+import { createAdSpendGetHandler, createAdSpendPostHandler } from '../ad-spend/route';
+import { createTeamGetHandler, createTeamPostHandler } from '../team/route';
+import { createDailyDigestGetHandler } from '../ai/daily-digest/route';
+import { createNlQueryPostHandler } from '../ai/natural-language/route';
 
 const tenantContext: TenantContext = {
   tenantId: 'tenant_fairfield',
@@ -1466,4 +1473,1048 @@ test('AI lead-routing GET returns tenant-scoped routing (solo mode)', async () =
   assert.equal(body.routing.mode, 'solo');
   assert.equal(body.routing.recommendations.length, 1);
   assert.equal(body.routing.recommendations[0]!.compositeScore, 72);
+});
+
+// ============================================================
+// Showings Routes (Sprint 3)
+// ============================================================
+
+test('showings GET returns 401 when unauthorized', async () => {
+  const handler = createShowingsGetHandler({
+    requireTenantContext: unauthorizedContext,
+    listShowingsByTenantId: async () => [],
+    createShowingForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/showings'));
+  assert.equal(response.status, 401);
+});
+
+test('showings GET returns tenant-scoped list with pagination', async () => {
+  const showing: CrmShowing = {
+    id: 'showing_1',
+    tenantId: tenantContext.tenantId,
+    leadId: 'lead_1',
+    contactId: null,
+    propertyAddress: '42 Oak Lane, Fairfield CT',
+    scheduledAt: new Date().toISOString(),
+    duration: 30,
+    status: 'scheduled',
+    notes: null,
+    calendarEventId: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createShowingsGetHandler({
+    requireTenantContext: authorizedContext,
+    listShowingsByTenantId: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return [showing];
+    },
+    createShowingForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/showings?limit=10&offset=0'));
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as {
+    ok: boolean;
+    tenantId: string;
+    showings: CrmShowing[];
+    pagination: { limit: number; offset: number; nextOffset: number | null };
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.tenantId, tenantContext.tenantId);
+  assert.equal(body.showings.length, 1);
+  assert.equal(body.showings[0]!.propertyAddress, '42 Oak Lane, Fairfield CT');
+});
+
+test('showings POST returns 400 when propertyAddress is missing', async () => {
+  const handler = createShowingsPostHandler({
+    requireTenantContext: authorizedContext,
+    listShowingsByTenantId: async () => [],
+    createShowingForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/showings', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ scheduledAt: new Date().toISOString() }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /propertyAddress/);
+});
+
+test('showings POST returns 400 when scheduledAt is missing', async () => {
+  const handler = createShowingsPostHandler({
+    requireTenantContext: authorizedContext,
+    listShowingsByTenantId: async () => [],
+    createShowingForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/showings', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ propertyAddress: '10 Main St' }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /scheduledAt/);
+});
+
+test('showings POST creates tenant-scoped showing', async () => {
+  const showing: CrmShowing = {
+    id: 'showing_2',
+    tenantId: tenantContext.tenantId,
+    leadId: 'lead_1',
+    contactId: null,
+    propertyAddress: '100 Elm Street',
+    scheduledAt: '2026-03-01T14:00:00Z',
+    duration: 45,
+    status: 'scheduled',
+    notes: 'Buyer is interested in backyard',
+    calendarEventId: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createShowingsPostHandler({
+    requireTenantContext: authorizedContext,
+    listShowingsByTenantId: async () => [],
+    createShowingForTenant: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return showing;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/showings', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        propertyAddress: '100 Elm Street',
+        scheduledAt: '2026-03-01T14:00:00Z',
+        leadId: 'lead_1',
+        duration: 45,
+        notes: 'Buyer is interested in backyard',
+      }),
+    })
+  );
+  assert.equal(response.status, 201);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; showing: CrmShowing };
+  assert.equal(body.ok, true);
+  assert.equal(body.showing.propertyAddress, '100 Elm Street');
+});
+
+// ============================================================
+// Commissions Routes (Sprint 3)
+// ============================================================
+
+test('commissions GET returns 401 when unauthorized', async () => {
+  const handler = createCommissionsGetHandler({
+    requireTenantContext: unauthorizedContext,
+    listCommissionsByTenantId: async () => [],
+    createCommissionForTenant: async () => null,
+    getCommissionSettingForTenant: async () => null,
+    upsertCommissionSettingForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/commissions'));
+  assert.equal(response.status, 401);
+});
+
+test('commissions GET returns tenant-scoped commissions with settings', async () => {
+  const commission: CrmCommission = {
+    id: 'comm_1',
+    tenantId: tenantContext.tenantId,
+    transactionId: 'txn_1',
+    leadId: 'lead_1',
+    salePrice: 500000,
+    commPct: 3.0,
+    brokerageSplitPct: 70,
+    marketingFees: 500,
+    referralFees: 200,
+    netAmount: 9800,
+    notes: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  const settings: CrmCommissionSetting = {
+    id: 'cs_1',
+    tenantId: tenantContext.tenantId,
+    defaultCommPct: 3.0,
+    brokerageSplitPct: 70,
+    marketingFee: 500,
+    referralFee: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createCommissionsGetHandler({
+    requireTenantContext: authorizedContext,
+    listCommissionsByTenantId: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return [commission];
+    },
+    createCommissionForTenant: async () => null,
+    getCommissionSettingForTenant: async () => settings,
+    upsertCommissionSettingForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/commissions?limit=10&offset=0'));
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as {
+    ok: boolean;
+    tenantId: string;
+    commissions: CrmCommission[];
+    settings: CrmCommissionSetting;
+    pagination: { limit: number; offset: number; nextOffset: number | null };
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.commissions.length, 1);
+  assert.equal(body.commissions[0]!.salePrice, 500000);
+  assert.equal(body.settings.defaultCommPct, 3.0);
+});
+
+test('commissions POST returns 400 when transactionId is missing', async () => {
+  const handler = createCommissionsPostHandler({
+    requireTenantContext: authorizedContext,
+    listCommissionsByTenantId: async () => [],
+    createCommissionForTenant: async () => null,
+    getCommissionSettingForTenant: async () => null,
+    upsertCommissionSettingForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/commissions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ salePrice: 400000 }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /transactionId/);
+});
+
+test('commissions POST returns 400 when salePrice is invalid', async () => {
+  const handler = createCommissionsPostHandler({
+    requireTenantContext: authorizedContext,
+    listCommissionsByTenantId: async () => [],
+    createCommissionForTenant: async () => null,
+    getCommissionSettingForTenant: async () => null,
+    upsertCommissionSettingForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/commissions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ transactionId: 'txn_1', salePrice: -100 }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /salePrice/);
+});
+
+test('commissions POST creates tenant-scoped commission', async () => {
+  const commission: CrmCommission = {
+    id: 'comm_2',
+    tenantId: tenantContext.tenantId,
+    transactionId: 'txn_2',
+    leadId: null,
+    salePrice: 750000,
+    commPct: 2.5,
+    brokerageSplitPct: 70,
+    marketingFees: 0,
+    referralFees: 0,
+    netAmount: 13125,
+    notes: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createCommissionsPostHandler({
+    requireTenantContext: authorizedContext,
+    listCommissionsByTenantId: async () => [],
+    createCommissionForTenant: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return commission;
+    },
+    getCommissionSettingForTenant: async () => null,
+    upsertCommissionSettingForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/commissions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        transactionId: 'txn_2',
+        salePrice: 750000,
+        commPct: 2.5,
+      }),
+    })
+  );
+  assert.equal(response.status, 201);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; commission: CrmCommission };
+  assert.equal(body.ok, true);
+  assert.equal(body.commission.salePrice, 750000);
+});
+
+test('commissions POST updates settings via action=update_settings', async () => {
+  const setting: CrmCommissionSetting = {
+    id: 'cs_2',
+    tenantId: tenantContext.tenantId,
+    defaultCommPct: 2.5,
+    brokerageSplitPct: 65,
+    marketingFee: 300,
+    referralFee: 100,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createCommissionsPostHandler({
+    requireTenantContext: authorizedContext,
+    listCommissionsByTenantId: async () => [],
+    createCommissionForTenant: async () => null,
+    getCommissionSettingForTenant: async () => null,
+    upsertCommissionSettingForTenant: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return setting;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/commissions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        action: 'update_settings',
+        defaultCommPct: 2.5,
+        brokerageSplitPct: 65,
+      }),
+    })
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; settings: CrmCommissionSetting };
+  assert.equal(body.ok, true);
+  assert.equal(body.settings.defaultCommPct, 2.5);
+});
+
+// ============================================================
+// Campaigns Routes (Sprint 5)
+// ============================================================
+
+test('campaigns GET returns 401 when unauthorized', async () => {
+  const handler = createCampaignsGetHandler({
+    requireTenantContext: unauthorizedContext,
+    listCampaignsByTenantId: async () => [],
+    createCampaignForTenant: async () => null,
+    updateCampaignForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/campaigns'));
+  assert.equal(response.status, 401);
+});
+
+test('campaigns GET returns tenant-scoped list with pagination', async () => {
+  const campaign: CrmCampaign = {
+    id: 'camp_1',
+    tenantId: tenantContext.tenantId,
+    name: 'Welcome Drip',
+    status: 'active',
+    stepsJson: JSON.stringify([{ day: 0, action: 'email', template: 'welcome' }]),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createCampaignsGetHandler({
+    requireTenantContext: authorizedContext,
+    listCampaignsByTenantId: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return [campaign];
+    },
+    createCampaignForTenant: async () => null,
+    updateCampaignForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/campaigns?limit=20&offset=0'));
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as {
+    ok: boolean;
+    tenantId: string;
+    campaigns: CrmCampaign[];
+    pagination: { limit: number; offset: number; nextOffset: number | null };
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.campaigns.length, 1);
+  assert.equal(body.campaigns[0]!.name, 'Welcome Drip');
+});
+
+test('campaigns POST returns 400 when name is missing', async () => {
+  const handler = createCampaignsPostHandler({
+    requireTenantContext: authorizedContext,
+    listCampaignsByTenantId: async () => [],
+    createCampaignForTenant: async () => null,
+    updateCampaignForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/campaigns', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status: 'draft' }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /name/);
+});
+
+test('campaigns POST creates tenant-scoped campaign', async () => {
+  const campaign: CrmCampaign = {
+    id: 'camp_2',
+    tenantId: tenantContext.tenantId,
+    name: 'Re-engagement Series',
+    status: 'draft',
+    stepsJson: '[]',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createCampaignsPostHandler({
+    requireTenantContext: authorizedContext,
+    listCampaignsByTenantId: async () => [],
+    createCampaignForTenant: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return campaign;
+    },
+    updateCampaignForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/campaigns', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'Re-engagement Series' }),
+    })
+  );
+  assert.equal(response.status, 201);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; campaign: CrmCampaign };
+  assert.equal(body.ok, true);
+  assert.equal(body.campaign.name, 'Re-engagement Series');
+});
+
+test('campaigns POST updates existing campaign via action=update', async () => {
+  const updated: CrmCampaign = {
+    id: 'camp_1',
+    tenantId: tenantContext.tenantId,
+    name: 'Updated Campaign',
+    status: 'active',
+    stepsJson: '[]',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedCampaignId = '';
+  const handler = createCampaignsPostHandler({
+    requireTenantContext: authorizedContext,
+    listCampaignsByTenantId: async () => [],
+    createCampaignForTenant: async () => null,
+    updateCampaignForTenant: async (_tenantId, campaignId) => {
+      receivedCampaignId = campaignId;
+      return updated;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/campaigns', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'update', campaignId: 'camp_1', name: 'Updated Campaign' }),
+    })
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedCampaignId, 'camp_1');
+  const body = (await response.json()) as { ok: boolean; campaign: CrmCampaign };
+  assert.equal(body.ok, true);
+  assert.equal(body.campaign.name, 'Updated Campaign');
+});
+
+// ============================================================
+// Ad Spend Routes (Sprint 5)
+// ============================================================
+
+test('ad-spend GET returns 401 when unauthorized', async () => {
+  const handler = createAdSpendGetHandler({
+    requireTenantContext: unauthorizedContext,
+    listAdSpendsByTenantId: async () => [],
+    createAdSpendForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ad-spend'));
+  assert.equal(response.status, 401);
+});
+
+test('ad-spend GET returns tenant-scoped list with pagination', async () => {
+  const adSpend: CrmAdSpend = {
+    id: 'ads_1',
+    tenantId: tenantContext.tenantId,
+    platform: 'google',
+    amount: 1500,
+    startDate: '2026-01-01',
+    endDate: '2026-01-31',
+    notes: null,
+    createdAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createAdSpendGetHandler({
+    requireTenantContext: authorizedContext,
+    listAdSpendsByTenantId: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return [adSpend];
+    },
+    createAdSpendForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ad-spend?limit=10&offset=0'));
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as {
+    ok: boolean;
+    tenantId: string;
+    adSpends: CrmAdSpend[];
+    pagination: { limit: number; offset: number; nextOffset: number | null };
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.adSpends.length, 1);
+  assert.equal(body.adSpends[0]!.platform, 'google');
+  assert.equal(body.adSpends[0]!.amount, 1500);
+});
+
+test('ad-spend POST returns 400 when platform is missing', async () => {
+  const handler = createAdSpendPostHandler({
+    requireTenantContext: authorizedContext,
+    listAdSpendsByTenantId: async () => [],
+    createAdSpendForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ad-spend', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ amount: 1000, startDate: '2026-01-01', endDate: '2026-01-31' }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /platform/);
+});
+
+test('ad-spend POST returns 400 when amount is invalid', async () => {
+  const handler = createAdSpendPostHandler({
+    requireTenantContext: authorizedContext,
+    listAdSpendsByTenantId: async () => [],
+    createAdSpendForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ad-spend', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ platform: 'facebook', amount: -50 }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /amount/);
+});
+
+test('ad-spend POST creates tenant-scoped ad spend record', async () => {
+  const adSpend: CrmAdSpend = {
+    id: 'ads_2',
+    tenantId: tenantContext.tenantId,
+    platform: 'facebook',
+    amount: 2000,
+    startDate: '2026-02-01',
+    endDate: '2026-02-28',
+    notes: 'Buyer campaign',
+    createdAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createAdSpendPostHandler({
+    requireTenantContext: authorizedContext,
+    listAdSpendsByTenantId: async () => [],
+    createAdSpendForTenant: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return adSpend;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ad-spend', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        platform: 'facebook',
+        amount: 2000,
+        startDate: '2026-02-01',
+        endDate: '2026-02-28',
+        notes: 'Buyer campaign',
+      }),
+    })
+  );
+  assert.equal(response.status, 201);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; adSpend: CrmAdSpend };
+  assert.equal(body.ok, true);
+  assert.equal(body.adSpend.platform, 'facebook');
+  assert.equal(body.adSpend.amount, 2000);
+});
+
+// ============================================================
+// Team Routes (Sprint 5)
+// ============================================================
+
+test('team GET returns 401 when unauthorized', async () => {
+  const handler = createTeamGetHandler({
+    requireTenantContext: unauthorizedContext,
+    listTeamMembersByTenantId: async () => [],
+    createTeamMemberForTenant: async () => null,
+    updateTeamMemberForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/team'));
+  assert.equal(response.status, 401);
+});
+
+test('team GET returns tenant-scoped members with pagination', async () => {
+  const member: CrmTeamMember = {
+    id: 'tm_1',
+    tenantId: tenantContext.tenantId,
+    name: 'Alice Agent',
+    email: 'alice@fairfield.example.com',
+    role: 'agent',
+    isActive: true,
+    leadCap: 25,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createTeamGetHandler({
+    requireTenantContext: authorizedContext,
+    listTeamMembersByTenantId: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return [member];
+    },
+    createTeamMemberForTenant: async () => null,
+    updateTeamMemberForTenant: async () => null,
+  });
+
+  const response = await handler(new Request('http://crm.local/api/team?limit=20&offset=0'));
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as {
+    ok: boolean;
+    tenantId: string;
+    members: CrmTeamMember[];
+    pagination: { limit: number; offset: number; nextOffset: number | null };
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.members.length, 1);
+  assert.equal(body.members[0]!.name, 'Alice Agent');
+  assert.equal(body.members[0]!.role, 'agent');
+});
+
+test('team POST returns 400 when name is missing', async () => {
+  const handler = createTeamPostHandler({
+    requireTenantContext: authorizedContext,
+    listTeamMembersByTenantId: async () => [],
+    createTeamMemberForTenant: async () => null,
+    updateTeamMemberForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/team', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'nobody@example.com' }),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /name/);
+});
+
+test('team POST creates tenant-scoped team member', async () => {
+  const member: CrmTeamMember = {
+    id: 'tm_2',
+    tenantId: tenantContext.tenantId,
+    name: 'Bob Broker',
+    email: 'bob@fairfield.example.com',
+    role: 'broker',
+    isActive: true,
+    leadCap: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createTeamPostHandler({
+    requireTenantContext: authorizedContext,
+    listTeamMembersByTenantId: async () => [],
+    createTeamMemberForTenant: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return member;
+    },
+    updateTeamMemberForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/team', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Bob Broker',
+        email: 'bob@fairfield.example.com',
+        role: 'broker',
+      }),
+    })
+  );
+  assert.equal(response.status, 201);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as { ok: boolean; member: CrmTeamMember };
+  assert.equal(body.ok, true);
+  assert.equal(body.member.name, 'Bob Broker');
+  assert.equal(body.member.role, 'broker');
+});
+
+test('team POST updates existing member via action=update', async () => {
+  const updated: CrmTeamMember = {
+    id: 'tm_1',
+    tenantId: tenantContext.tenantId,
+    name: 'Alice Agent',
+    email: 'alice@fairfield.example.com',
+    role: 'team_lead',
+    isActive: true,
+    leadCap: 30,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedMemberId = '';
+  const handler = createTeamPostHandler({
+    requireTenantContext: authorizedContext,
+    listTeamMembersByTenantId: async () => [],
+    createTeamMemberForTenant: async () => null,
+    updateTeamMemberForTenant: async (_tenantId, memberId) => {
+      receivedMemberId = memberId;
+      return updated;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/team', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'update', memberId: 'tm_1', role: 'team_lead', leadCap: 30 }),
+    })
+  );
+  assert.equal(response.status, 200);
+  assert.equal(receivedMemberId, 'tm_1');
+  const body = (await response.json()) as { ok: boolean; member: CrmTeamMember };
+  assert.equal(body.ok, true);
+  assert.equal(body.member.role, 'team_lead');
+});
+
+// ============================================================
+// AI Daily Digest (Sprint 6)
+// ============================================================
+
+test('daily-digest GET returns 401 when unauthorized', async () => {
+  const handler = createDailyDigestGetHandler({
+    requireTenantContext: unauthorizedContext,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/daily-digest'));
+  assert.equal(response.status, 401);
+});
+
+test('daily-digest GET returns tenant-scoped digest items', async () => {
+  const now = new Date();
+  const recentLead: CrmLead = {
+    id: 'lead_dd_1',
+    tenantId: tenantContext.tenantId,
+    contactId: null,
+    status: 'new',
+    leadType: 'website_lead',
+    source: 'website',
+    timeframe: null,
+    notes: null,
+    listingId: null,
+    listingUrl: null,
+    listingAddress: '55 Maple Drive',
+    propertyType: null,
+    beds: null,
+    baths: null,
+    sqft: null,
+    lastContactAt: null,
+    nextActionAt: null,
+    nextActionNote: null,
+    nextActionChannel: null,
+    reminderSnoozedUntil: null,
+    priceMin: null,
+    priceMax: null,
+    tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
+    createdAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+    updatedAt: new Date().toISOString(),
+  };
+
+  const overdueLead: CrmLead = {
+    id: 'lead_dd_2',
+    tenantId: tenantContext.tenantId,
+    contactId: null,
+    status: 'qualified',
+    leadType: 'buyer',
+    source: 'referral',
+    timeframe: null,
+    notes: null,
+    listingId: null,
+    listingUrl: null,
+    listingAddress: '77 Pine Road',
+    propertyType: null,
+    beds: null,
+    baths: null,
+    sqft: null,
+    lastContactAt: null,
+    nextActionAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+    nextActionNote: 'Follow up call',
+    nextActionChannel: 'call',
+    reminderSnoozedUntil: null,
+    priceMin: null,
+    priceMax: null,
+    tags: [],
+    closeReason: null,
+    closeNotes: null,
+    closedAt: null,
+    assignedTo: null,
+    referredBy: null,
+    createdAt: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  let receivedTenantId = '';
+  const handler = createDailyDigestGetHandler({
+    requireTenantContext: authorizedContext,
+    listLeadsByTenantId: async (tenantId) => {
+      receivedTenantId = tenantId;
+      return [recentLead, overdueLead];
+    },
+    listActivitiesByTenantId: async () => [],
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/daily-digest'));
+  assert.equal(response.status, 200);
+  assert.equal(receivedTenantId, tenantContext.tenantId);
+  const body = (await response.json()) as {
+    ok: boolean;
+    tenantId: string;
+    items: Array<{ type: string; label: string; leadId: string }>;
+    generatedAt: string;
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.tenantId, tenantContext.tenantId);
+  assert.ok(body.items.length >= 2, 'Expected at least 2 digest items (new lead + overdue)');
+  const types = body.items.map((i) => i.type);
+  assert.ok(types.includes('new_lead'), 'Expected a new_lead item');
+  assert.ok(types.includes('overdue'), 'Expected an overdue item');
+});
+
+test('daily-digest GET returns empty items when no leads exist', async () => {
+  const handler = createDailyDigestGetHandler({
+    requireTenantContext: authorizedContext,
+    listLeadsByTenantId: async () => [],
+    listActivitiesByTenantId: async () => [],
+  });
+
+  const response = await handler(new Request('http://crm.local/api/ai/daily-digest'));
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as {
+    ok: boolean;
+    items: Array<unknown>;
+    generatedAt: string;
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.items.length, 0);
+  assert.ok(body.generatedAt);
+});
+
+// ============================================================
+// AI Natural Language Query (Sprint 6)
+// ============================================================
+
+test('natural-language POST returns 401 when unauthorized', async () => {
+  const handler = createNlQueryPostHandler({
+    requireTenantContext: unauthorizedContext,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/natural-language', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'show me leads from zillow' }),
+    })
+  );
+  assert.equal(response.status, 401);
+});
+
+test('natural-language POST returns 400 when query is missing', async () => {
+  const handler = createNlQueryPostHandler({
+    requireTenantContext: authorizedContext,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/natural-language', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+  );
+  assert.equal(response.status, 400);
+  const body = (await response.json()) as { error: string };
+  assert.match(body.error, /query/);
+});
+
+test('natural-language POST returns 400 when query is empty whitespace', async () => {
+  const handler = createNlQueryPostHandler({
+    requireTenantContext: authorizedContext,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/natural-language', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: '   ' }),
+    })
+  );
+  assert.equal(response.status, 400);
+});
+
+test('natural-language POST parses source-based filter intent', async () => {
+  const handler = createNlQueryPostHandler({
+    requireTenantContext: authorizedContext,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/natural-language', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'show me leads from zillow' }),
+    })
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as {
+    ok: boolean;
+    tenantId: string;
+    intent: { action: string; view: string; filters: Record<string, string> };
+  };
+  assert.equal(body.ok, true);
+  assert.equal(body.tenantId, tenantContext.tenantId);
+  assert.equal(body.intent.action, 'filter');
+  assert.equal(body.intent.view, 'leads');
+  assert.equal(body.intent.filters.source, 'zillow');
+});
+
+test('natural-language POST parses status-based filter intent', async () => {
+  const handler = createNlQueryPostHandler({
+    requireTenantContext: authorizedContext,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/natural-language', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'show me qualified leads' }),
+    })
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as {
+    ok: boolean;
+    intent: { action: string; filters: Record<string, string> };
+  };
+  assert.equal(body.intent.action, 'filter');
+  assert.equal(body.intent.filters.status, 'qualified');
+});
+
+test('natural-language POST parses navigation intent', async () => {
+  const handler = createNlQueryPostHandler({
+    requireTenantContext: authorizedContext,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/natural-language', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'go to dashboard' }),
+    })
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as {
+    ok: boolean;
+    intent: { action: string; view: string };
+  };
+  assert.equal(body.intent.action, 'navigate');
+  assert.equal(body.intent.view, 'dashboard');
+});
+
+test('natural-language POST falls back to search for unknown queries', async () => {
+  const handler = createNlQueryPostHandler({
+    requireTenantContext: authorizedContext,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/ai/natural-language', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'find property on elm street' }),
+    })
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as {
+    ok: boolean;
+    intent: { action: string; searchTerm: string };
+  };
+  assert.equal(body.intent.action, 'search');
+  assert.ok(body.intent.searchTerm);
 });

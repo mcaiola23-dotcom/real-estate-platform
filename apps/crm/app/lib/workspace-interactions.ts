@@ -2,8 +2,8 @@ import type { CrmLeadStatus } from '@real-estate/types/crm';
 
 import { formatLeadStatusLabel } from './crm-display';
 
-export type WorkspaceNav = 'dashboard' | 'pipeline' | 'leads' | 'properties' | 'transactions' | 'contacts' | 'activity' | 'analytics' | 'settings' | 'profile';
-export type WorkspaceView = 'dashboard' | 'pipeline' | 'leads' | 'properties' | 'transactions' | 'analytics' | 'settings' | 'profile';
+export type WorkspaceNav = 'dashboard' | 'pipeline' | 'leads' | 'properties' | 'transactions' | 'contacts' | 'activity' | 'analytics' | 'campaigns' | 'settings' | 'profile';
+export type WorkspaceView = 'dashboard' | 'pipeline' | 'leads' | 'properties' | 'transactions' | 'analytics' | 'campaigns' | 'settings' | 'profile';
 export type TableStatusPreset = 'all' | 'new' | 'follow_up' | 'open_pipeline' | 'closed';
 
 export type LeadsTableSortColumn =
@@ -46,6 +46,9 @@ export function resolveViewFromNav(nav: WorkspaceNav): WorkspaceView {
   }
   if (nav === 'analytics') {
     return 'analytics';
+  }
+  if (nav === 'campaigns') {
+    return 'campaigns';
   }
   return 'dashboard';
 }

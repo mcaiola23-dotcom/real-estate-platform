@@ -10,6 +10,14 @@ import type {
   CrmLeadIngestionSummary,
   CrmLeadStatus,
   CrmLeadType,
+  CrmShowing,
+  CrmShowingListQuery,
+  CrmCommissionSetting,
+  CrmCommission,
+  CrmCampaign,
+  CrmAdSpend,
+  CrmTeamMember,
+  CrmESignatureRequest,
 } from '@real-estate/types/crm';
 import type {
   WebsiteEvent,
@@ -1793,5 +1801,715 @@ export async function findPotentialDuplicateLeads(
     return results;
   } catch {
     return [];
+  }
+}
+
+// ─── Showing Helpers ───────────────────────────────────────────────────────────
+
+function toCrmShowing(record: {
+  id: string;
+  tenantId: string;
+  leadId: string | null;
+  contactId: string | null;
+  propertyAddress: string;
+  scheduledAt: string | Date;
+  duration: number | null;
+  status: string;
+  notes: string | null;
+  calendarEventId: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): CrmShowing {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    leadId: record.leadId,
+    contactId: record.contactId,
+    propertyAddress: record.propertyAddress,
+    scheduledAt: toIsoString(record.scheduledAt),
+    duration: record.duration,
+    status: record.status,
+    notes: record.notes,
+    calendarEventId: record.calendarEventId,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export interface CreateShowingInput {
+  leadId?: string | null;
+  contactId?: string | null;
+  propertyAddress: string;
+  scheduledAt: string | Date;
+  duration?: number | null;
+  status?: string;
+  notes?: string | null;
+  calendarEventId?: string | null;
+}
+
+export interface UpdateShowingInput {
+  propertyAddress?: string;
+  scheduledAt?: string | Date;
+  duration?: number | null;
+  status?: string;
+  notes?: string | null;
+  calendarEventId?: string | null;
+}
+
+export async function createShowingForTenant(
+  tenantId: string,
+  input: CreateShowingInput
+): Promise<CrmShowing | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  const address = input.propertyAddress.trim();
+  if (!address) return null;
+
+  try {
+    if (input.leadId) {
+      const lead = await prisma.lead.findFirst({
+        where: { id: input.leadId, tenantId },
+        select: { id: true },
+      });
+      if (!lead) return null;
+    }
+
+    if (input.contactId) {
+      const contact = await prisma.contact.findFirst({
+        where: { id: input.contactId, tenantId },
+        select: { id: true },
+      });
+      if (!contact) return null;
+    }
+
+    const now = new Date();
+    const showing = await prisma.showing.create({
+      data: {
+        id: randomUUID(),
+        tenantId,
+        leadId: input.leadId || null,
+        contactId: input.contactId || null,
+        propertyAddress: address,
+        scheduledAt: new Date(input.scheduledAt),
+        duration: input.duration ?? null,
+        status: input.status || 'scheduled',
+        notes: input.notes?.trim() || null,
+        calendarEventId: input.calendarEventId?.trim() || null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+
+    return toCrmShowing(showing);
+  } catch {
+    return null;
+  }
+}
+
+export async function updateShowingForTenant(
+  tenantId: string,
+  showingId: string,
+  input: UpdateShowingInput
+): Promise<CrmShowing | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  const data: Record<string, unknown> = { updatedAt: new Date() };
+
+  if (input.propertyAddress !== undefined) data.propertyAddress = input.propertyAddress.trim();
+  if (input.scheduledAt !== undefined) data.scheduledAt = new Date(input.scheduledAt);
+  if (input.duration !== undefined) data.duration = input.duration;
+  if (input.status !== undefined) data.status = input.status;
+  if (input.notes !== undefined) data.notes = input.notes?.trim() || null;
+  if (input.calendarEventId !== undefined) data.calendarEventId = input.calendarEventId?.trim() || null;
+
+  try {
+    const existing = await prisma.showing.findFirst({
+      where: { id: showingId, tenantId },
+      select: { id: true },
+    });
+    if (!existing) return null;
+
+    const updated = await prisma.showing.update({
+      where: { id: showingId },
+      data,
+    });
+    return toCrmShowing(updated);
+  } catch {
+    return null;
+  }
+}
+
+export async function listShowingsByTenantId(
+  tenantId: string,
+  query: CrmShowingListQuery = {}
+): Promise<CrmShowing[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+
+  const take = Math.min(Math.max(query.limit ?? 50, 1), 200);
+  const skip = Math.max(query.offset ?? 0, 0);
+
+  try {
+    const showings = await prisma.showing.findMany({
+      where: {
+        tenantId,
+        ...(query.leadId ? { leadId: query.leadId } : {}),
+        ...(query.status ? { status: query.status } : {}),
+        ...(query.from || query.to
+          ? {
+              scheduledAt: {
+                ...(query.from ? { gte: new Date(query.from) } : {}),
+                ...(query.to ? { lte: new Date(query.to) } : {}),
+              },
+            }
+          : {}),
+      },
+      orderBy: { scheduledAt: 'desc' },
+      take,
+      skip,
+    });
+    return showings.map(toCrmShowing);
+  } catch {
+    return [];
+  }
+}
+
+export async function getShowingByIdForTenant(
+  tenantId: string,
+  showingId: string
+): Promise<CrmShowing | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const showing = await prisma.showing.findFirst({
+      where: { id: showingId, tenantId },
+    });
+    return showing ? toCrmShowing(showing) : null;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Commission Setting Helpers ────────────────────────────────────────────────
+
+function toCrmCommissionSetting(record: {
+  id: string;
+  tenantId: string;
+  defaultCommPct: number;
+  brokerageSplitPct: number;
+  marketingFee: number;
+  referralFee: number;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): CrmCommissionSetting {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    defaultCommPct: record.defaultCommPct,
+    brokerageSplitPct: record.brokerageSplitPct,
+    marketingFee: record.marketingFee,
+    referralFee: record.referralFee,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export interface UpsertCommissionSettingInput {
+  defaultCommPct?: number;
+  brokerageSplitPct?: number;
+  marketingFee?: number;
+  referralFee?: number;
+}
+
+export async function getCommissionSettingForTenant(
+  tenantId: string
+): Promise<CrmCommissionSetting | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const setting = await prisma.commissionSetting.findUnique({
+      where: { tenantId },
+    });
+    return setting ? toCrmCommissionSetting(setting) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function upsertCommissionSettingForTenant(
+  tenantId: string,
+  input: UpsertCommissionSettingInput
+): Promise<CrmCommissionSetting | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  const now = new Date();
+
+  try {
+    const setting = await prisma.commissionSetting.upsert({
+      where: { tenantId },
+      update: {
+        ...(input.defaultCommPct !== undefined ? { defaultCommPct: input.defaultCommPct } : {}),
+        ...(input.brokerageSplitPct !== undefined ? { brokerageSplitPct: input.brokerageSplitPct } : {}),
+        ...(input.marketingFee !== undefined ? { marketingFee: input.marketingFee } : {}),
+        ...(input.referralFee !== undefined ? { referralFee: input.referralFee } : {}),
+        updatedAt: now,
+      },
+      create: {
+        id: randomUUID(),
+        tenantId,
+        defaultCommPct: input.defaultCommPct ?? 3.0,
+        brokerageSplitPct: input.brokerageSplitPct ?? 70.0,
+        marketingFee: input.marketingFee ?? 0,
+        referralFee: input.referralFee ?? 0,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+    return toCrmCommissionSetting(setting);
+  } catch {
+    return null;
+  }
+}
+
+// ─── Commission Helpers ────────────────────────────────────────────────────────
+
+function toCrmCommission(record: {
+  id: string;
+  tenantId: string;
+  transactionId: string;
+  leadId: string | null;
+  salePrice: number;
+  commPct: number;
+  brokerageSplitPct: number;
+  marketingFees: number;
+  referralFees: number;
+  netAmount: number;
+  notes: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): CrmCommission {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    transactionId: record.transactionId,
+    leadId: record.leadId,
+    salePrice: record.salePrice,
+    commPct: record.commPct,
+    brokerageSplitPct: record.brokerageSplitPct,
+    marketingFees: record.marketingFees,
+    referralFees: record.referralFees,
+    netAmount: record.netAmount,
+    notes: record.notes,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export interface CreateCommissionInput {
+  transactionId: string;
+  leadId?: string | null;
+  salePrice: number;
+  commPct: number;
+  brokerageSplitPct: number;
+  marketingFees?: number;
+  referralFees?: number;
+  notes?: string | null;
+}
+
+export async function createCommissionForTenant(
+  tenantId: string,
+  input: CreateCommissionInput
+): Promise<CrmCommission | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const tx = await prisma.transaction.findFirst({
+      where: { id: input.transactionId, tenantId },
+      select: { id: true },
+    });
+    if (!tx) return null;
+
+    if (input.leadId) {
+      const lead = await prisma.lead.findFirst({
+        where: { id: input.leadId, tenantId },
+        select: { id: true },
+      });
+      if (!lead) return null;
+    }
+
+    const grossComm = input.salePrice * (input.commPct / 100);
+    const agentShare = grossComm * (input.brokerageSplitPct / 100);
+    const mktFees = input.marketingFees ?? 0;
+    const refFees = input.referralFees ?? 0;
+    const netAmount = Math.round(agentShare - mktFees - refFees);
+
+    const now = new Date();
+    const commission = await prisma.commission.create({
+      data: {
+        id: randomUUID(),
+        tenantId,
+        transactionId: input.transactionId,
+        leadId: input.leadId || null,
+        salePrice: input.salePrice,
+        commPct: input.commPct,
+        brokerageSplitPct: input.brokerageSplitPct,
+        marketingFees: mktFees,
+        referralFees: refFees,
+        netAmount,
+        notes: input.notes?.trim() || null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+
+    return toCrmCommission(commission);
+  } catch {
+    return null;
+  }
+}
+
+export async function listCommissionsByTenantId(
+  tenantId: string,
+  options: { transactionId?: string; limit?: number; offset?: number } = {}
+): Promise<CrmCommission[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+
+  const take = Math.min(Math.max(options.limit ?? 50, 1), 200);
+  const skip = Math.max(options.offset ?? 0, 0);
+
+  try {
+    const commissions = await prisma.commission.findMany({
+      where: {
+        tenantId,
+        ...(options.transactionId ? { transactionId: options.transactionId } : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+      take,
+      skip,
+    });
+    return commissions.map(toCrmCommission);
+  } catch {
+    return [];
+  }
+}
+
+// ─── Campaign Helpers ──────────────────────────────────────────────────────────
+
+function toCrmCampaign(record: {
+  id: string; tenantId: string; name: string; status: string; stepsJson: string;
+  createdAt: string | Date; updatedAt: string | Date;
+}): CrmCampaign {
+  return {
+    id: record.id, tenantId: record.tenantId, name: record.name,
+    status: record.status, stepsJson: record.stepsJson,
+    createdAt: toIsoString(record.createdAt), updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export async function listCampaignsByTenantId(
+  tenantId: string, options: { status?: string; limit?: number; offset?: number } = {}
+): Promise<CrmCampaign[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+  const take = Math.min(Math.max(options.limit ?? 50, 1), 200);
+  const skip = Math.max(options.offset ?? 0, 0);
+  try {
+    const rows = await prisma.campaign.findMany({
+      where: { tenantId, ...(options.status ? { status: options.status } : {}) },
+      orderBy: { createdAt: 'desc' }, take, skip,
+    });
+    return rows.map(toCrmCampaign);
+  } catch { return []; }
+}
+
+export async function createCampaignForTenant(
+  tenantId: string, input: { name: string; stepsJson?: string; status?: string }
+): Promise<CrmCampaign | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+  const name = input.name.trim();
+  if (!name) return null;
+  try {
+    const now = new Date();
+    const row = await prisma.campaign.create({
+      data: {
+        id: randomUUID(), tenantId, name,
+        stepsJson: input.stepsJson || '[]',
+        status: input.status || 'draft',
+        createdAt: now, updatedAt: now,
+      },
+    });
+    return toCrmCampaign(row);
+  } catch { return null; }
+}
+
+export async function updateCampaignForTenant(
+  tenantId: string, campaignId: string, input: { name?: string; stepsJson?: string; status?: string }
+): Promise<CrmCampaign | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+  try {
+    const existing = await prisma.campaign.findFirst({ where: { id: campaignId, tenantId }, select: { id: true } });
+    if (!existing) return null;
+    const data: Record<string, unknown> = { updatedAt: new Date() };
+    if (input.name !== undefined) data.name = input.name.trim();
+    if (input.stepsJson !== undefined) data.stepsJson = input.stepsJson;
+    if (input.status !== undefined) data.status = input.status;
+    const updated = await prisma.campaign.update({ where: { id: campaignId }, data });
+    return toCrmCampaign(updated);
+  } catch { return null; }
+}
+
+// ─── Ad Spend Helpers ──────────────────────────────────────────────────────────
+
+function toCrmAdSpend(record: {
+  id: string; tenantId: string; platform: string; amount: number;
+  startDate: string | Date; endDate: string | Date; notes: string | null; createdAt: string | Date;
+}): CrmAdSpend {
+  return {
+    id: record.id, tenantId: record.tenantId, platform: record.platform, amount: record.amount,
+    startDate: toIsoString(record.startDate), endDate: toIsoString(record.endDate),
+    notes: record.notes, createdAt: toIsoString(record.createdAt),
+  };
+}
+
+export async function listAdSpendsByTenantId(
+  tenantId: string, options: { platform?: string; limit?: number; offset?: number } = {}
+): Promise<CrmAdSpend[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+  const take = Math.min(Math.max(options.limit ?? 50, 1), 200);
+  const skip = Math.max(options.offset ?? 0, 0);
+  try {
+    const rows = await prisma.adSpend.findMany({
+      where: { tenantId, ...(options.platform ? { platform: options.platform } : {}) },
+      orderBy: { createdAt: 'desc' }, take, skip,
+    });
+    return rows.map(toCrmAdSpend);
+  } catch { return []; }
+}
+
+export async function createAdSpendForTenant(
+  tenantId: string,
+  input: { platform: string; amount: number; startDate: string; endDate: string; notes?: string | null }
+): Promise<CrmAdSpend | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+  try {
+    const row = await prisma.adSpend.create({
+      data: {
+        id: randomUUID(), tenantId,
+        platform: input.platform.trim(),
+        amount: input.amount,
+        startDate: new Date(input.startDate),
+        endDate: new Date(input.endDate),
+        notes: input.notes?.trim() || null,
+        createdAt: new Date(),
+      },
+    });
+    return toCrmAdSpend(row);
+  } catch { return null; }
+}
+
+// ─── Team Member Helpers ───────────────────────────────────────────────────────
+
+function toCrmTeamMember(record: {
+  id: string; tenantId: string; name: string; email: string | null; role: string;
+  isActive: boolean; leadCap: number | null; createdAt: string | Date; updatedAt: string | Date;
+}): CrmTeamMember {
+  return {
+    id: record.id, tenantId: record.tenantId, name: record.name, email: record.email,
+    role: record.role, isActive: record.isActive, leadCap: record.leadCap,
+    createdAt: toIsoString(record.createdAt), updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export async function listTeamMembersByTenantId(
+  tenantId: string, options: { activeOnly?: boolean; limit?: number; offset?: number } = {}
+): Promise<CrmTeamMember[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+  const take = Math.min(Math.max(options.limit ?? 50, 1), 200);
+  const skip = Math.max(options.offset ?? 0, 0);
+  try {
+    const rows = await prisma.teamMember.findMany({
+      where: { tenantId, ...(options.activeOnly ? { isActive: true } : {}) },
+      orderBy: { name: 'asc' }, take, skip,
+    });
+    return rows.map(toCrmTeamMember);
+  } catch { return []; }
+}
+
+export async function createTeamMemberForTenant(
+  tenantId: string,
+  input: { name: string; email?: string | null; role?: string; leadCap?: number | null }
+): Promise<CrmTeamMember | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+  const name = input.name.trim();
+  if (!name) return null;
+  try {
+    const now = new Date();
+    const row = await prisma.teamMember.create({
+      data: {
+        id: randomUUID(), tenantId, name,
+        email: input.email?.trim() || null,
+        role: input.role || 'agent',
+        leadCap: input.leadCap ?? null,
+        isActive: true,
+        createdAt: now, updatedAt: now,
+      },
+    });
+    return toCrmTeamMember(row);
+  } catch { return null; }
+}
+
+export async function updateTeamMemberForTenant(
+  tenantId: string, memberId: string,
+  input: { name?: string; email?: string | null; role?: string; isActive?: boolean; leadCap?: number | null }
+): Promise<CrmTeamMember | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+  try {
+    const existing = await prisma.teamMember.findFirst({ where: { id: memberId, tenantId }, select: { id: true } });
+    if (!existing) return null;
+    const data: Record<string, unknown> = { updatedAt: new Date() };
+    if (input.name !== undefined) data.name = input.name.trim();
+    if (input.email !== undefined) data.email = input.email?.trim() || null;
+    if (input.role !== undefined) data.role = input.role;
+    if (input.isActive !== undefined) data.isActive = input.isActive;
+    if (input.leadCap !== undefined) data.leadCap = input.leadCap;
+    const updated = await prisma.teamMember.update({ where: { id: memberId }, data });
+    return toCrmTeamMember(updated);
+  } catch { return null; }
+}
+
+// ─── E-Signature Request Helpers ────────────────────────────────────────────────
+
+function toCrmESignatureRequest(record: {
+  id: string;
+  tenantId: string;
+  transactionId: string | null;
+  documentName: string;
+  recipientEmail: string;
+  status: string;
+  sentAt: string | Date | null;
+  signedAt: string | Date | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): CrmESignatureRequest {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    transactionId: record.transactionId,
+    documentName: record.documentName,
+    recipientEmail: record.recipientEmail,
+    status: record.status,
+    sentAt: toNullableIso(record.sentAt),
+    signedAt: toNullableIso(record.signedAt),
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export async function listESignatureRequestsByTenantId(
+  tenantId: string,
+  query: { transactionId?: string; status?: string; limit?: number; offset?: number } = {}
+): Promise<CrmESignatureRequest[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+
+  const take = Math.min(Math.max(query.limit ?? 50, 1), 200);
+  const skip = Math.max(query.offset ?? 0, 0);
+
+  try {
+    const rows = await prisma.eSignatureRequest.findMany({
+      where: {
+        tenantId,
+        ...(query.transactionId ? { transactionId: query.transactionId } : {}),
+        ...(query.status ? { status: query.status } : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+      take,
+      skip,
+    });
+    return rows.map(toCrmESignatureRequest);
+  } catch {
+    return [];
+  }
+}
+
+export async function createESignatureRequestForTenant(
+  tenantId: string,
+  data: {
+    transactionId?: string | null;
+    documentName: string;
+    recipientEmail: string;
+    status?: string;
+  }
+): Promise<CrmESignatureRequest | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  const documentName = data.documentName.trim();
+  const recipientEmail = data.recipientEmail.trim();
+  if (!documentName || !recipientEmail) return null;
+
+  try {
+    const now = new Date();
+    const row = await prisma.eSignatureRequest.create({
+      data: {
+        id: randomUUID(),
+        tenantId,
+        transactionId: data.transactionId || null,
+        documentName,
+        recipientEmail,
+        status: data.status || 'pending',
+        sentAt: null,
+        signedAt: null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+    return toCrmESignatureRequest(row);
+  } catch {
+    return null;
+  }
+}
+
+export async function updateESignatureRequestForTenant(
+  tenantId: string,
+  id: string,
+  input: { status?: string; sentAt?: string | Date | null; signedAt?: string | Date | null }
+): Promise<CrmESignatureRequest | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const existing = await prisma.eSignatureRequest.findFirst({
+      where: { id, tenantId },
+      select: { id: true },
+    });
+    if (!existing) return null;
+
+    const updateData: Record<string, unknown> = { updatedAt: new Date() };
+    if (input.status !== undefined) updateData.status = input.status;
+    if (input.sentAt !== undefined) updateData.sentAt = input.sentAt ? new Date(input.sentAt) : null;
+    if (input.signedAt !== undefined) updateData.signedAt = input.signedAt ? new Date(input.signedAt) : null;
+
+    const updated = await prisma.eSignatureRequest.update({
+      where: { id },
+      data: updateData,
+    });
+    return toCrmESignatureRequest(updated);
+  } catch {
+    return null;
   }
 }

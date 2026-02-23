@@ -96,3 +96,112 @@ export interface CrmActivityListQuery {
   limit?: number;
   offset?: number;
 }
+
+export interface CrmShowing {
+  id: string;
+  tenantId: string;
+  leadId: string | null;
+  contactId: string | null;
+  propertyAddress: string;
+  scheduledAt: string;
+  duration: number | null;
+  status: string;
+  notes: string | null;
+  calendarEventId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmShowingListQuery {
+  leadId?: string;
+  status?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface CrmCommissionSetting {
+  id: string;
+  tenantId: string;
+  defaultCommPct: number;
+  brokerageSplitPct: number;
+  marketingFee: number;
+  referralFee: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmCommission {
+  id: string;
+  tenantId: string;
+  transactionId: string;
+  leadId: string | null;
+  salePrice: number;
+  commPct: number;
+  brokerageSplitPct: number;
+  marketingFees: number;
+  referralFees: number;
+  netAmount: number;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmCampaign {
+  id: string;
+  tenantId: string;
+  name: string;
+  status: string;
+  stepsJson: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmCampaignEnrollment {
+  id: string;
+  tenantId: string;
+  campaignId: string;
+  leadId: string;
+  currentStep: number;
+  status: string;
+  nextSendAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmAdSpend {
+  id: string;
+  tenantId: string;
+  platform: string;
+  amount: number;
+  startDate: string;
+  endDate: string;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface CrmTeamMember {
+  id: string;
+  tenantId: string;
+  name: string;
+  email: string | null;
+  role: string;
+  isActive: boolean;
+  leadCap: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmESignatureRequest {
+  id: string;
+  tenantId: string;
+  transactionId: string | null;
+  documentName: string;
+  recipientEmail: string;
+  status: string;
+  sentAt: string | null;
+  signedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

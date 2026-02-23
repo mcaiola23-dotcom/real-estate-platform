@@ -36,6 +36,10 @@ import { GmailComposer } from '../shared/GmailComposer';
 import { GmailThreads } from '../shared/GmailThreads';
 import type { MergeFieldContext } from '../../lib/crm-templates';
 import { downloadIcsFile } from '../../lib/crm-calendar';
+import type { CrmShowing } from '@real-estate/types/crm';
+import { ShowingScheduler } from '../shared/ShowingScheduler';
+import { VoiceNoteRecorder } from '../shared/VoiceNoteRecorder';
+import { MlsPropertyCard } from '../shared/MlsPropertyCard';
 
 interface LeadProfileModalProps {
   lead: CrmLead;
@@ -95,6 +99,21 @@ export function LeadProfileModal({
   const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
   const [addingToCalendar, setAddingToCalendar] = useState(false);
   const [calendarAdded, setCalendarAdded] = useState(false);
+  const [showings, setShowings] = useState<CrmShowing[]>([]);
+  const [portalLink, setPortalLink] = useState<string | null>(null);
+  const [generatingPortal, setGeneratingPortal] = useState(false);
+
+  // Fetch showings for this lead
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/showings?leadId=${lead.id}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.showings) setShowings(data.showings);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [lead.id]);
 
   // Check Google connection status
   useEffect(() => {
@@ -178,9 +197,36 @@ export function LeadProfileModal({
               </div>
             ) : null}
           </div>
-          <button type="button" className="crm-modal-close" onClick={onClose} aria-label="Close lead profile">
-            ✕
-          </button>
+          <div className="crm-modal-header-actions">
+            <button
+              type="button"
+              className="crm-secondary-button"
+              disabled={generatingPortal}
+              onClick={async () => {
+                setGeneratingPortal(true);
+                try {
+                  const res = await fetch('/api/portal/generate-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ leadId: lead.id }),
+                  });
+                  const data = await res.json();
+                  if (data.ok && data.portalUrl) {
+                    const fullUrl = `${window.location.origin}${data.portalUrl}`;
+                    setPortalLink(fullUrl);
+                    void navigator.clipboard.writeText(fullUrl);
+                  }
+                } catch { /* portal generation failed */ } finally {
+                  setGeneratingPortal(false);
+                }
+              }}
+            >
+              {portalLink ? 'Link Copied!' : generatingPortal ? 'Generating...' : 'Share Client Portal'}
+            </button>
+            <button type="button" className="crm-modal-close" onClick={onClose} aria-label="Close lead profile">
+              ✕
+            </button>
+          </div>
         </header>
 
         <DuplicateWarning
@@ -479,6 +525,12 @@ export function LeadProfileModal({
                 <LeadActivityChart activities={activities} />
                 <PriceInterestBar signals={listingSignals} />
               </div>
+              <MlsPropertyCard
+                listingAddress={lead.listingAddress ?? undefined}
+                priceMin={lead.priceMin}
+                priceMax={lead.priceMax}
+                propertyType={lead.propertyType}
+              />
             </div>
             <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
             <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
@@ -651,6 +703,33 @@ export function LeadProfileModal({
             void onUpdateLead(lead.id);
           }}
         />
+
+        <section className="crm-modal-section">
+          <ShowingScheduler
+            leadId={lead.id}
+            contactId={lead.contactId}
+            defaultAddress={lead.listingAddress || ''}
+            existingShowings={showings}
+            onShowingCreated={(showing) => {
+              setShowings((prev) => [showing, ...prev]);
+              void onLogContact('showing_scheduled', `Showing scheduled: ${showing.propertyAddress}`);
+            }}
+          />
+        </section>
+
+        <section className="crm-modal-section">
+          <h4>Voice Note</h4>
+          <VoiceNoteRecorder
+            onRecordingComplete={async (blob, durationSeconds) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const base64 = reader.result as string;
+                void onLogContact('voice_note', `Voice note (${durationSeconds}s)`);
+              };
+              reader.readAsDataURL(blob);
+            }}
+          />
+        </section>
 
         {(propertyMatches.length > 0 || matchesLoading) ? (
           <section className="crm-modal-section crm-suggested-properties">
