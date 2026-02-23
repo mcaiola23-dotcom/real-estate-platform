@@ -35,6 +35,7 @@ import { AiDraftComposer } from '../shared/AiDraftComposer';
 import { GmailComposer } from '../shared/GmailComposer';
 import { GmailThreads } from '../shared/GmailThreads';
 import type { MergeFieldContext } from '../../lib/crm-templates';
+import { downloadIcsFile } from '../../lib/crm-calendar';
 
 interface LeadProfileModalProps {
   lead: CrmLead;
@@ -519,7 +520,6 @@ export function LeadProfileModal({
                     type="button"
                     className="crm-secondary-button"
                     onClick={() => {
-                      const { downloadIcsFile } = require('../../lib/crm-calendar');
                       downloadIcsFile({
                         title: `Follow up: ${activeContact?.fullName ?? 'Lead'} — ${lead.nextActionNote || 'Follow up'}`,
                         startDate: new Date(lead.nextActionAt!),

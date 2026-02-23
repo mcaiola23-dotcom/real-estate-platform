@@ -1,9 +1,12 @@
-import type { Dispatch, SetStateAction } from 'react';
+'use client';
+
+import { useEffect, useState, useCallback, type Dispatch, type SetStateAction } from 'react';
 import type { TenantContext } from '@real-estate/types/tenant';
 import Image from 'next/image';
 import type { BrandPreferences } from '../../lib/crm-types';
 import { normalizeHexColor } from '../../lib/crm-brand-theme';
 import { passthroughImageLoader } from '../../lib/crm-formatters';
+import { CalendarSync } from '../shared/CalendarSync';
 
 interface SettingsViewProps {
   brandPreferences: BrandPreferences;
@@ -28,6 +31,55 @@ export function SettingsView({
   setLogoLoadErrored,
   tenantContext,
 }: SettingsViewProps) {
+  const [googleStatus, setGoogleStatus] = useState<{
+    connected: boolean;
+    capabilities?: { calendar: boolean; gmail: boolean };
+    connectedAt?: string;
+  } | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
+
+  const fetchGoogleStatus = useCallback(async () => {
+    try {
+      const res = await fetch('/api/integrations/google/status', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.ok) {
+        setGoogleStatus({
+          connected: data.connected,
+          capabilities: data.capabilities,
+          connectedAt: data.connectedAt,
+        });
+      }
+    } catch {
+      setGoogleStatus({ connected: false });
+    }
+  }, []);
+
+  useEffect(() => { void fetchGoogleStatus(); }, [fetchGoogleStatus]);
+
+  const handleGoogleConnect = useCallback(async () => {
+    try {
+      const res = await fetch('/api/integrations/google/connect');
+      const data = await res.json();
+      if (data.ok && data.authUrl) {
+        window.location.href = data.authUrl;
+      }
+    } catch {
+      // Connection attempt failed
+    }
+  }, []);
+
+  const handleGoogleDisconnect = useCallback(async () => {
+    setDisconnecting(true);
+    try {
+      await fetch('/api/integrations/google/disconnect', { method: 'POST' });
+      setGoogleStatus({ connected: false });
+    } catch {
+      // Disconnect failed
+    } finally {
+      setDisconnecting(false);
+    }
+  }, []);
+
   return (
     <section className="crm-panel">
       <div className="crm-panel-head">
@@ -161,6 +213,94 @@ export function SettingsView({
           <p className="crm-muted">
             Your logo and colors appear in navigation, header, footer, and key workflow surfaces for stronger brand recognition.
           </p>
+        </article>
+      </div>
+
+      <div className="crm-panel-head" style={{ marginTop: '1.5rem' }}>
+        <h3>Integrations</h3>
+        <span className="crm-muted">Connect external services to enhance your CRM workflow.</span>
+      </div>
+      <div className="crm-settings-grid">
+        <article>
+          <h4>Google Account</h4>
+          {googleStatus === null ? (
+            <p className="crm-muted">Checking connection...</p>
+          ) : googleStatus.connected ? (
+            <div className="crm-integration-status-block">
+              <div className="crm-integration-status-row">
+                <span className="crm-integration-dot crm-integration-dot-connected" />
+                <span>Connected</span>
+              </div>
+              {googleStatus.capabilities && (
+                <div className="crm-integration-capabilities">
+                  {googleStatus.capabilities.calendar && (
+                    <span className="crm-chip">Calendar</span>
+                  )}
+                  {googleStatus.capabilities.gmail && (
+                    <span className="crm-chip">Gmail</span>
+                  )}
+                </div>
+              )}
+              {googleStatus.connectedAt && (
+                <p className="crm-muted">
+                  Connected since {new Date(googleStatus.connectedAt).toLocaleDateString()}
+                </p>
+              )}
+              <button
+                type="button"
+                className="crm-secondary-button crm-danger-button"
+                onClick={handleGoogleDisconnect}
+                disabled={disconnecting}
+              >
+                {disconnecting ? 'Disconnecting...' : 'Disconnect Google'}
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p className="crm-muted">
+                Connect your Google account to sync calendar events and send/view emails from the CRM.
+              </p>
+              <button
+                type="button"
+                className="crm-secondary-button"
+                onClick={handleGoogleConnect}
+              >
+                Connect Google Account
+              </button>
+            </div>
+          )}
+        </article>
+        <article>
+          <h4>Calendar Sync</h4>
+          <CalendarSync
+            connected={googleStatus?.connected ?? false}
+            onConnect={handleGoogleConnect}
+            onDisconnect={handleGoogleDisconnect}
+          />
+        </article>
+        <article>
+          <h4>Gmail</h4>
+          {googleStatus?.connected && googleStatus.capabilities?.gmail ? (
+            <div>
+              <div className="crm-integration-status-row">
+                <span className="crm-integration-dot crm-integration-dot-connected" />
+                <span>Gmail Active</span>
+              </div>
+              <p className="crm-muted">
+                Send emails and view conversation threads directly from lead profiles.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <div className="crm-integration-status-row">
+                <span className="crm-integration-dot" />
+                <span>Not Connected</span>
+              </div>
+              <p className="crm-muted">
+                Connect your Google account to send emails and view threads in the CRM.
+              </p>
+            </div>
+          )}
         </article>
       </div>
     </section>
