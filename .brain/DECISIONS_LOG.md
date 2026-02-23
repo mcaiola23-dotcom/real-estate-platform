@@ -713,3 +713,12 @@
 ### D-166: Smart Lead Routing uses 5-factor weighted composite scoring
 **Decision**: Implement `computeLeadRouting()` in `packages/ai/src/crm/lead-routing.ts` with 5 weighted routing factors: geographic specialization (25%), property type expertise (20%), pipeline load (20%), historical conversion rate (20%), and response time (15%). Supports team mode (2+ actors, ranked recommendations) and solo mode (self-assessment). Uses `TenantControlActor` as agent identity. AI enhancement provides rationale for top recommendation.
 **Reason**: Multi-factor composite scoring provides transparent, explainable agent-lead matching. Weight distribution balances specialization signals with operational capacity. Solo mode enables value even before team expansion. Actor model reuse avoids new identity infrastructure.
+
+## 2026-02-23
+### D-167: Keep onboarding bulk task mutations on repeated PATCH calls until published telemetry evidence accumulates
+**Decision**: Do not add a dedicated backend bulk onboarding task mutation endpoint yet. Continue using the existing repeated task PATCH orchestration and reassess only after real operator usage telemetry (especially published aggregate snapshots) shows sustained throughput or reliability pain.
+**Reason**: A local dev audit query found zero successful `tenant.observability.telemetry.publish` snapshots in `AdminAuditEvent`, so there is not yet meaningful published usage evidence to justify expanding the backend mutation surface. Repeated PATCH calls reuse existing validation/audit behavior with lower maintenance risk.
+
+### D-168: Standardize onboarding telemetry review policy around weekly cadence + biweekly rollup and retune endpoint recommendation thresholds conservatively
+**Decision**: Keep the server-side onboarding usage telemetry observability rollup at `14` days (covering two weekly operator review cycles), keep the suggested server retention guidance at `30` days, expose cadence/rollup policy metadata in the Admin telemetry helper/UI, and retune `ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS` to `minRunsForDecision=12`, `avgSelectedWarnAt=18`, `avgDurationWarnMs=12000`, and `failureRateWarnRatio=0.10`.
+**Reason**: The prior 14-day rollup already fits the intended operator review cadence, but the policy was implicit. Making cadence/rollup expectations explicit improves operator clarity, and the tuned thresholds reduce premature endpoint recommendations while making reliability regressions trigger review sooner.

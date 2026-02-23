@@ -67,14 +67,16 @@ export const ADMIN_USAGE_TELEMETRY_POLICY = {
   promotionMode: 'manual_aggregate_opt_in',
   includesRecentEventsInPublish: false,
   includesTenantIdsInPublish: false,
+  recommendedReviewCadenceDays: 7,
+  recommendedRollupWindowDays: 14,
   recommendedServerRetentionDays: 30,
 } as const;
 
 export const ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS = {
-  minRunsForDecision: 10,
-  avgSelectedWarnAt: 15,
-  avgDurationWarnMs: 8_000,
-  failureRateWarnRatio: 0.15,
+  minRunsForDecision: 12,
+  avgSelectedWarnAt: 18,
+  avgDurationWarnMs: 12_000,
+  failureRateWarnRatio: 0.1,
 } as const;
 
 export interface AdminBulkEndpointRecommendation {
@@ -245,7 +247,7 @@ export function buildAdminBulkEndpointRecommendation(
     return {
       level: 'info',
       summary: `No onboarding bulk-action telemetry recorded in ${sourceLabel}.`,
-      detail: `Use Launch checklist bulk actions to collect ${sourceLabel} evidence before deciding on a backend bulk endpoint.`,
+      detail: `Keep the existing repeated PATCH flow and collect ${sourceLabel} evidence before changing the backend API surface.`,
       metrics: {
         runCount: 0,
         avgSelectedCount: 0,
@@ -280,7 +282,7 @@ export function buildAdminBulkEndpointRecommendation(
   if (totals.count < ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS.minRunsForDecision) {
     return {
       level: 'info',
-      summary: 'Insufficient telemetry to justify a bulk API endpoint yet.',
+      summary: 'Bulk endpoint decision deferred until more telemetry is collected.',
       detail: `Observed ${totals.count} bulk actions in ${sourceLabel} (avg selected ${avgSelected.toFixed(
         1
       )}, avg duration ${Math.round(avgDurationMs)}ms). Collect more usage before changing the API surface.`,
@@ -305,7 +307,7 @@ export function buildAdminBulkEndpointRecommendation(
 
   return {
     level: 'ok',
-    summary: 'Current repeated PATCH bulk actions look acceptable.',
+    summary: 'Current repeated PATCH bulk actions remain acceptable.',
     detail: `Observed ${totals.count} bulk actions in ${sourceLabel} (avg selected ${avgSelected.toFixed(
       1
     )}, avg duration ${Math.round(avgDurationMs)}ms, failure rate ${(failureRate * 100).toFixed(1)}%).`,
@@ -323,8 +325,23 @@ export function buildAdminUsageTelemetryRollupAlignmentNote(windowDays: number):
       summary: `Telemetry rollup window (${windowDays}d) exceeds suggested server retention (${ADMIN_USAGE_TELEMETRY_POLICY.recommendedServerRetentionDays}d).`,
     };
   }
+
+  if (windowDays < ADMIN_USAGE_TELEMETRY_POLICY.recommendedReviewCadenceDays) {
+    return {
+      level: 'warn',
+      summary: `Telemetry rollup window (${windowDays}d) is shorter than the recommended operator review cadence (${ADMIN_USAGE_TELEMETRY_POLICY.recommendedReviewCadenceDays}d).`,
+    };
+  }
+
+  if (windowDays === ADMIN_USAGE_TELEMETRY_POLICY.recommendedRollupWindowDays) {
+    return {
+      level: 'info',
+      summary: `Telemetry rollup window (${windowDays}d) matches the recommended ${ADMIN_USAGE_TELEMETRY_POLICY.recommendedRollupWindowDays}d window (two weekly review cycles) and fits within suggested retention (${ADMIN_USAGE_TELEMETRY_POLICY.recommendedServerRetentionDays}d).`,
+    };
+  }
+
   return {
     level: 'info',
-    summary: `Telemetry rollup window (${windowDays}d) is within suggested server retention (${ADMIN_USAGE_TELEMETRY_POLICY.recommendedServerRetentionDays}d).`,
+    summary: `Telemetry rollup window (${windowDays}d) supports at least one weekly review cycle and is within suggested retention (${ADMIN_USAGE_TELEMETRY_POLICY.recommendedServerRetentionDays}d).`,
   };
 }

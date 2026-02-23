@@ -47,14 +47,14 @@ function writeQueue(items: OfflineQueueItem[]): void {
 }
 
 export function useOfflineQueue(tenantId: string) {
-  const [isOnline, setIsOnline] = useState(() =>
-    typeof navigator !== 'undefined' ? navigator.onLine : true
-  );
+  // Always start as online to avoid hydration mismatch (navigator not available server-side)
+  const [isOnline, setIsOnline] = useState(true);
   const [queue, setQueue] = useState<OfflineQueueItem[]>(() => readQueue());
   const syncingRef = useRef(false);
 
-  // Listen for online/offline events
+  // Sync real online status on mount + listen for changes
   useEffect(() => {
+    setIsOnline(navigator.onLine);
     function handleOnline() { setIsOnline(true); }
     function handleOffline() { setIsOnline(false); }
 

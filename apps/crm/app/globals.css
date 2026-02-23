@@ -9878,3 +9878,549 @@ textarea:focus {
 [data-theme="dark"] .crm-danger-button:hover {
   background: rgba(248, 113, 113, 0.1);
 }
+
+/* =========================================================================
+   Sprint 1B: Quick-Add Lead Modal
+   ========================================================================= */
+
+.crm-quick-add-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  z-index: 1100;
+  padding: 1rem;
+  animation: crm-fade-in 0.15s ease-out;
+}
+
+.crm-quick-add-modal {
+  background: var(--crm-card, #fff);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: crm-slide-in-right 0.2s ease-out;
+  border: 1px solid var(--crm-border, #e2e0dc);
+}
+
+.crm-quick-add-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--crm-border, #e2e0dc);
+}
+
+.crm-quick-add-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.crm-quick-add-body {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crm-quick-add-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.crm-quick-add-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--crm-border, #e2e0dc);
+}
+
+@keyframes crm-slide-in-right {
+  from { transform: translateX(100px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes crm-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+[data-theme="dark"] .crm-quick-add-modal {
+  background: var(--crm-card, #1a1a1a);
+  border-color: var(--crm-border, #333);
+}
+
+/* =========================================================================
+   Sprint 1C: Command Palette Enhancements
+   ========================================================================= */
+
+.crm-cmdpal__section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.375rem;
+  margin-left: 0.375rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: var(--crm-accent, #a08060);
+  color: #fff;
+}
+
+.crm-cmdpal__item-detail {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--crm-muted, #999);
+  opacity: 0.7;
+}
+
+/* =========================================================================
+   Sprint 1D: Pipeline Card Info Density
+   ========================================================================= */
+
+.crm-pipeline-card-info-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.7rem;
+  color: var(--crm-muted, #888);
+  flex-wrap: wrap;
+}
+
+.crm-pipeline-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.crm-score-high { background: #16a34a; }
+.crm-score-medium { background: #ca8a04; }
+.crm-score-low { background: #9ca3af; }
+
+.crm-pipeline-days-in-stage {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.crm-pipeline-last-contact {
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.crm-pipeline-next-action {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* =========================================================================
+   Sprint 4C: Density Controls
+   ========================================================================= */
+
+[data-density="compact"] .crm-pipeline-card {
+  padding: 0.5rem;
+  font-size: 0.8rem;
+}
+
+[data-density="compact"] .crm-kpi-card {
+  padding: 0.5rem;
+}
+
+[data-density="compact"] .crm-lead-card {
+  padding: 0.75rem;
+}
+
+[data-density="compact"] .crm-panel {
+  padding: 0.75rem;
+}
+
+[data-density="comfortable"] .crm-pipeline-card {
+  padding: 1.5rem;
+  font-size: 1rem;
+}
+
+[data-density="comfortable"] .crm-kpi-card {
+  padding: 1.5rem;
+}
+
+[data-density="comfortable"] .crm-lead-card {
+  padding: 1.5rem;
+}
+
+[data-density="comfortable"] .crm-panel {
+  padding: 1.5rem;
+}
+
+/* =========================================================================
+   Sprint 2A: Speed-to-Lead Timer
+   ========================================================================= */
+
+.crm-speed-timer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+  background: var(--crm-surface, #fff);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.crm-speed-timer--green {
+  border-left: 3px solid #16a34a;
+}
+
+.crm-speed-timer--yellow {
+  border-left: 3px solid #ca8a04;
+  background: rgba(202, 138, 4, 0.04);
+}
+
+.crm-speed-timer--red {
+  border-left: 3px solid #dc2626;
+  background: rgba(220, 38, 38, 0.04);
+  animation: crm-speed-pulse 2s ease-in-out infinite;
+}
+
+@keyframes crm-speed-pulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12); }
+}
+
+.crm-speed-timer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.crm-speed-timer-info strong {
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crm-speed-timer-elapsed {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--crm-text-muted, #8c8579);
+}
+
+.crm-speed-timer--yellow .crm-speed-timer-elapsed { color: #a16207; }
+.crm-speed-timer--red .crm-speed-timer-elapsed { color: #dc2626; }
+
+.crm-speed-timer-bar {
+  width: 80px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.crm-speed-timer-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+.crm-speed-timer-fill--green { background: #16a34a; }
+.crm-speed-timer-fill--yellow { background: #ca8a04; }
+.crm-speed-timer-fill--red { background: #dc2626; }
+
+.crm-speed-timer-claim {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--crm-accent, #a08060);
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--crm-accent, #a08060);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.crm-speed-timer-claim:hover {
+  background: var(--crm-accent, #a08060);
+  color: #fff;
+}
+
+.crm-unclaimed-leads {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.crm-unclaimed-leads h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--crm-text, #2c2c2c);
+}
+
+/* =========================================================================
+   Sprint 2B: Floating Activity Log
+   ========================================================================= */
+
+.crm-floating-activity-log {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 900;
+  font-family: var(--crm-font, 'Inter', sans-serif);
+}
+
+.crm-floating-activity-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 2rem;
+  background: var(--crm-card, #fff);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.crm-floating-activity-toggle:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.crm-floating-activity-toggle-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.crm-floating-activity-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--crm-accent, #a08060);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.crm-floating-activity-log--collapsed .crm-floating-activity-panel {
+  display: none;
+}
+
+.crm-floating-activity-panel {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  width: 340px;
+  max-height: 480px;
+  background: var(--crm-card, #fff);
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: crm-slide-up 0.2s ease-out;
+}
+
+@keyframes crm-slide-up {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.crm-floating-activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--crm-border, #e2e0dc);
+}
+
+.crm-floating-activity-header h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.crm-floating-activity-filters {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--crm-border, #e2e0dc);
+}
+
+.crm-floating-activity-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.25rem 0;
+}
+
+.crm-floating-activity-item {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  transition: background 0.12s;
+}
+
+.crm-floating-activity-item:hover {
+  background: var(--crm-bg-soft, #faf8f5);
+}
+
+.crm-floating-activity-item:last-child {
+  border-bottom: none;
+}
+
+.crm-floating-activity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.crm-floating-activity-summary {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--crm-text, #2c2c2c);
+  line-height: 1.3;
+}
+
+/* =========================================================================
+   Sprint 2C: Notification Preferences
+   ========================================================================= */
+
+.crm-notification-prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crm-notification-prefs .crm-panel-head {
+  margin-bottom: 0;
+}
+
+.crm-notification-prefs .crm-panel-head h4 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.crm-notification-prefs-enable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crm-notification-prefs-enable p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--crm-text-secondary, #6b6560);
+}
+
+.crm-notification-prefs-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.crm-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.crm-toggle-row input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--crm-accent, #a08060);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.crm-toggle-row input[type="checkbox"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.crm-toggle-row input[type="checkbox"]:disabled + span {
+  opacity: 0.5;
+}
+
+.crm-banner-warning {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  color: #b91c1c;
+}
+
+/* ─── Dark mode overrides for Sprint 2 ─── */
+
+[data-theme="dark"] .crm-speed-timer {
+  background: var(--crm-surface, #1e1e1e);
+  border-color: var(--crm-border, #333);
+}
+
+[data-theme="dark"] .crm-speed-timer--yellow {
+  background: rgba(202, 138, 4, 0.08);
+}
+
+[data-theme="dark"] .crm-speed-timer--red {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+[data-theme="dark"] .crm-speed-timer-bar {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .crm-floating-activity-toggle {
+  background: var(--crm-card, #1a1a1a);
+  border-color: var(--crm-border, #333);
+}
+
+[data-theme="dark"] .crm-floating-activity-panel {
+  background: var(--crm-card, #1a1a1a);
+  border-color: var(--crm-border, #333);
+}
+
+[data-theme="dark"] .crm-floating-activity-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .crm-banner-warning {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}

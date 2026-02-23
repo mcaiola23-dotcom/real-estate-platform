@@ -4,10 +4,22 @@ import { forwardRef } from 'react';
 import type { CrmContact, CrmLead, CrmLeadStatus } from '@real-estate/types/crm';
 
 import { formatLeadSourceLabel, formatLeadStatusLabel, formatLeadTypeLabel } from '../../lib/crm-display';
-import { formatTimeAgo, getLeadContactLabel } from '../../lib/crm-formatters';
+import { formatTimeAgo, getLeadContactLabel, formatDateTime } from '../../lib/crm-formatters';
 import { computeLeadAging, estimateDealValue, formatDealValue, formatCommission } from '../../lib/crm-aging';
 import { getPipelineMoveNotice } from '../../lib/workspace-interactions';
 import { LEAD_STATUSES, type LeadDraft, type LeadStatusFilter } from '../../lib/crm-types';
+
+function getDaysInStage(lead: CrmLead): number {
+  const now = Date.now();
+  const updatedAt = new Date(lead.updatedAt).getTime();
+  return Math.floor((now - updatedAt) / (1000 * 60 * 60 * 24));
+}
+
+function getScoreColor(score: number): string {
+  if (score >= 70) return 'crm-score-high';
+  if (score >= 40) return 'crm-score-medium';
+  return 'crm-score-low';
+}
 
 export interface PipelineCardProps {
   lead: CrmLead;
@@ -24,6 +36,10 @@ export interface PipelineCardProps {
   onFilterNotice: (notice: string | null) => void;
   /** When true, renders as a drag overlay (no interactive controls). */
   isOverlay?: boolean;
+  /** Lead score (0-100) */
+  score?: number;
+  /** Last contact date ISO string */
+  lastContactAt?: string | null;
 }
 
 export const PipelineCard = forwardRef<HTMLElement, PipelineCardProps & React.HTMLAttributes<HTMLElement>>(
@@ -42,6 +58,8 @@ export const PipelineCard = forwardRef<HTMLElement, PipelineCardProps & React.HT
       onSave,
       onFilterNotice,
       isOverlay,
+      score,
+      lastContactAt,
       ...attrs
     },
     ref
@@ -51,6 +69,7 @@ export const PipelineCard = forwardRef<HTMLElement, PipelineCardProps & React.HT
     const contactLabel = getLeadContactLabel(lead, contactById);
     const hasMatchCriteria = Boolean(lead.propertyType || lead.beds || lead.baths || lead.priceMin || lead.priceMax);
     const linkedContact = lead.contactId ? contactById.get(lead.contactId) : null;
+    const daysInStage = getDaysInStage(lead);
 
     return (
       <article ref={ref} className={`crm-pipeline-card${isOverlay ? ' crm-pipeline-card--overlay' : ''}`} {...attrs}>
@@ -89,6 +108,27 @@ export const PipelineCard = forwardRef<HTMLElement, PipelineCardProps & React.HT
             </button>
           )}
         </p>
+
+        <div className="crm-pipeline-card-info-strip">
+          {score !== undefined && (
+            <span className={`crm-pipeline-score-badge ${getScoreColor(score)}`} title={`Lead score: ${score}`}>
+              {score}
+            </span>
+          )}
+          <span className="crm-pipeline-days-in-stage" title={`Days in current stage: ${daysInStage}`}>
+            {daysInStage}d
+          </span>
+          {lastContactAt && (
+            <span className="crm-pipeline-last-contact" title={`Last contact: ${formatDateTime(lastContactAt)}`}>
+              ✉ {formatTimeAgo(lastContactAt)}
+            </span>
+          )}
+          {lead.nextActionNote && (
+            <span className="crm-pipeline-next-action" title={lead.nextActionNote}>
+              → {lead.nextActionNote.length > 25 ? lead.nextActionNote.slice(0, 22) + '...' : lead.nextActionNote}
+            </span>
+          )}
+        </div>
 
         {!isOverlay && linkedContact && (linkedContact.phone || linkedContact.email) ? (
           <div className="crm-quick-actions">

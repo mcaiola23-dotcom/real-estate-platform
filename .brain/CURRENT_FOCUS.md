@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-All CRM AI roadmap items are now complete: #50/#53 (Score Explain/Summary), #55 (Market Digest), #56 (Listing Description), #57 (Predictive Lead Scoring), #58 (Smart Lead Routing). 53/53 CRM route tests passing. Next: continue Admin post-MVP onboarding polish, Calendar Sync Phase 2 (#64), team/brokerage hierarchy, or marketing attribution.
+All CRM AI roadmap items are now complete: #50/#53 (Score Explain/Summary), #55 (Market Digest), #56 (Listing Description), #57 (Predictive Lead Scoring), #58 (Smart Lead Routing). 53/53 CRM route tests passing. Admin onboarding telemetry/bulk-endpoint polish follow-up is now complete. User temporarily deferred Calendar Sync Phase 2 (#64), team/brokerage hierarchy, and marketing attribution for the next session. Next non-CRM candidate: AI content generation pipeline for website onboarding.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -1122,3 +1122,28 @@ All CRM AI roadmap items are now complete: #50/#53 (Score Explain/Summary), #55 
 ### Session Validation (2026-02-22 Centralized Telemetry Recommendation Thresholds + Local-vs-Published Recommendation UI)
 - `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` passes (route layer unaffected by helper/UI threshold centralization).
 - `timeout 180s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after telemetry helper export additions and Platform Health recommendation/alignment UI updates.
+
+## Session Update (2026-02-23 Admin Telemetry Calibration + Rollup Alignment Confirmation + Bulk Endpoint Decision)
+
+### Completed This Session
+1. Evaluated the onboarding bulk-endpoint follow-up using real local dev persisted evidence and kept the no-bulk-endpoint posture:
+- queried local `AdminAuditEvent` rows for `tenant.observability.telemetry.publish` and found `0` successful published telemetry aggregates in the current dev DB,
+- reaffirmed repeated onboarding task PATCH orchestration as the default path until real operator usage telemetry accumulates.
+2. Revisited telemetry rollup window/retention alignment and codified the intended cadence in the shared helper/UI:
+- kept the server-side onboarding telemetry rollup at `14` days in `packages/db/src/control-plane.ts` (biweekly window),
+- added explicit policy metadata in `apps/admin/app/lib/admin-usage-telemetry.ts` for weekly review cadence (`7d`) and recommended rollup target (`14d`),
+- upgraded `buildAdminUsageTelemetryRollupAlignmentNote(...)` to confirm cadence coverage (two weekly review cycles) in addition to retention alignment.
+3. Tuned bulk-endpoint recommendation thresholds conservatively in `apps/admin/app/lib/admin-usage-telemetry.ts`:
+- `minRunsForDecision`: `10` -> `12`
+- `avgSelectedWarnAt`: `15` -> `18`
+- `avgDurationWarnMs`: `8000` -> `12000`
+- `failureRateWarnRatio`: `0.15` -> `0.10`
+4. Improved Platform Health telemetry inspector transparency in `apps/admin/app/components/control-plane/PlatformHealthTabBody.tsx`:
+- added policy chips for review cadence / rollup target,
+- surfaced tuned warning thresholds (avg selected, avg duration, failure rate) alongside `min runs`.
+5. Added direct helper coverage for the telemetry recommendation/alignment logic in `apps/admin/app/lib/admin-usage-telemetry.test.ts`.
+
+### Session Validation (2026-02-23 Admin Telemetry Calibration + Rollup Alignment Confirmation + Bulk Endpoint Decision)
+- `node --import tsx --test apps/admin/app/lib/admin-usage-telemetry.test.ts` passes.
+- `timeout 180s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after telemetry helper/UI threshold + policy updates.
+- `node --import tsx --eval "... prisma.adminAuditEvent.findMany(... action='tenant.observability.telemetry.publish' ...)"` returns `0` published telemetry snapshots in local `packages/db/prisma/dev.db` (used as evidence for the deferred bulk-endpoint decision).

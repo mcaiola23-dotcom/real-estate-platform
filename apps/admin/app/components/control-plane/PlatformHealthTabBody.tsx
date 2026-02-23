@@ -500,7 +500,22 @@ export function PlatformHealthTabBody({
                 suggested retention: {ADMIN_USAGE_TELEMETRY_POLICY.recommendedServerRetentionDays}d
               </span>
               <span className="admin-chip">
+                review cadence: {ADMIN_USAGE_TELEMETRY_POLICY.recommendedReviewCadenceDays}d
+              </span>
+              <span className="admin-chip">
+                rollup target: {ADMIN_USAGE_TELEMETRY_POLICY.recommendedRollupWindowDays}d
+              </span>
+              <span className="admin-chip">
                 bulk threshold min runs: {ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS.minRunsForDecision}
+              </span>
+              <span className="admin-chip">
+                warn avg selected: {ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS.avgSelectedWarnAt}+
+              </span>
+              <span className="admin-chip">
+                warn avg duration: {Math.round(ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS.avgDurationWarnMs / 1000)}s+
+              </span>
+              <span className="admin-chip">
+                warn failure rate: {(ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS.failureRateWarnRatio * 100).toFixed(0)}%+
               </span>
             </div>
             {telemetryRollupAlignmentNote ? (

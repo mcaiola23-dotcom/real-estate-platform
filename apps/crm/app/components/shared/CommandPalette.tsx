@@ -1,8 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { CrmLead, CrmContact } from '@real-estate/types/crm';
+import type { CrmActivity, CrmLead, CrmContact } from '@real-estate/types/crm';
 import type { WorkspaceNav } from '../../lib/workspace-interactions';
+import { useCrmStore } from '../../lib/stores/use-crm-store';
+import { formatActivityTypeLabel } from '../../lib/crm-display';
 
 interface CommandPaletteProps {
   open: boolean;
@@ -13,10 +15,13 @@ interface CommandPaletteProps {
   contacts: CrmContact[];
 }
 
+type CommandSection = 'Navigation' | 'Actions' | 'Leads' | 'Contacts' | 'Activities' | 'Transactions' | 'Properties';
+
 interface CommandItem {
   id: string;
   label: string;
-  section: 'Navigation' | 'Actions' | 'Leads' | 'Contacts';
+  detail?: string;
+  section: CommandSection;
   icon: string;
   action: () => void;
 }
@@ -62,6 +67,8 @@ function CommandPaletteInner({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const activities = useCrmStore((s) => s.activities);
+  const setShowQuickAddLead = useCrmStore((s) => s.setShowQuickAddLead);
 
   // Auto-focus on mount
   useEffect(() => {
@@ -78,10 +85,23 @@ function CommandPaletteInner({
     { id: 'nav-pipeline', label: 'Go to Pipeline', section: 'Navigation', icon: '▦', action: () => { onNavigate('pipeline'); onClose(); } },
     { id: 'nav-leads', label: 'Go to Lead Tracker', section: 'Navigation', icon: '☰', action: () => { onNavigate('leads'); onClose(); } },
     { id: 'nav-properties', label: 'Go to Properties', section: 'Navigation', icon: '⊞', action: () => { onNavigate('properties'); onClose(); } },
+    { id: 'nav-transactions', label: 'Go to Transactions', section: 'Navigation', icon: '⇄', action: () => { onNavigate('transactions'); onClose(); } },
     { id: 'nav-contacts', label: 'Go to Contacts', section: 'Navigation', icon: '◉', action: () => { onNavigate('contacts'); onClose(); } },
     { id: 'nav-activity', label: 'Go to Activity', section: 'Navigation', icon: '↻', action: () => { onNavigate('activity'); onClose(); } },
+    { id: 'nav-analytics', label: 'Go to Analytics', section: 'Navigation', icon: '◫', action: () => { onNavigate('analytics'); onClose(); } },
     { id: 'nav-settings', label: 'Go to Settings', section: 'Navigation', icon: '⚙', action: () => { onNavigate('settings'); onClose(); } },
   ], [onNavigate, onClose]);
+
+  const actionItems: CommandItem[] = useMemo(() => [
+    {
+      id: 'action-new-lead',
+      label: 'New Lead',
+      detail: 'Press N anywhere',
+      section: 'Actions',
+      icon: '＋',
+      action: () => { setShowQuickAddLead(true); onClose(); },
+    },
+  ], [setShowQuickAddLead, onClose]);
 
   const leadItems: CommandItem[] = useMemo(() =>
     leads.slice(0, 20).map((lead) => {
@@ -90,6 +110,7 @@ function CommandPaletteInner({
       return {
         id: `lead-${lead.id}`,
         label,
+        detail: lead.status,
         section: 'Leads' as const,
         icon: '●',
         action: () => { onOpenLead(lead.id); onClose(); },
@@ -98,12 +119,53 @@ function CommandPaletteInner({
     [leads, contacts, onOpenLead, onClose]
   );
 
-  const allItems = useMemo(() => [...navItems, ...leadItems], [navItems, leadItems]);
+  const contactItems: CommandItem[] = useMemo(() =>
+    contacts.slice(0, 15).map((contact) => ({
+      id: `contact-${contact.id}`,
+      label: contact.fullName || contact.email || contact.phone || 'Contact',
+      detail: contact.email || contact.phone || undefined,
+      section: 'Contacts' as const,
+      icon: '◎',
+      action: () => {
+        // Find the first lead linked to this contact
+        const linkedLead = leads.find(l => l.contactId === contact.id);
+        if (linkedLead) {
+          onOpenLead(linkedLead.id);
+        }
+        onClose();
+      },
+    })),
+    [contacts, leads, onOpenLead, onClose]
+  );
+
+  const activityItems: CommandItem[] = useMemo(() =>
+    activities.slice(0, 15).map((activity) => ({
+      id: `activity-${activity.id}`,
+      label: activity.summary || formatActivityTypeLabel(activity.activityType),
+      detail: formatActivityTypeLabel(activity.activityType),
+      section: 'Activities' as const,
+      icon: '↻',
+      action: () => {
+        if (activity.leadId) {
+          onOpenLead(activity.leadId);
+        }
+        onClose();
+      },
+    })),
+    [activities, onOpenLead, onClose]
+  );
+
+  const allItems = useMemo(
+    () => [...navItems, ...actionItems, ...leadItems, ...contactItems, ...activityItems],
+    [navItems, actionItems, leadItems, contactItems, activityItems]
+  );
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return navItems;
-    return allItems.filter((item) => fuzzyMatch(item.label, query));
-  }, [query, allItems, navItems]);
+    if (!query.trim()) return [...navItems, ...actionItems];
+    return allItems.filter((item) =>
+      fuzzyMatch(item.label, query) || (item.detail && fuzzyMatch(item.detail, query))
+    );
+  }, [query, allItems, navItems, actionItems]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
@@ -128,7 +190,7 @@ function CommandPaletteInner({
     selected?.scrollIntoView({ block: 'nearest' });
   }, [selectedIndex]);
 
-  // Group by section
+  // Group by section with counts
   const sections = new Map<string, CommandItem[]>();
   for (const item of filtered) {
     const existing = sections.get(item.section) || [];
@@ -148,7 +210,7 @@ function CommandPaletteInner({
             ref={inputRef}
             className="crm-cmdpal__input"
             type="text"
-            placeholder="Type a command or search..."
+            placeholder="Type a command or search leads, contacts, activities..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -161,7 +223,10 @@ function CommandPaletteInner({
           ) : (
             Array.from(sections.entries()).map(([section, items]) => (
               <div key={section} className="crm-cmdpal__section">
-                <div className="crm-cmdpal__section-label">{section}</div>
+                <div className="crm-cmdpal__section-label">
+                  {section}
+                  <span className="crm-cmdpal__section-count">{items.length}</span>
+                </div>
                 {items.map((item) => {
                   const globalIndex = filtered.indexOf(item);
                   return (
@@ -174,6 +239,7 @@ function CommandPaletteInner({
                     >
                       <span className="crm-cmdpal__item-icon">{item.icon}</span>
                       <span className="crm-cmdpal__item-label">{item.label}</span>
+                      {item.detail && <span className="crm-cmdpal__item-detail">{item.detail}</span>}
                     </button>
                   );
                 })}

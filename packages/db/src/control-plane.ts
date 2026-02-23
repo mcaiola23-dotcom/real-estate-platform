@@ -2469,6 +2469,7 @@ export async function getControlPlaneObservabilitySummary(
   let deadLetterCount = 0;
   const billingDriftWindowDays = 7;
   let billingDriftSummary = buildEmptyBillingDriftSummary(generatedAt, billingDriftWindowDays);
+  // Keep a biweekly window so operators can compare across two weekly review cycles.
   const onboardingUsageTelemetryWindowDays = 14;
   let onboardingUsageTelemetrySummary = buildEmptyOnboardingUsageTelemetrySummary(
     generatedAt,

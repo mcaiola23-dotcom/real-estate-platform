@@ -25,7 +25,8 @@
       "@real-estate/db": ["../../packages/db/src/index"],
       "@real-estate/db/*": ["../../packages/db/src/*"],
       "@real-estate/types": ["../../packages/types/src/index"],
-      "@real-estate/types/*": ["../../packages/types/src/*"]
+      "@real-estate/types/*": ["../../packages/types/src/*"],
+      "@real-estate/integrations/*": ["../../packages/integrations/src/*"]
     }
   },
   "include": [

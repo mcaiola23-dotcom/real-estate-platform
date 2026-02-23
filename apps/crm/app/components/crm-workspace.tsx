@@ -89,6 +89,11 @@ import { MobileActionBar } from './shared/MobileActionBar';
 import { computeLeadEscalationLevel } from '@real-estate/ai/crm/escalation-engine';
 import { useOfflineQueue } from '../lib/use-offline-queue';
 import { exportLeadsCsv, exportActivitiesCsv } from '../lib/crm-export';
+import { useCrmStore } from '../lib/stores/use-crm-store';
+import { useWorkspaceData, refreshLead } from '../lib/stores/use-query-hooks';
+import { FloatingActivityLog } from './shared/FloatingActivityLog';
+import { SpeedToLeadTimer } from './dashboard/SpeedToLeadTimer';
+import { usePushNotifications } from '../lib/use-push-notifications';
 
 const ProfileView = dynamic(() => import('./views/ProfileView').then(m => ({ default: m.ProfileView })), { ssr: false });
 const SettingsView = dynamic(() => import('./views/SettingsView').then(m => ({ default: m.SettingsView })), { ssr: false });
@@ -103,72 +108,58 @@ export function CrmWorkspace({
   initialSummary,
 }: CrmWorkspaceProps) {
   const { theme, toggleTheme } = useCrmTheme(tenantContext.tenantId);
-  const [summary, setSummary] = useState(initialSummary);
-  const [leads, setLeads] = useState<CrmLead[]>([]);
-  const [contacts, setContacts] = useState<CrmContact[]>([]);
-  const [activities, setActivities] = useState<CrmActivity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeMutations, setActiveMutations] = useState(0);
 
-  const [draftByLeadId, setDraftByLeadId] = useState<Record<string, LeadDraft>>({});
-  const [savingLeadIds, setSavingLeadIds] = useState<Record<string, true>>({});
-  const [draftContactById, setDraftContactById] = useState<Record<string, ContactDraft>>({});
-  const [savingContactIds, setSavingContactIds] = useState<Record<string, true>>({});
+  // --- Zustand Store ---
+  const store = useCrmStore();
+  const {
+    // UI
+    activeNav, activeView, activeLeadProfileId,
+    searchQuery, searchSuggestionsOpen,
+    cmdPaletteOpen, notificationsOpen, avatarMenuOpen, logoLoadErrored,
+    showNewLeadForm, showCsvImport, showQuickAddLead,
+    toasts, loading, error, activeMutations, greetingLabel,
+    // UI actions
+    handleNav, openLeadProfile: storeOpenLeadProfile, closeLeadProfile: storeCloseLeadProfile,
+    setSearchQuery, setSearchSuggestionsOpen,
+    setCmdPaletteOpen, toggleCmdPalette,
+    setNotificationsOpen, setAvatarMenuOpen, setLogoLoadErrored,
+    setShowNewLeadForm, toggleShowNewLeadForm, setShowCsvImport, setShowQuickAddLead,
+    pushToast, setLoading, setError, beginMutation, endMutation, setGreetingLabel,
+    // Data
+    summary, leads, contacts, activities,
+    setSummary, updateSummary, setLeads, addLead, removeLead, replaceLeadById,
+    setContacts, addContact, removeContact, replaceContactById,
+    setActivities, addActivity, removeActivity, replaceActivityById,
+    // Drafts
+    draftByLeadId, savingLeadIds, draftContactById, savingContactIds,
+    setLeadDraftField, clearLeadDraft, clearAllLeadDrafts,
+    setSavingLeadId, setSavingContactId, clearContactDraft,
+    // Filters
+    dashboardStatusFilter, dashboardSourceFilter, dashboardLeadTypeFilter,
+    pipelineStatusFilter, pipelineSourceFilter, pipelineLeadTypeFilter,
+    tableStatusPreset, tableSort, activitySortMode,
+    setDashboardStatusFilter, setDashboardSourceFilter, setDashboardLeadTypeFilter,
+    setPipelineStatusFilter, setPipelineSourceFilter, setPipelineLeadTypeFilter,
+    setTableStatusPreset, setTableSort, setActivitySortMode,
+    // Forms
+    newLeadAddress, newLeadSource, newLeadType, newLeadNotes, newLeadTimeframe, newLeadPropertyType,
+    newContactName, newContactEmail, newContactPhone,
+    newActivitySummary, newActivityLeadId, newActivityContactId,
+    setNewLeadField, resetNewLeadForm, setNewContactField, resetNewContactForm,
+    setNewActivityField, resetNewActivityForm,
+    // Settings
+    brandPreferences, agentProfile, winLossPrompt, density,
+    setBrandPreferences, setAgentProfile, setWinLossPrompt, setDensity,
+    resetBrandPreferences: storeResetBrandPreferences,
+  } = store;
 
-  const [newContactName, setNewContactName] = useState('');
-  const [newContactEmail, setNewContactEmail] = useState('');
-  const [newContactPhone, setNewContactPhone] = useState('');
+  // Initialize summary from props
+  useEffect(() => {
+    setSummary(initialSummary);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [newActivitySummary, setNewActivitySummary] = useState('');
-  const [newActivityLeadId, setNewActivityLeadId] = useState('');
-  const [newActivityContactId, setNewActivityContactId] = useState('');
-  const [activitySortMode, setActivitySortMode] = useState<'recent' | 'alpha'>('recent');
-
-  const [showNewLeadForm, setShowNewLeadForm] = useState(false);
-  const [showCsvImport, setShowCsvImport] = useState(false);
-  const [newLeadAddress, setNewLeadAddress] = useState('');
-  const [newLeadSource, setNewLeadSource] = useState('crm_manual');
-  const [newLeadType, setNewLeadType] = useState<'buyer' | 'seller'>('buyer');
-  const [newLeadNotes, setNewLeadNotes] = useState('');
-  const [newLeadTimeframe, setNewLeadTimeframe] = useState('');
-  const [newLeadPropertyType, setNewLeadPropertyType] = useState('');
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchSuggestionsOpen, setSearchSuggestionsOpen] = useState(false);
-
-  const [dashboardStatusFilter, setDashboardStatusFilter] = useState<LeadStatusFilter>(ALL_STATUS_FILTER);
-  const [dashboardSourceFilter, setDashboardSourceFilter] = useState<LeadSourceFilter>(ALL_SOURCE_FILTER);
-  const [dashboardLeadTypeFilter, setDashboardLeadTypeFilter] = useState<LeadTypeFilter>(ALL_LEAD_TYPE_FILTER);
-
-  const [pipelineStatusFilter, setPipelineStatusFilter] = useState<LeadStatusFilter>(ALL_STATUS_FILTER);
-  const [pipelineSourceFilter, setPipelineSourceFilter] = useState<LeadSourceFilter>(ALL_SOURCE_FILTER);
-  const [pipelineLeadTypeFilter, setPipelineLeadTypeFilter] = useState<LeadTypeFilter>(ALL_LEAD_TYPE_FILTER);
-
-  const [tableStatusPreset, setTableStatusPreset] = useState<TableStatusPreset>('all');
-  const [tableSort, setTableSort] = useState<LeadsTableSort>({ column: 'updatedAt', direction: 'desc' });
-
-  const [toasts, setToasts] = useState<WorkspaceToast[]>([]);
-  const [activeNav, setActiveNav] = useState<WorkspaceNav>('dashboard');
-  const [activeView, setActiveView] = useState<WorkspaceView>('dashboard');
-  const [activeLeadProfileId, setActiveLeadProfileId] = useState<string | null>(null);
-
-  const [winLossPrompt, setWinLossPrompt] = useState<{ leadId: string; outcome: 'won' | 'lost' } | null>(null);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
-  const [logoLoadErrored, setLogoLoadErrored] = useState(false);
-  const [brandPreferences, setBrandPreferences] = useState<BrandPreferences>(() =>
-    createDefaultBrandPreferences(tenantContext.tenantSlug)
-  );
-  const [agentProfile, setAgentProfile] = useState<AgentProfile>({
-    fullName: '',
-    email: '',
-    phone: '',
-    brokerage: '',
-    licenseNumber: '',
-    headshotUrl: '',
-    bio: '',
-  });
+  // Load workspace data via hook
+  useWorkspaceData();
 
   const contactPanelRef = useRef<HTMLElement | null>(null);
   const activityPanelRef = useRef<HTMLElement | null>(null);
@@ -179,16 +170,15 @@ export function CrmWorkspace({
   const brandStorageKey = useMemo(() => `crm.branding.${tenantContext.tenantId}`, [tenantContext.tenantId]);
   const profileStorageKey = useMemo(() => `crm.profile.${tenantContext.tenantId}`, [tenantContext.tenantId]);
   const websiteFaviconUrl = useMemo(() => `https://${tenantContext.tenantDomain}/favicon.ico`, [tenantContext.tenantDomain]);
-  const [greetingLabel, setGreetingLabel] = useState('Welcome');
   useEffect(() => {
     setGreetingLabel(getTimeGreeting());
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(brandStorageKey);
       if (!raw) {
-        setBrandPreferences(createDefaultBrandPreferences(tenantContext.tenantSlug));
+        storeResetBrandPreferences(tenantContext.tenantSlug);
         return;
       }
       const parsed = JSON.parse(raw) as Partial<BrandPreferences>;
@@ -197,9 +187,9 @@ export function CrmWorkspace({
         ...parsed,
       });
     } catch {
-      setBrandPreferences(createDefaultBrandPreferences(tenantContext.tenantSlug));
+      storeResetBrandPreferences(tenantContext.tenantSlug);
     }
-  }, [brandStorageKey, tenantContext.tenantSlug]);
+  }, [brandStorageKey, tenantContext.tenantSlug, setBrandPreferences, storeResetBrandPreferences]);
 
   useEffect(() => {
     try {
@@ -214,12 +204,12 @@ export function CrmWorkspace({
       const raw = window.localStorage.getItem(profileStorageKey);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<AgentProfile>;
-        setAgentProfile((prev) => ({ ...prev, ...parsed }));
+        setAgentProfile({ ...agentProfile, ...parsed });
       }
     } catch {
       // Ignore parse errors.
     }
-  }, [profileStorageKey]);
+  }, [profileStorageKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     try {
@@ -250,38 +240,37 @@ export function CrmWorkspace({
   const leadById = useMemo(() => new Map(leads.map((lead) => [lead.id, lead])), [leads]);
   const contactById = useMemo(() => new Map(contacts.map((contact) => [contact.id, contact])), [contacts]);
 
-  const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false);
   const { notifications, unreadCount } = useNotifications({ leads, activities, contactById });
   const { pinnedIds, togglePin, isPinned } = usePinnedLeads(tenantContext.tenantId);
   const { isOnline, pendingCount: offlinePendingCount, enqueue: enqueueOffline } = useOfflineQueue(tenantContext.tenantId);
+  const pushNotifications = usePushNotifications(tenantContext.tenantId);
+
+  // Unclaimed leads for speed-to-lead (new leads without any contact/response)
+  const unclaimedLeads = useMemo(() => {
+    return leads.filter((l) =>
+      l.status === 'new' && !l.lastContactAt
+    ).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }, [leads]);
 
   // Cmd+K / Ctrl+K keyboard shortcut for command palette
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setCmdPaletteOpen((prev) => !prev);
+        toggleCmdPalette();
+      }
+      // Sprint 1B: Press N to open quick-add lead (when not in text input)
+      if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+        if (tag !== 'input' && tag !== 'textarea' && tag !== 'select' && !(e.target as HTMLElement)?.isContentEditable) {
+          e.preventDefault();
+          setShowQuickAddLead(true);
+        }
       }
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const pushToast = useCallback((kind: WorkspaceToast['kind'], message: string) => {
-    const toastId = Date.now() + Math.floor(Math.random() * 1000);
-    setToasts((prev) => [...prev, { id: toastId, kind, message }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((toast) => toast.id !== toastId));
-    }, 3200);
-  }, []);
-
-  const beginMutation = useCallback(() => {
-    setActiveMutations((prev) => prev + 1);
-  }, []);
-
-  const endMutation = useCallback(() => {
-    setActiveMutations((prev) => Math.max(0, prev - 1));
-  }, []);
+  }, [toggleCmdPalette, setShowQuickAddLead]);
 
   const getLeadDraft = useCallback(
     (lead: CrmLead): LeadDraft => {
@@ -290,24 +279,15 @@ export function CrmWorkspace({
     [draftByLeadId]
   );
 
-  const setLeadDraftField = useCallback(
+  const handleSetLeadDraftField = useCallback(
     (leadId: string, field: keyof LeadDraft, value: string | CrmLeadStatus) => {
       const lead = leadById.get(leadId);
       if (!lead) {
         return;
       }
-      setDraftByLeadId((prev) => {
-        const current = prev[leadId] ?? buildLeadDraft(lead);
-        return {
-          ...prev,
-          [leadId]: {
-            ...current,
-            [field]: value,
-          },
-        };
-      });
+      setLeadDraftField(leadId, field, value, lead);
     },
-    [leadById]
+    [leadById, setLeadDraftField]
   );
 
   const hasUnsavedLeadChange = useCallback(
@@ -333,16 +313,7 @@ export function CrmWorkspace({
     [getLeadDraft]
   );
 
-  const clearLeadDraft = useCallback((leadId: string) => {
-    setDraftByLeadId((prev) => {
-      if (!(leadId in prev)) {
-        return prev;
-      }
-      const next = { ...prev };
-      delete next[leadId];
-      return next;
-    });
-  }, []);
+  // clearLeadDraft now comes from Zustand store
 
   const sourceFilterOptions = useMemo(() => {
     return Array.from(new Set(leads.map((lead) => lead.source))).sort((left, right) => left.localeCompare(right));
@@ -918,71 +889,49 @@ export function CrmWorkspace({
     return leadsByContactId.get(newActivityContactId) ?? [];
   }, [leadsByContactId, newActivityContactId, sortedActivityLeads]);
 
-  const loadWorkspace = useCallback(async () => {
+  // Data loading is handled by useWorkspaceData() hook above.
+  // reloadWorkspace re-fetches data for use after CSV import, etc.
+  const reloadWorkspace = useCallback(async () => {
     setLoading(true);
     setError(null);
-
     try {
       const [leadsRes, contactsRes, activitiesRes] = await Promise.all([
         fetch('/api/leads?limit=200', { cache: 'no-store' }),
         fetch('/api/contacts?limit=200', { cache: 'no-store' }),
         fetch('/api/activities?limit=200', { cache: 'no-store' }),
       ]);
-
       if (!leadsRes.ok || !contactsRes.ok || !activitiesRes.ok) {
         throw new Error('Failed to load CRM workspace data.');
       }
-
       const leadsJson = (await leadsRes.json()) as { leads: CrmLead[] };
       const contactsJson = (await contactsRes.json()) as { contacts: CrmContact[] };
       const activitiesJson = (await activitiesRes.json()) as { activities: CrmActivity[] };
-
       setLeads(leadsJson.leads);
       setContacts(contactsJson.contacts);
       setActivities(activitiesJson.activities);
-      setSummary((prev) => ({
-        ...prev,
+      updateSummary({
         leadCount: leadsJson.leads.length,
         contactCount: contactsJson.contacts.length,
         activityCount: activitiesJson.activities.length,
-      }));
+      });
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Unknown CRM load error.');
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    void loadWorkspace();
-  }, [loadWorkspace]);
+  }, [setLoading, setError, setLeads, setContacts, setActivities, updateSummary]);
 
   const openLeadProfile = useCallback(
     (leadId: string) => {
-      setActiveLeadProfileId(leadId);
-      setSearchSuggestionsOpen(false);
-
-      void (async () => {
-        try {
-          const response = await fetch(`/api/leads/${leadId}`, { cache: 'no-store' });
-          if (!response.ok) {
-            return;
-          }
-          const json = (await response.json()) as { lead?: CrmLead };
-          if (json.lead) {
-            setLeads((prev) => prev.map((entry) => (entry.id === leadId ? json.lead! : entry)));
-          }
-        } catch {
-          // Keep modal open with current local data.
-        }
-      })();
+      storeOpenLeadProfile(leadId);
+      void refreshLead(leadId);
     },
-    []
+    [storeOpenLeadProfile]
   );
 
   const closeLeadProfile = useCallback(() => {
     if (!activeLeadProfile) {
-      setActiveLeadProfileId(null);
+      storeCloseLeadProfile();
       return;
     }
 
@@ -996,17 +945,17 @@ export function CrmWorkspace({
       }
     }
 
-    setActiveLeadProfileId(null);
-  }, [activeContact, activeLeadProfile, hasUnsavedContactChange, hasUnsavedLeadChange]);
+    storeCloseLeadProfile();
+  }, [activeContact, activeLeadProfile, hasUnsavedContactChange, hasUnsavedLeadChange, storeCloseLeadProfile]);
 
   useEffect(() => {
     if (!activeLeadProfileId) {
       return;
     }
     if (!leadById.has(activeLeadProfileId)) {
-      setActiveLeadProfileId(null);
+      storeCloseLeadProfile();
     }
-  }, [activeLeadProfileId, leadById]);
+  }, [activeLeadProfileId, leadById, storeCloseLeadProfile]);
 
   useEffect(() => {
     if (!activeLeadProfileId) {
@@ -1165,7 +1114,7 @@ export function CrmWorkspace({
     }
 
     beginMutation();
-    setSavingLeadIds((prev) => ({ ...prev, [leadId]: true }));
+    setSavingLeadId(leadId, true);
     setError(null);
 
     const optimisticLead: CrmLead = {
@@ -1186,7 +1135,7 @@ export function CrmWorkspace({
       priceMax: payload.priceMax === undefined ? lead.priceMax : payload.priceMax,
     };
 
-    setLeads((prev) => prev.map((entry) => (entry.id === leadId ? optimisticLead : entry)));
+    replaceLeadById(leadId, optimisticLead);
 
     try {
       const response = await fetch(`/api/leads/${leadId}`, {
@@ -1202,7 +1151,7 @@ export function CrmWorkspace({
       const json = (await response.json()) as { lead?: CrmLead };
 
       if (json.lead) {
-        setLeads((prev) => prev.map((entry) => (entry.id === leadId ? json.lead! : entry)));
+        replaceLeadById(leadId, json.lead);
       }
 
       clearLeadDraft(leadId);
@@ -1213,16 +1162,12 @@ export function CrmWorkspace({
         setWinLossPrompt({ leadId, outcome: payload.status });
       }
     } catch (mutationError) {
-      setLeads((prev) => prev.map((entry) => (entry.id === leadId ? lead : entry)));
+      replaceLeadById(leadId, lead);
       const message = mutationError instanceof Error ? mutationError.message : 'Unknown lead update error.';
       setError(message);
       pushToast('error', message);
     } finally {
-      setSavingLeadIds((prev) => {
-        const next = { ...prev };
-        delete next[leadId];
-        return next;
-      });
+      setSavingLeadId(leadId, false);
       endMutation();
     }
   }
@@ -1252,7 +1197,7 @@ export function CrmWorkspace({
     }
 
     beginMutation();
-    setSavingContactIds((prev) => ({ ...prev, [contactId]: true }));
+    setSavingContactId(contactId, true);
     setError(null);
 
     const optimisticContact: CrmContact = {
@@ -1271,7 +1216,7 @@ export function CrmWorkspace({
         payload.phone === undefined ? contact.phoneNormalized : payload.phone ? payload.phone.replace(/\D/g, '') : null,
     };
 
-    setContacts((prev) => prev.map((entry) => (entry.id === contactId ? optimisticContact : entry)));
+    replaceContactById(contactId, optimisticContact);
 
     try {
       const response = await fetch(`/api/contacts/${contactId}`, {
@@ -1286,27 +1231,19 @@ export function CrmWorkspace({
 
       const json = (await response.json()) as { contact?: CrmContact };
       if (json.contact) {
-        setContacts((prev) => prev.map((entry) => (entry.id === contactId ? json.contact! : entry)));
+        replaceContactById(contactId, json.contact);
       }
 
-      setDraftContactById((prev) => {
-        const next = { ...prev };
-        delete next[contactId];
-        return next;
-      });
+      clearContactDraft(contactId);
 
       pushToast('success', 'Contact updated.');
     } catch (mutationError) {
-      setContacts((prev) => prev.map((entry) => (entry.id === contactId ? contact : entry)));
+      replaceContactById(contactId, contact);
       const message = mutationError instanceof Error ? mutationError.message : 'Unknown contact update error.';
       setError(message);
       pushToast('error', message);
     } finally {
-      setSavingContactIds((prev) => {
-        const next = { ...prev };
-        delete next[contactId];
-        return next;
-      });
+      setSavingContactId(contactId, false);
       endMutation();
     }
   }
@@ -1319,9 +1256,7 @@ export function CrmWorkspace({
     await Promise.all(pendingLeadIds.map(async (leadId) => updateLead(leadId)));
   }
 
-  function clearAllLeadDrafts() {
-    setDraftByLeadId({});
-  }
+  // clearAllLeadDrafts is now from the store
 
   async function createContact(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1343,8 +1278,8 @@ export function CrmWorkspace({
       updatedAt: nowIso,
     };
 
-    setContacts((prev) => [optimisticContact, ...prev]);
-    setSummary((prev) => ({ ...prev, contactCount: prev.contactCount + 1 }));
+    addContact(optimisticContact);
+    updateSummary({ contactCount: summary.contactCount + 1 });
 
     beginMutation();
 
@@ -1365,21 +1300,19 @@ export function CrmWorkspace({
 
       const json = (await response.json()) as { contact?: CrmContact };
 
-      setNewContactName('');
-      setNewContactEmail('');
-      setNewContactPhone('');
+      resetNewContactForm();
 
       if (json.contact) {
-        setContacts((prev) => prev.map((contact) => (contact.id === optimisticId ? json.contact! : contact)));
+        replaceContactById(optimisticId, json.contact);
       } else {
-        setContacts((prev) => prev.filter((contact) => contact.id !== optimisticId));
-        setSummary((prev) => ({ ...prev, contactCount: Math.max(0, prev.contactCount - 1) }));
+        removeContact(optimisticId);
+        updateSummary({ contactCount: Math.max(0, summary.contactCount - 1) });
       }
 
       pushToast('success', 'Contact added.');
     } catch (mutationError) {
-      setContacts((prev) => prev.filter((contact) => contact.id !== optimisticId));
-      setSummary((prev) => ({ ...prev, contactCount: Math.max(0, prev.contactCount - 1) }));
+      removeContact(optimisticId);
+      updateSummary({ contactCount: Math.max(0, summary.contactCount - 1) });
       const message = mutationError instanceof Error ? mutationError.message : 'Unknown contact create error.';
       setError(message);
       pushToast('error', message);
@@ -1407,8 +1340,8 @@ export function CrmWorkspace({
       createdAt: nowIso,
     };
 
-    setActivities((prev) => [optimisticActivity, ...prev]);
-    setSummary((prev) => ({ ...prev, activityCount: prev.activityCount + 1 }));
+    addActivity(optimisticActivity);
+    updateSummary({ activityCount: summary.activityCount + 1 });
 
     beginMutation();
 
@@ -1430,21 +1363,19 @@ export function CrmWorkspace({
 
       const json = (await response.json()) as { activity?: CrmActivity };
 
-      setNewActivitySummary('');
-      setNewActivityLeadId('');
-      setNewActivityContactId('');
+      resetNewActivityForm();
 
       if (json.activity) {
-        setActivities((prev) => prev.map((activity) => (activity.id === optimisticId ? json.activity! : activity)));
+        replaceActivityById(optimisticId, json.activity);
       } else {
-        setActivities((prev) => prev.filter((activity) => activity.id !== optimisticId));
-        setSummary((prev) => ({ ...prev, activityCount: Math.max(0, prev.activityCount - 1) }));
+        removeActivity(optimisticId);
+        updateSummary({ activityCount: Math.max(0, summary.activityCount - 1) });
       }
 
       pushToast('success', 'Activity logged.');
     } catch (mutationError) {
-      setActivities((prev) => prev.filter((activity) => activity.id !== optimisticId));
-      setSummary((prev) => ({ ...prev, activityCount: Math.max(0, prev.activityCount - 1) }));
+      removeActivity(optimisticId);
+      updateSummary({ activityCount: Math.max(0, summary.activityCount - 1) });
       const message = mutationError instanceof Error ? mutationError.message : 'Unknown activity create error.';
       setError(message);
       pushToast('error', message);
@@ -1470,7 +1401,7 @@ export function CrmWorkspace({
       createdAt: nowIso,
     };
 
-    setActivities((prev) => [optimisticActivity, ...prev]);
+    addActivity(optimisticActivity);
     beginMutation();
 
     try {
@@ -1489,7 +1420,7 @@ export function CrmWorkspace({
 
       const json = (await response.json()) as { activity?: CrmActivity };
       if (json.activity) {
-        setActivities((prev) => prev.map((a) => (a.id === optimisticId ? json.activity! : a)));
+        replaceActivityById(optimisticId, json.activity);
       }
 
       // Also update lastContactAt on the lead
@@ -1499,13 +1430,11 @@ export function CrmWorkspace({
         body: JSON.stringify({ lastContactAt: nowIso }),
       });
 
-      setLeads((prev) =>
-        prev.map((l) => (l.id === activeLeadProfile.id ? { ...l, lastContactAt: nowIso } : l))
-      );
+      replaceLeadById(activeLeadProfile.id, { ...activeLeadProfile, lastContactAt: nowIso });
 
       pushToast('success', 'Contact logged.');
     } catch (err) {
-      setActivities((prev) => prev.filter((a) => a.id !== optimisticId));
+      removeActivity(optimisticId);
       pushToast('error', err instanceof Error ? err.message : 'Failed to log contact.');
     } finally {
       endMutation();
@@ -1513,9 +1442,8 @@ export function CrmWorkspace({
   }
 
   const openDashboard = useCallback(() => {
-    setActiveNav('dashboard');
-    setActiveView('dashboard');
-  }, []);
+    handleNav('dashboard');
+  }, [handleNav]);
 
   async function createLead() {
     if (!newLeadAddress.trim()) {
@@ -1558,8 +1486,8 @@ export function CrmWorkspace({
       updatedAt: nowIso,
     };
 
-    setLeads((prev) => [optimisticLead, ...prev]);
-    setSummary((prev) => ({ ...prev, leadCount: prev.leadCount + 1 }));
+    addLead(optimisticLead);
+    updateSummary({ leadCount: summary.leadCount + 1 });
     beginMutation();
 
     try {
@@ -1582,25 +1510,19 @@ export function CrmWorkspace({
 
       const json = (await response.json()) as { lead?: CrmLead };
 
-      setNewLeadAddress('');
-      setNewLeadSource('crm_manual');
-      setNewLeadType('buyer');
-      setNewLeadNotes('');
-      setNewLeadTimeframe('');
-      setNewLeadPropertyType('');
-      setShowNewLeadForm(false);
+      resetNewLeadForm();
 
       if (json.lead) {
-        setLeads((prev) => prev.map((lead) => (lead.id === optimisticId ? json.lead! : lead)));
+        replaceLeadById(optimisticId, json.lead);
       } else {
-        setLeads((prev) => prev.filter((lead) => lead.id !== optimisticId));
-        setSummary((prev) => ({ ...prev, leadCount: Math.max(0, prev.leadCount - 1) }));
+        removeLead(optimisticId);
+        updateSummary({ leadCount: Math.max(0, summary.leadCount - 1) });
       }
 
       pushToast('success', 'Lead created successfully.');
     } catch (mutationError) {
-      setLeads((prev) => prev.filter((lead) => lead.id !== optimisticId));
-      setSummary((prev) => ({ ...prev, leadCount: Math.max(0, prev.leadCount - 1) }));
+      removeLead(optimisticId);
+      updateSummary({ leadCount: Math.max(0, summary.leadCount - 1) });
       const message = mutationError instanceof Error ? mutationError.message : 'Unknown lead create error.';
       setError(message);
       pushToast('error', message);
@@ -1610,26 +1532,23 @@ export function CrmWorkspace({
   }
 
   const openPipeline = useCallback(() => {
-    setActiveNav('pipeline');
-    setActiveView('pipeline');
-  }, []);
+    handleNav('pipeline');
+  }, [handleNav]);
 
   const openLeadsTable = useCallback((preset: TableStatusPreset) => {
-    setActiveNav('leads');
-    setActiveView('leads');
+    handleNav('leads');
     setTableStatusPreset(preset);
-  }, []);
+  }, [handleNav, setTableStatusPreset]);
 
   const openProfile = useCallback(() => {
-    setActiveNav('profile');
-    setActiveView('profile');
-  }, []);
+    handleNav('profile');
+  }, [handleNav]);
 
-  const handleNav = useCallback(
+  // Extended handleNav that also scrolls to sections
+  const handleNavWithScroll = useCallback(
     (nav: WorkspaceNav) => {
-      setActiveNav(nav);
+      handleNav(nav);
       const nextView = resolveViewFromNav(nav);
-      setActiveView(nextView);
 
       if (nextView !== 'dashboard') {
         return;
@@ -1643,12 +1562,12 @@ export function CrmWorkspace({
         requestAnimationFrame(() => activityPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
       }
     },
-    []
+    [handleNav]
   );
 
   const resetBrandPreferences = useCallback(() => {
-    setBrandPreferences(createDefaultBrandPreferences(tenantContext.tenantSlug));
-  }, [tenantContext.tenantSlug]);
+    storeResetBrandPreferences(tenantContext.tenantSlug);
+  }, [tenantContext.tenantSlug, storeResetBrandPreferences]);
 
   // --- Properties ---
   const propertyLeadOptions = useMemo(() => {
@@ -1665,11 +1584,7 @@ export function CrmWorkspace({
       if (!lead) return;
       const addr = `${listing.address.street}, ${listing.address.city}`;
       // Optimistic update
-      setLeads((prev) =>
-        prev.map((entry) =>
-          entry.id === leadId ? { ...entry, listingAddress: addr } : entry
-        )
-      );
+      replaceLeadById(leadId, { ...lead, listingAddress: addr });
       beginMutation();
       try {
         const res = await fetch(`/api/leads/${leadId}`, {
@@ -1680,22 +1595,18 @@ export function CrmWorkspace({
         if (!res.ok) throw new Error('Failed to assign property');
         const json = await res.json();
         if (json.lead) {
-          setLeads((prev) => prev.map((entry) => (entry.id === leadId ? json.lead : entry)));
+          replaceLeadById(leadId, json.lead);
         }
         pushToast('success', `Assigned ${listing.address.street} to ${getLeadContactLabel(lead, contactById) || 'lead'}.`);
       } catch {
         // Rollback
-        setLeads((prev) =>
-          prev.map((entry) =>
-            entry.id === leadId ? { ...entry, listingAddress: lead.listingAddress } : entry
-          )
-        );
+        replaceLeadById(leadId, lead);
         pushToast('error', 'Failed to assign property to lead.');
       } finally {
         endMutation();
       }
     },
-    [leads, contactById, beginMutation, endMutation, pushToast]
+    [leads, contactById, beginMutation, endMutation, pushToast, replaceLeadById]
   );
 
   const handleSendPropertyToClient = useCallback(
@@ -1735,11 +1646,11 @@ export function CrmWorkspace({
   ];
 
   function toggleTableSort(column: LeadsTableSortColumn) {
-    setTableSort((prev) => toggleTableSortState(prev, column));
+    setTableSort(toggleTableSortState(tableSort, column));
   }
 
   return (
-    <div className={`crm-shell-app ${brandPreferences.showTexture ? 'crm-shell-texture' : ''}`} style={brandThemeVars}>
+    <div className={`crm-shell-app ${brandPreferences.showTexture ? 'crm-shell-texture' : ''}`} style={brandThemeVars} data-density={density}>
       <aside className="crm-sidebar" aria-label="CRM navigation">
         <div className="crm-sidebar-brand">
           <div className="crm-brand-lockup">
@@ -1772,7 +1683,7 @@ export function CrmWorkspace({
               key={item.id}
               type="button"
               className={`crm-side-nav-item ${activeNav === item.id ? 'is-active' : ''}`}
-              onClick={() => handleNav(item.id)}
+              onClick={() => handleNavWithScroll(item.id)}
             >
               <span className="crm-side-nav-icon" aria-hidden="true">
                 {item.icon}
@@ -1934,7 +1845,7 @@ export function CrmWorkspace({
                 className="crm-icon-button crm-notif-trigger"
                 type="button"
                 aria-label="Notifications"
-                onClick={() => setNotificationsOpen((prev) => !prev)}
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
               >
                 🔔
                 {unreadCount > 0 && (
@@ -1948,7 +1859,7 @@ export function CrmWorkspace({
                 type="button"
                 className="crm-avatar crm-avatar-button"
                 aria-label="User actions"
-                onClick={() => setAvatarMenuOpen((prev) => !prev)}
+                onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
               >
                 {agentProfile.headshotUrl ? (
                   <Image
@@ -2058,6 +1969,25 @@ export function CrmWorkspace({
               contactById={contactById}
               onOpenLead={openLeadProfile}
             />
+
+            {unclaimedLeads.length > 0 && (
+              <section className="crm-panel crm-unclaimed-leads">
+                <div className="crm-panel-head">
+                  <h3>Unclaimed Leads</h3>
+                  <span className="crm-muted">{unclaimedLeads.length} awaiting first contact</span>
+                </div>
+                <div className="crm-unclaimed-leads-list">
+                  {unclaimedLeads.slice(0, 5).map((lead) => (
+                    <SpeedToLeadTimer
+                      key={lead.id}
+                      lead={lead}
+                      contactById={contactById}
+                      onClaim={(leadId) => openLeadProfile(leadId)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
 
             {escalatedLeads.length > 0 && (
               <EscalationAlertBanner
@@ -2369,7 +2299,7 @@ export function CrmWorkspace({
                                 value={draft.status}
                                 onChange={(event) => {
                                   const value = event.target.value as CrmLeadStatus;
-                                  setLeadDraftField(lead.id, 'status', value);
+                                  handleSetLeadDraftField(lead.id, 'status', value);
                                 }}
                               >
                                 {LEAD_STATUSES.map((status) => (
@@ -2384,7 +2314,7 @@ export function CrmWorkspace({
                               Next Action
                               <input
                                 value={draft.timeframe}
-                                onChange={(event) => setLeadDraftField(lead.id, 'timeframe', event.target.value)}
+                                onChange={(event) => handleSetLeadDraftField(lead.id, 'timeframe', event.target.value)}
                                 placeholder="Schedule follow-up next Tuesday"
                               />
                             </label>
@@ -2395,7 +2325,7 @@ export function CrmWorkspace({
                               Notes
                               <textarea
                                 value={draft.notes}
-                                onChange={(event) => setLeadDraftField(lead.id, 'notes', event.target.value)}
+                                onChange={(event) => handleSetLeadDraftField(lead.id, 'notes', event.target.value)}
                                 placeholder="Capture call outcomes, objections, and next actions..."
                               />
                             </label>
@@ -2429,14 +2359,14 @@ export function CrmWorkspace({
                   <form className="crm-form" onSubmit={createContact}>
                     <label className="crm-field">
                       Full Name
-                      <input value={newContactName} onChange={(event) => setNewContactName(event.target.value)} placeholder="Jane Doe" />
+                      <input value={newContactName} onChange={(event) => setNewContactField('newContactName', event.target.value)} placeholder="Jane Doe" />
                     </label>
                     <label className="crm-field">
                       Email
                       <input
                         type="email"
                         value={newContactEmail}
-                        onChange={(event) => setNewContactEmail(event.target.value)}
+                        onChange={(event) => setNewContactField('newContactEmail', event.target.value)}
                         placeholder="jane@example.com"
                       />
                     </label>
@@ -2444,7 +2374,7 @@ export function CrmWorkspace({
                       Phone
                       <input
                         value={newContactPhone}
-                        onChange={(event) => setNewContactPhone(event.target.value)}
+                        onChange={(event) => setNewContactField('newContactPhone', event.target.value)}
                         placeholder="(203) 555-0101"
                       />
                     </label>
@@ -2483,7 +2413,7 @@ export function CrmWorkspace({
                       Summary
                       <input
                         value={newActivitySummary}
-                        onChange={(event) => setNewActivitySummary(event.target.value)}
+                        onChange={(event) => setNewActivityField('newActivitySummary', event.target.value)}
                         placeholder="Called seller and reviewed valuation strategy"
                         required
                       />
@@ -2494,7 +2424,7 @@ export function CrmWorkspace({
                         value={newActivityContactId}
                         onChange={(event) => {
                           const nextContactId = event.target.value;
-                          setNewActivityContactId(nextContactId);
+                          setNewActivityField('newActivityContactId', nextContactId);
 
                           if (!nextContactId) {
                             return;
@@ -2502,7 +2432,7 @@ export function CrmWorkspace({
 
                           const linkedLead = (leadsByContactId.get(nextContactId) ?? [])[0];
                           if (linkedLead) {
-                            setNewActivityLeadId(linkedLead.id);
+                            setNewActivityField('newActivityLeadId', linkedLead.id);
                           }
                         }}
                       >
@@ -2520,7 +2450,7 @@ export function CrmWorkspace({
                         value={newActivityLeadId}
                         onChange={(event) => {
                           const nextLeadId = event.target.value;
-                          setNewActivityLeadId(nextLeadId);
+                          setNewActivityField('newActivityLeadId', nextLeadId);
 
                           if (!nextLeadId) {
                             return;
@@ -2528,7 +2458,7 @@ export function CrmWorkspace({
 
                           const linkedLead = leadById.get(nextLeadId);
                           if (linkedLead?.contactId) {
-                            setNewActivityContactId(linkedLead.contactId);
+                            setNewActivityField('newActivityContactId', linkedLead.contactId);
                           }
                         }}
                       >
@@ -2605,7 +2535,7 @@ export function CrmWorkspace({
                 <button
                   type="button"
                   className="crm-primary-button"
-                  onClick={() => setShowNewLeadForm((prev) => !prev)}
+                  onClick={() => toggleShowNewLeadForm()}
                 >
                   {showNewLeadForm ? '✕ Cancel' : '＋ New Lead'}
                 </button>
@@ -2621,19 +2551,19 @@ export function CrmWorkspace({
                       type="text"
                       value={newLeadAddress}
                       placeholder="123 Main St, Fairfield, CT"
-                      onChange={(event) => setNewLeadAddress(event.target.value)}
+                      onChange={(event) => setNewLeadField('newLeadAddress', event.target.value)}
                     />
                   </label>
                   <label className="crm-field">
                     Lead Type
-                    <select value={newLeadType} onChange={(event) => setNewLeadType(event.target.value as 'buyer' | 'seller')}>
+                    <select value={newLeadType} onChange={(event) => setNewLeadField('newLeadType', event.target.value)}>
                       <option value="buyer">Buyer</option>
                       <option value="seller">Seller</option>
                     </select>
                   </label>
                   <label className="crm-field">
                     Source
-                    <select value={newLeadSource} onChange={(event) => setNewLeadSource(event.target.value)}>
+                    <select value={newLeadSource} onChange={(event) => setNewLeadField('newLeadSource', event.target.value)}>
                       <option value="crm_manual">Manual Entry</option>
                       <option value="website">Website</option>
                       <option value="referral">Referral</option>
@@ -2644,7 +2574,7 @@ export function CrmWorkspace({
                   </label>
                   <label className="crm-field">
                     Property Type
-                    <select value={newLeadPropertyType} onChange={(event) => setNewLeadPropertyType(event.target.value)}>
+                    <select value={newLeadPropertyType} onChange={(event) => setNewLeadField('newLeadPropertyType', event.target.value)}>
                       <option value="">Not specified</option>
                       <option value="single-family">Single Family</option>
                       <option value="condo">Condo</option>
@@ -2657,7 +2587,7 @@ export function CrmWorkspace({
                       type="text"
                       value={newLeadTimeframe}
                       placeholder="e.g. 3-6 months"
-                      onChange={(event) => setNewLeadTimeframe(event.target.value)}
+                      onChange={(event) => setNewLeadField('newLeadTimeframe', event.target.value)}
                     />
                   </label>
                   <label className="crm-field crm-field-wide">
@@ -2666,7 +2596,7 @@ export function CrmWorkspace({
                       value={newLeadNotes}
                       placeholder="Initial notes about this lead..."
                       rows={2}
-                      onChange={(event) => setNewLeadNotes(event.target.value)}
+                      onChange={(event) => setNewLeadField('newLeadNotes', event.target.value)}
                     />
                   </label>
                 </div>
@@ -2866,7 +2796,7 @@ export function CrmWorkspace({
             onLeadTypeFilterChange={setPipelineLeadTypeFilter}
             onOpenProfile={openLeadProfile}
             onTogglePin={togglePin}
-            onDraftChange={setLeadDraftField}
+            onDraftChange={handleSetLeadDraftField}
             onSave={(leadId) => { void updateLead(leadId); }}
             pushToast={pushToast}
           />
@@ -2898,7 +2828,13 @@ export function CrmWorkspace({
         {activeView === 'profile' ? (
           <ProfileView
             agentProfile={agentProfile}
-            setAgentProfile={setAgentProfile}
+            setAgentProfile={(value) => {
+              if (typeof value === 'function') {
+                setAgentProfile(value(agentProfile));
+              } else {
+                setAgentProfile(value);
+              }
+            }}
             leads={leads}
             brandInitials={brandInitials}
           />
@@ -2907,14 +2843,30 @@ export function CrmWorkspace({
         {activeView === 'settings' ? (
           <SettingsView
             brandPreferences={brandPreferences}
-            setBrandPreferences={setBrandPreferences}
+            setBrandPreferences={(value) => {
+              if (typeof value === 'function') {
+                setBrandPreferences(value(brandPreferences));
+              } else {
+                setBrandPreferences(value);
+              }
+            }}
             resetBrandPreferences={resetBrandPreferences}
             websiteFaviconUrl={websiteFaviconUrl}
             showBrandLogo={showBrandLogo}
             resolvedLogoUrl={resolvedLogoUrl}
             brandInitials={brandInitials}
-            setLogoLoadErrored={setLogoLoadErrored}
+            setLogoLoadErrored={(value) => {
+              if (typeof value === 'function') {
+                setLogoLoadErrored(value(logoLoadErrored));
+              } else {
+                setLogoLoadErrored(value);
+              }
+            }}
             tenantContext={tenantContext}
+            notificationPrefs={pushNotifications.prefs}
+            notificationPermission={pushNotifications.permissionState}
+            onRequestNotificationPermission={pushNotifications.requestPermission}
+            onUpdateNotificationPrefs={pushNotifications.updatePrefs}
           />
         ) : null}
 
@@ -2967,22 +2919,30 @@ export function CrmWorkspace({
           hasUnsavedLeadChange={hasUnsavedLeadChange(activeLeadProfile)}
           hasUnsavedContactChange={activeContact ? hasUnsavedContactChange(activeContact) : false}
           onClose={closeLeadProfile}
-          onSetLeadDraftField={setLeadDraftField}
-          onSetContactDraft={setDraftContactById}
+          onSetLeadDraftField={handleSetLeadDraftField}
+          onSetContactDraft={(updater) => {
+            // Compatibility wrapper: LeadProfileModal passes React-style setState updaters
+            if (typeof updater === 'function') {
+              const next = updater(draftContactById);
+              for (const [id, draft] of Object.entries(next)) {
+                store.setContactDraft(id, draft);
+              }
+            }
+          }}
           onUpdateLead={updateLead}
           onUpdateContact={updateContact}
           onClearLeadDraft={clearLeadDraft}
           onLogContact={logContactActivity}
           onViewLead={openLeadProfile}
           onSaveReminder={(leadId, data) => {
-            setLeadDraftField(leadId, 'nextActionAt', data.nextActionAt);
-            setLeadDraftField(leadId, 'nextActionNote', data.nextActionNote);
-            setLeadDraftField(leadId, 'nextActionChannel', data.nextActionChannel);
+            handleSetLeadDraftField(leadId, 'nextActionAt', data.nextActionAt);
+            handleSetLeadDraftField(leadId, 'nextActionNote', data.nextActionNote);
+            handleSetLeadDraftField(leadId, 'nextActionChannel', data.nextActionChannel);
             void updateLead(leadId);
           }}
           onSnoozeReminder={(leadId, durationMs) => {
             const snoozedUntil = new Date(Date.now() + durationMs).toISOString();
-            setLeadDraftField(leadId, 'reminderSnoozedUntil', snoozedUntil);
+            handleSetLeadDraftField(leadId, 'reminderSnoozedUntil', snoozedUntil);
             void updateLead(leadId);
           }}
         />
@@ -2994,7 +2954,7 @@ export function CrmWorkspace({
           onClose={() => setShowCsvImport(false)}
           onImportComplete={(imported, errors) => {
             pushToast('success', `Imported ${imported} lead${imported !== 1 ? 's' : ''}${errors > 0 ? ` (${errors} error${errors !== 1 ? 's' : ''})` : ''}.`);
-            void loadWorkspace();
+            void reloadWorkspace();
           }}
         />
       ) : null}
@@ -3031,8 +2991,7 @@ export function CrmWorkspace({
         open={cmdPaletteOpen}
         onClose={() => setCmdPaletteOpen(false)}
         onNavigate={(nav) => {
-          setActiveNav(nav);
-          setActiveView(resolveViewFromNav(nav));
+          handleNav(nav);
         }}
         onOpenLead={openLeadProfile}
         leads={leads}
@@ -3055,10 +3014,89 @@ export function CrmWorkspace({
           handleNav('leads');
           setShowNewLeadForm(true);
         }}
-        onLogActivityClick={() => handleNav('activity')}
+        onLogActivityClick={() => handleNavWithScroll('activity')}
         onNotificationsClick={() => setNotificationsOpen(true)}
         notificationCount={unreadCount}
       />
+
+      <FloatingActivityLog
+        activities={activities}
+        leadById={leadById}
+        contactById={contactById}
+        onOpenLead={openLeadProfile}
+      />
+
+      {showQuickAddLead && (
+        <div className="crm-quick-add-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowQuickAddLead(false); }}>
+          <div className="crm-quick-add-modal">
+            <div className="crm-quick-add-header">
+              <h3>Quick Add Lead</h3>
+              <button type="button" className="crm-icon-button" onClick={() => setShowQuickAddLead(false)} aria-label="Close">✕</button>
+            </div>
+            <div className="crm-quick-add-body">
+              <label className="crm-field">
+                Listing Address *
+                <input
+                  type="text"
+                  value={newLeadAddress}
+                  placeholder="123 Main St, Fairfield, CT"
+                  onChange={(e) => setNewLeadField('newLeadAddress', e.target.value)}
+                  autoFocus
+                />
+              </label>
+              <div className="crm-quick-add-row">
+                <label className="crm-field">
+                  Type
+                  <select value={newLeadType} onChange={(e) => setNewLeadField('newLeadType', e.target.value)}>
+                    <option value="buyer">Buyer</option>
+                    <option value="seller">Seller</option>
+                  </select>
+                </label>
+                <label className="crm-field">
+                  Source
+                  <select value={newLeadSource} onChange={(e) => setNewLeadField('newLeadSource', e.target.value)}>
+                    <option value="crm_manual">Manual Entry</option>
+                    <option value="website">Website</option>
+                    <option value="referral">Referral</option>
+                    <option value="social">Social Media</option>
+                    <option value="cold_call">Cold Call</option>
+                    <option value="open_house">Open House</option>
+                  </select>
+                </label>
+              </div>
+              <label className="crm-field">
+                Notes
+                <textarea
+                  value={newLeadNotes}
+                  placeholder="Quick notes about this lead..."
+                  rows={2}
+                  onChange={(e) => setNewLeadField('newLeadNotes', e.target.value)}
+                />
+              </label>
+            </div>
+            <div className="crm-quick-add-footer">
+              <button
+                type="button"
+                className="crm-secondary-button"
+                onClick={() => setShowQuickAddLead(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="crm-primary-button"
+                disabled={!newLeadAddress.trim() || isMutating}
+                onClick={() => {
+                  void createLead();
+                  setShowQuickAddLead(false);
+                }}
+              >
+                {isMutating ? 'Creating...' : 'Create Lead'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="crm-toast-stack" aria-live="polite" aria-label="CRM notifications">
         {toasts.map((toast) => (

@@ -4,18 +4,15 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- Continue Admin post-MVP onboarding workflow polish:
-  - evaluate whether onboarding bulk mutations need a dedicated backend endpoint (performance/throughput),
-  - revisit onboarding usage telemetry rollup window/retention alignment (currently 14-day rollup from audit events),
-  - tune telemetry-based bulk-endpoint recommendation thresholds (`ADMIN_BULK_ENDPOINT_RECOMMENDATION_THRESHOLDS`) with real operator usage.
-- OR: Continue with remaining platform work — #64 Calendar Sync Phase 2 (external API integration), team/brokerage hierarchy, marketing attribution.
+- User deferred the previously suggested next tracks for now (`#64` Calendar Sync Phase 2, team/brokerage hierarchy, marketing attribution dashboard).
+- Start the next non-CRM roadmap item instead: **Implement AI content generation pipeline for website onboarding** (shared `packages/ai` + tenant-safe onboarding workflow integration).
 
 ## Why This Is Next
 - All CRM AI roadmap items are now complete: #50/#53 (Score Explain/Summary), #55 (Market Digest), #56 (Listing Description), #57 (Predictive Lead Scoring), #58 (Smart Lead Routing).
-- Admin onboarding persistence MVP is implemented; the next value is operational polish and observability surfacing on top of that persisted state.
+- Admin onboarding persistence + telemetry polish follow-up is complete, including bulk-endpoint decision criteria, telemetry rollup alignment note, and threshold calibration.
 - Windows-authoritative Admin route tests are passing (`50/50`), so the remaining Admin work is product/UX polish.
 - CRM route tests are passing (`53/53`) including coverage for all AI endpoints.
-- #64 Calendar Sync Phase 2 needs external API integration (Google/Outlook).
+- User explicitly deferred `#64` Calendar Sync Phase 2, team/brokerage hierarchy, and marketing attribution for the next session, so the next best non-CRM path is the website-onboarding AI content pipeline.
 
 ## Current Snapshot (2026-02-22, Session 12)
 - **Predictive Lead Scoring (#57) fully implemented**:
@@ -43,11 +40,8 @@ Use this file to start the next session quickly. Update it at the end of every w
 
 ## First Actions Next Session
 1. Run `$platform-session-bootstrap`.
-2. Admin polish track (if continuing):
-   - evaluate bulk mutation API needs,
-   - tune telemetry rollup/review windows and retention expectations,
-   - tune shared bulk-endpoint recommendation thresholds using real local/published telemetry data.
-3. If Admin polish complete, move to Calendar Sync Phase 2, team/brokerage hierarchy, or marketing attribution.
+2. Start **AI content generation pipeline for website onboarding** (define MVP inputs/outputs, shared prompt/orchestration boundary, and tenant-scoped integration point).
+3. Treat `#64` Calendar Sync Phase 2, team/brokerage hierarchy, and marketing attribution as intentionally deferred until the user re-prioritizes them.
 4. Run relevant tests/build validation after implementation.
 
 ## Validation Context (Most Recent)
@@ -56,6 +50,7 @@ Use this file to start the next session quickly. Update it at the end of every w
 - `npm run test:routes --workspace @real-estate/admin` — PASS (50/50 tests, Windows-authoritative)
 - `node --import tsx --test apps/admin/app/api/lib/routes.integration.test.ts` — PASS (local/WSL, includes onboarding + telemetry publish coverage)
 - `tsc --noEmit -p apps/admin/tsconfig.json` — PASS (latest Admin telemetry/observability passes; local run required extended timeout)
+- `node --import tsx --test apps/admin/app/lib/admin-usage-telemetry.test.ts` — PASS (2026-02-23; threshold + rollup alignment helper coverage)
 - `tsc --noEmit -p packages/db/tsconfig.json` — FAIL only on pre-existing `@real-estate/types/website-config` module-resolution issue (no new onboarding/telemetry type errors)
 - Latest Windows-authoritative Prisma sampling: `db:generate:sample -- 12 --json --exit-zero` — PASS (`12/12`, `0` EPERM failures)
 

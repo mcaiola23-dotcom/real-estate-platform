@@ -7,6 +7,8 @@ import type { BrandPreferences } from '../../lib/crm-types';
 import { normalizeHexColor } from '../../lib/crm-brand-theme';
 import { passthroughImageLoader } from '../../lib/crm-formatters';
 import { CalendarSync } from '../shared/CalendarSync';
+import type { NotificationPrefs } from '../../lib/use-push-notifications';
+import { NotificationPreferences } from '../shared/NotificationPreferences';
 
 interface SettingsViewProps {
   brandPreferences: BrandPreferences;
@@ -18,6 +20,10 @@ interface SettingsViewProps {
   brandInitials: string;
   setLogoLoadErrored: Dispatch<SetStateAction<boolean>>;
   tenantContext: TenantContext;
+  notificationPrefs: NotificationPrefs;
+  notificationPermission: NotificationPermission;
+  onRequestNotificationPermission: () => void;
+  onUpdateNotificationPrefs: (updates: Partial<NotificationPrefs>) => void;
 }
 
 export function SettingsView({
@@ -30,6 +36,10 @@ export function SettingsView({
   brandInitials,
   setLogoLoadErrored,
   tenantContext,
+  notificationPrefs,
+  notificationPermission,
+  onRequestNotificationPermission,
+  onUpdateNotificationPrefs,
 }: SettingsViewProps) {
   const [googleStatus, setGoogleStatus] = useState<{
     connected: boolean;
@@ -301,6 +311,21 @@ export function SettingsView({
               </p>
             </div>
           )}
+        </article>
+      </div>
+
+      <div className="crm-panel-head" style={{ marginTop: '1.5rem' }}>
+        <h3>Notifications</h3>
+        <span className="crm-muted">Configure how and when you receive alerts.</span>
+      </div>
+      <div className="crm-settings-grid">
+        <article>
+          <NotificationPreferences
+            prefs={notificationPrefs}
+            permissionState={notificationPermission}
+            onRequestPermission={onRequestNotificationPermission}
+            onUpdatePrefs={onUpdateNotificationPrefs}
+          />
         </article>
       </div>
     </section>

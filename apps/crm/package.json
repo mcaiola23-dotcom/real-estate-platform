@@ -18,9 +18,11 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@real-estate/db": "*",
     "@real-estate/types": "*",
+    "@tanstack/react-query": "^5.90.21",
     "next": "16.1.1",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@types/node": "^20",
