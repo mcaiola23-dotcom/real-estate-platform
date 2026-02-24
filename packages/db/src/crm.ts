@@ -362,6 +362,7 @@ export interface CreateCrmContactInput {
 
 export interface UpdateCrmLeadInput {
   status?: CrmLeadStatus;
+  leadType?: CrmLeadType;
   notes?: string | null;
   timeframe?: string | null;
   listingAddress?: string | null;
@@ -1042,7 +1043,7 @@ export async function ingestWebsiteEvent(event: WebsiteEvent): Promise<WebsiteEv
             tenantId: event.tenant.tenantId,
             contactId,
             status: 'new',
-            leadType: 'website_lead',
+            leadType: 'buyer',
             source: event.payload.source || 'website',
             timeframe: event.payload.timeframe,
             notes: event.payload.message,
@@ -1080,7 +1081,7 @@ export async function ingestWebsiteEvent(event: WebsiteEvent): Promise<WebsiteEv
             tenantId: event.tenant.tenantId,
             contactId: null,
             status: 'new',
-            leadType: 'valuation_request',
+            leadType: 'seller',
             source: 'website_valuation',
             timeframe: null,
             notes: null,
@@ -1457,6 +1458,9 @@ export async function updateLeadForTenant(
 
   if (input.status) {
     data.status = input.status;
+  }
+  if (input.leadType !== undefined) {
+    data.leadType = input.leadType;
   }
   if (input.notes !== undefined) {
     data.notes = input.notes;

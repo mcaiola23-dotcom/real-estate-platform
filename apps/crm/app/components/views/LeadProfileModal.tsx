@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
-import type { CrmActivity, CrmContact, CrmLead, CrmLeadStatus } from '@real-estate/types/crm';
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import type { CrmActivity, CrmContact, CrmLead, CrmLeadStatus, CrmLeadType } from '@real-estate/types/crm';
 import type { Listing } from '@real-estate/types/listings';
 import type {
   ContactDraft,
@@ -10,7 +10,7 @@ import type {
   LeadSearchSignal,
 } from '../../lib/crm-types';
 import { LEAD_STATUSES } from '../../lib/crm-types';
-import { formatDateTime } from '../../lib/crm-formatters';
+import { formatDateTime, formatTimeAgo } from '../../lib/crm-formatters';
 import {
   formatLeadSourceLabel,
   formatLeadStatusLabel,
@@ -23,7 +23,8 @@ import { PriceInterestBar } from '../shared/PriceInterestBar';
 import { ContactHistoryLog } from '../leads/ContactHistoryLog';
 import { AiLeadSummary } from '../leads/AiLeadSummary';
 import { AiNextActions } from '../leads/AiNextActions';
-import { DuplicateWarning } from '../leads/DuplicateWarning';
+// DuplicateWarning removed — revisit when duplicate merge flow is built
+// import { DuplicateWarning } from '../leads/DuplicateWarning';
 import { LeadTagInput } from '../leads/LeadTagInput';
 import { SourceAttributionChain } from '../leads/SourceAttributionChain';
 import { UnifiedTimeline } from '../leads/UnifiedTimeline';
@@ -40,8 +41,9 @@ import type { MergeFieldContext } from '../../lib/crm-templates';
 import { downloadIcsFile } from '../../lib/crm-calendar';
 import type { CrmShowing } from '@real-estate/types/crm';
 import { ShowingScheduler } from '../shared/ShowingScheduler';
-import { EscalationBanner } from '../shared/EscalationBanner';
-import { computeLeadEscalationLevel } from '@real-estate/ai/crm/escalation-engine';
+// EscalationBanner removed — was too aggressive without actionable info
+// import { EscalationBanner } from '../shared/EscalationBanner';
+// import { computeLeadEscalationLevel } from '@real-estate/ai/crm/escalation-engine';
 
 // ---------------------------------------------------------------------------
 // Tab type + icons
@@ -181,10 +183,16 @@ export function LeadProfileModal({
   const [deleting, setDeleting] = useState(false);
   const [replyContext, setReplyContext] = useState<{ threadId: string; subject: string } | null>(null);
 
-  // Escalation check — show banner for overdue leads
-  const escalation = lead.nextActionAt && lead.status !== 'won' && lead.status !== 'lost'
-    ? computeLeadEscalationLevel(lead)
-    : null;
+  // Escalation banner removed — revisit when actionable resolution flow is built
+
+  // Color-coded last contact badge
+  const lastContactColorClass = useMemo(() => {
+    if (!activeLeadLastContact) return 'crm-last-contact-none';
+    const days = (Date.now() - new Date(activeLeadLastContact).getTime()) / (1000 * 60 * 60 * 24);
+    if (days < 7) return 'crm-last-contact-recent';
+    if (days <= 28) return 'crm-last-contact-aging';
+    return 'crm-last-contact-stale';
+  }, [activeLeadLastContact]);
 
   const modalRef = useRef<HTMLElement>(null);
 
@@ -342,18 +350,27 @@ export function LeadProfileModal({
             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <h3 id="crm-lead-profile-title">{activeContact?.fullName || leadDraft.listingAddress || 'Lead Details'}</h3>
-              {lead.leadType && (
-                <span className={`crm-lead-type-badge crm-lead-type-${lead.leadType}`}>
-                  {formatLeadTypeLabel(lead.leadType)}
+              {leadDraft.leadType && (
+                <span className={`crm-lead-type-badge crm-lead-type-${leadDraft.leadType}`}>
+                  {formatLeadTypeLabel(leadDraft.leadType as CrmLeadType)}
                 </span>
               )}
             </div>
             <p className="crm-muted">
               Created {formatDateTime(lead.createdAt)} · Updated {formatDateTime(lead.updatedAt)}
-              {activeLeadLastContact ? ` · Last contact ${formatDateTime(activeLeadLastContact)}` : ' · No contact yet'}
             </p>
+            <button
+              type="button"
+              className={`crm-last-contact-badge ${lastContactColorClass}`}
+              onClick={() => setActiveTab('activity')}
+              title="View activity timeline"
+            >
+              {activeLeadLastContact ? `Last contact ${formatTimeAgo(activeLeadLastContact)}` : 'No contact yet'}
+            </button>
+          </div>
+          <div className="crm-modal-header-actions">
             {activeContact && (activeContact.phone || activeContact.email) ? (
-              <div className="crm-quick-actions" style={{ marginTop: '0.5rem' }}>
+              <div className="crm-quick-actions">
                 {activeContact.phone ? (
                   <a href={`tel:${activeContact.phone}`} className="crm-quick-action" title={`Call ${activeContact.phone}`} aria-label="Call lead">
                     {QuickPhoneIcon}
@@ -376,8 +393,6 @@ export function LeadProfileModal({
                 ) : null}
               </div>
             ) : null}
-          </div>
-          <div className="crm-modal-header-actions">
             <button
               type="button"
               className="crm-btn-secondary"
@@ -409,26 +424,7 @@ export function LeadProfileModal({
           </div>
         </header>
 
-        {escalation && escalation.level > 0 && (
-          <EscalationBanner
-            leadId={lead.id}
-            leadName={activeContact?.fullName || leadDraft.listingAddress || 'Lead'}
-            level={escalation.level}
-            daysOverdue={escalation.daysOverdue}
-            recommendation={`Follow up overdue by ${escalation.daysOverdue} day${escalation.daysOverdue !== 1 ? 's' : ''}`}
-            compact
-          />
-        )}
-
-        <DuplicateWarning
-          leadId={lead.id}
-          email={activeContact?.email ?? null}
-          phone={activeContact?.phone ?? null}
-          address={lead.listingAddress}
-          onViewLead={onViewLead}
-          dismissedIds={dismissedDuplicateIds}
-          onDismiss={onDismissDuplicate}
-        />
+        {/* Escalation banner and duplicate warning removed — revisit when actionable resolution flows are built */}
 
         {/* ── Tab Bar ── */}
         <nav className="crm-modal-tabs" aria-label="Lead profile sections">
@@ -486,7 +482,6 @@ export function LeadProfileModal({
               }
             >
               <div className="crm-chip-row">
-                <span className="crm-chip">{formatLeadTypeLabel(lead.leadType)}</span>
                 <span className="crm-chip">{formatLeadSourceLabel(lead.source)}</span>
                 <span className={`crm-status-badge crm-status-${leadDraft.status}`}>
                   {formatLeadStatusLabel(leadDraft.status)}
@@ -518,6 +513,21 @@ export function LeadProfileModal({
                     {LEAD_STATUSES.map((status) => (
                       <option key={status} value={status}>
                         {formatLeadStatusLabel(status)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="crm-field">
+                  Lead Type
+                  <select
+                    value={leadDraft.leadType}
+                    onChange={(event) => {
+                      onSetLeadDraftField(lead.id, 'leadType', event.target.value);
+                    }}
+                  >
+                    {(['buyer', 'seller', 'investor', 'renter', 'other'] as const).map((type) => (
+                      <option key={type} value={type}>
+                        {formatLeadTypeLabel(type)}
                       </option>
                     ))}
                   </select>

@@ -1,4 +1,4 @@
-import type { CrmLeadStatus } from '@real-estate/types/crm';
+import type { CrmLeadStatus, CrmLeadType } from '@real-estate/types/crm';
 import type { TenantContext } from '@real-estate/types';
 import { createActivityForTenant, deleteLeadForTenant, getLeadByIdForTenant, updateLeadForTenant } from '@real-estate/db/crm';
 import { NextResponse } from 'next/server';
@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { requireTenantContext } from '../../lib/tenant-route';
 
 const VALID_STATUSES: Set<CrmLeadStatus> = new Set(['new', 'qualified', 'nurturing', 'won', 'lost']);
+const VALID_LEAD_TYPES: Set<CrmLeadType> = new Set(['buyer', 'seller', 'investor', 'renter', 'other', 'website_lead', 'valuation_request']);
 
 interface RouteContext {
   params: Promise<{
@@ -142,6 +143,7 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
     const payload = (await request.json().catch(() => null)) as
       | {
           status?: string;
+          leadType?: string;
           notes?: string | null;
           timeframe?: string | null;
           listingAddress?: string | null;
@@ -183,6 +185,10 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       payload.status && VALID_STATUSES.has(payload.status as CrmLeadStatus)
         ? (payload.status as CrmLeadStatus)
         : undefined;
+    const leadType =
+      payload.leadType && VALID_LEAD_TYPES.has(payload.leadType as CrmLeadType)
+        ? (payload.leadType as CrmLeadType)
+        : undefined;
     const notes = toNullableString(payload.notes);
     const timeframe = toNullableString(payload.timeframe);
     const listingAddress = toNullableString(payload.listingAddress);
@@ -212,6 +218,7 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
 
     if (
       status === undefined &&
+      leadType === undefined &&
       notes === undefined &&
       timeframe === undefined &&
       listingAddress === undefined &&
@@ -248,6 +255,7 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
 
     const updatedLead = await deps.updateLeadForTenant(tenantContext.tenantId, leadId, {
       status,
+      leadType,
       notes,
       timeframe,
       listingAddress,
@@ -291,6 +299,16 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
         contactId: updatedLead.contactId,
         summary: `Lead status updated to ${status}`,
         metadataJson: JSON.stringify({ status }),
+      });
+    }
+
+    if (leadType) {
+      await deps.createActivityForTenant(tenantContext.tenantId, {
+        activityType: 'lead_type_changed',
+        leadId,
+        contactId: updatedLead.contactId,
+        summary: `Lead type updated to ${leadType}`,
+        metadataJson: JSON.stringify({ leadType }),
       });
     }
 

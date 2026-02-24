@@ -39,9 +39,16 @@ export function normalizeOptionalString(value: string | null | undefined): strin
   return trimmed.length > 0 ? trimmed : null;
 }
 
+export function classifyLeadType(raw: string): string {
+  if (raw === 'website_lead') return 'buyer';
+  if (raw === 'valuation_request') return 'seller';
+  return raw;
+}
+
 export function buildLeadDraft(lead: CrmLead): LeadDraft {
   return {
     status: lead.status,
+    leadType: classifyLeadType(lead.leadType),
     notes: lead.notes ?? '',
     timeframe: lead.timeframe ?? '',
     listingAddress: lead.listingAddress ?? '',

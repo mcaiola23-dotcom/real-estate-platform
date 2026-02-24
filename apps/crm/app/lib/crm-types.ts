@@ -17,6 +17,7 @@ export interface WorkspaceToast {
 
 export interface LeadDraft {
   status: CrmLeadStatus;
+  leadType: string;
   notes: string;
   timeframe: string;
   listingAddress: string;

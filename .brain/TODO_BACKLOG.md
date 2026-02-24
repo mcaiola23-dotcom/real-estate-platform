@@ -140,6 +140,11 @@
 - [x] Phase 9H: AI Conversation Insights UI (#54) — ConversationInsights component with extract-from-API, checkbox approval list, confidence badges. Wired into ContactHistoryLog for post-log and per-entry extraction. (Completed 2026-02-22, session 8.)
 - [x] Phase 9I: Confirmed AI Lead Scoring Explanations (#50) and AI Lead Summaries (#53) already fully built and integrated. (Verified 2026-02-22, session 8.)
 - [x] Remaining CRM polish: #62 Mobile-First Actions, #63 Offline Note Capture, #65 MLS/IDX Feed Status, #66 Document Management, #61 Export. (Completed 2026-02-22, session 10.)
+- [x] Lead Profile Modal Round 2 Polish: leadType editability (full-stack DB→API→workspace→modal), auto-classification of legacy types, color-coded lead type badges, last-contact clickable badge with color-matched hover, delete button alignment. (Completed 2026-02-24, session 17.)
+- [x] Remove EscalationBanner from modal (aggressive, no actionable resolution). Component retained for future use. (Completed 2026-02-24, session 17.)
+- [x] Remove DuplicateWarning from modal (no merge flow). Component retained for future use. (Completed 2026-02-24, session 17.)
+- [ ] Build duplicate lead merge/resolution flow — DuplicateWarning component exists, re-enable in modal when merge UX is built.
+- [ ] Build actionable escalation resolution flow — EscalationBanner component exists, re-enable when it provides actionable steps beyond "X days overdue."
 
 ## Control Plane Roadmap (Longer Term)
 - [x] Improve Admin mutation error transparency: surface actionable backend error messages in UI (RBAC denial, duplicate slug/domain, validation failures) with field-level hints. (Implemented 2026-02-18 in admin onboarding/domain/settings flows with scoped next-step guidance.)

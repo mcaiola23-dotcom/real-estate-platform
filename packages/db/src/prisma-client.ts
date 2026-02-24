@@ -167,6 +167,16 @@ export async function getPrismaClient(): Promise<any | null> {
         return null;
       }
     })();
+
+    // If initialization resolved to null, clear the cached promise so subsequent
+    // calls can retry. This prevents a transient failure (e.g. engine not yet
+    // generated, DATABASE_URL not yet set) from permanently disabling the client
+    // for the lifetime of the process.
+    _g.__realEstatePrismaPromise.then((result) => {
+      if (result === null) {
+        _g.__realEstatePrismaPromise = null;
+      }
+    });
   }
 
   return _g.__realEstatePrismaPromise;

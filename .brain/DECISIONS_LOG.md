@@ -793,3 +793,21 @@
 ### D-185: Wire CrmListingModal action buttons with tab-switching callbacks
 **Decision**: Add `onScheduleShowing` and `onShareWithLead` callbacks to CrmListingModal. Schedule Showing closes the listing modal and switches to the Activity tab. Share with Lead closes and switches to Communication tab with templates open. Buttons are disabled when callbacks aren't provided.
 **Reason**: The listing modal action buttons were previously non-functional placeholders. Tab-switching provides a natural flow from viewing a listing to taking action on it without requiring the user to manually navigate.
+
+## 2026-02-24
+
+### D-186: Make leadType editable full-stack with auto-classification
+**Decision**: Add `leadType` to `UpdateCrmLeadInput`, PATCH API route, workspace draft flow, and modal dropdown. Auto-classify `website_lead` → `buyer` and `valuation_request` → `seller` in `buildLeadDraft()` via `classifyLeadType()`, and in the ingestion pipeline. Dropdown shows only 5 user-facing types (buyer/seller/investor/renter/other).
+**Reason**: `leadType` was immutable after creation. Website/valuation leads arrived with source-based types that didn't reflect buyer/seller intent. Agents need to reclassify leads without database intervention.
+
+### D-187: Remove EscalationBanner from Lead Profile Modal
+**Decision**: Remove `EscalationBanner` and `computeLeadEscalationLevel` from LeadProfileModal. Components and engine remain in codebase for future use.
+**Reason**: The "ACTION REQUIRED — X days overdue" banner was aggressive, took significant visual space, and provided no actionable resolution path. Revisit when an actionable escalation resolution flow is built.
+
+### D-188: Remove DuplicateWarning from Lead Profile Modal
+**Decision**: Remove `DuplicateWarning` component rendering from LeadProfileModal. Component, CSS, and DB helper remain in codebase for future use.
+**Reason**: The duplicate notification showed matches but had no merge/resolution functionality. It added visual clutter without enabling agents to resolve the duplicates. Revisit when a duplicate merge flow is built.
+
+### D-189: Auto-classify legacy lead types in draft to prevent false dirty flags
+**Decision**: `classifyLeadType()` is applied in `buildLeadDraft()`, `hasUnsavedLeadChange()`, and `updateLead()` so that legacy `website_lead`/`valuation_request` values are normalized before comparison. This prevents the "Discard unsaved changes?" warning from firing on unmodified leads.
+**Reason**: Without normalization, the draft value (`buyer`) would differ from the DB value (`website_lead`), causing every modal close to trigger the unsaved-changes warning even when no changes were made.

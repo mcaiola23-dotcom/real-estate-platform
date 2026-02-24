@@ -7064,9 +7064,9 @@ textarea:focus {
   border-left: 3px solid #c49a3c;
   border-radius: 6px;
   background: rgba(196, 154, 60, 0.06);
-  padding: 0;
+  padding: 0 0 2px;
   margin: 8px 0;
-  overflow: hidden;
+  overflow: visible;
   animation: crmDupSlide 0.2s ease-out;
 }
 
@@ -7079,7 +7079,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 10px;
+  padding: 8px 12px;
   border-bottom: 1px solid rgba(196, 154, 60, 0.15);
 }
 
@@ -7121,7 +7121,7 @@ textarea:focus {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 8px 12px;
 }
 
 .crm-dup-warning-item + .crm-dup-warning-item {
@@ -7141,9 +7141,8 @@ textarea:focus {
   font-size: var(--crm-text-xs);
   font-weight: 600;
   color: var(--crm-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .crm-dup-warning-status {
@@ -7160,6 +7159,7 @@ textarea:focus {
   font-size: 0.64rem;
   color: var(--crm-muted);
   font-style: italic;
+  width: 100%;
 }
 
 .crm-dup-warning-view {
@@ -12639,20 +12639,27 @@ textarea:focus {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0.5rem 0.85rem;
+  padding: 0.55rem 0.95rem;
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--crm-muted);
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
+  border-radius: 0.35rem 0.35rem 0 0;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
   white-space: nowrap;
 }
 
 .crm-modal-tab:hover {
-  color: var(--crm-text-secondary);
+  color: var(--crm-muted);
+  background: var(--crm-hover-soft);
+  border-bottom-color: var(--crm-border);
+}
+
+.crm-modal-tab:hover svg {
+  opacity: 0.8;
 }
 
 .crm-modal-tab.is-active {
@@ -12685,7 +12692,6 @@ textarea:focus {
   border: 1px solid var(--crm-border-subtle);
   border-radius: 0.6rem;
   background: var(--crm-surface-alt);
-  overflow: hidden;
 }
 
 .crm-collapsible-section__header {
@@ -12699,6 +12705,12 @@ textarea:focus {
   cursor: pointer;
   transition: background 0.12s ease;
   text-align: left;
+  border-radius: calc(0.6rem - 1px) calc(0.6rem - 1px) 0 0;
+}
+
+/* When collapsed (no body visible), header gets full border-radius */
+.crm-collapsible-section:not(.is-open) .crm-collapsible-section__header {
+  border-radius: calc(0.6rem - 1px);
 }
 
 .crm-collapsible-section__header:hover {
@@ -12754,6 +12766,7 @@ textarea:focus {
   padding: 0 0.7rem 0.65rem;
   display: grid;
   gap: 0.5rem;
+  border-radius: 0 0 calc(0.6rem - 1px) calc(0.6rem - 1px);
 }
 
 /* — Typography hierarchy — */
@@ -13087,6 +13100,10 @@ textarea:focus {
   border-bottom-color: var(--crm-border);
 }
 
+[data-theme="dark"] .crm-modal-tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 [data-theme="dark"] .crm-modal-tab.is-active {
   border-bottom-color: var(--crm-accent);
 }
@@ -13127,40 +13144,56 @@ textarea:focus {
 .crm-lead-type-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.15rem 0.55rem;
+  padding: 0.2rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
   line-height: 1.4;
+  border: 1px solid transparent;
 }
 
 .crm-lead-type-buyer {
   color: #1d4ed8;
   background: #eaf2ff;
+  border-color: rgba(29, 78, 216, 0.2);
 }
 
 .crm-lead-type-seller {
   color: #15803d;
   background: #edf9f0;
+  border-color: rgba(21, 128, 61, 0.2);
 }
 
 .crm-lead-type-renter {
   color: #7c3aed;
   background: #f3f0ff;
+  border-color: rgba(124, 58, 237, 0.2);
 }
 
 .crm-lead-type-investor {
   color: #b45309;
   background: #fff6ea;
+  border-color: rgba(180, 83, 9, 0.2);
 }
 
-.crm-lead-type-other,
-.crm-lead-type-website_lead,
-.crm-lead-type-valuation_request {
+.crm-lead-type-other {
   color: var(--crm-text-secondary, #6b6560);
   background: var(--crm-surface-alt, #f5f3f0);
+  border-color: rgba(107, 101, 96, 0.2);
+}
+
+.crm-lead-type-website_lead {
+  color: #0369a1;
+  background: #e8f4fc;
+  border-color: rgba(3, 105, 161, 0.2);
+}
+
+.crm-lead-type-valuation_request {
+  color: #9333ea;
+  background: #f5f0ff;
+  border-color: rgba(147, 51, 234, 0.2);
 }
 
 [data-theme="dark"] .crm-lead-type-buyer {
@@ -13183,11 +13216,107 @@ textarea:focus {
   background: rgba(180, 83, 9, 0.15);
 }
 
-[data-theme="dark"] .crm-lead-type-other,
-[data-theme="dark"] .crm-lead-type-website_lead,
-[data-theme="dark"] .crm-lead-type-valuation_request {
+[data-theme="dark"] .crm-lead-type-other {
   color: var(--crm-text-secondary);
   background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .crm-lead-type-website_lead {
+  color: #7dd3fc;
+  background: rgba(3, 105, 161, 0.15);
+  border-color: rgba(3, 105, 161, 0.25);
+}
+
+[data-theme="dark"] .crm-lead-type-valuation_request {
+  color: #d8b4fe;
+  background: rgba(147, 51, 234, 0.15);
+  border-color: rgba(147, 51, 234, 0.25);
+}
+
+/* =========================================================================
+   Last Contact Badge — color-coded pill in modal header
+   ========================================================================= */
+
+.crm-last-contact-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1.4;
+  margin-top: 0.35rem;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.crm-last-contact-recent {
+  color: #15803d;
+  background: #edf9f0;
+}
+.crm-last-contact-recent:hover {
+  background: #dcf2e4;
+}
+
+.crm-last-contact-aging {
+  color: #a16207;
+  background: #fef9c3;
+}
+.crm-last-contact-aging:hover {
+  background: #fef0a0;
+}
+
+.crm-last-contact-stale {
+  color: #dc2626;
+  background: #fef2f2;
+}
+.crm-last-contact-stale:hover {
+  background: #fee4e4;
+}
+
+.crm-last-contact-none {
+  color: var(--crm-muted);
+  background: var(--crm-surface-alt);
+}
+.crm-last-contact-none:hover {
+  background: var(--crm-border, #e8e4df);
+}
+
+[data-theme="dark"] .crm-last-contact-recent {
+  color: #6ee7a0;
+  background: rgba(21, 128, 61, 0.15);
+}
+[data-theme="dark"] .crm-last-contact-recent:hover {
+  background: rgba(21, 128, 61, 0.25);
+}
+
+[data-theme="dark"] .crm-last-contact-aging {
+  color: #fbbf24;
+  background: rgba(161, 98, 7, 0.15);
+}
+[data-theme="dark"] .crm-last-contact-aging:hover {
+  background: rgba(161, 98, 7, 0.25);
+}
+
+[data-theme="dark"] .crm-last-contact-stale {
+  color: #f87171;
+  background: rgba(220, 38, 38, 0.15);
+}
+[data-theme="dark"] .crm-last-contact-stale:hover {
+  background: rgba(220, 38, 38, 0.25);
+}
+
+[data-theme="dark"] .crm-last-contact-none {
+  color: var(--crm-muted);
+  background: rgba(255, 255, 255, 0.06);
+}
+[data-theme="dark"] .crm-last-contact-none:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* =========================================================================
@@ -13273,20 +13402,25 @@ textarea:focus {
    ========================================================================= */
 
 .crm-btn-destructive {
-  padding: 0.3rem 0.6rem;
-  border: 1px solid transparent;
-  border-radius: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0.4rem 0.85rem;
+  border: none;
+  border-radius: 0.5rem;
   background: transparent;
   color: #dc2626;
-  font-size: 0.78rem;
+  font-size: var(--crm-text-sm);
+  font-weight: 600;
   font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
 .crm-btn-destructive:hover {
-  border-color: #dc2626;
-  background: rgba(220, 38, 38, 0.06);
+  background: rgba(220, 38, 38, 0.08);
 }
 
 .crm-btn-destructive:disabled {
@@ -13299,8 +13433,7 @@ textarea:focus {
 }
 
 [data-theme="dark"] .crm-btn-destructive:hover {
-  border-color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
+  background: rgba(248, 113, 113, 0.12);
 }
 
 /* =========================================================================

@@ -45,7 +45,7 @@ export function DuplicateWarning({ leadId, email, phone, address, onViewLead, di
           const data = await res.json();
           setDuplicates(data.duplicates ?? []);
         }
-      } catch { /* silent */ }
+      } catch (err) { console.warn('[DuplicateWarning]', err); }
       if (!cancelled) setLoading(false);
     }
     check();

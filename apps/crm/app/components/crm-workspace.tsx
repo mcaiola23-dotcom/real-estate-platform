@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import type { CrmActivity, CrmContact, CrmLead, CrmLeadStatus } from '@real-estate/types/crm';
+import type { CrmActivity, CrmContact, CrmLead, CrmLeadStatus, CrmLeadType } from '@real-estate/types/crm';
 import Image from 'next/image';
 
 import {
@@ -53,6 +53,7 @@ import {
   formatDateTime,
   formatPriceRange,
   formatTimeAgo,
+  classifyLeadType,
   getLeadContactLabel,
   getStatusGlyph,
   getTimeGreeting,
@@ -316,6 +317,7 @@ export function CrmWorkspace({
       const draft = getLeadDraft(lead);
       return (
         draft.status !== lead.status ||
+        draft.leadType !== classifyLeadType(lead.leadType) ||
         normalizeOptionalNotes(draft.notes) !== normalizeOptionalNotes(lead.notes) ||
         normalizeOptionalString(draft.timeframe) !== normalizeOptionalString(lead.timeframe) ||
         normalizeOptionalString(draft.listingAddress) !== normalizeOptionalString(lead.listingAddress) ||
@@ -534,25 +536,50 @@ export function CrmWorkspace({
       'showing_scheduled',
     ]);
 
+    // Build reverse map: contactId → leadId[] so contact-linked activities update leads
+    const leadIdsByContactId = new Map<string, string[]>();
+    for (const lead of leads) {
+      if (lead.contactId) {
+        const existing = leadIdsByContactId.get(lead.contactId);
+        if (existing) {
+          existing.push(lead.id);
+        } else {
+          leadIdsByContactId.set(lead.contactId, [lead.id]);
+        }
+      }
+    }
+
     const map = new Map<string, string>();
 
-    for (const activity of activities) {
-      if (!activity.leadId) {
-        continue;
+    const updateMap = (leadId: string, occurredAt: string) => {
+      const existing = map.get(leadId);
+      if (!existing || new Date(occurredAt).getTime() > new Date(existing).getTime()) {
+        map.set(leadId, occurredAt);
       }
+    };
 
+    for (const activity of activities) {
       if (!LAST_CONTACT_ACTIVITY_TYPES.has(activity.activityType)) {
         continue;
       }
 
-      const existing = map.get(activity.leadId);
-      if (!existing || new Date(activity.occurredAt).getTime() > new Date(existing).getTime()) {
-        map.set(activity.leadId, activity.occurredAt);
+      if (activity.leadId) {
+        updateMap(activity.leadId, activity.occurredAt);
+      }
+
+      // Also update leads linked via contactId
+      if (activity.contactId) {
+        const linkedLeadIds = leadIdsByContactId.get(activity.contactId);
+        if (linkedLeadIds) {
+          for (const linkedLeadId of linkedLeadIds) {
+            updateMap(linkedLeadId, activity.occurredAt);
+          }
+        }
       }
     }
 
     return map;
-  }, [activities]);
+  }, [activities, leads]);
 
   const unlinkedBehaviorCount = useMemo(() => {
     return activities.filter((activity) => {
@@ -981,6 +1008,7 @@ export function CrmWorkspace({
 
     const payload: {
       status?: CrmLeadStatus;
+      leadType?: CrmLeadType;
       notes?: string | null;
       timeframe?: string | null;
       listingAddress?: string | null;
@@ -1005,6 +1033,10 @@ export function CrmWorkspace({
 
     if (draft.status !== lead.status) {
       payload.status = draft.status;
+    }
+
+    if (draft.leadType !== classifyLeadType(lead.leadType)) {
+      payload.leadType = draft.leadType as CrmLeadType;
     }
 
     if (normalizeOptionalNotes(draft.notes) !== normalizeOptionalNotes(lead.notes)) {
@@ -1136,6 +1168,7 @@ export function CrmWorkspace({
       baths: payload.baths === undefined ? lead.baths : payload.baths,
       sqft: payload.sqft === undefined ? lead.sqft : payload.sqft,
       status: payload.status === undefined ? lead.status : payload.status,
+      leadType: payload.leadType === undefined ? lead.leadType : payload.leadType,
       nextActionAt: payload.nextActionAt === undefined ? lead.nextActionAt : payload.nextActionAt,
       nextActionNote: payload.nextActionNote === undefined ? lead.nextActionNote : payload.nextActionNote,
       priceMin: payload.priceMin === undefined ? lead.priceMin : payload.priceMin,
