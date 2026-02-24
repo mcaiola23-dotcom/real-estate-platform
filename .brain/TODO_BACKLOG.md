@@ -194,6 +194,36 @@
 - [x] Sprint 8: Client Portal (HMAC tokens), MLS Property Cards, E-Signature Panel. DB model: ESignatureRequest.
 - [ ] Generate and apply Prisma migrations for 8 new models (Showing, CommissionSetting, Commission, Campaign, CampaignEnrollment, AdSpend, TeamMember, ESignatureRequest) when targeting production DB.
 
+## CRM Lead Profile Modal Redesign (Audit 2026-02-23, Session 14)
+- [ ] Add tabbed navigation within the modal (Overview / Communication / Intelligence / Activity tabs) to break scroll-fatigue.
+- [ ] Restructure "Lead + Contact Details" section into logical groups: Contact Info, Property Preferences, Follow-Up, Notes.
+- [ ] Unify the three "next action" concepts (date/note fields, timeframe field, SmartReminderForm) into one clear widget.
+- [ ] Move messaging tools (Templates, AI Composer, Gmail, Email History) out of "Lead Intelligence" into "Communication" tab.
+- [ ] Auto-collapse AI sections behind expandable headers (like SmartReminderForm pattern).
+- [ ] Add "Link Contact" affordance when no contact exists (instead of just disabled fields).
+- [ ] Combine Save Lead + Save Contact into a single "Save Changes" action (or auto-save with debounce).
+- [ ] Make listing references in UnifiedTimeline clickable (opens CRM Listing Modal).
+- [ ] Make Suggested Properties cards previewable (opens CRM Listing Modal).
+- [ ] Add keyboard focus trap for modal accessibility.
+- [ ] Replace emoji icons (📞 ✉️ 💬 📅) with consistent SVG icons.
+- [ ] Increase modal padding and section gaps to reduce visual density.
+- [ ] Remove redundant nested borders — use spacing/background differentiation instead of double-boxing.
+- [ ] Add visual hierarchy to section headings (primary vs. secondary).
+- [ ] Add section-level expand/collapse for less-used sections (Voice Notes, Showings).
+- [ ] Fix MlsPropertyCard naming/labeling — it shows lead preferences, not an MLS listing.
+- [ ] Rename "Next Action" field (timeframe) to clarify its purpose vs. the date/note fields.
+
+## CRM Listing Modal Integration (New Feature — 2026-02-23)
+- [ ] Create `CrmListingModal` wrapper in `apps/crm` using shared listing types from `packages/types/src/listings.ts`.
+- [ ] Port photo gallery + lightbox from `apps/web` ListingModal (no cross-app import — rewrite in CRM context).
+- [ ] Replace agent branding/inquiry CTA with CRM actions: Schedule Showing, Share with Client, Assign to Lead.
+- [ ] Add lead context header showing which lead is viewing this listing.
+- [ ] Add agent notes/annotations capability for listing-in-context-of-lead.
+- [ ] Show listing engagement data if lead has viewed/favorited this listing.
+- [ ] Wire clickable listing references throughout Lead Profile Modal (timeline events, suggested properties, MLS cards).
+- [ ] Add "Copy Listing Link" and "Email Listing to Lead" share actions integrated with CRM communication tools.
+- [ ] Tenant-scope all listing data (remove hardcoded brand images).
+
 ## AI Roadmap
 - [x] Create prompt registry and versioning. (Completed — `PROMPT_VERSIONS` registry in `packages/ai/src/prompts/crm-prompts.ts` with per-prompt version tracking.)
 - [x] Implement AI Market Digest (#55) — Dashboard market analytics widget with KPI strip, narrative, highlights, and agent takeaway. Rule-based baseline + AI enhancement. (Completed 2026-02-22.)

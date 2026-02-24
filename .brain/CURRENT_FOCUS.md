@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-CRM Elite Overhaul is fully implemented (8 sprints, ~35 new files, ~3,700 lines of changes). 89/89 CRM route tests + 4/4 workspace tests passing, 0 type errors. All CRM AI roadmap items remain complete. Admin onboarding telemetry work is unaffected. Next non-CRM candidate: AI content generation pipeline for website onboarding.
+Lead Profile Modal redesign and Listing Modal CRM integration. A comprehensive UI/UX audit was completed (Session 14, 2026-02-23) identifying 20 issues across layout, usability, design, and integration. CRM Elite Overhaul remains uncommitted (~3,700 lines). All CRM AI roadmap items remain complete. Admin onboarding work is unaffected.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -62,11 +62,11 @@ CRM Elite Overhaul is fully implemented (8 sprints, ~35 new files, ~3,700 lines 
 56. CRM remaining polish items are now fully implemented: #62 Mobile-First Actions (`MobileActionBar.tsx` with 4 quick actions, responsive CSS, 44px touch targets), #63 Offline Note Capture (`use-offline-queue.ts` with localStorage queue + background sync + amber offline badge), #65 MLS/IDX Feed Status (`FeedStatusChip.tsx` + factory-pattern feed-status API route), #66 Document Management (enhanced `DocumentsPane` with status cycling/checklists/progress + PATCH document route), #61 Export & Reporting (`crm-export.ts` with CSV/print utilities + Lead Tracker export button).
 
 ## Immediate Next Steps
-- CRM Elite Overhaul complete — state management, agent features, design system, AI differentiators, infrastructure, and client-facing features all implemented.
-- Commit the overhaul (~3,700 lines across 49 files).
-- Next candidate: AI content generation pipeline for website onboarding, OR manual CRM feature walkthrough.
+- Lead Profile Modal redesign (17 layout/usability/design items from audit) — see `TODO_BACKLOG.md` "CRM Lead Profile Modal Redesign" section.
+- CRM Listing Modal integration (9 items) — see `TODO_BACKLOG.md` "CRM Listing Modal Integration" section.
+- CRM Elite Overhaul still needs commit (~3,700 lines across 49 files).
+- AI content generation pipeline for website onboarding remains next non-CRM candidate after modal work.
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes.
-- Keep manual browser click-through deferred until buildout stabilizes (per current user override).
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.

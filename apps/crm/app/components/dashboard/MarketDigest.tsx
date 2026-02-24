@@ -1,6 +1,7 @@
 'use client';
 
 import { memo, useCallback, useEffect, useState } from 'react';
+import { Sparkles } from 'lucide-react';
 
 interface MarketStats {
   totalActive: number;
@@ -54,7 +55,7 @@ export const MarketDigest = memo(function MarketDigest() {
       <section className="crm-market-digest crm-market-digest--loading">
         <div className="crm-market-digest__header">
           <h3 className="crm-market-digest__title">
-            <span className="crm-ai-glyph">◆</span> Market Digest
+            <Sparkles size={14} className="crm-ai-glyph" /> Market Digest
           </h3>
         </div>
         <div className="crm-market-digest__shimmer" />
@@ -67,7 +68,7 @@ export const MarketDigest = memo(function MarketDigest() {
       <section className="crm-market-digest crm-market-digest--error">
         <div className="crm-market-digest__header">
           <h3 className="crm-market-digest__title">
-            <span className="crm-ai-glyph">◆</span> Market Digest
+            <Sparkles size={14} className="crm-ai-glyph" /> Market Digest
           </h3>
           <button className="crm-btn crm-btn-ghost crm-btn-sm" onClick={fetchDigest}>
             Retry
@@ -82,17 +83,17 @@ export const MarketDigest = memo(function MarketDigest() {
   const fmtPrice = (n: number) => `$${n.toLocaleString()}`;
 
   return (
-    <section className="crm-market-digest">
+    <section className="crm-market-digest crm-panel--ai-accent">
       <div className="crm-market-digest__header">
         <h3 className="crm-market-digest__title">
-          <span className="crm-ai-glyph">◆</span> Weekly Market Digest
+          <Sparkles size={14} className="crm-ai-glyph" /> Weekly Market Digest
         </h3>
         <div className="crm-market-digest__actions">
           <button
             className="crm-btn crm-btn-ghost crm-btn-sm"
             onClick={() => setCollapsed(!collapsed)}
           >
-            {collapsed ? 'Expand' : 'Collapse'}
+            {collapsed ? 'Show' : 'Hide'}
           </button>
           <button className="crm-btn crm-btn-ghost crm-btn-sm" onClick={fetchDigest}>
             Refresh

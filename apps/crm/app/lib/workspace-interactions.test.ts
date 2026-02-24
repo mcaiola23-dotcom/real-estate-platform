@@ -15,8 +15,7 @@ test('resolveViewFromNav maps navigation to stable workspace views', () => {
   assert.equal(resolveViewFromNav('pipeline'), 'pipeline');
   assert.equal(resolveViewFromNav('leads'), 'leads');
   assert.equal(resolveViewFromNav('settings'), 'settings');
-  assert.equal(resolveViewFromNav('contacts'), 'dashboard');
-  assert.equal(resolveViewFromNav('activity'), 'dashboard');
+  assert.equal(resolveViewFromNav('activity'), 'activity');
 });
 
 test('doesStatusMatchPreset gates lead statuses per table preset', () => {

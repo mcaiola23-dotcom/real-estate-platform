@@ -1,11 +1,12 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import type { CrmLead } from '@real-estate/types/crm';
 
 interface RevenuePipelineProps {
   leads: CrmLead[];
   commissionRate?: number;
+  onClickTotal?: () => void;
 }
 
 interface PipelineStage {
@@ -31,6 +32,7 @@ function formatCurrency(amount: number): string {
 export const RevenuePipeline = memo(function RevenuePipeline({
   leads,
   commissionRate = 0.03,
+  onClickTotal,
 }: RevenuePipelineProps) {
   const statusOrder = ['new', 'qualified', 'nurturing'];
   const statusLabels: Record<string, string> = {
@@ -53,13 +55,20 @@ export const RevenuePipeline = memo(function RevenuePipeline({
   const grandTotal = stages.reduce((sum, s) => sum + s.value, 0);
   const maxValue = Math.max(1, ...stages.map((s) => s.value));
   const commissionTotal = grandTotal * commissionRate;
+  const [hoveredStage, setHoveredStage] = useState<string | null>(null);
 
   return (
     <div className="crm-revenue">
       <div className="crm-revenue__header">
         <h3 className="crm-revenue__title">Revenue Pipeline</h3>
         <div className="crm-revenue__totals">
-          <span className="crm-revenue__grand">{formatCurrency(grandTotal)}</span>
+          {onClickTotal ? (
+            <button type="button" className="crm-revenue__grand crm-revenue__grand--clickable" onClick={onClickTotal}>
+              {formatCurrency(grandTotal)}
+            </button>
+          ) : (
+            <span className="crm-revenue__grand">{formatCurrency(grandTotal)}</span>
+          )}
           <span className="crm-revenue__commission">
             Est. Commission: {formatCurrency(commissionTotal)}
           </span>
@@ -71,7 +80,12 @@ export const RevenuePipeline = memo(function RevenuePipeline({
           const pct = (stage.value / maxValue) * 100;
           const commission = stage.value * commissionRate;
           return (
-            <div key={stage.key} className="crm-revenue__bar-row">
+            <div
+              key={stage.key}
+              className="crm-revenue__bar-row"
+              onMouseEnter={() => setHoveredStage(stage.key)}
+              onMouseLeave={() => setHoveredStage(null)}
+            >
               <span className="crm-revenue__bar-label">{stage.label}</span>
               <div className="crm-revenue__bar-track">
                 <div
@@ -84,6 +98,14 @@ export const RevenuePipeline = memo(function RevenuePipeline({
                 <span className="crm-revenue__bar-commission">{formatCurrency(commission)}</span>
               </div>
               <span className="crm-revenue__bar-count">{stage.count}</span>
+              {hoveredStage === stage.key && (
+                <div className="crm-revenue__tooltip">
+                  <strong>{stage.label}</strong>
+                  <span>{stage.count} leads · {formatCurrency(stage.value)} total</span>
+                  <span>Commission: {formatCurrency(commission)}</span>
+                  <span>{grandTotal > 0 ? Math.round((stage.value / grandTotal) * 100) : 0}% of pipeline</span>
+                </div>
+              )}
             </div>
           );
         })}

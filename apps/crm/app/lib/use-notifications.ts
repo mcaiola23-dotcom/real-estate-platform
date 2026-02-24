@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { CrmActivity, CrmContact, CrmLead } from '@real-estate/types/crm';
 
 export interface CrmNotification {
@@ -14,6 +14,7 @@ interface UseNotificationsParams {
   leads: CrmLead[];
   activities: CrmActivity[];
   contactById: Map<string, CrmContact>;
+  tenantId?: string;
 }
 
 function getLeadName(lead: CrmLead, contactById: Map<string, CrmContact>): string {
@@ -24,8 +25,42 @@ function getLeadName(lead: CrmLead, contactById: Map<string, CrmContact>): strin
   return lead.listingAddress || 'Lead';
 }
 
-export function useNotifications({ leads, activities, contactById }: UseNotificationsParams) {
-  const notifications = useMemo<CrmNotification[]>(() => {
+export function useNotifications({ leads, activities, contactById, tenantId }: UseNotificationsParams) {
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined' || !tenantId) return new Set();
+    try {
+      const raw = window.localStorage.getItem(`crm.dismissed-notifs.${tenantId}`);
+      return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  const persistDismissed = useCallback((ids: Set<string>) => {
+    if (!tenantId) return;
+    try {
+      window.localStorage.setItem(`crm.dismissed-notifs.${tenantId}`, JSON.stringify([...ids]));
+    } catch { /* ignore */ }
+  }, [tenantId]);
+
+  const dismissNotification = useCallback((id: string) => {
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      persistDismissed(next);
+      return next;
+    });
+  }, [persistDismissed]);
+
+  const clearAllNotifications = useCallback(() => {
+    setDismissedIds((prev) => {
+      const next = new Set([...prev, ...allNotifications.map((n) => n.id)]);
+      persistDismissed(next);
+      return next;
+    });
+  }, [persistDismissed]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const allNotifications = useMemo<CrmNotification[]>(() => {
     const items: CrmNotification[] = [];
     const now = new Date();
 
@@ -77,7 +112,11 @@ export function useNotifications({ leads, activities, contactById }: UseNotifica
     return items;
   }, [leads, activities, contactById]);
 
+  const notifications = useMemo(() => {
+    return allNotifications.filter((n) => !dismissedIds.has(n.id));
+  }, [allNotifications, dismissedIds]);
+
   const unreadCount = notifications.length;
 
-  return { notifications, unreadCount };
+  return { notifications, unreadCount, dismissNotification, clearAllNotifications };
 }

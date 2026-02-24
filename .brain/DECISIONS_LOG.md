@@ -742,3 +742,12 @@
 ### D-173: CRM uses 8 new Prisma models for Elite Overhaul features
 **Decision**: Add Prisma models: Showing, CommissionSetting, Commission, Campaign, CampaignEnrollment, AdSpend, TeamMember, ESignatureRequest. All tenant-scoped with cascade delete on tenant. Composite indexes on high-query-volume paths.
 **Reason**: Each model maps to a distinct CRM feature area (showings, commissions, campaigns, team, ad spend, e-signatures). Follows existing patterns: UUID primary keys, tenant relation with cascade, timestamp fields, optional foreign keys with SetNull.
+
+## 2026-02-23 (Session 14)
+### D-174: Lead Profile Modal needs tabbed navigation and section restructure
+**Decision**: The Lead Profile Modal audit identified that the single-scroll layout with ~15+ sections needs tabbed navigation (Overview / Communication / Intelligence / Activity) to reduce scroll fatigue and improve usability. The three separate "next action" concepts (inline date/note fields, timeframe field, SmartReminderForm) should be unified. Messaging tools should move out of "Lead Intelligence" into a "Communication" tab.
+**Reason**: The modal currently packs all lead information into one scrollable panel. Users cannot quickly navigate to what they need. The mixed concerns (contact details, property preferences, AI scoring, messaging, scheduling, voice notes, timeline) create cognitive overload. Tabbed navigation is standard in CRM products (Salesforce, HubSpot) for record detail views.
+
+### D-175: Listing Modal integration into CRM requires shared types, not cross-app imports
+**Decision**: Integrate the agent website's `ListingModal` into the CRM by creating a `CrmListingModal` wrapper in `apps/crm` that reuses shared listing types from `packages/types/src/listings.ts`. The wrapper replaces agent branding/inquiry CTA with CRM-specific actions (schedule showing, share with client, assign to lead). Do NOT import from `apps/web` directly.
+**Reason**: The no-cross-app-imports rule (CLAUDE.md non-negotiable #2) prevents importing `apps/web/app/home-search/ListingModal.tsx` into `apps/crm`. The listing type contracts already exist in `packages/types/src/listings.ts`. The CRM context requires different actions than the consumer website context (agent sees CRM actions, not "Contact Agent" buttons).

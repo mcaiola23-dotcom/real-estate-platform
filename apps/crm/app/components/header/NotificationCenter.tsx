@@ -7,6 +7,8 @@ interface NotificationCenterProps {
   onClose: () => void;
   notifications: CrmNotification[];
   onOpenLead: (leadId: string) => void;
+  onDismiss?: (id: string) => void;
+  onClearAll?: () => void;
 }
 
 function formatRelativeTime(timestamp: string): string {
@@ -26,7 +28,7 @@ const CATEGORY_CONFIG = {
   milestone: { label: 'Milestone', color: '#2d6a4f', icon: '★' },
 } as const;
 
-export function NotificationCenter({ open, onClose, notifications, onOpenLead }: NotificationCenterProps) {
+export function NotificationCenter({ open, onClose, notifications, onOpenLead, onDismiss, onClearAll }: NotificationCenterProps) {
   if (!open) return null;
 
   const grouped = {
@@ -41,11 +43,18 @@ export function NotificationCenter({ open, onClose, notifications, onOpenLead }:
       <aside className="crm-notif-panel" aria-label="Notifications">
         <div className="crm-notif-panel__header">
           <h3 className="crm-notif-panel__title">Notifications</h3>
-          <button className="crm-notif-panel__close" onClick={onClose} aria-label="Close">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="crm-notif-panel__header-actions">
+            {onClearAll && notifications.length > 0 && (
+              <button className="crm-btn crm-btn-ghost crm-btn-sm" onClick={onClearAll}>
+                Clear All
+              </button>
+            )}
+            <button className="crm-notif-panel__close" onClick={onClose} aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="crm-notif-panel__body">
@@ -64,23 +73,34 @@ export function NotificationCenter({ open, onClose, notifications, onOpenLead }:
                     <span className="crm-notif-panel__section-count">{items.length}</span>
                   </div>
                   {items.slice(0, 10).map((notif) => (
-                    <button
-                      key={notif.id}
-                      className="crm-notif-panel__item"
-                      type="button"
-                      onClick={() => {
-                        if (notif.leadId) onOpenLead(notif.leadId);
-                        onClose();
-                      }}
-                    >
-                      <span className="crm-notif-panel__item-icon" style={{ color: config.color }}>
-                        {config.icon}
-                      </span>
-                      <div className="crm-notif-panel__item-content">
-                        <span className="crm-notif-panel__item-title">{notif.title}</span>
-                        <span className="crm-notif-panel__item-time">{formatRelativeTime(notif.timestamp)}</span>
-                      </div>
-                    </button>
+                    <div key={notif.id} className="crm-notif-panel__item-row">
+                      <button
+                        className="crm-notif-panel__item"
+                        type="button"
+                        onClick={() => {
+                          if (notif.leadId) onOpenLead(notif.leadId);
+                          onClose();
+                        }}
+                      >
+                        <span className="crm-notif-panel__item-icon" style={{ color: config.color }}>
+                          {config.icon}
+                        </span>
+                        <div className="crm-notif-panel__item-content">
+                          <span className="crm-notif-panel__item-title">{notif.title}</span>
+                          <span className="crm-notif-panel__item-time">{formatRelativeTime(notif.timestamp)}</span>
+                        </div>
+                      </button>
+                      {onDismiss && (
+                        <button
+                          type="button"
+                          className="crm-notif-panel__dismiss"
+                          onClick={(e) => { e.stopPropagation(); onDismiss(notif.id); }}
+                          aria-label="Dismiss"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
                   ))}
                 </div>
               );

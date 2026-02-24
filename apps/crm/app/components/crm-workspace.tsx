@@ -67,11 +67,25 @@ import {
   extractLeadSearchSignal,
   matchesLeadFilters,
 } from '../lib/crm-data-extraction';
+import {
+  LayoutDashboard,
+  Kanban,
+  ListFilter,
+  Building2,
+  ArrowLeftRight,
+  Activity,
+  BarChart3,
+  Mail,
+  Settings,
+  Search,
+  Bell,
+} from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { KpiSparkline } from './shared/KpiSparkline';
 import { EmptyState } from './shared/EmptyState';
 import { SevenDayPulse } from './dashboard/SevenDayPulse';
 import { MyDayPanel } from './dashboard/MyDayPanel';
+import { ActionCenter } from './dashboard/ActionCenter';
 import { ConversionFunnel } from './dashboard/ConversionFunnel';
 import { RevenuePipeline } from './dashboard/RevenuePipeline';
 import { MarketDigest } from './dashboard/MarketDigest';
@@ -85,6 +99,9 @@ import { useNotifications } from '../lib/use-notifications';
 import { usePinnedLeads } from '../lib/use-pinned-leads';
 import { EscalationAlertBanner } from './shared/EscalationBanner';
 import { CsvImportModal } from './shared/CsvImportModal';
+import { NeedsAttention } from './dashboard/NeedsAttention';
+import { NewLeadModal } from './shared/NewLeadModal';
+import { NewActivityModal } from './shared/NewActivityModal';
 import { MobileActionBar } from './shared/MobileActionBar';
 import { computeLeadEscalationLevel } from '@real-estate/ai/crm/escalation-engine';
 import { useOfflineQueue } from '../lib/use-offline-queue';
@@ -94,9 +111,7 @@ import { useWorkspaceData, refreshLead } from '../lib/stores/use-query-hooks';
 import { FloatingActivityLog } from './shared/FloatingActivityLog';
 import { SpeedToLeadTimer } from './dashboard/SpeedToLeadTimer';
 import { usePushNotifications } from '../lib/use-push-notifications';
-import { DensityToggle } from './shared/DensityToggle';
-
-const ProfileView = dynamic(() => import('./views/ProfileView').then(m => ({ default: m.ProfileView })), { ssr: false });
+const ActivityView = dynamic(() => import('./views/ActivityView').then(m => ({ default: m.ActivityView })), { ssr: false });
 const SettingsView = dynamic(() => import('./views/SettingsView').then(m => ({ default: m.SettingsView })), { ssr: false });
 const LeadProfileModal = dynamic(() => import('./views/LeadProfileModal').then(m => ({ default: m.LeadProfileModal })), { ssr: false });
 const PropertiesView = dynamic(() => import('./properties/PropertiesView').then(m => ({ default: m.PropertiesView })), { ssr: false });
@@ -126,6 +141,7 @@ export function CrmWorkspace({
     setCmdPaletteOpen, toggleCmdPalette,
     setNotificationsOpen, setAvatarMenuOpen, setLogoLoadErrored,
     setShowNewLeadForm, toggleShowNewLeadForm, setShowCsvImport, setShowQuickAddLead,
+    setShowNewLeadModal, setShowNewActivityModal,
     pushToast, setLoading, setError, beginMutation, endMutation, setGreetingLabel,
     // Data
     summary, leads, contacts, activities,
@@ -146,8 +162,9 @@ export function CrmWorkspace({
     // Forms
     newLeadAddress, newLeadSource, newLeadType, newLeadNotes, newLeadTimeframe, newLeadPropertyType,
     newContactName, newContactEmail, newContactPhone,
-    newActivitySummary, newActivityLeadId, newActivityContactId,
-    setNewLeadField, resetNewLeadForm, setNewContactField, resetNewContactForm,
+    newActivitySummary, newActivityLeadId, newActivityContactId, newActivityType,
+    showNewLeadModal, showNewActivityModal,
+    setNewLeadField, resetNewLeadForm, resetNewContactForm,
     setNewActivityField, resetNewActivityForm,
     // Settings
     brandPreferences, agentProfile, winLossPrompt, density,
@@ -242,7 +259,7 @@ export function CrmWorkspace({
   const leadById = useMemo(() => new Map(leads.map((lead) => [lead.id, lead])), [leads]);
   const contactById = useMemo(() => new Map(contacts.map((contact) => [contact.id, contact])), [contacts]);
 
-  const { notifications, unreadCount } = useNotifications({ leads, activities, contactById });
+  const { notifications, unreadCount, dismissNotification, clearAllNotifications } = useNotifications({ leads, activities, contactById, tenantId: tenantContext.tenantId });
   const { pinnedIds, togglePin, isPinned } = usePinnedLeads(tenantContext.tenantId);
   const { isOnline, pendingCount: offlinePendingCount, enqueue: enqueueOffline } = useOfflineQueue(tenantContext.tenantId);
   const pushNotifications = usePushNotifications(tenantContext.tenantId);
@@ -448,29 +465,6 @@ export function CrmWorkspace({
     return map;
   }, [leads]);
 
-  const leadsByContactId = useMemo(() => {
-    const map = new Map<string, CrmLead[]>();
-    for (const lead of leads) {
-      if (!lead.contactId) {
-        continue;
-      }
-      const entries = map.get(lead.contactId) ?? [];
-      entries.push(lead);
-      map.set(lead.contactId, entries);
-    }
-
-    for (const [contactId, contactLeads] of map.entries()) {
-      const sorted = [...contactLeads].sort((a, b) => {
-        if (activitySortMode === 'alpha') {
-          return (a.listingAddress || '').localeCompare(b.listingAddress || '');
-        }
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-      });
-      map.set(contactId, sorted);
-    }
-
-    return map;
-  }, [activitySortMode, leads]);
 
   const leadBehaviorByLeadId = useMemo(() => {
     const map = new Map<string, LeadBehaviorStats>();
@@ -860,36 +854,6 @@ export function CrmWorkspace({
 
     return rows;
   }, [activities, contactById, getLeadDraft, lastContactByLeadId, leadBehaviorByLeadId, leads, tableSort, tableStatusPreset]);
-
-  const sortedActivityLeads = useMemo(() => {
-    const working = [...leads];
-    working.sort((left, right) => {
-      if (activitySortMode === 'alpha') {
-        return (left.listingAddress || '').localeCompare(right.listingAddress || '');
-      }
-      return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
-    });
-    return working;
-  }, [activitySortMode, leads]);
-
-  const sortedActivityContacts = useMemo(() => {
-    const working = [...contacts];
-    working.sort((left, right) => {
-      if (activitySortMode === 'alpha') {
-        return (left.fullName || left.email || '').localeCompare(right.fullName || right.email || '');
-      }
-      return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime();
-    });
-    return working;
-  }, [activitySortMode, contacts]);
-
-  const activityLeadOptions = useMemo(() => {
-    if (!newActivityContactId) {
-      return sortedActivityLeads;
-    }
-
-    return leadsByContactId.get(newActivityContactId) ?? [];
-  }, [leadsByContactId, newActivityContactId, sortedActivityLeads]);
 
   // Data loading is handled by useWorkspaceData() hook above.
   // reloadWorkspace re-fetches data for use after CSV import, etc.
@@ -1335,7 +1299,7 @@ export function CrmWorkspace({
       tenantId: tenantContext.tenantId,
       contactId: newActivityContactId || null,
       leadId: newActivityLeadId || null,
-      activityType: 'note',
+      activityType: newActivityType || 'note',
       occurredAt: nowIso,
       summary: newActivitySummary.trim(),
       metadataJson: null,
@@ -1352,7 +1316,7 @@ export function CrmWorkspace({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          activityType: 'note',
+          activityType: newActivityType || 'note',
           summary: newActivitySummary,
           leadId: newActivityLeadId || undefined,
           contactId: newActivityContactId || undefined,
@@ -1542,27 +1506,10 @@ export function CrmWorkspace({
     setTableStatusPreset(preset);
   }, [handleNav, setTableStatusPreset]);
 
-  const openProfile = useCallback(() => {
-    handleNav('profile');
-  }, [handleNav]);
-
   // Extended handleNav that also scrolls to sections
   const handleNavWithScroll = useCallback(
     (nav: WorkspaceNav) => {
       handleNav(nav);
-      const nextView = resolveViewFromNav(nav);
-
-      if (nextView !== 'dashboard') {
-        return;
-      }
-
-      if (nav === 'contacts') {
-        requestAnimationFrame(() => contactPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-      }
-
-      if (nav === 'activity') {
-        requestAnimationFrame(() => activityPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-      }
     },
     [handleNav]
   );
@@ -1634,18 +1581,16 @@ export function CrmWorkspace({
     [leads, contacts, pushToast]
   );
 
-  const navItems: Array<{ id: WorkspaceNav; label: string; icon: string }> = [
-    { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
-    { id: 'pipeline', label: 'Pipeline', icon: '▦' },
-    { id: 'leads', label: 'Lead Tracker', icon: '☰' },
-    { id: 'properties', label: 'Properties', icon: '⊞' },
-    { id: 'transactions', label: 'Transactions', icon: '⇄' },
-    { id: 'contacts', label: 'Contacts', icon: '◉' },
-    { id: 'activity', label: 'Activity', icon: '↻' },
-    { id: 'profile', label: 'Profile', icon: '◯' },
-    { id: 'analytics', label: 'Analytics', icon: '◫' },
-    { id: 'campaigns', label: 'Campaigns', icon: '✉' },
-    { id: 'settings', label: 'Settings', icon: '⚙' },
+  const navItems: Array<{ id: WorkspaceNav; label: string; icon: React.ReactNode }> = [
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+    { id: 'pipeline', label: 'Pipeline', icon: <Kanban size={18} /> },
+    { id: 'leads', label: 'Lead Tracker', icon: <ListFilter size={18} /> },
+    { id: 'properties', label: 'Properties', icon: <Building2 size={18} /> },
+    { id: 'transactions', label: 'Transactions', icon: <ArrowLeftRight size={18} /> },
+    { id: 'activity', label: 'Activity', icon: <Activity size={18} /> },
+    { id: 'analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
+    { id: 'campaigns', label: 'Campaigns', icon: <Mail size={18} /> },
+    { id: 'settings', label: 'Settings', icon: <Settings size={18} /> },
   ];
 
   function toggleTableSort(column: LeadsTableSortColumn) {
@@ -1653,7 +1598,7 @@ export function CrmWorkspace({
   }
 
   return (
-    <div className={`crm-shell-app ${brandPreferences.showTexture ? 'crm-shell-texture' : ''}`} style={brandThemeVars} data-density={density}>
+    <div className={`crm-shell-app ${brandPreferences.showTexture ? 'crm-shell-texture' : ''}`} style={brandThemeVars} data-density="default">
       <aside className="crm-sidebar" aria-label="CRM navigation">
         <div className="crm-sidebar-brand">
           <div className="crm-brand-lockup">
@@ -1677,7 +1622,6 @@ export function CrmWorkspace({
               <h1>CRM</h1>
             </div>
           </div>
-          <span className="crm-tenant-domain">{tenantContext.tenantDomain}</span>
         </div>
 
         <nav className="crm-side-nav">
@@ -1695,19 +1639,6 @@ export function CrmWorkspace({
             </button>
           ))}
         </nav>
-
-        <button
-          type="button"
-          className="crm-theme-toggle"
-          onClick={toggleTheme}
-          title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-        >
-          <span className="crm-theme-toggle__icon" aria-hidden="true">
-            {theme === 'light' ? '☽' : '☀'}
-          </span>
-          <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
-        </button>
 
         {pinnedIds.length > 0 && (
           <div className="crm-pinned-leads">
@@ -1734,53 +1665,12 @@ export function CrmWorkspace({
           </div>
         )}
 
-        <div className="crm-side-context">
-          <span className="crm-chip">{tenantContext.tenantSlug}</span>
-          <span className="crm-chip">{tenantContext.source}</span>
-        </div>
       </aside>
 
       <div className="crm-main-shell">
-        <header className="crm-shell-header">
-          <div className="crm-shell-title">
-            <span className="crm-brand-mark crm-brand-mark-small" aria-hidden="true">
-              {showBrandLogo ? (
-                <Image
-                  loader={passthroughImageLoader}
-                  src={resolvedLogoUrl}
-                  alt=""
-                  width={36}
-                  height={36}
-                  unoptimized
-                  onError={() => setLogoLoadErrored(true)}
-                />
-              ) : (
-                <span>{brandInitials}</span>
-              )}
-            </span>
-            <div>
-              <p className="crm-kicker">{greetingLabel}</p>
-              <strong>{brandPreferences.brandName}</strong>
-              <span className="crm-shell-subtitle">{toTitleCase(tenantContext.tenantSlug)} Workspace</span>
-            </div>
-          </div>
-          <div className="crm-shell-links">
-            <button type="button" className="crm-shell-link" onClick={openDashboard}>
-              Dashboard
-            </button>
-            <button type="button" className="crm-shell-link" onClick={openPipeline}>
-              Pipeline
-            </button>
-            <button type="button" className="crm-shell-link" onClick={() => openLeadsTable('all')}>
-              Lead Tracker
-            </button>
-          </div>
-        </header>
-
-        <header className="crm-header">
-          <div>
-            <p className="crm-kicker">Workspace</p>
-            <h2>
+        <header className="crm-header crm-header--unified">
+          <div className="crm-header__left">
+            <h2 className="crm-header__title">
               {activeView === 'pipeline'
                 ? 'Deal Pipeline'
                 : activeView === 'leads'
@@ -1791,24 +1681,31 @@ export function CrmWorkspace({
                       ? 'Transactions'
                       : activeView === 'analytics'
                         ? 'Analytics'
-                        : activeView === 'settings'
-                          ? 'Settings'
-                          : activeView === 'profile'
-                            ? 'My Profile'
-                          : 'Dashboard'}
+                        : activeView === 'campaigns'
+                          ? 'Campaigns'
+                          : activeView === 'settings'
+                            ? 'Settings'
+                            : activeView === 'activity'
+                              ? 'Activity'
+                              : 'Dashboard'}
             </h2>
           </div>
-          <div className="crm-header-tools">
-            <DensityToggle density={density} onChangeDensity={setDensity} />
+          <div className="crm-header__right">
+            <button type="button" className="crm-btn crm-btn-ghost crm-btn-sm" onClick={() => setShowNewLeadModal(true)}>
+              + Lead
+            </button>
+            <button type="button" className="crm-btn crm-btn-ghost crm-btn-sm" onClick={() => setShowNewActivityModal(true)}>
+              + Activity
+            </button>
             {!isOnline && (
               <span className="crm-offline-badge" title={offlinePendingCount > 0 ? `${offlinePendingCount} items queued` : 'You are offline'}>
-                ⚡ Offline{offlinePendingCount > 0 ? ` (${offlinePendingCount})` : ''}
+                Offline{offlinePendingCount > 0 ? ` (${offlinePendingCount})` : ''}
               </span>
             )}
             <div className="crm-search-wrap" ref={searchPanelRef}>
               <label className="crm-search">
                 <span className="crm-search-icon" aria-hidden="true">
-                  ⌕
+                  <Search size={16} />
                 </span>
                 <input
                   value={searchQuery}
@@ -1851,7 +1748,7 @@ export function CrmWorkspace({
                 aria-label="Notifications"
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
               >
-                🔔
+                <Bell size={18} />
                 {unreadCount > 0 && (
                   <span className="crm-notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
                 )}
@@ -1876,21 +1773,11 @@ export function CrmWorkspace({
                     style={{ borderRadius: '50%', objectFit: 'cover' }}
                   />
                 ) : (
-                  brandInitials
+                  agentProfile.fullName ? getBrandInitials(agentProfile.fullName) : brandInitials
                 )}
               </button>
               {avatarMenuOpen ? (
                 <div className="crm-popover crm-avatar-menu">
-                  <button
-                    type="button"
-                    className="crm-popover-action"
-                    onClick={() => {
-                      openProfile();
-                      setAvatarMenuOpen(false);
-                    }}
-                  >
-                    Profile
-                  </button>
                   <button
                     type="button"
                     className="crm-popover-action"
@@ -1917,46 +1804,6 @@ export function CrmWorkspace({
           </div>
         </header>
 
-        <nav className="crm-breadcrumb" aria-label="Breadcrumb">
-          <button type="button" className="crm-breadcrumb-item" onClick={() => { closeLeadProfile(); handleNav('dashboard'); }}>Dashboard</button>
-          {activeView !== 'dashboard' ? (
-            <>
-              <span className="crm-breadcrumb-sep">/</span>
-              {activeLeadProfile ? (
-                <button type="button" className="crm-breadcrumb-item" onClick={closeLeadProfile}>{
-                  activeView === 'pipeline' ? 'Pipeline' :
-                  activeView === 'leads' ? 'Leads' :
-                  activeView === 'properties' ? 'Properties' :
-                  activeView === 'transactions' ? 'Transactions' :
-                  activeView === 'analytics' ? 'Analytics' :
-                  activeView === 'campaigns' ? 'Campaigns' :
-                  activeView === 'settings' ? 'Settings' :
-                  activeView === 'profile' ? 'Profile' : ''
-                }</button>
-              ) : (
-                <span className="crm-breadcrumb-item crm-breadcrumb-item--current">{
-                  activeView === 'pipeline' ? 'Pipeline' :
-                  activeView === 'leads' ? 'Leads' :
-                  activeView === 'properties' ? 'Properties' :
-                  activeView === 'transactions' ? 'Transactions' :
-                  activeView === 'analytics' ? 'Analytics' :
-                  activeView === 'campaigns' ? 'Campaigns' :
-                  activeView === 'settings' ? 'Settings' :
-                  activeView === 'profile' ? 'Profile' : ''
-                }</span>
-              )}
-            </>
-          ) : null}
-          {activeLeadProfile ? (
-            <>
-              <span className="crm-breadcrumb-sep">/</span>
-              <span className="crm-breadcrumb-item crm-breadcrumb-item--current">
-                {getLeadContactLabel(activeLeadProfile, contactById)}
-              </span>
-            </>
-          ) : null}
-        </nav>
-
         {!hasClerkKey && !devAuthBypassEnabled ? (
           <p className="crm-banner-warning">Set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` to enable sign-in UI in this environment.</p>
         ) : null}
@@ -1967,41 +1814,6 @@ export function CrmWorkspace({
 
         {activeView === 'dashboard' ? (
           <section className="crm-dashboard-view">
-            <MyDayPanel
-              greeting={greetingLabel}
-              agentName={agentProfile.fullName}
-              leads={leads}
-              activities={activities}
-              contactById={contactById}
-              onOpenLead={openLeadProfile}
-            />
-
-            {unclaimedLeads.length > 0 && (
-              <section className="crm-panel crm-unclaimed-leads">
-                <div className="crm-panel-head">
-                  <h3>Unclaimed Leads</h3>
-                  <span className="crm-muted">{unclaimedLeads.length} awaiting first contact</span>
-                </div>
-                <div className="crm-unclaimed-leads-list">
-                  {unclaimedLeads.slice(0, 5).map((lead) => (
-                    <SpeedToLeadTimer
-                      key={lead.id}
-                      lead={lead}
-                      contactById={contactById}
-                      onClaim={(leadId) => openLeadProfile(leadId)}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {escalatedLeads.length > 0 && (
-              <EscalationAlertBanner
-                escalatedLeads={escalatedLeads}
-                onViewLead={openLeadProfile}
-              />
-            )}
-
             <section className="crm-kpi-grid" aria-label="Summary metrics">
               <button type="button" className="crm-kpi-card" onClick={() => openLeadsTable('new')}>
                 <p>New Leads</p>
@@ -2029,490 +1841,42 @@ export function CrmWorkspace({
               </button>
             </section>
 
-            {urgentFollowUps.length > 0 && (
-              <section className="crm-panel crm-urgent-followups">
-                <div className="crm-panel-head">
-                  <h3>Urgent Follow-Ups</h3>
-                  <span className="crm-muted">{urgentFollowUps.length} overdue or due today</span>
-                </div>
-                <ul className="crm-timeline">
-                  {urgentFollowUps.slice(0, 5).map((lead) => {
-                    const contact = lead.contactId ? contactById.get(lead.contactId) : undefined;
-                    return (
-                      <li key={lead.id} className="crm-timeline-item">
-                        <span className="crm-timeline-dot crm-status-nurturing" />
-                        <div>
-                          <strong>
-                            <button type="button" className="crm-inline-link" onClick={() => openLeadProfile(lead.id)}>
-                              {contact?.fullName || lead.listingAddress || 'Lead'}
-                            </button>
-                          </strong>
-                          <p>
-                            {lead.nextActionNote || 'Follow-up needed'}
-                            {lead.nextActionAt ? ` — due ${formatDateTime(lead.nextActionAt)}` : ''}
-                          </p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            )}
+            <ActionCenter
+              greeting={greetingLabel}
+              agentName={agentProfile.fullName ? agentProfile.fullName.split(' ')[0] : 'there'}
+              leads={leads}
+              activities={activities}
+              contactById={contactById}
+              onOpenLead={openLeadProfile}
+              newThisWeek={leadCountsByStatus.new}
+              followUpsToday={urgentFollowUps.length}
+              pipelineDeals={activePipelineCount}
+              onClickNewThisWeek={() => openLeadsTable('new')}
+              onClickFollowUps={() => openLeadsTable('follow_up')}
+              onClickPipelineDeals={() => openLeadsTable('open_pipeline')}
+            />
 
-            <section className="crm-status-strip" aria-label="Lead status breakdown">
-              {LEAD_STATUSES.map((status) => (
-                <button
-                  key={status}
-                  className={`crm-status-pill crm-status-${status} ${dashboardStatusFilter === status ? 'is-active' : ''}`}
-                  type="button"
-                  onClick={() => setDashboardStatusFilter(dashboardStatusFilter === status ? ALL_STATUS_FILTER : status)}
-                >
-                  <span>
-                    {getStatusGlyph(status)} {formatLeadStatusLabel(status)}
-                  </span>
-                  <strong>{leadCountsByStatus[status]}</strong>
-                </button>
-              ))}
-            </section>
+            <div className="crm-dashboard-funnel-row">
+              <ConversionFunnel leads={leads} contactById={contactById} onClickStatus={(status) => openLeadsTable(status === 'won' || status === 'lost' ? 'all' : 'open_pipeline')} />
+              <RevenuePipeline leads={leads} onClickTotal={() => openLeadsTable('open_pipeline')} />
+            </div>
 
-            <section className="crm-momentum-strip" aria-label="7 day activity pulse">
+            <section className="crm-pulse-section" aria-label="7 day activity pulse">
               <p className="crm-kicker">7-day Pulse</p>
               <SevenDayPulse days={heartbeatDays} />
               <span className="crm-muted">
-                Activity across the last week: {heartbeatDays.reduce((sum, d) => sum + d.total, 0)} total events.
+                {heartbeatDays.reduce((sum, d) => sum + d.total, 0)} events this week
               </span>
             </section>
 
-            <div className="crm-dashboard-widgets">
-              <ConversionFunnel leads={leads} />
-              <RevenuePipeline leads={leads} />
-            </div>
-
             <MarketDigest />
 
-            <section className="crm-overview-grid">
-              <article className="crm-panel">
-                <div className="crm-panel-head">
-                  <h3>Recent Activity</h3>
-                  <span className="crm-muted">Latest tenant-scoped updates</span>
-                </div>
-                {activities.length === 0 ? (
-                  <EmptyState title="No activity yet" detail="Once calls, notes, and website events arrive, this feed will populate here." />
-                ) : (
-                  <ul className="crm-timeline">
-                    {activities.slice(0, 8).map((activity) => {
-                      const linkedLead = activity.leadId ? leadById.get(activity.leadId) : null;
-                      return (
-                        <li key={activity.id} className="crm-timeline-item">
-                          <span className={`crm-timeline-dot crm-status-${linkedLead ? getLeadDraft(linkedLead).status : 'new'}`} />
-                          <div>
-                            <strong>{activity.summary}</strong>
-                            <p>
-                              {linkedLead ? (
-                                <button type="button" className="crm-inline-link" onClick={() => openLeadProfile(linkedLead.id)}>
-                                  {linkedLead.listingAddress || 'View lead profile'}
-                                </button>
-                              ) : (
-                                'General CRM activity'
-                              )}{' '}
-                              • {formatActivityTypeLabel(activity.activityType)} • {formatTimeAgo(activity.occurredAt)}
-                            </p>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </article>
-
-              <article className="crm-panel">
-                <div className="crm-panel-head">
-                  <h3>Pipeline Snapshot</h3>
-                  <span className="crm-muted">Current stage distribution</span>
-                </div>
-
-                <div className="crm-pipeline-bar" role="img" aria-label="Pipeline status distribution">
-                  {LEAD_STATUSES.map((status) => {
-                    const total = summary.leadCount || 1;
-                    const segmentWidth = Math.max(leadCountsByStatus[status] / total, 0.08);
-
-                    return (
-                      <span
-                        key={status}
-                        className={`crm-pipeline-segment crm-status-${status}`}
-                        style={{ flexGrow: segmentWidth }}
-                        title={`${formatLeadStatusLabel(status)}: ${leadCountsByStatus[status]}`}
-                      />
-                    );
-                  })}
-                </div>
-
-                <ul className="crm-legend">
-                  {LEAD_STATUSES.map((status) => (
-                    <li key={status}>
-                      <span className={`crm-legend-swatch crm-status-${status}`} />
-                      <span>
-                        {getStatusGlyph(status)} {formatLeadStatusLabel(status)}
-                      </span>
-                      <strong>{leadCountsByStatus[status]}</strong>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="crm-quick-actions">
-                  <button type="button" onClick={() => activityPanelRef.current?.scrollIntoView({ behavior: 'smooth' })}>
-                    Log Note
-                  </button>
-                  <button
-                    type="button"
-                    className="crm-secondary-button"
-                    onClick={() => contactPanelRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                  >
-                    Add Contact
-                  </button>
-                  <button type="button" className="crm-secondary-button" onClick={openPipeline}>
-                    View Pipeline
-                  </button>
-                </div>
-
-                <div className="crm-intent-banner">
-                  <strong>{unlinkedBehaviorCount}</strong>
-                  <span>Behavior events currently without linked lead/contact records.</span>
-                </div>
-              </article>
-            </section>
-
-            <section className="crm-work-grid">
-              <article className="crm-panel crm-lead-panel">
-                <div className="crm-panel-head">
-                  <h3>Lead Queue</h3>
-                  <span className="crm-muted">Prioritize and update your pipeline in one place.</span>
-                </div>
-
-                <div className="crm-filter-grid">
-                  <label className="crm-field crm-field-grow">
-                    Source
-                    <select value={dashboardSourceFilter} onChange={(event) => setDashboardSourceFilter(event.target.value)}>
-                      <option value={ALL_SOURCE_FILTER}>All sources</option>
-                      {sourceFilterOptions.map((source) => (
-                        <option key={source} value={source}>
-                          {formatLeadSourceLabel(source)}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="crm-field crm-field-grow">
-                    Lead type
-                    <select
-                      value={dashboardLeadTypeFilter}
-                      onChange={(event) => setDashboardLeadTypeFilter(event.target.value as LeadTypeFilter)}
-                    >
-                      <option value={ALL_LEAD_TYPE_FILTER}>All types</option>
-                      <option value="website_lead">Website Lead</option>
-                      <option value="valuation_request">Valuation Request</option>
-                    </select>
-                  </label>
-                </div>
-
-                <div className="crm-draft-bar">
-                  <div className="crm-quick-summary">
-                    <strong>{pendingLeadIds.length}</strong>
-                    <span>Unsaved lead {pendingLeadIds.length === 1 ? 'change' : 'changes'}</span>
-                  </div>
-                  <div className="crm-quick-actions-buttons">
-                    <button type="button" disabled={pendingLeadIds.length === 0 || isMutating} onClick={saveAllLeadDrafts}>
-                      Save All
-                    </button>
-                    <button
-                      type="button"
-                      className="crm-secondary-button"
-                      disabled={pendingLeadIds.length === 0 || isMutating}
-                      onClick={clearAllLeadDrafts}
-                    >
-                      Discard Drafts
-                    </button>
-                  </div>
-                </div>
-
-                {dashboardFilteredLeads.length === 0 ? (
-                  <EmptyState
-                    title="No leads match the current filters"
-                    detail="Clear or broaden filters to bring leads back into the queue."
-                  />
-                ) : (
-                  <div className="crm-lead-list">
-                    {dashboardFilteredLeads.map((lead) => {
-                      const draft = getLeadDraft(lead);
-                      const leadHasUnsavedChanges = hasUnsavedLeadChange(lead);
-                      const isSavingLead = Boolean(savingLeadIds[lead.id]);
-                      const behavior = leadBehaviorByLeadId.get(lead.id);
-
-                      return (
-                        <article key={lead.id} className="crm-lead-card">
-                          <div className="crm-lead-head">
-                            <div>
-                              <button type="button" className="crm-lead-title-button" onClick={() => openLeadProfile(lead.id)}>
-                                {draft.listingAddress || 'No address provided'}
-                              </button>
-                              <p className="crm-lead-meta">
-                                {formatDateTime(lead.createdAt)} • {formatLeadTypeLabel(lead.leadType)}
-                              </p>
-                            </div>
-                            <div className="crm-chip-row">
-                              <span className="crm-chip">{formatLeadSourceLabel(lead.source)}</span>
-                              <span className={`crm-status-badge crm-status-${draft.status}`}>{formatLeadStatusLabel(draft.status)}</span>
-                              {behavior && (behavior.favoritedCount > 0 || behavior.viewedCount > 0) ? (
-                                <span className="crm-chip crm-chip-intent">Intent signal</span>
-                              ) : null}
-                              {leadHasUnsavedChanges ? <span className="crm-chip crm-chip-warning">Unsaved</span> : null}
-                            </div>
-                          </div>
-
-                          <div className="crm-lead-details">
-                            <p>
-                              <span>Contact</span>
-                              <strong>
-                                {lead.contactId ? (
-                                  <button type="button" className="crm-inline-link" onClick={() => openLeadProfile(lead.id)}>
-                                    {getLeadContactLabel(lead, contactById)}
-                                  </button>
-                                ) : (
-                                  getLeadContactLabel(lead, contactById)
-                                )}
-                              </strong>
-                            </p>
-                            <p>
-                              <span>Property</span>
-                              <strong>{draft.propertyType || 'Unspecified'}</strong>
-                            </p>
-                            <p>
-                              <span>Beds / Baths</span>
-                              <strong>
-                                {draft.beds || '-'} / {draft.baths || '-'}
-                              </strong>
-                            </p>
-                            <p>
-                              <span>Sqft</span>
-                              <strong>{draft.sqft || '-'}</strong>
-                            </p>
-                          </div>
-
-                          <div className="crm-lead-edit-row">
-                            <label className="crm-field">
-                              Status
-                              <select
-                                disabled={isSavingLead}
-                                value={draft.status}
-                                onChange={(event) => {
-                                  const value = event.target.value as CrmLeadStatus;
-                                  handleSetLeadDraftField(lead.id, 'status', value);
-                                }}
-                              >
-                                {LEAD_STATUSES.map((status) => (
-                                  <option key={status} value={status}>
-                                    {formatLeadStatusLabel(status)}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-
-                            <label className="crm-field crm-field-grow">
-                              Next Action
-                              <input
-                                value={draft.timeframe}
-                                onChange={(event) => handleSetLeadDraftField(lead.id, 'timeframe', event.target.value)}
-                                placeholder="Schedule follow-up next Tuesday"
-                              />
-                            </label>
-                          </div>
-
-                          <div className="crm-lead-edit-row">
-                            <label className="crm-field crm-field-grow">
-                              Notes
-                              <textarea
-                                value={draft.notes}
-                                onChange={(event) => handleSetLeadDraftField(lead.id, 'notes', event.target.value)}
-                                placeholder="Capture call outcomes, objections, and next actions..."
-                              />
-                            </label>
-                          </div>
-
-                          <div className="crm-actions-row">
-                            <span className="crm-muted">Updated {formatDateTime(lead.updatedAt)}</span>
-                            <button
-                              type="button"
-                              disabled={isSavingLead}
-                              onClick={() => {
-                                void updateLead(lead.id);
-                              }}
-                            >
-                              {isSavingLead ? 'Saving...' : 'Save Lead'}
-                            </button>
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                )}
-              </article>
-
-              <aside className="crm-side-column">
-                <section className="crm-panel" ref={contactPanelRef}>
-                  <div className="crm-panel-head">
-                    <h3>New Contact</h3>
-                    <span className="crm-muted">Add a person manually to your CRM.</span>
-                  </div>
-                  <form className="crm-form" onSubmit={createContact}>
-                    <label className="crm-field">
-                      Full Name
-                      <input value={newContactName} onChange={(event) => setNewContactField('newContactName', event.target.value)} placeholder="Jane Doe" />
-                    </label>
-                    <label className="crm-field">
-                      Email
-                      <input
-                        type="email"
-                        value={newContactEmail}
-                        onChange={(event) => setNewContactField('newContactEmail', event.target.value)}
-                        placeholder="jane@example.com"
-                      />
-                    </label>
-                    <label className="crm-field">
-                      Phone
-                      <input
-                        value={newContactPhone}
-                        onChange={(event) => setNewContactField('newContactPhone', event.target.value)}
-                        placeholder="(203) 555-0101"
-                      />
-                    </label>
-                    <button type="submit" disabled={isMutating}>
-                      Add Contact
-                    </button>
-                  </form>
-                </section>
-
-                <section className="crm-panel" ref={activityPanelRef}>
-                  <div className="crm-panel-head">
-                    <h3>Log Activity</h3>
-                    <span className="crm-muted">Document outreach and deal progress.</span>
-                  </div>
-
-                  <div className="crm-inline-controls">
-                    <span className="crm-muted">Sort linked options:</span>
-                    <button
-                      type="button"
-                      className={`crm-sort-toggle ${activitySortMode === 'recent' ? 'is-active' : ''}`}
-                      onClick={() => setActivitySortMode('recent')}
-                    >
-                      Most recent
-                    </button>
-                    <button
-                      type="button"
-                      className={`crm-sort-toggle ${activitySortMode === 'alpha' ? 'is-active' : ''}`}
-                      onClick={() => setActivitySortMode('alpha')}
-                    >
-                      Alphabetical
-                    </button>
-                  </div>
-
-                  <form className="crm-form" onSubmit={createActivity}>
-                    <label className="crm-field">
-                      Summary
-                      <input
-                        value={newActivitySummary}
-                        onChange={(event) => setNewActivityField('newActivitySummary', event.target.value)}
-                        placeholder="Called seller and reviewed valuation strategy"
-                        required
-                      />
-                    </label>
-                    <label className="crm-field">
-                      Contact
-                      <select
-                        value={newActivityContactId}
-                        onChange={(event) => {
-                          const nextContactId = event.target.value;
-                          setNewActivityField('newActivityContactId', nextContactId);
-
-                          if (!nextContactId) {
-                            return;
-                          }
-
-                          const linkedLead = (leadsByContactId.get(nextContactId) ?? [])[0];
-                          if (linkedLead) {
-                            setNewActivityField('newActivityLeadId', linkedLead.id);
-                          }
-                        }}
-                      >
-                        <option value="">None</option>
-                        {sortedActivityContacts.map((contact) => (
-                          <option key={contact.id} value={contact.id}>
-                            {contact.fullName || contact.email || contact.id}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="crm-field">
-                      Lead
-                      <select
-                        value={newActivityLeadId}
-                        onChange={(event) => {
-                          const nextLeadId = event.target.value;
-                          setNewActivityField('newActivityLeadId', nextLeadId);
-
-                          if (!nextLeadId) {
-                            return;
-                          }
-
-                          const linkedLead = leadById.get(nextLeadId);
-                          if (linkedLead?.contactId) {
-                            setNewActivityField('newActivityContactId', linkedLead.contactId);
-                          }
-                        }}
-                      >
-                        <option value="">None</option>
-                        {activityLeadOptions.map((lead) => (
-                          <option key={lead.id} value={lead.id}>
-                            {lead.listingAddress || lead.id}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <button type="submit" disabled={isMutating}>
-                      Log Note
-                    </button>
-                  </form>
-                </section>
-
-                <section className="crm-panel">
-                  <div className="crm-panel-head">
-                    <h3>Contacts</h3>
-                    <span className="crm-muted">Directory snapshot for active records.</span>
-                  </div>
-                  {contacts.length === 0 ? (
-                    <EmptyState title="No contacts yet" detail="Create your first contact to start linking notes and lead records." />
-                  ) : (
-                    <ul className="crm-list">
-                      {contacts.slice(0, 8).map((contact) => {
-                        const linkedLead = leadByContactId.get(contact.id);
-                        return (
-                          <li key={contact.id} className="crm-list-item">
-                            <strong>
-                              {linkedLead ? (
-                                <button type="button" className="crm-inline-link" onClick={() => openLeadProfile(linkedLead.id)}>
-                                  {contact.fullName || 'Unnamed contact'}
-                                </button>
-                              ) : (
-                                contact.fullName || 'Unnamed contact'
-                              )}
-                            </strong>
-                            <span className="crm-muted">{contact.email || contact.phone || 'No channel captured'}</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </section>
-              </aside>
-            </section>
+            <NeedsAttention
+              leads={leads}
+              activities={activities}
+              contactById={contactById}
+              onOpenLead={openLeadProfile}
+            />
           </section>
         ) : null}
 
@@ -2833,18 +2197,14 @@ export function CrmWorkspace({
 
         {activeView === 'campaigns' ? <CampaignsView /> : null}
 
-        {activeView === 'profile' ? (
-          <ProfileView
-            agentProfile={agentProfile}
-            setAgentProfile={(value) => {
-              if (typeof value === 'function') {
-                setAgentProfile(value(agentProfile));
-              } else {
-                setAgentProfile(value);
-              }
-            }}
+        {activeView === 'activity' ? (
+          <ActivityView
+            activities={activities}
             leads={leads}
-            brandInitials={brandInitials}
+            contacts={contacts}
+            contactById={contactById}
+            leadById={leadById}
+            onOpenLead={openLeadProfile}
           />
         ) : null}
 
@@ -2875,6 +2235,17 @@ export function CrmWorkspace({
             notificationPermission={pushNotifications.permissionState}
             onRequestNotificationPermission={pushNotifications.requestPermission}
             onUpdateNotificationPrefs={pushNotifications.updatePrefs}
+            agentProfile={agentProfile}
+            setAgentProfile={(value) => {
+              if (typeof value === 'function') {
+                setAgentProfile(value(agentProfile));
+              } else {
+                setAgentProfile(value);
+              }
+            }}
+            leads={leads}
+            theme={theme}
+            toggleTheme={toggleTheme}
           />
         ) : null}
 
@@ -3011,6 +2382,8 @@ export function CrmWorkspace({
         onClose={() => setNotificationsOpen(false)}
         notifications={notifications}
         onOpenLead={openLeadProfile}
+        onDismiss={dismissNotification}
+        onClearAll={clearAllNotifications}
       />
 
       <MobileActionBar
@@ -3027,12 +2400,85 @@ export function CrmWorkspace({
         notificationCount={unreadCount}
       />
 
+      <div className="crm-floating-btn-stack">
+        <button type="button" className="crm-floating-btn" onClick={() => setShowNewLeadModal(true)} title="New Lead" aria-label="New Lead">
+          + Lead
+        </button>
+        <button type="button" className="crm-floating-btn" onClick={() => setShowNewActivityModal(true)} title="New Activity" aria-label="New Activity">
+          + Activity
+        </button>
+      </div>
+
       <FloatingActivityLog
         activities={activities}
         leadById={leadById}
         contactById={contactById}
         onOpenLead={openLeadProfile}
       />
+
+      <NewLeadModal
+        open={showNewLeadModal}
+        onClose={() => setShowNewLeadModal(false)}
+        isMutating={isMutating}
+        onSubmit={async (data) => {
+          setShowNewLeadModal(false);
+          setNewLeadField('newLeadAddress', data.listingAddress);
+          setNewLeadField('newLeadSource', data.source);
+          setNewLeadField('newLeadType', data.leadType);
+          setNewLeadField('newLeadNotes', data.notes);
+          setNewLeadField('newLeadTimeframe', data.timeframe);
+          setNewLeadField('newLeadPropertyType', data.propertyType);
+          await createLead();
+        }}
+      />
+
+      <NewActivityModal
+        open={showNewActivityModal}
+        onClose={() => setShowNewActivityModal(false)}
+        isMutating={isMutating}
+        leads={leads}
+        contacts={contacts}
+        contactById={contactById}
+        onSubmit={async (data) => {
+          setShowNewActivityModal(false);
+          // Direct POST since this bypasses the form state
+          const nowIso = new Date().toISOString();
+          const optimisticId = `optimistic-activity-${Date.now()}`;
+          const optimisticActivity: CrmActivity = {
+            id: optimisticId,
+            tenantId: tenantContext.tenantId,
+            contactId: data.contactId || null,
+            leadId: data.leadId || null,
+            activityType: data.activityType,
+            occurredAt: nowIso,
+            summary: data.summary,
+            metadataJson: null,
+            createdAt: nowIso,
+          };
+          addActivity(optimisticActivity);
+          updateSummary({ activityCount: summary.activityCount + 1 });
+          beginMutation();
+          try {
+            const response = await fetch('/api/activities', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            });
+            if (!response.ok) throw new Error('Activity create failed.');
+            const json = (await response.json()) as { activity?: CrmActivity };
+            if (json.activity) replaceActivityById(optimisticId, json.activity);
+            else { removeActivity(optimisticId); updateSummary({ activityCount: Math.max(0, summary.activityCount - 1) }); }
+            pushToast('success', 'Activity logged.');
+          } catch (err) {
+            removeActivity(optimisticId);
+            updateSummary({ activityCount: Math.max(0, summary.activityCount - 1) });
+            pushToast('error', err instanceof Error ? err.message : 'Failed to log activity.');
+          } finally {
+            endMutation();
+          }
+        }}
+      />
+
 
       {showQuickAddLead && (
         <div className="crm-quick-add-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowQuickAddLead(false); }}>

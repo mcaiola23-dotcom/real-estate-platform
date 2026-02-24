@@ -35,7 +35,6 @@ interface UiSlice {
   showNewLeadForm: boolean;
   showCsvImport: boolean;
   showQuickAddLead: boolean;
-
   toasts: WorkspaceToast[];
 
   loading: boolean;
@@ -62,7 +61,6 @@ interface UiSlice {
   toggleShowNewLeadForm: () => void;
   setShowCsvImport: (show: boolean) => void;
   setShowQuickAddLead: (show: boolean) => void;
-
   pushToast: (kind: WorkspaceToast['kind'], message: string) => void;
   removeToast: (id: number) => void;
 
@@ -174,6 +172,10 @@ interface FormSlice {
   newActivitySummary: string;
   newActivityLeadId: string;
   newActivityContactId: string;
+  newActivityType: string;
+
+  showNewLeadModal: boolean;
+  showNewActivityModal: boolean;
 
   setNewLeadField: (field: keyof Pick<FormSlice, 'newLeadAddress' | 'newLeadSource' | 'newLeadType' | 'newLeadNotes' | 'newLeadTimeframe' | 'newLeadPropertyType'>, value: string) => void;
   resetNewLeadForm: () => void;
@@ -181,8 +183,11 @@ interface FormSlice {
   setNewContactField: (field: keyof Pick<FormSlice, 'newContactName' | 'newContactEmail' | 'newContactPhone'>, value: string) => void;
   resetNewContactForm: () => void;
 
-  setNewActivityField: (field: keyof Pick<FormSlice, 'newActivitySummary' | 'newActivityLeadId' | 'newActivityContactId'>, value: string) => void;
+  setNewActivityField: (field: keyof Pick<FormSlice, 'newActivitySummary' | 'newActivityLeadId' | 'newActivityContactId' | 'newActivityType'>, value: string) => void;
   resetNewActivityForm: () => void;
+
+  setShowNewLeadModal: (show: boolean) => void;
+  setShowNewActivityModal: (show: boolean) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -226,7 +231,6 @@ export const useCrmStore = create<CrmStore>((set, get) => ({
   showNewLeadForm: false,
   showCsvImport: false,
   showQuickAddLead: false,
-
   toasts: [],
 
   loading: true,
@@ -408,6 +412,10 @@ export const useCrmStore = create<CrmStore>((set, get) => ({
   newActivitySummary: '',
   newActivityLeadId: '',
   newActivityContactId: '',
+  newActivityType: 'note',
+
+  showNewLeadModal: false,
+  showNewActivityModal: false,
 
   setNewLeadField: (field, value) => set({ [field]: value }),
   resetNewLeadForm: () => set({
@@ -432,7 +440,11 @@ export const useCrmStore = create<CrmStore>((set, get) => ({
     newActivitySummary: '',
     newActivityLeadId: '',
     newActivityContactId: '',
+    newActivityType: 'note',
   }),
+
+  setShowNewLeadModal: (show) => set({ showNewLeadModal: show }),
+  setShowNewActivityModal: (show) => set({ showNewActivityModal: show }),
 
   // --- Settings State ---
   brandPreferences: createDefaultBrandPreferences(''),

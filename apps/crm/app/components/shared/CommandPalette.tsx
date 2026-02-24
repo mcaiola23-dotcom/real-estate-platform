@@ -88,7 +88,6 @@ function CommandPaletteInner({
     { id: 'nav-leads', label: 'Go to Lead Tracker', section: 'Navigation', icon: '☰', action: () => { onNavigate('leads'); onClose(); } },
     { id: 'nav-properties', label: 'Go to Properties', section: 'Navigation', icon: '⊞', action: () => { onNavigate('properties'); onClose(); } },
     { id: 'nav-transactions', label: 'Go to Transactions', section: 'Navigation', icon: '⇄', action: () => { onNavigate('transactions'); onClose(); } },
-    { id: 'nav-contacts', label: 'Go to Contacts', section: 'Navigation', icon: '◉', action: () => { onNavigate('contacts'); onClose(); } },
     { id: 'nav-activity', label: 'Go to Activity', section: 'Navigation', icon: '↻', action: () => { onNavigate('activity'); onClose(); } },
     { id: 'nav-analytics', label: 'Go to Analytics', section: 'Navigation', icon: '◫', action: () => { onNavigate('analytics'); onClose(); } },
     { id: 'nav-settings', label: 'Go to Settings', section: 'Navigation', icon: '⚙', action: () => { onNavigate('settings'); onClose(); } },

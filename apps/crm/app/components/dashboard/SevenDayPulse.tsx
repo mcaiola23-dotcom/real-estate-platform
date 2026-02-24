@@ -5,7 +5,12 @@ import type { DailyBreakdown } from '../../lib/crm-types';
 
 const DAY_FMT = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-export function SevenDayPulse({ days }: { days: DailyBreakdown[] }) {
+interface SevenDayPulseProps {
+  days: DailyBreakdown[];
+  onClickDay?: (date: Date) => void;
+}
+
+export function SevenDayPulse({ days, onClickDay }: SevenDayPulseProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
   const activeIndex = pinnedIndex ?? hoveredIndex;
@@ -98,7 +103,17 @@ export function SevenDayPulse({ days }: { days: DailyBreakdown[] }) {
           }}
         >
           <div className="crm-pulse-tooltip-header">
-            <span>{DAY_FMT.format(days[activeIndex]!.date)}</span>
+            {onClickDay ? (
+              <button
+                type="button"
+                className="crm-pulse-tooltip-day-btn"
+                onClick={() => onClickDay(days[activeIndex]!.date)}
+              >
+                {DAY_FMT.format(days[activeIndex]!.date)}
+              </button>
+            ) : (
+              <span>{DAY_FMT.format(days[activeIndex]!.date)}</span>
+            )}
             <strong>{days[activeIndex]!.total} events</strong>
           </div>
           <div className="crm-pulse-tooltip-grid">

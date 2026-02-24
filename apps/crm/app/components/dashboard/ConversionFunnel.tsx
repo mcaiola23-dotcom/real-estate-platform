@@ -1,10 +1,12 @@
 'use client';
 
 import { memo, useEffect, useRef, useState } from 'react';
-import type { CrmLead } from '@real-estate/types/crm';
+import type { CrmContact, CrmLead } from '@real-estate/types/crm';
 
 interface ConversionFunnelProps {
   leads: CrmLead[];
+  contactById?: Map<string, CrmContact>;
+  onClickStatus?: (status: string) => void;
 }
 
 interface FunnelStage {
@@ -27,8 +29,9 @@ function avgDaysInStatus(leads: CrmLead[], status: string): number {
   return Math.round(total / matching.length);
 }
 
-export const ConversionFunnel = memo(function ConversionFunnel({ leads }: ConversionFunnelProps) {
+export const ConversionFunnel = memo(function ConversionFunnel({ leads, contactById, onClickStatus }: ConversionFunnelProps) {
   const [animated, setAnimated] = useState(false);
+  const [hoveredStage, setHoveredStage] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,22 +92,30 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
       avgDays: avgDaysInStatus(leads, 'won'),
       color: 'var(--status-won)',
     },
+    {
+      key: 'lost',
+      label: 'Lost',
+      count: countByStatus.lost,
+      pct: Math.round((countByStatus.lost / total) * 100),
+      avgDays: avgDaysInStatus(leads, 'lost'),
+      color: 'var(--status-lost)',
+    },
   ];
 
-  const lostStage: FunnelStage = {
-    key: 'lost',
-    label: 'Lost',
-    count: countByStatus.lost,
-    pct: Math.round((countByStatus.lost / total) * 100),
-    avgDays: avgDaysInStatus(leads, 'lost'),
-    color: 'var(--status-lost)',
+  // Helper: get first N lead names for tooltip
+  const getLeadNames = (status: string, max: number) => {
+    const matching = leads.filter((l) => l.status === status).slice(0, max);
+    return matching.map((l) => {
+      const contact = l.contactId && contactById ? contactById.get(l.contactId) : undefined;
+      return contact?.fullName || l.listingAddress || 'Lead';
+    });
   };
 
   // SVG dimensions
   const svgW = 520;
-  const svgH = 120;
+  const svgH = 160;
   const stageW = svgW / stages.length;
-  const maxBarH = 80;
+  const maxBarH = 140;
 
   return (
     <div ref={ref} className={`crm-funnel ${animated ? 'crm-funnel--animated' : ''}`}>
@@ -117,7 +128,14 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
             const w = stageW * 0.8;
             const y = svgH - barH - 10;
             return (
-              <g key={stage.key} className="crm-funnel__bar-group">
+              <g
+                key={stage.key}
+                className="crm-funnel__bar-group"
+                onMouseEnter={() => setHoveredStage(stage.key)}
+                onMouseLeave={() => setHoveredStage(null)}
+                onClick={() => onClickStatus?.(stage.key)}
+                style={{ cursor: onClickStatus ? 'pointer' : undefined }}
+              >
                 <rect
                   x={x}
                   y={y}
@@ -146,6 +164,28 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
             );
           })}
         </svg>
+
+        {/* Hover tooltips (rendered outside SVG) */}
+        {hoveredStage && (() => {
+          const idx = stages.findIndex((s) => s.key === hoveredStage);
+          if (idx < 0) return null;
+          const stage = stages[idx]!;
+          const names = getLeadNames(stage.key, 5);
+          const remaining = stage.count - names.length;
+          return (
+            <div
+              className="crm-funnel__tooltip"
+              style={{ left: `${((idx + 0.5) / stages.length) * 100}%` }}
+            >
+              <strong>{stage.label} ({stage.count})</strong>
+              {names.map((name, ni) => (
+                <span key={ni} className="crm-funnel__tooltip-name">{name}</span>
+              ))}
+              {remaining > 0 && <span className="crm-muted">+{remaining} more</span>}
+              {onClickStatus && <span className="crm-funnel__tooltip-cta">Click to view all</span>}
+            </div>
+          );
+        })()}
       </div>
 
       <div className="crm-funnel__legend">
@@ -155,10 +195,6 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
             {stage.label}: {stage.pct}% &middot; ~{stage.avgDays}d avg
           </span>
         ))}
-        <span className="crm-funnel__legend-item crm-funnel__legend-item--lost">
-          <span className="crm-funnel__legend-dot" style={{ background: lostStage.color }} />
-          {lostStage.label}: {lostStage.count} ({lostStage.pct}%)
-        </span>
       </div>
     </div>
   );

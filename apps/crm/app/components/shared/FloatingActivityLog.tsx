@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import type { CrmActivity, CrmLead, CrmContact } from '@real-estate/types/crm';
+import { Activity } from 'lucide-react';
 import { formatActivityTypeLabel } from '../../lib/crm-display';
 import { formatTimeAgo } from '../../lib/crm-formatters';
 
@@ -48,7 +49,7 @@ export function FloatingActivityLog({
         onClick={() => setCollapsed(!collapsed)}
         aria-label={collapsed ? 'Open activity log' : 'Close activity log'}
       >
-        <span className="crm-floating-activity-toggle-icon">↻</span>
+        <span className="crm-floating-activity-toggle-icon"><Activity size={18} /></span>
         {collapsed && <span className="crm-floating-activity-badge">{activities.length}</span>}
       </button>
 

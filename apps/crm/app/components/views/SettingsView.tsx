@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState, useCallback, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useState, useCallback, useRef, type Dispatch, type SetStateAction } from 'react';
 import type { TenantContext } from '@real-estate/types/tenant';
+import type { CrmLead } from '@real-estate/types/crm';
 import Image from 'next/image';
-import type { BrandPreferences } from '../../lib/crm-types';
-import { normalizeHexColor } from '../../lib/crm-brand-theme';
+import { Moon, Sun } from 'lucide-react';
+import type { AgentProfile, BrandPreferences } from '../../lib/crm-types';
+import { normalizeHexColor, getBrandInitials } from '../../lib/crm-brand-theme';
 import { passthroughImageLoader } from '../../lib/crm-formatters';
 import { CalendarSync } from '../shared/CalendarSync';
 import type { NotificationPrefs } from '../../lib/use-push-notifications';
@@ -13,6 +15,118 @@ import { CommissionSettingsPanel } from './CommissionSettingsPanel';
 import { AdSpendTracker } from '../shared/AdSpendTracker';
 import { TeamRoster } from '../shared/TeamRoster';
 import { AiWorkflowPanel } from '../shared/AiWorkflowPanel';
+
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+
+function resizeAndEncode(file: File, maxSize: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = document.createElement('img');
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width;
+        let h = img.height;
+        if (w > maxSize || h > maxSize) {
+          const ratio = Math.min(maxSize / w, maxSize / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas not supported')); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = () => reject(new Error('Invalid image'));
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function HeadshotUpload({ headshotUrl, onChange }: { headshotUrl: string; onChange: (url: string) => void }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState('');
+  const [showUrlFallback, setShowUrlFallback] = useState(false);
+
+  const handleFile = useCallback(async (file: File) => {
+    setError('');
+    if (file.size > MAX_FILE_SIZE) {
+      setError('File must be under 2MB.');
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file.');
+      return;
+    }
+    try {
+      const dataUrl = await resizeAndEncode(file, 300);
+      onChange(dataUrl);
+    } catch {
+      setError('Failed to process image.');
+    }
+  }, [onChange]);
+
+  return (
+    <div className="crm-headshot-upload">
+      <span className="crm-field-label">Headshot</span>
+      <div
+        className="crm-headshot-upload__dropzone"
+        onClick={() => fileRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('is-dragover'); }}
+        onDragLeave={(e) => e.currentTarget.classList.remove('is-dragover')}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.currentTarget.classList.remove('is-dragover');
+          const file = e.dataTransfer.files[0];
+          if (file) handleFile(file);
+        }}
+      >
+        {headshotUrl ? (
+          <img src={headshotUrl} alt="Headshot preview" className="crm-headshot-upload__preview" />
+        ) : (
+          <span className="crm-headshot-upload__placeholder">Click or drag to upload</span>
+        )}
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="crm-headshot-upload__input"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleFile(file);
+            e.target.value = '';
+          }}
+        />
+      </div>
+      {headshotUrl && (
+        <button type="button" className="crm-btn crm-btn-ghost crm-btn-sm" onClick={() => onChange('')}>
+          Remove
+        </button>
+      )}
+      {error && <span className="crm-field-error">{error}</span>}
+      <button
+        type="button"
+        className="crm-btn crm-btn-ghost crm-btn-sm"
+        onClick={() => setShowUrlFallback(!showUrlFallback)}
+      >
+        {showUrlFallback ? 'Hide URL input' : 'Or enter URL'}
+      </button>
+      {showUrlFallback && (
+        <input
+          type="url"
+          className="crm-headshot-upload__url-input"
+          value={headshotUrl.startsWith('data:') ? '' : headshotUrl}
+          placeholder="https://example.com/headshot.jpg"
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
+    </div>
+  );
+}
 
 interface SettingsViewProps {
   brandPreferences: BrandPreferences;
@@ -28,6 +142,11 @@ interface SettingsViewProps {
   notificationPermission: NotificationPermission;
   onRequestNotificationPermission: () => void;
   onUpdateNotificationPrefs: (updates: Partial<NotificationPrefs>) => void;
+  agentProfile: AgentProfile;
+  setAgentProfile: Dispatch<SetStateAction<AgentProfile>>;
+  leads: CrmLead[];
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 export function SettingsView({
@@ -44,6 +163,11 @@ export function SettingsView({
   notificationPermission,
   onRequestNotificationPermission,
   onUpdateNotificationPrefs,
+  agentProfile,
+  setAgentProfile,
+  leads,
+  theme,
+  toggleTheme,
 }: SettingsViewProps) {
   const [googleStatus, setGoogleStatus] = useState<{
     connected: boolean;
@@ -98,6 +222,108 @@ export function SettingsView({
     <section className="crm-panel">
       <div className="crm-panel-head">
         <h3>Settings</h3>
+        <span className="crm-muted">Tenant-scoped brand, look-and-feel, and workspace preferences.</span>
+      </div>
+      <div className="crm-panel-head" style={{ marginTop: '0' }}>
+        <h3>Personal Info</h3>
+        <span className="crm-muted">Your agent profile — visible on profile cards and lead communications.</span>
+      </div>
+      <div className="crm-settings-grid">
+        <article className="crm-settings-profile-section">
+          <div className="crm-settings-profile-row">
+            <div className="crm-settings-profile-avatar">
+              {agentProfile.headshotUrl ? (
+                <Image
+                  loader={passthroughImageLoader}
+                  src={agentProfile.headshotUrl}
+                  alt={agentProfile.fullName || 'Agent headshot'}
+                  width={80}
+                  height={80}
+                  unoptimized
+                  style={{ borderRadius: '50%', objectFit: 'cover', width: 80, height: 80 }}
+                />
+              ) : (
+                <span className="crm-profile-initials">{agentProfile.fullName ? getBrandInitials(agentProfile.fullName) : brandInitials}</span>
+              )}
+            </div>
+            <div className="crm-settings-profile-stats">
+              <div className="crm-profile-stat">
+                <strong>{leads.length}</strong>
+                <span>Total Leads</span>
+              </div>
+              <div className="crm-profile-stat">
+                <strong>{leads.length > 0 ? `${Math.round((leads.filter((l) => l.status === 'won').length / leads.length) * 100)}%` : '0%'}</strong>
+                <span>Win Rate</span>
+              </div>
+              <div className="crm-profile-stat">
+                <strong>{leads.filter((l) => l.status === 'new' || l.status === 'qualified' || l.status === 'nurturing').length}</strong>
+                <span>Active</span>
+              </div>
+            </div>
+          </div>
+          <label className="crm-field">
+            Full Name
+            <input
+              type="text"
+              value={agentProfile.fullName}
+              placeholder="Jane Doe"
+              onChange={(event) => setAgentProfile((prev) => ({ ...prev, fullName: event.target.value }))}
+            />
+          </label>
+          <label className="crm-field">
+            Email
+            <input
+              type="email"
+              value={agentProfile.email}
+              placeholder="jane@example.com"
+              onChange={(event) => setAgentProfile((prev) => ({ ...prev, email: event.target.value }))}
+            />
+          </label>
+          <label className="crm-field">
+            Phone
+            <input
+              type="tel"
+              value={agentProfile.phone}
+              placeholder="(203) 555-0100"
+              onChange={(event) => setAgentProfile((prev) => ({ ...prev, phone: event.target.value }))}
+            />
+          </label>
+          <label className="crm-field">
+            Brokerage
+            <input
+              type="text"
+              value={agentProfile.brokerage}
+              placeholder="Luxury Properties Group"
+              onChange={(event) => setAgentProfile((prev) => ({ ...prev, brokerage: event.target.value }))}
+            />
+          </label>
+          <label className="crm-field">
+            License Number
+            <input
+              type="text"
+              value={agentProfile.licenseNumber}
+              placeholder="RES.0123456"
+              onChange={(event) => setAgentProfile((prev) => ({ ...prev, licenseNumber: event.target.value }))}
+            />
+          </label>
+          <HeadshotUpload
+            headshotUrl={agentProfile.headshotUrl}
+            onChange={(url) => setAgentProfile((prev) => ({ ...prev, headshotUrl: url }))}
+          />
+          <label className="crm-field">
+            Bio
+            <textarea
+              value={agentProfile.bio}
+              placeholder="A brief description of your experience and specialties..."
+              rows={3}
+              onChange={(event) => setAgentProfile((prev) => ({ ...prev, bio: event.target.value }))}
+            />
+          </label>
+        </article>
+      </div>
+
+      <div className="crm-panel-head" style={{ marginTop: '1.5rem' }}>
+        <h3>Branding</h3>
         <span className="crm-muted">Tenant-scoped brand, look-and-feel, and workspace preferences.</span>
       </div>
       <div className="crm-settings-grid">
@@ -196,6 +422,17 @@ export function SettingsView({
             />
             <span>Enable decorative background texture</span>
           </label>
+          <div className="crm-settings-theme-toggle">
+            <h4 style={{ marginTop: '1rem' }}>Appearance</h4>
+            <button
+              type="button"
+              className="crm-secondary-button crm-settings-dark-mode-btn"
+              onClick={toggleTheme}
+            >
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+              <span>{theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</span>
+            </button>
+          </div>
           <button type="button" className="crm-secondary-button" onClick={resetBrandPreferences}>
             Reset Branding Defaults
           </button>
