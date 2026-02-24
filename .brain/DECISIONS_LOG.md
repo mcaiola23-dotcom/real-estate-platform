@@ -751,3 +751,23 @@
 ### D-175: Listing Modal integration into CRM requires shared types, not cross-app imports
 **Decision**: Integrate the agent website's `ListingModal` into the CRM by creating a `CrmListingModal` wrapper in `apps/crm` that reuses shared listing types from `packages/types/src/listings.ts`. The wrapper replaces agent branding/inquiry CTA with CRM-specific actions (schedule showing, share with client, assign to lead). Do NOT import from `apps/web` directly.
 **Reason**: The no-cross-app-imports rule (CLAUDE.md non-negotiable #2) prevents importing `apps/web/app/home-search/ListingModal.tsx` into `apps/crm`. The listing type contracts already exist in `packages/types/src/listings.ts`. The CRM context requires different actions than the consumer website context (agent sees CRM actions, not "Contact Agent" buttons).
+
+### D-176: Use CollapsibleSection as reusable expand/collapse primitive for modal content grouping
+**Decision**: Extract a shared `CollapsibleSection` component in `apps/crm/app/components/shared/CollapsibleSection.tsx` with `title`, `icon`, `badge`, `defaultOpen`, and `children` props. Used across Overview, Intelligence, and Activity tabs in LeadProfileModal.
+**Reason**: SmartReminderForm already had an inline expand/collapse pattern. Multiple modal sections need the same behavior. Extracting it as a shared component avoids duplicating the chevron-rotation/toggle pattern across 8+ sections.
+
+### D-177: Unified modal footer with single Save Changes button
+**Decision**: Replace the two separate save buttons (Save Lead + Save Contact) with a single "Save Changes" button in a sticky modal footer. The button calls `onUpdateLead` first, then `onUpdateContact` if present. Disable when no unsaved changes exist.
+**Reason**: Two save buttons confused users about which to click. A single save action is standard in CRM products. The sequential save order (lead then contact) prevents partial-save confusion.
+
+### D-178: Add listingId to LeadListingSignal for clickable listing references
+**Decision**: Add optional `listingId` field to `LeadListingSignal` interface and extract it from activity metadata in `crm-data-extraction.ts`. Pass through to `TimelineEventData` and use `onListingClick` callback prop pattern in `UnifiedTimeline` and `TimelineEvent`.
+**Reason**: Listing signals need a stable identifier to fetch full listing details when users click on them. The data already exists in activity metadata from ingested website events.
+
+### D-179: Rename MlsPropertyCard to PropertyPreferences with backward-compatible alias
+**Decision**: Rename the component and export a deprecated `MlsPropertyCard` alias from the same file. Add `timeframe` prop.
+**Reason**: The component shows lead property search preferences (beds, baths, price range, timeframe), not MLS listing data. The deprecated alias ensures no breaking changes for any unconverted imports.
+
+### D-180: Embed VoiceNoteRecorder in ContactHistoryLog instead of standalone section
+**Decision**: Move VoiceNoteRecorder from a standalone orphaned section in the modal into an inline toggle within the ContactHistoryLog component. A microphone button toggles the recorder visibility alongside the call/text/email type selector.
+**Reason**: Voice notes are a form of contact logging. Having them as a separate modal section disconnected from the contact history was confusing and wasted vertical space. The toggle pattern keeps the UI clean while providing access when needed.

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
+import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import type { CrmActivity, CrmContact, CrmLead, CrmLeadStatus } from '@real-estate/types/crm';
 import type { Listing } from '@real-estate/types/listings';
 import type {
@@ -34,12 +34,74 @@ import { TemplateLibrary } from '../shared/TemplateLibrary';
 import { AiDraftComposer } from '../shared/AiDraftComposer';
 import { GmailComposer } from '../shared/GmailComposer';
 import { GmailThreads } from '../shared/GmailThreads';
+import { CollapsibleSection } from '../shared/CollapsibleSection';
+import { PropertyPreferences } from '../shared/MlsPropertyCard';
+import { CrmListingModal } from '../shared/CrmListingModal';
 import type { MergeFieldContext } from '../../lib/crm-templates';
 import { downloadIcsFile } from '../../lib/crm-calendar';
 import type { CrmShowing } from '@real-estate/types/crm';
 import { ShowingScheduler } from '../shared/ShowingScheduler';
-import { VoiceNoteRecorder } from '../shared/VoiceNoteRecorder';
-import { MlsPropertyCard } from '../shared/MlsPropertyCard';
+
+// ---------------------------------------------------------------------------
+// Tab type + icons
+// ---------------------------------------------------------------------------
+
+type ModalTab = 'overview' | 'communication' | 'intelligence' | 'activity';
+
+const TabOverviewIcon = (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+);
+
+const TabCommsIcon = (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <path d="M2.5 3h11A1.5 1.5 0 0115 4.5v6a1.5 1.5 0 01-1.5 1.5H5L2 14.5V4.5A1.5 1.5 0 013.5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const TabIntelIcon = (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M8 5v3l2 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const TabActivityIcon = (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <path d="M2 8h3l1.5-4 3 8L11 8h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// ---------------------------------------------------------------------------
+// Quick action SVG icons (replacing emojis)
+// ---------------------------------------------------------------------------
+
+const QuickPhoneIcon = (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <path d="M6 3H4.5A1.5 1.5 0 003 4.5v1A8.5 8.5 0 0010.5 14h1a1.5 1.5 0 001.5-1.5V11l-2.5-1.5L9 11a5 5 0 01-4-4l1.5-1.5L5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const QuickEmailIcon = (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const QuickTextIcon = (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <path d="M2.5 3h11A1.5 1.5 0 0115 4.5v6a1.5 1.5 0 01-1.5 1.5H5L2 14.5V4.5A1.5 1.5 0 013.5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
 
 interface LeadProfileModalProps {
   lead: CrmLead;
@@ -67,6 +129,10 @@ interface LeadProfileModalProps {
   onSnoozeReminder?: (leadId: string, durationMs: number) => void;
 }
 
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export function LeadProfileModal({
   lead,
   leadDraft,
@@ -92,6 +158,7 @@ export function LeadProfileModal({
   onSaveReminder,
   onSnoozeReminder,
 }: LeadProfileModalProps) {
+  const [activeTab, setActiveTab] = useState<ModalTab>('overview');
   const [showTemplates, setShowTemplates] = useState(false);
   const [showAiComposer, setShowAiComposer] = useState(false);
   const [showGmailComposer, setShowGmailComposer] = useState(false);
@@ -102,6 +169,54 @@ export function LeadProfileModal({
   const [showings, setShowings] = useState<CrmShowing[]>([]);
   const [portalLink, setPortalLink] = useState<string | null>(null);
   const [generatingPortal, setGeneratingPortal] = useState(false);
+  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+
+  const modalRef = useRef<HTMLElement>(null);
+
+  // -- Focus trap --
+  useEffect(() => {
+    const modal = modalRef.current;
+    if (!modal) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const focusable = modal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    // Auto-focus first interactive element
+    requestAnimationFrame(() => {
+      const firstFocusable = modal.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      firstFocusable?.focus();
+    });
+
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   // Fetch showings for this lead
   useEffect(() => {
@@ -129,7 +244,7 @@ export function LeadProfileModal({
     return () => { cancelled = true; };
   }, []);
 
-  // Suggested property matches — derive loading from data staleness to avoid synchronous setState in effect body
+  // Suggested property matches
   interface MatchEntry { listing: Listing; score: number; matchReasons: string[] }
   const [matchData, setMatchData] = useState<{ leadId: string; data: MatchEntry[] } | null>(null);
 
@@ -155,28 +270,66 @@ export function LeadProfileModal({
     return () => { cancelled = true; };
   }, [lead.id, lead.propertyType, lead.beds, lead.baths, lead.priceMin, lead.priceMax, hasPreferences]);
 
+  // Unified save
+  const handleSaveAll = useCallback(async () => {
+    if (hasUnsavedLeadChange) {
+      await onUpdateLead(lead.id);
+    }
+    if (activeContact && hasUnsavedContactChange) {
+      await onUpdateContact(activeContact.id);
+    }
+  }, [lead.id, activeContact, hasUnsavedLeadChange, hasUnsavedContactChange, onUpdateLead, onUpdateContact]);
+
+  const handleDiscard = useCallback(() => {
+    onClearLeadDraft(lead.id);
+    if (activeContact) {
+      onSetContactDraft((prev) => {
+        const next = { ...prev };
+        delete next[activeContact.id];
+        return next;
+      });
+    }
+  }, [lead.id, activeContact, onClearLeadDraft, onSetContactDraft]);
+
+  const handleListingClick = useCallback((listingId: string) => {
+    // Try to find listing in matches first
+    const match = propertyMatches.find((m) => m.listing.id === listingId);
+    if (match) {
+      setSelectedListing(match.listing);
+      return;
+    }
+    // Fetch from API
+    fetch(`/api/listings/${listingId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.listing) setSelectedListing(data.listing);
+      })
+      .catch(() => {});
+  }, [propertyMatches]);
+
+  const hasUnsavedChanges = hasUnsavedLeadChange || hasUnsavedContactChange;
+
   return (
     <div
       className="crm-modal-backdrop"
       onClick={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
+        if (event.target === event.currentTarget) onClose();
       }}
     >
-      <section className="crm-modal" role="dialog" aria-modal="true" aria-labelledby="crm-lead-profile-title">
+      <section className="crm-modal" role="dialog" aria-modal="true" aria-labelledby="crm-lead-profile-title" ref={modalRef}>
+        {/* ── Header ── */}
         <header className="crm-modal-header">
           <div>
             <p className="crm-kicker">Lead Profile</p>
             <h3 id="crm-lead-profile-title">{leadDraft.listingAddress || 'Lead Details'}</h3>
             <p className="crm-muted">
-              Created {formatDateTime(lead.createdAt)} • Updated {formatDateTime(lead.updatedAt)}
+              Created {formatDateTime(lead.createdAt)} · Updated {formatDateTime(lead.updatedAt)}
             </p>
             {activeContact && (activeContact.phone || activeContact.email) ? (
               <div className="crm-quick-actions" style={{ marginTop: '0.5rem' }}>
                 {activeContact.phone ? (
                   <a href={`tel:${activeContact.phone}`} className="crm-quick-action" title={`Call ${activeContact.phone}`} aria-label="Call lead">
-                    📞
+                    {QuickPhoneIcon}
                   </a>
                 ) : null}
                 {activeContact.email ? (
@@ -186,12 +339,12 @@ export function LeadProfileModal({
                     title={`Email ${activeContact.email}`}
                     aria-label="Email lead"
                   >
-                    ✉️
+                    {QuickEmailIcon}
                   </a>
                 ) : null}
                 {activeContact.phone ? (
                   <a href={`sms:${activeContact.phone}`} className="crm-quick-action" title={`Text ${activeContact.phone}`} aria-label="Text lead">
-                    💬
+                    {QuickTextIcon}
                   </a>
                 ) : null}
               </div>
@@ -200,7 +353,7 @@ export function LeadProfileModal({
           <div className="crm-modal-header-actions">
             <button
               type="button"
-              className="crm-secondary-button"
+              className="crm-btn-secondary"
               disabled={generatingPortal}
               onClick={async () => {
                 setGeneratingPortal(true);
@@ -237,308 +390,306 @@ export function LeadProfileModal({
           onViewLead={onViewLead ?? (() => {})}
         />
 
-        <div className="crm-modal-grid">
-          <section className="crm-modal-section">
-            <h4>Lead + Contact Details</h4>
-            <div className="crm-chip-row">
-              <span className="crm-chip">{formatLeadTypeLabel(lead.leadType)}</span>
-              <span className="crm-chip">{formatLeadSourceLabel(lead.source)}</span>
-              <span className={`crm-status-badge crm-status-${leadDraft.status}`}>
-                {formatLeadStatusLabel(leadDraft.status)}
-              </span>
-              {hasUnsavedLeadChange ? <span className="crm-chip crm-chip-warning">Unsaved lead changes</span> : null}
-              {activeContact && hasUnsavedContactChange ? (
-                <span className="crm-chip crm-chip-warning">Unsaved contact changes</span>
-              ) : null}
-            </div>
+        {/* ── Tab Bar ── */}
+        <nav className="crm-modal-tabs" aria-label="Lead profile sections">
+          <button
+            type="button"
+            className={`crm-modal-tab ${activeTab === 'overview' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            {TabOverviewIcon} Overview
+          </button>
+          <button
+            type="button"
+            className={`crm-modal-tab ${activeTab === 'communication' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('communication')}
+          >
+            {TabCommsIcon} Communication
+          </button>
+          <button
+            type="button"
+            className={`crm-modal-tab ${activeTab === 'intelligence' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('intelligence')}
+          >
+            {TabIntelIcon} Intelligence
+          </button>
+          <button
+            type="button"
+            className={`crm-modal-tab ${activeTab === 'activity' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('activity')}
+          >
+            {TabActivityIcon} Activity
+          </button>
+        </nav>
 
-            <SourceAttributionChain source={lead.source} activities={activities} />
-
-            <LeadTagInput
-              leadId={lead.id}
-              tenantId={lead.tenantId}
-              initialTags={lead.tags}
-              onTagsChange={() => { /* parent refresh handled by API persist */ }}
-            />
-
-            <div className="crm-modal-definition-grid">
-              <p>
-                <span>Last Contact</span>
-                <strong>{activeLeadLastContact ? formatDateTime(activeLeadLastContact) : 'No contact logged'}</strong>
-              </p>
-            </div>
-
-            <div className="crm-inline-edit-row">
-              <div className="crm-inline-edit-field">
-                <label>Next Action Date</label>
-                <input
-                  type="date"
-                  value={leadDraft.nextActionAt ? leadDraft.nextActionAt.split('T')[0] : ''}
-                  onChange={(e) => onSetLeadDraftField(lead.id, 'nextActionAt', e.target.value ? new Date(e.target.value).toISOString() : '')}
-                />
+        {/* ── Overview Tab ── */}
+        {activeTab === 'overview' && (
+          <div className="crm-modal-tab-content">
+            {/* Unsaved change indicators */}
+            {hasUnsavedChanges && (
+              <div className="crm-chip-row">
+                {hasUnsavedLeadChange ? <span className="crm-chip crm-chip-warning">Unsaved lead changes</span> : null}
+                {activeContact && hasUnsavedContactChange ? (
+                  <span className="crm-chip crm-chip-warning">Unsaved contact changes</span>
+                ) : null}
               </div>
-              <div className="crm-inline-edit-field">
-                <label>Next Action Note</label>
-                <input
-                  type="text"
-                  value={leadDraft.nextActionNote}
-                  onChange={(e) => onSetLeadDraftField(lead.id, 'nextActionNote', e.target.value)}
-                  placeholder="Follow up re: showing"
-                />
+            )}
+
+            {/* Lead Profile section */}
+            <CollapsibleSection
+              title="Lead Profile"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              }
+            >
+              <div className="crm-chip-row">
+                <span className="crm-chip">{formatLeadTypeLabel(lead.leadType)}</span>
+                <span className="crm-chip">{formatLeadSourceLabel(lead.source)}</span>
+                <span className={`crm-status-badge crm-status-${leadDraft.status}`}>
+                  {formatLeadStatusLabel(leadDraft.status)}
+                </span>
               </div>
-            </div>
 
-            <div className="crm-inline-edit-row">
-              <div className="crm-inline-edit-field">
-                <label>Min Price ($)</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={leadDraft.priceMin}
-                  onChange={(e) => onSetLeadDraftField(lead.id, 'priceMin', e.target.value)}
-                  placeholder="350000"
-                />
-              </div>
-              <div className="crm-inline-edit-field">
-                <label>Max Price ($)</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={leadDraft.priceMax}
-                  onChange={(e) => onSetLeadDraftField(lead.id, 'priceMax', e.target.value)}
-                  placeholder="550000"
-                />
-              </div>
-            </div>
+              <SourceAttributionChain source={lead.source} activities={activities} />
 
-            <div className="crm-modal-edit-grid">
-              <label className="crm-field crm-field-grow">
-                Contact Name
-                <input
-                  value={activeContactDraft?.fullName ?? ''}
-                  onChange={(event) => {
-                    if (!activeContact) return;
-                    const value = event.target.value;
-                    onSetContactDraft((prev) => ({
-                      ...prev,
-                      [activeContact.id]: {
-                        ...(prev[activeContact.id] ?? {
-                          fullName: activeContact.fullName ?? '',
-                          email: activeContact.email ?? '',
-                          phone: activeContact.phone ?? '',
-                        }),
-                        fullName: value,
-                      },
-                    }));
-                  }}
-                  disabled={!activeContact}
-                  placeholder="No linked contact"
-                />
-              </label>
-              <label className="crm-field crm-field-grow">
-                Contact Email
-                <input
-                  value={activeContactDraft?.email ?? ''}
-                  onChange={(event) => {
-                    if (!activeContact) return;
-                    const value = event.target.value;
-                    onSetContactDraft((prev) => ({
-                      ...prev,
-                      [activeContact.id]: {
-                        ...(prev[activeContact.id] ?? {
-                          fullName: activeContact.fullName ?? '',
-                          email: activeContact.email ?? '',
-                          phone: activeContact.phone ?? '',
-                        }),
-                        email: value,
-                      },
-                    }));
-                  }}
-                  disabled={!activeContact}
-                />
-              </label>
-            </div>
-
-            <div className="crm-modal-edit-grid">
-              <label className="crm-field crm-field-grow">
-                Contact Phone
-                <input
-                  value={activeContactDraft?.phone ?? ''}
-                  onChange={(event) => {
-                    if (!activeContact) return;
-                    const value = event.target.value;
-                    onSetContactDraft((prev) => ({
-                      ...prev,
-                      [activeContact.id]: {
-                        ...(prev[activeContact.id] ?? {
-                          fullName: activeContact.fullName ?? '',
-                          email: activeContact.email ?? '',
-                          phone: activeContact.phone ?? '',
-                        }),
-                        phone: value,
-                      },
-                    }));
-                  }}
-                  disabled={!activeContact}
-                />
-              </label>
-              <label className="crm-field crm-field-grow">
-                Address
-                <input
-                  value={leadDraft.listingAddress}
-                  onChange={(event) => onSetLeadDraftField(lead.id, 'listingAddress', event.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className="crm-modal-edit-grid">
-              <label className="crm-field">
-                Status
-                <select
-                  value={leadDraft.status}
-                  onChange={(event) => {
-                    const value = event.target.value as CrmLeadStatus;
-                    onSetLeadDraftField(lead.id, 'status', value);
-                  }}
-                >
-                  {LEAD_STATUSES.map((status) => (
-                    <option key={status} value={status}>
-                      {formatLeadStatusLabel(status)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="crm-field crm-field-grow">
-                Property Type
-                <select
-                  value={leadDraft.propertyType}
-                  onChange={(event) => onSetLeadDraftField(lead.id, 'propertyType', event.target.value)}
-                >
-                  <option value="">Not specified</option>
-                  <option value="single-family">Single Family</option>
-                  <option value="condo">Condo / Townhome</option>
-                  <option value="multi-family">Multifamily</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="rental">Rental</option>
-                  <option value="other">Other</option>
-                </select>
-              </label>
-            </div>
-
-            <div className="crm-modal-edit-grid crm-modal-edit-grid-three">
-              <label className="crm-field">
-                Beds desired
-                <input
-                  value={leadDraft.beds}
-                  onChange={(event) => onSetLeadDraftField(lead.id, 'beds', event.target.value)}
-                />
-              </label>
-              <label className="crm-field">
-                Baths desired
-                <input
-                  value={leadDraft.baths}
-                  onChange={(event) => onSetLeadDraftField(lead.id, 'baths', event.target.value)}
-                />
-              </label>
-              <label className="crm-field">
-                Size desired (sqft)
-                <input
-                  value={leadDraft.sqft}
-                  onChange={(event) => onSetLeadDraftField(lead.id, 'sqft', event.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className="crm-modal-edit-grid">
-              <label className="crm-field crm-field-grow">
-                Next Action
-                <input
-                  value={leadDraft.timeframe}
-                  onChange={(event) => onSetLeadDraftField(lead.id, 'timeframe', event.target.value)}
-                  placeholder="Schedule next call"
-                />
-              </label>
-            </div>
-
-            <label className="crm-field crm-field-grow">
-              Notes
-              <textarea
-                value={leadDraft.notes}
-                onChange={(event) => onSetLeadDraftField(lead.id, 'notes', event.target.value)}
-                placeholder="Capture call outcomes, objections, and next actions..."
+              <LeadTagInput
+                leadId={lead.id}
+                tenantId={lead.tenantId}
+                initialTags={lead.tags}
+                onTagsChange={() => {}}
               />
-            </label>
 
-            <div className="crm-actions-row">
-              <button
-                type="button"
-                disabled={savingLead}
-                onClick={() => { void onUpdateLead(lead.id); }}
-              >
-                {savingLead ? 'Saving...' : 'Save Lead'}
-              </button>
-              <button
-                type="button"
-                className="crm-secondary-button"
-                disabled={!activeContact || savingContact}
-                onClick={() => {
-                  if (!activeContact) return;
-                  void onUpdateContact(activeContact.id);
-                }}
-              >
-                {savingContact ? 'Saving...' : 'Save Contact'}
-              </button>
-              <button
-                type="button"
-                className="crm-secondary-button"
-                onClick={() => {
-                  onClearLeadDraft(lead.id);
-                  if (activeContact) {
-                    onSetContactDraft((prev) => {
-                      const next = { ...prev };
-                      delete next[activeContact.id];
-                      return next;
-                    });
-                  }
-                }}
-              >
-                Discard Draft
-              </button>
-            </div>
-          </section>
+              <div className="crm-modal-definition-grid">
+                <p>
+                  <span>Last Contact</span>
+                  <strong>{activeLeadLastContact ? formatDateTime(activeLeadLastContact) : 'No contact logged'}</strong>
+                </p>
+              </div>
 
-          <section className="crm-modal-section">
-            <h4>Lead Intelligence</h4>
-            <div className="crm-lead-insights">
-              <div className="crm-lead-insights__gauge-wrapper">
-                <LeadEngagementGauge score={leadScore.score} label={leadScore.label} />
-                <AiScoreExplanation
-                  leadId={lead.id}
-                  tenantId={lead.tenantId}
-                />
-                <AiPredictiveScore
-                  leadId={lead.id}
-                  tenantId={lead.tenantId}
-                />
+              <div className="crm-modal-edit-grid">
+                <label className="crm-field">
+                  Status
+                  <select
+                    value={leadDraft.status}
+                    onChange={(event) => {
+                      const value = event.target.value as CrmLeadStatus;
+                      onSetLeadDraftField(lead.id, 'status', value);
+                    }}
+                  >
+                    {LEAD_STATUSES.map((status) => (
+                      <option key={status} value={status}>
+                        {formatLeadStatusLabel(status)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="crm-field crm-field-grow">
+                  Address
+                  <input
+                    value={leadDraft.listingAddress}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'listingAddress', event.target.value)}
+                  />
+                </label>
               </div>
-              <div className="crm-lead-insights-charts">
-                <LeadActivityChart activities={activities} />
-                <PriceInterestBar signals={listingSignals} />
+
+              <label className="crm-field crm-field-grow">
+                Notes
+                <textarea
+                  value={leadDraft.notes}
+                  onChange={(event) => onSetLeadDraftField(lead.id, 'notes', event.target.value)}
+                  placeholder="Capture call outcomes, objections, and next actions..."
+                />
+              </label>
+            </CollapsibleSection>
+
+            {/* Contact Information section */}
+            <CollapsibleSection
+              title="Contact Information"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                  <circle cx="8" cy="6" r="2" stroke="currentColor" strokeWidth="1.2" />
+                  <path d="M5 12c0-1.5 1.3-2.5 3-2.5s3 1 3 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                </svg>
+              }
+            >
+              {activeContact ? (
+                <>
+                  <div className="crm-modal-edit-grid">
+                    <label className="crm-field crm-field-grow">
+                      Contact Name
+                      <input
+                        value={activeContactDraft?.fullName ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          onSetContactDraft((prev) => ({
+                            ...prev,
+                            [activeContact.id]: {
+                              ...(prev[activeContact.id] ?? {
+                                fullName: activeContact.fullName ?? '',
+                                email: activeContact.email ?? '',
+                                phone: activeContact.phone ?? '',
+                              }),
+                              fullName: value,
+                            },
+                          }));
+                        }}
+                        placeholder="Full name"
+                      />
+                    </label>
+                    <label className="crm-field crm-field-grow">
+                      Email
+                      <input
+                        value={activeContactDraft?.email ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          onSetContactDraft((prev) => ({
+                            ...prev,
+                            [activeContact.id]: {
+                              ...(prev[activeContact.id] ?? {
+                                fullName: activeContact.fullName ?? '',
+                                email: activeContact.email ?? '',
+                                phone: activeContact.phone ?? '',
+                              }),
+                              email: value,
+                            },
+                          }));
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <div className="crm-modal-edit-grid">
+                    <label className="crm-field crm-field-grow">
+                      Phone
+                      <input
+                        value={activeContactDraft?.phone ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          onSetContactDraft((prev) => ({
+                            ...prev,
+                            [activeContact.id]: {
+                              ...(prev[activeContact.id] ?? {
+                                fullName: activeContact.fullName ?? '',
+                                email: activeContact.email ?? '',
+                                phone: activeContact.phone ?? '',
+                              }),
+                              phone: value,
+                            },
+                          }));
+                        }}
+                      />
+                    </label>
+                  </div>
+                </>
+              ) : (
+                <div className="crm-contact-link-cta">
+                  <p>No linked contact. Create or link one to enable communication tools.</p>
+                  <button type="button" className="crm-btn-secondary">Link Contact</button>
+                </div>
+              )}
+            </CollapsibleSection>
+
+            {/* Property Preferences section */}
+            <CollapsibleSection
+              title="Property Preferences"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 7l6-5 6 5v6.5a1 1 0 01-1 1H3a1 1 0 01-1-1V7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              }
+            >
+              <div className="crm-inline-edit-row">
+                <div className="crm-inline-edit-field">
+                  <label>Min Price ($)</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={leadDraft.priceMin}
+                    onChange={(e) => onSetLeadDraftField(lead.id, 'priceMin', e.target.value)}
+                    placeholder="350000"
+                  />
+                </div>
+                <div className="crm-inline-edit-field">
+                  <label>Max Price ($)</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={leadDraft.priceMax}
+                    onChange={(e) => onSetLeadDraftField(lead.id, 'priceMax', e.target.value)}
+                    placeholder="550000"
+                  />
+                </div>
               </div>
-              <MlsPropertyCard
+
+              <div className="crm-modal-edit-grid">
+                <label className="crm-field crm-field-grow">
+                  Property Type
+                  <select
+                    value={leadDraft.propertyType}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'propertyType', event.target.value)}
+                  >
+                    <option value="">Not specified</option>
+                    <option value="single-family">Single Family</option>
+                    <option value="condo">Condo / Townhome</option>
+                    <option value="multi-family">Multifamily</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="rental">Rental</option>
+                    <option value="other">Other</option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="crm-modal-edit-grid crm-modal-edit-grid-three">
+                <label className="crm-field">
+                  Beds desired
+                  <input
+                    value={leadDraft.beds}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'beds', event.target.value)}
+                  />
+                </label>
+                <label className="crm-field">
+                  Baths desired
+                  <input
+                    value={leadDraft.baths}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'baths', event.target.value)}
+                  />
+                </label>
+                <label className="crm-field">
+                  Size desired (sqft)
+                  <input
+                    value={leadDraft.sqft}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'sqft', event.target.value)}
+                  />
+                </label>
+              </div>
+
+              <div className="crm-modal-edit-grid">
+                <label className="crm-field crm-field-grow">
+                  Timeframe
+                  <input
+                    value={leadDraft.timeframe}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'timeframe', event.target.value)}
+                    placeholder="e.g. Next 3 months"
+                  />
+                </label>
+              </div>
+
+              <PropertyPreferences
                 listingAddress={lead.listingAddress ?? undefined}
                 priceMin={lead.priceMin}
                 priceMax={lead.priceMax}
                 propertyType={lead.propertyType}
+                beds={lead.beds}
+                baths={lead.baths}
+                sqft={lead.sqft}
+                timeframe={lead.timeframe}
               />
-            </div>
-            <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
-            <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
-            <AiLeadRouting
-              leadId={lead.id}
-              tenantId={lead.tenantId}
-              currentAssignee={lead.assignedTo}
-            />
+            </CollapsibleSection>
+
+            {/* Follow-Up Reminder — the SINGLE next-action widget */}
             <SmartReminderForm
               leadId={lead.id}
               tenantId={lead.tenantId}
@@ -553,7 +704,7 @@ export function LeadProfileModal({
                 {googleConnected ? (
                   <button
                     type="button"
-                    className="crm-secondary-button"
+                    className="crm-btn-secondary"
                     disabled={addingToCalendar || calendarAdded}
                     onClick={async () => {
                       setAddingToCalendar(true);
@@ -565,12 +716,12 @@ export function LeadProfileModal({
                       setAddingToCalendar(false);
                     }}
                   >
-                    {calendarAdded ? '✓ Synced to Calendar' : addingToCalendar ? 'Adding...' : '📅 Add to Google Calendar'}
+                    {calendarAdded ? '✓ Synced to Calendar' : addingToCalendar ? 'Adding...' : 'Add to Google Calendar'}
                   </button>
                 ) : (
                   <button
                     type="button"
-                    className="crm-secondary-button"
+                    className="crm-btn-secondary"
                     onClick={() => {
                       downloadIcsFile({
                         title: `Follow up: ${activeContact?.fullName ?? 'Lead'} — ${lead.nextActionNote || 'Follow up'}`,
@@ -579,11 +730,37 @@ export function LeadProfileModal({
                       });
                     }}
                   >
-                    📅 Download .ics
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                      <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M2 6.5h12M5.5 3V1.5M10.5 3V1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    Download .ics
                   </button>
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── Communication Tab ── */}
+        {activeTab === 'communication' && (
+          <div className="crm-modal-tab-content">
+            <ContactHistoryLog
+              leadId={lead.id}
+              tenantId={lead.tenantId}
+              contactId={lead.contactId}
+              activities={activities}
+              onLogContact={onLogContact}
+              onApplyInsights={(insights) => {
+                const insightText = insights.map((i) => `[${i.category}] ${i.value}`).join('\n');
+                const existing = leadDraft.notes?.trim() || '';
+                const separator = existing ? '\n---\n' : '';
+                onSetLeadDraftField(lead.id, 'notes', existing + separator + insightText);
+                void onUpdateLead(lead.id);
+              }}
+            />
+
+            {/* Message tools */}
             <div className="crm-template-toggle" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <button
                 type="button"
@@ -610,7 +787,11 @@ export function LeadProfileModal({
                   className="crm-template-toggle__btn"
                   onClick={() => { setShowGmailComposer(!showGmailComposer); setShowTemplates(false); setShowAiComposer(false); }}
                 >
-                  ✉️ {showGmailComposer ? 'Hide Email' : googleConnected ? 'Send via Gmail' : 'Email'}
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {showGmailComposer ? 'Hide Email' : googleConnected ? 'Send via Gmail' : 'Email'}
                 </button>
               )}
               {activeContact?.email && googleConnected && (
@@ -619,7 +800,12 @@ export function LeadProfileModal({
                   className="crm-template-toggle__btn"
                   onClick={() => setShowGmailThreads(!showGmailThreads)}
                 >
-                  📧 {showGmailThreads ? 'Hide Threads' : 'Email History'}
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M5 9h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+                  </svg>
+                  {showGmailThreads ? 'Hide Threads' : 'Email History'}
                 </button>
               )}
             </div>
@@ -679,126 +865,197 @@ export function LeadProfileModal({
             {showGmailThreads && activeContact?.email && googleConnected && (
               <GmailThreads
                 email={activeContact.email}
-                onReply={(threadId, subject) => {
+                onReply={() => {
                   setShowGmailComposer(true);
                   setShowGmailThreads(false);
                 }}
                 onClose={() => setShowGmailThreads(false)}
               />
             )}
-          </section>
-        </div>
+          </div>
+        )}
 
-        <ContactHistoryLog
-          leadId={lead.id}
-          tenantId={lead.tenantId}
-          contactId={lead.contactId}
-          activities={activities}
-          onLogContact={onLogContact}
-          onApplyInsights={(insights) => {
-            const insightText = insights.map((i) => `[${i.category}] ${i.value}`).join('\n');
-            const existing = leadDraft.notes?.trim() || '';
-            const separator = existing ? '\n---\n' : '';
-            onSetLeadDraftField(lead.id, 'notes', existing + separator + insightText);
-            void onUpdateLead(lead.id);
-          }}
-        />
+        {/* ── Intelligence Tab ── */}
+        {activeTab === 'intelligence' && (
+          <div className="crm-modal-tab-content">
+            {/* AI Lead Score */}
+            <CollapsibleSection
+              title="AI Lead Score"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" opacity="0.7" />
+                </svg>
+              }
+            >
+              <LeadEngagementGauge score={leadScore.score} label={leadScore.label} />
+              <AiScoreExplanation leadId={lead.id} tenantId={lead.tenantId} />
+              <AiPredictiveScore leadId={lead.id} tenantId={lead.tenantId} />
+            </CollapsibleSection>
 
-        <section className="crm-modal-section">
-          <ShowingScheduler
-            leadId={lead.id}
-            contactId={lead.contactId}
-            defaultAddress={lead.listingAddress || ''}
-            existingShowings={showings}
-            onShowingCreated={(showing) => {
-              setShowings((prev) => [showing, ...prev]);
-              void onLogContact('showing_scheduled', `Showing scheduled: ${showing.propertyAddress}`);
-            }}
-          />
-        </section>
-
-        <section className="crm-modal-section">
-          <h4>Voice Note</h4>
-          <VoiceNoteRecorder
-            onRecordingComplete={async (blob, durationSeconds) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const base64 = reader.result as string;
-                void onLogContact('voice_note', `Voice note (${durationSeconds}s)`);
-              };
-              reader.readAsDataURL(blob);
-            }}
-          />
-        </section>
-
-        {(propertyMatches.length > 0 || matchesLoading) ? (
-          <section className="crm-modal-section crm-suggested-properties">
-            <h4>
-              Suggested Properties
-              {propertyMatches.length > 0 && !matchesLoading ? (
-                <span className="crm-match-badge">{propertyMatches.length} match{propertyMatches.length !== 1 ? 'es' : ''}</span>
-              ) : null}
-            </h4>
-            {matchesLoading ? (
-              <p className="crm-muted">Finding matching properties...</p>
-            ) : (
-              <div className="crm-suggested-properties-list">
-                {propertyMatches.map((match) => (
-                  <article key={match.listing.id} className="crm-suggested-property-card">
-                    <div className="crm-suggested-property-header">
-                      <strong>{match.listing.address.street}</strong>
-                      <span className="crm-match-score">
-                        {match.score >= 4 ? '★★★' : match.score >= 2 ? '★★' : '★'} {match.score}pt
-                      </span>
-                    </div>
-                    <p className="crm-muted">
-                      {match.listing.address.city}, {match.listing.address.state} {match.listing.address.zip}
-                    </p>
-                    <div className="crm-chip-row">
-                      <span className="crm-chip">${match.listing.price.toLocaleString()}</span>
-                      <span className="crm-chip">{match.listing.beds} bd / {match.listing.baths} ba</span>
-                      <span className="crm-chip">{match.listing.sqft.toLocaleString()} sqft</span>
-                      <span className={`crm-status-badge crm-status-${match.listing.status === 'active' ? 'new' : 'nurturing'}`}>
-                        {match.listing.status}
-                      </span>
-                    </div>
-                    <div className="crm-match-reasons">
-                      {match.matchReasons.map((reason) => (
-                        <span key={reason} className="crm-chip crm-chip-match">{reason}</span>
-                      ))}
-                    </div>
-                    <div className="crm-suggested-property-actions">
-                      <button
-                        type="button"
-                        className="crm-secondary-button"
-                        onClick={() => {
-                          onSetLeadDraftField(lead.id, 'listingAddress', match.listing.address.street);
-                        }}
-                      >
-                        Assign to Lead
-                      </button>
-                      {activeContact?.email ? (
-                        <a
-                          className="crm-secondary-button"
-                          href={`mailto:${activeContact.email}?subject=Property Match: ${match.listing.address.street}&body=Hi ${activeContact.fullName ?? ''},\n\nI found a property that matches your criteria:\n\n${match.listing.address.street}, ${match.listing.address.city}\n$${match.listing.price.toLocaleString()} • ${match.listing.beds} beds / ${match.listing.baths} baths • ${match.listing.sqft.toLocaleString()} sqft\n\nLet me know if you'd like to schedule a showing!`}
-                        >
-                          Send to Client
-                        </a>
-                      ) : null}
-                    </div>
-                  </article>
-                ))}
-              </div>
+            {/* Search Activity */}
+            {searchSignals.length > 0 && (
+              <CollapsibleSection
+                title="Search Activity"
+                badge={searchSignals.length}
+                icon={
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                }
+              >
+                <LeadActivityChart activities={activities} />
+                <PriceInterestBar signals={listingSignals} />
+              </CollapsibleSection>
             )}
-          </section>
-        ) : null}
 
-        <UnifiedTimeline
-          activities={activities}
-          searchSignals={searchSignals}
-          listingSignals={listingSignals}
-        />
+            {/* Listing Activity */}
+            {listingSignals.length > 0 && (
+              <CollapsibleSection
+                title="Listing Activity"
+                badge={listingSignals.length}
+                icon={
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 7l6-5 6 5v6.5a1 1 0 01-1 1H3a1 1 0 01-1-1V7z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                }
+              >
+                <ul className="crm-modal-signal-list">
+                  {listingSignals.map((signal) => (
+                    <li
+                      key={signal.id}
+                      className={signal.listingId ? 'crm-listing-signal-clickable' : ''}
+                      onClick={() => signal.listingId && handleListingClick(signal.listingId)}
+                      role={signal.listingId ? 'button' : undefined}
+                      tabIndex={signal.listingId ? 0 : undefined}
+                      onKeyDown={(e) => signal.listingId && e.key === 'Enter' && handleListingClick(signal.listingId)}
+                    >
+                      <strong>{signal.address || 'Unknown property'}</strong>
+                      <span>
+                        {signal.action} · {signal.price ? `$${signal.price.toLocaleString()}` : ''} {signal.beds ? `${signal.beds}bd` : ''} {signal.baths ? `${signal.baths}ba` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </CollapsibleSection>
+            )}
+
+            {/* AI Summary & Insights */}
+            <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
+            <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
+            <AiLeadRouting
+              leadId={lead.id}
+              tenantId={lead.tenantId}
+              currentAssignee={lead.assignedTo}
+            />
+
+            {/* Suggested Properties */}
+            {(propertyMatches.length > 0 || matchesLoading) && (
+              <CollapsibleSection
+                title="Suggested Properties"
+                defaultOpen={false}
+                badge={propertyMatches.length || undefined}
+                icon={
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 1l2 4h4l-3.2 2.5L12 12 8 9.2 4 12l1.2-4.5L2 5h4l2-4z" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+                  </svg>
+                }
+              >
+                {matchesLoading ? (
+                  <p className="crm-muted">Finding matching properties...</p>
+                ) : (
+                  <div className="crm-suggested-properties-list">
+                    {propertyMatches.map((match) => (
+                      <article
+                        key={match.listing.id}
+                        className="crm-suggested-property-card crm-listing-signal-clickable"
+                        onClick={() => setSelectedListing(match.listing)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && setSelectedListing(match.listing)}
+                      >
+                        <div className="crm-suggested-property-header">
+                          <strong>{match.listing.address.street}</strong>
+                          <span className="crm-match-score">
+                            {match.score >= 4 ? '★★★' : match.score >= 2 ? '★★' : '★'} {match.score}pt
+                          </span>
+                        </div>
+                        <p className="crm-muted">
+                          {match.listing.address.city}, {match.listing.address.state} {match.listing.address.zip}
+                        </p>
+                        <div className="crm-chip-row">
+                          <span className="crm-chip">${match.listing.price.toLocaleString()}</span>
+                          <span className="crm-chip">{match.listing.beds} bd / {match.listing.baths} ba</span>
+                          <span className="crm-chip">{match.listing.sqft.toLocaleString()} sqft</span>
+                        </div>
+                        <div className="crm-match-reasons">
+                          {match.matchReasons.map((reason) => (
+                            <span key={reason} className="crm-chip crm-chip-match">{reason}</span>
+                          ))}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </CollapsibleSection>
+            )}
+          </div>
+        )}
+
+        {/* ── Activity Tab ── */}
+        {activeTab === 'activity' && (
+          <div className="crm-modal-tab-content">
+            <UnifiedTimeline
+              activities={activities}
+              searchSignals={searchSignals}
+              listingSignals={listingSignals}
+              onListingClick={handleListingClick}
+            />
+
+            <section className="crm-modal-section">
+              <ShowingScheduler
+                leadId={lead.id}
+                contactId={lead.contactId}
+                defaultAddress={lead.listingAddress || ''}
+                existingShowings={showings}
+                onShowingCreated={(showing) => {
+                  setShowings((prev) => [showing, ...prev]);
+                  void onLogContact('showing_scheduled', `Showing scheduled: ${showing.propertyAddress}`);
+                }}
+              />
+            </section>
+          </div>
+        )}
+
+        {/* ── Unified Footer ── */}
+        <div className="crm-modal-footer">
+          <button
+            type="button"
+            className="crm-btn-ghost"
+            onClick={handleDiscard}
+            disabled={!hasUnsavedChanges}
+          >
+            Discard
+          </button>
+          <button
+            type="button"
+            className="crm-btn-primary"
+            disabled={!hasUnsavedChanges || savingLead || savingContact}
+            onClick={() => { void handleSaveAll(); }}
+          >
+            {savingLead || savingContact ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </section>
+
+      {/* CRM Listing Detail Modal */}
+      {selectedListing && (
+        <CrmListingModal
+          listing={selectedListing}
+          onClose={() => setSelectedListing(null)}
+          leadName={activeContact?.fullName ?? undefined}
+        />
+      )}
     </div>
   );
 }

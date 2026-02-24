@@ -10,6 +10,7 @@ interface UnifiedTimelineProps {
   activities: CrmActivity[];
   searchSignals: LeadSearchSignal[];
   listingSignals: LeadListingSignal[];
+  onListingClick?: (listingId: string) => void;
 }
 
 const CATEGORY_FILTERS: Array<{ id: TimelineEventCategory; label: string }> = [
@@ -87,7 +88,7 @@ function formatListingDetail(signal: LeadListingSignal): string {
   return parts.join(' · ');
 }
 
-export function UnifiedTimeline({ activities, searchSignals, listingSignals }: UnifiedTimelineProps) {
+export function UnifiedTimeline({ activities, searchSignals, listingSignals, onListingClick }: UnifiedTimelineProps) {
   const [hiddenCategories, setHiddenCategories] = useState<Set<TimelineEventCategory>>(new Set());
 
   const allEvents: TimelineEventData[] = useMemo(() => {
@@ -129,6 +130,7 @@ export function UnifiedTimeline({ activities, searchSignals, listingSignals }: U
         summary: l.address || 'Unknown property',
         detail: formatListingDetail(l) || undefined,
         occurredAt: l.occurredAt,
+        listingId: l.listingId,
       });
     }
 
@@ -213,6 +215,7 @@ export function UnifiedTimeline({ activities, searchSignals, listingSignals }: U
                   key={event.id}
                   event={event}
                   formatTime={formatRelativeTime}
+                  onListingClick={onListingClick}
                 />
               ))}
             </div>

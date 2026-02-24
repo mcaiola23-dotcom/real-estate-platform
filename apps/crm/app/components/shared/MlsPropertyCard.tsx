@@ -1,6 +1,6 @@
 'use client';
 
-interface MlsPropertyCardProps {
+interface PropertyPreferencesProps {
   listingAddress?: string;
   priceMin?: number | null;
   priceMax?: number | null;
@@ -8,6 +8,7 @@ interface MlsPropertyCardProps {
   beds?: number | null;
   baths?: number | null;
   sqft?: number | null;
+  timeframe?: string | null;
 }
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -29,7 +30,10 @@ function formatPriceRange(min?: number | null, max?: number | null): string | nu
   return null;
 }
 
-export function MlsPropertyCard({
+/** @deprecated Use PropertyPreferences instead */
+export const MlsPropertyCard = PropertyPreferences;
+
+export function PropertyPreferences({
   listingAddress,
   priceMin,
   priceMax,
@@ -37,7 +41,8 @@ export function MlsPropertyCard({
   beds,
   baths,
   sqft,
-}: MlsPropertyCardProps) {
+  timeframe,
+}: PropertyPreferencesProps) {
   const hasAnyDetail =
     listingAddress ||
     priceMin != null ||
@@ -45,12 +50,13 @@ export function MlsPropertyCard({
     propertyType ||
     beds != null ||
     baths != null ||
-    sqft != null;
+    sqft != null ||
+    timeframe;
 
   if (!hasAnyDetail) {
     return (
       <div className="crm-mls-card">
-        <p className="crm-muted">No listing details available</p>
+        <p className="crm-muted">No property preferences set</p>
       </div>
     );
   }
@@ -92,6 +98,12 @@ export function MlsPropertyCard({
           <div className="crm-mls-card-detail">
             <span className="crm-mls-card-label">Type</span>
             <span className="crm-mls-card-value">{propertyType}</span>
+          </div>
+        )}
+        {timeframe && (
+          <div className="crm-mls-card-detail">
+            <span className="crm-mls-card-label">Timeframe</span>
+            <span className="crm-mls-card-value">{timeframe}</span>
           </div>
         )}
       </div>

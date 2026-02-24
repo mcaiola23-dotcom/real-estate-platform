@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { CrmShowing } from '@real-estate/types/crm';
 import { formatDateTime } from '../../lib/crm-formatters';
 
@@ -20,6 +20,12 @@ export function ShowingScheduler({
   onShowingCreated,
 }: ShowingSchedulerProps) {
   const [address, setAddress] = useState(defaultAddress || '');
+
+  // Sync address when lead address changes
+  useEffect(() => {
+    if (defaultAddress) setAddress(defaultAddress);
+  }, [defaultAddress]);
+
   const [dateTime, setDateTime] = useState('');
   const [duration, setDuration] = useState('60');
   const [notes, setNotes] = useState('');

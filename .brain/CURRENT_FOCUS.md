@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Lead Profile Modal redesign and Listing Modal CRM integration. A comprehensive UI/UX audit was completed (Session 14, 2026-02-23) identifying 20 issues across layout, usability, design, and integration. CRM Elite Overhaul remains uncommitted (~3,700 lines). All CRM AI roadmap items remain complete. Admin onboarding work is unaffected.
+Lead Profile Modal redesign and Listing Modal CRM integration — **implemented** (Session 15, 2026-02-23). All 17 audit items addressed. Needs visual browser verification and git commit. CRM Elite Overhaul also remains uncommitted (~3,700 lines from prior sessions). All CRM AI roadmap items remain complete. Admin onboarding work is unaffected.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -61,10 +61,12 @@ Lead Profile Modal redesign and Listing Modal CRM integration. A comprehensive U
 55. CRM Elite Overhaul is fully implemented in `apps/crm` across 8 sprints: Zustand/React Query state management, quick-add lead/universal search/pipeline density, speed-to-lead timer/floating activity log/push notifications, showing scheduling/commission tracker/voice notes, Outfit+JetBrains Mono typography/density toggle/motion system, drip campaigns/ad spend/team roster, AI workflows/NL query/daily digest/forecast/benchmarks, SSE real-time/36 new route tests/DOMPurify/rate limiter/DB indexes, client portal/MLS cards/e-signatures. 8 new Prisma models, 12 new API routes, ~20 new UI components, 1,359 lines of new CSS. 89/89 route tests, 4/4 workspace tests, 0 type errors.
 56. CRM remaining polish items are now fully implemented: #62 Mobile-First Actions (`MobileActionBar.tsx` with 4 quick actions, responsive CSS, 44px touch targets), #63 Offline Note Capture (`use-offline-queue.ts` with localStorage queue + background sync + amber offline badge), #65 MLS/IDX Feed Status (`FeedStatusChip.tsx` + factory-pattern feed-status API route), #66 Document Management (enhanced `DocumentsPane` with status cycling/checklists/progress + PATCH document route), #61 Export & Reporting (`crm-export.ts` with CSV/print utilities + Lead Tracker export button).
 
+57. Lead Profile Modal redesign (Session 15) is now fully implemented in `apps/crm` with 4-tab navigation (Overview/Communication/Intelligence/Activity), CollapsibleSection grouping, unified Save Changes footer, focus trap for accessibility, emoji→SVG icon replacement, clickable listing references in timeline/signals, CrmListingModal slide-over with photo gallery/CRM actions, PropertyPreferences rename, embedded VoiceNoteRecorder in ContactHistoryLog, ShowingScheduler address sync fix, increased modal spacing/reduced nested borders, typography hierarchy (heading-lg/sm/label), and button hierarchy (btn-primary/secondary/ghost). 13 files changed, ~1,300 lines added, 0 type errors, 89/89 route tests, 4/4 workspace tests.
+
 ## Immediate Next Steps
-- Lead Profile Modal redesign (17 layout/usability/design items from audit) — see `TODO_BACKLOG.md` "CRM Lead Profile Modal Redesign" section.
-- CRM Listing Modal integration (9 items) — see `TODO_BACKLOG.md` "CRM Listing Modal Integration" section.
-- CRM Elite Overhaul still needs commit (~3,700 lines across 49 files).
+- Visual browser verification of Lead Profile Modal redesign (start `npm run dev:crm`, click through all 4 tabs, verify dark mode).
+- Commit CRM Elite Overhaul + Modal Redesign together (~5,000 total lines).
+- Remaining CRM Listing Modal enhancements: agent annotations, engagement data display, share actions integration (3 items still open).
 - AI content generation pipeline for website onboarding remains next non-CRM candidate after modal work.
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes.
 

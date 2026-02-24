@@ -108,6 +108,7 @@ export function extractLeadListingSignal(activity: CrmActivity): LeadListingSign
     baths: readNumber(listing?.baths),
     sqft: readNumber(listing?.sqft),
     source: readString(metadata.source),
+    listingId: readString(listing?.id ?? metadata.listingId ?? null) ?? undefined,
   };
 }
 

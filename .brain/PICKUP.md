@@ -4,49 +4,50 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- **Lead Profile Modal redesign** based on comprehensive UI/UX audit completed 2026-02-23 (Session 14).
-- The CRM Elite Overhaul remains uncommitted — 19 modified files + 7 new files. Needs commit + push before or after modal work.
-- A detailed 20-point audit was completed covering layout, usability, design, and Listing Modal integration. The user wants to address layout density, container overlap, Lead Intelligence section formatting, non-editable fields, and unclear display items.
-- The Listing Modal from `apps/web` should be integrated into the CRM so users can click on listing references to view full listing details.
+- **Commit Lead Profile Modal redesign** — 13 files changed (11 modified + 2 new), ~1,300 lines added. All type checks and tests pass. The CRM Elite Overhaul from prior sessions also remains uncommitted.
+- **Visual verification** — Start dev server (`npm run dev:crm`) and click through the redesigned Lead Profile Modal to verify tab navigation, collapsible sections, clickable listings, and unified save button work correctly in browser.
+- **Remaining modal polish** — After visual verification, address any layout/spacing tweaks discovered during browser testing.
 
 ## Why This Is Next
-- User identified the Lead Profile Modal as the priority concern: layout is too busy, containers overlap, Lead Intelligence box formatting is wrong, some fields are not editable, and some displayed items are unclear.
-- User is happy with the features/information being displayed but wants design, layout, and usability improvements.
-- Listing Modal integration is a new feature request: CRM users should be able to click on listing references (in timeline, suggested properties, etc.) to open the same listing modal used on the agent website.
+- The Lead Profile Modal redesign is fully implemented and passing all automated checks (TSC 0 errors, 89/89 route tests, 4/4 workspace tests) but has not been visually verified in a browser yet.
+- The prior CRM Elite Overhaul (~3,700 lines) plus this modal redesign (~1,300 lines) should be committed together or in sequence.
 
-## Current Snapshot (2026-02-23, Session 14)
-- **No code changes this session** — review and audit only.
-- **Audit findings** (20 items across 6 categories):
-  - **A. Structural/Layout (4 issues)**: Single-scroll with buried 2-col grid, Lead Intelligence section overflow/imbalance, nested container visual noise, responsive breakpoint gap
-  - **B. Component-Level (7 issues)**: Mixed concerns in Lead+Contact section (~15 data points unorganized), two separate "next action" concepts (three places to set follow-up), disabled contact fields with no link/create affordance, two save buttons, messaging tools under "Intelligence" label, emoji icons, misleading MLS Property Card naming
-  - **C. Usability (6 issues)**: No tab/section navigation, listing signals not clickable, suggested properties not previewable, orphaned voice note section, showing scheduler address sync, no focus trap
-  - **D. Visual Design (3 issues)**: Flat typography hierarchy, dense padding, button hierarchy lacking
-  - **E. Listing Modal Integration (10 items)**: Remove agent branding for CRM context, replace inquiry CTA with CRM actions, add lead context header, agent annotations, engagement data, tenant-scope, keep gallery, add agent data, share functionality, cross-app component strategy via `packages/ui` or types
-  - **F. Recommended Changes (17 items)**: Tabbed navigation, section grouping, unified next-action, link contact affordance, single save, clickable listings, focus trap, SVG icons, increased spacing, border reduction, heading hierarchy, collapsible sections, CrmListingModal wrapper, shared component extraction
+## Current Snapshot (2026-02-23, Session 15)
+- **13 files changed** across `apps/crm/` — no changes to `apps/admin`, `apps/web`, `packages/`, or `services/`.
+- **2 new components**: `CollapsibleSection.tsx`, `CrmListingModal.tsx`
+- **Major changes**:
+  - `LeadProfileModal.tsx`: 4-tab navigation (Overview/Communication/Intelligence/Activity), CollapsibleSection grouping, unified Save Changes footer, focus trap, emoji→SVG, clickable listings
+  - `ContactHistoryLog.tsx`: SVG icons replacing emoji, embedded VoiceNoteRecorder toggle
+  - `UnifiedTimeline.tsx` + `TimelineEvent.tsx`: `onListingClick` + `listingId` props for clickable listing references
+  - `MlsPropertyCard.tsx`: Renamed to `PropertyPreferences` with `timeframe` prop
+  - `ShowingScheduler.tsx`: Address sync fix via useEffect
+  - `globals.css`: +514 lines — tab bar, collapsible sections, typography hierarchy, button hierarchy, modal footer, listing modal, spacing increases
+  - `crm-types.ts` + `crm-data-extraction.ts`: `listingId` on `LeadListingSignal`
 
 ## First Actions Next Session
 1. Run `/session-bootstrap`.
-2. Decide priority: commit existing CRM changes first, OR start Lead Modal redesign directly on top of current uncommitted work.
-3. Implement Lead Profile Modal redesign — recommended order:
-   a. Add tabbed navigation (Overview / Communication / Intelligence / Activity)
-   b. Restructure Lead+Contact Details into logical groups
-   c. Unify the three "next action" concepts
-   d. Move messaging tools to Communication tab
-   e. Increase spacing, reduce nested borders
-   f. Make listing references clickable
-4. Create `CrmListingModal` wrapper for Listing Modal integration (shared types from `packages/types`, no cross-app imports).
-5. Run type checks and tests after changes.
+2. Commit all CRM changes (Elite Overhaul + Modal Redesign) — run `git status`, `git diff --stat`, compose commit message.
+3. Start `npm run dev:crm` and visually verify:
+   - 4 tabs render and switch content correctly
+   - CollapsibleSections expand/collapse with chevron animation
+   - Unified Save Changes button enables/disables based on draft state
+   - Quick action SVG icons render properly (no emoji fallback)
+   - CrmListingModal opens from suggested properties / timeline listing clicks
+   - Focus trap works (Tab key cycles within modal)
+   - Dark mode compatibility
+4. Fix any visual issues discovered during browser testing.
+5. Run final `tsc --noEmit` + test suites to confirm no regressions.
 
-## Validation Context (Most Recent — unchanged this session)
+## Validation Context (Most Recent)
+- `tsc --noEmit -p apps/crm/tsconfig.json` — PASS (0 errors)
 - `npm run test:routes --workspace @real-estate/crm` — PASS (89/89 tests)
 - `npm run test:workspace --workspace @real-estate/crm` — PASS (4/4 tests)
-- `tsc --noEmit -p apps/crm/tsconfig.json` — PASS (0 errors)
 - `npm run test:routes --workspace @real-estate/admin` — PASS (50/50 tests, Windows-authoritative, unchanged)
 - Latest Windows-authoritative Prisma sampling: `db:generate:sample -- 12 --json --exit-zero` — PASS (`12/12`, `0` EPERM failures)
 
 ## Constraints To Keep
 - Preserve tenant isolation for all CRM and Admin reads/writes.
 - Keep shared package boundaries strict: contracts in `packages/types`, persistence/helpers in `packages/db`, UI in `apps/*`.
-- No cross-app imports: Listing Modal integration requires shared types/component wrapper, not importing from `apps/web` into `apps/crm`.
+- No cross-app imports: CRM Listing Modal uses shared types from `packages/types/src/listings.ts`, not imports from `apps/web`.
 - New Prisma models (Showing, Commission, CommissionSetting, Campaign, CampaignEnrollment, AdSpend, TeamMember, ESignatureRequest) need migration generation when moving to production DB.
 - `dompurify` added as CRM dependency for Gmail HTML sanitization — `npm install` required after fresh clone.

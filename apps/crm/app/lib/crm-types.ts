@@ -61,6 +61,7 @@ export interface LeadListingSignal {
   baths: number | null;
   sqft: number | null;
   source: string | null;
+  listingId?: string;
 }
 
 export interface LeadSearchSuggestion {

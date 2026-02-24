@@ -88,7 +88,13 @@ export function VoiceNoteRecorder({ onRecordingComplete }: VoiceNoteRecorderProp
     <div className="crm-voice-recorder">
       {state === 'idle' && (
         <button type="button" className="crm-voice-recorder-start" onClick={startRecording}>
-          <span className="crm-voice-recorder-mic">🎤</span>
+          <span className="crm-voice-recorder-mic">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="5.5" y="2" width="5" height="8" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M3.5 8.5a4.5 4.5 0 009 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M8 13v1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </span>
           Record Voice Note
         </button>
       )}

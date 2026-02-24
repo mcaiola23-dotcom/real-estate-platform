@@ -10,14 +10,18 @@ export interface TimelineEventData {
   summary: string;
   detail?: string;
   occurredAt: string;
+  listingId?: string;
 }
 
 interface TimelineEventProps {
   event: TimelineEventData;
   formatTime: (iso: string) => string;
+  onListingClick?: (listingId: string) => void;
 }
 
-export function TimelineEvent({ event, formatTime }: TimelineEventProps) {
+export function TimelineEvent({ event, formatTime, onListingClick }: TimelineEventProps) {
+  const summaryClickable = event.listingId && onListingClick;
+
   return (
     <div className={`crm-timeline-event crm-timeline-event--${event.category}`}>
       <div className="crm-timeline-event-marker" aria-hidden="true">
@@ -28,7 +32,19 @@ export function TimelineEvent({ event, formatTime }: TimelineEventProps) {
           <span className="crm-timeline-event-label">{event.label}</span>
           <span className="crm-timeline-event-time">{formatTime(event.occurredAt)}</span>
         </div>
-        <p className="crm-timeline-event-summary">{event.summary}</p>
+        {summaryClickable ? (
+          <p
+            className="crm-timeline-event-summary crm-timeline-listing-link"
+            role="button"
+            tabIndex={0}
+            onClick={() => onListingClick!(event.listingId!)}
+            onKeyDown={(e) => e.key === 'Enter' && onListingClick!(event.listingId!)}
+          >
+            {event.summary}
+          </p>
+        ) : (
+          <p className="crm-timeline-event-summary">{event.summary}</p>
+        )}
         {event.detail ? (
           <p className="crm-timeline-event-detail">{event.detail}</p>
         ) : null}
