@@ -517,6 +517,13 @@ export function LeadProfileModal({
                     ))}
                   </select>
                 </label>
+                <label className="crm-field crm-field-grow">
+                  Address
+                  <input
+                    value={leadDraft.listingAddress}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'listingAddress', event.target.value)}
+                  />
+                </label>
                 <label className="crm-field">
                   Lead Type
                   <select
@@ -531,13 +538,6 @@ export function LeadProfileModal({
                       </option>
                     ))}
                   </select>
-                </label>
-                <label className="crm-field crm-field-grow">
-                  Address
-                  <input
-                    value={leadDraft.listingAddress}
-                    onChange={(event) => onSetLeadDraftField(lead.id, 'listingAddress', event.target.value)}
-                  />
                 </label>
               </div>
 
