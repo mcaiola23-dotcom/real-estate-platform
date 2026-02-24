@@ -236,6 +236,10 @@ model Lead {
   closeReason    String?
   closeNotes     String?
   closedAt       DateTime?
+  acreage        Float?
+  town           String?
+  neighborhood   String?
+  preferenceNotes String?
   assignedTo     String?
   referredBy     String?
   createdAt      DateTime

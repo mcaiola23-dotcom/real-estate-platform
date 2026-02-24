@@ -35,12 +35,13 @@ import { AiDraftComposer } from '../shared/AiDraftComposer';
 import { GmailComposer } from '../shared/GmailComposer';
 import { GmailThreads } from '../shared/GmailThreads';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
-import { PropertyPreferences } from '../shared/MlsPropertyCard';
 import { CrmListingModal } from '../shared/CrmListingModal';
 import type { MergeFieldContext } from '../../lib/crm-templates';
 import { downloadIcsFile } from '../../lib/crm-calendar';
 import type { CrmShowing } from '@real-estate/types/crm';
 import { ShowingScheduler } from '../shared/ShowingScheduler';
+import { EscalationBanner } from '../shared/EscalationBanner';
+import { computeLeadEscalationLevel } from '@real-estate/ai/crm/escalation-engine';
 
 // ---------------------------------------------------------------------------
 // Tab type + icons
@@ -118,13 +119,16 @@ interface LeadProfileModalProps {
   hasUnsavedLeadChange: boolean;
   hasUnsavedContactChange: boolean;
   onClose: () => void;
-  onSetLeadDraftField: (leadId: string, field: keyof LeadDraft, value: string) => void;
+  onSetLeadDraftField: (leadId: string, field: keyof LeadDraft, value: string | string[]) => void;
   onSetContactDraft: Dispatch<SetStateAction<Record<string, ContactDraft>>>;
   onUpdateLead: (leadId: string) => Promise<void>;
   onUpdateContact: (contactId: string) => Promise<void>;
   onClearLeadDraft: (leadId: string) => void;
   onLogContact: (activityType: string, summary: string) => Promise<void>;
   onViewLead?: (leadId: string) => void;
+  onDeleteLead?: (leadId: string) => Promise<void>;
+  dismissedDuplicateIds?: Set<string>;
+  onDismissDuplicate?: (leadId: string) => void;
   onSaveReminder?: (leadId: string, data: { nextActionAt: string; nextActionNote: string; nextActionChannel: string }) => void;
   onSnoozeReminder?: (leadId: string, durationMs: number) => void;
 }
@@ -155,6 +159,9 @@ export function LeadProfileModal({
   onClearLeadDraft,
   onLogContact,
   onViewLead,
+  onDeleteLead,
+  dismissedDuplicateIds,
+  onDismissDuplicate,
   onSaveReminder,
   onSnoozeReminder,
 }: LeadProfileModalProps) {
@@ -170,6 +177,14 @@ export function LeadProfileModal({
   const [portalLink, setPortalLink] = useState<string | null>(null);
   const [generatingPortal, setGeneratingPortal] = useState(false);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [replyContext, setReplyContext] = useState<{ threadId: string; subject: string } | null>(null);
+
+  // Escalation check — show banner for overdue leads
+  const escalation = lead.nextActionAt && lead.status !== 'won' && lead.status !== 'lost'
+    ? computeLeadEscalationLevel(lead)
+    : null;
 
   const modalRef = useRef<HTMLElement>(null);
 
@@ -320,10 +335,22 @@ export function LeadProfileModal({
         {/* ── Header ── */}
         <header className="crm-modal-header">
           <div>
-            <p className="crm-kicker">Lead Profile</p>
-            <h3 id="crm-lead-profile-title">{leadDraft.listingAddress || 'Lead Details'}</h3>
+            {activeContact?.fullName && leadDraft.listingAddress ? (
+              <p className="crm-kicker">{leadDraft.listingAddress}</p>
+            ) : (
+              <p className="crm-kicker">Lead Profile</p>
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <h3 id="crm-lead-profile-title">{activeContact?.fullName || leadDraft.listingAddress || 'Lead Details'}</h3>
+              {lead.leadType && (
+                <span className={`crm-lead-type-badge crm-lead-type-${lead.leadType}`}>
+                  {formatLeadTypeLabel(lead.leadType)}
+                </span>
+              )}
+            </div>
             <p className="crm-muted">
               Created {formatDateTime(lead.createdAt)} · Updated {formatDateTime(lead.updatedAt)}
+              {activeLeadLastContact ? ` · Last contact ${formatDateTime(activeLeadLastContact)}` : ' · No contact yet'}
             </p>
             {activeContact && (activeContact.phone || activeContact.email) ? (
               <div className="crm-quick-actions" style={{ marginTop: '0.5rem' }}>
@@ -382,12 +409,25 @@ export function LeadProfileModal({
           </div>
         </header>
 
+        {escalation && escalation.level > 0 && (
+          <EscalationBanner
+            leadId={lead.id}
+            leadName={activeContact?.fullName || leadDraft.listingAddress || 'Lead'}
+            level={escalation.level}
+            daysOverdue={escalation.daysOverdue}
+            recommendation={`Follow up overdue by ${escalation.daysOverdue} day${escalation.daysOverdue !== 1 ? 's' : ''}`}
+            compact
+          />
+        )}
+
         <DuplicateWarning
           leadId={lead.id}
           email={activeContact?.email ?? null}
           phone={activeContact?.phone ?? null}
           address={lead.listingAddress}
-          onViewLead={onViewLead ?? (() => {})}
+          onViewLead={onViewLead}
+          dismissedIds={dismissedDuplicateIds}
+          onDismiss={onDismissDuplicate}
         />
 
         {/* ── Tab Bar ── */}
@@ -458,16 +498,12 @@ export function LeadProfileModal({
               <LeadTagInput
                 leadId={lead.id}
                 tenantId={lead.tenantId}
-                initialTags={lead.tags}
-                onTagsChange={() => {}}
+                initialTags={leadDraft.tags}
+                draftMode
+                onTagsChange={(nextTags) => {
+                  onSetLeadDraftField(lead.id, 'tags', nextTags);
+                }}
               />
-
-              <div className="crm-modal-definition-grid">
-                <p>
-                  <span>Last Contact</span>
-                  <strong>{activeLeadLastContact ? formatDateTime(activeLeadLastContact) : 'No contact logged'}</strong>
-                </p>
-              </div>
 
               <div className="crm-modal-edit-grid">
                 <label className="crm-field">
@@ -624,22 +660,36 @@ export function LeadProfileModal({
                 </div>
               </div>
 
-              <div className="crm-modal-edit-grid">
-                <label className="crm-field crm-field-grow">
-                  Property Type
-                  <select
-                    value={leadDraft.propertyType}
-                    onChange={(event) => onSetLeadDraftField(lead.id, 'propertyType', event.target.value)}
-                  >
-                    <option value="">Not specified</option>
-                    <option value="single-family">Single Family</option>
-                    <option value="condo">Condo / Townhome</option>
-                    <option value="multi-family">Multifamily</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="rental">Rental</option>
-                    <option value="other">Other</option>
-                  </select>
-                </label>
+              <div className="crm-field">
+                <span className="crm-field-label">Property Type</span>
+                <div className="crm-multi-checkbox-group">
+                  {[
+                    { value: 'single-family', label: 'Single Family' },
+                    { value: 'condo', label: 'Condo / Townhome' },
+                    { value: 'multi-family', label: 'Multifamily' },
+                    { value: 'commercial', label: 'Commercial' },
+                    { value: 'rental', label: 'Rental' },
+                    { value: 'other', label: 'Other' },
+                  ].map((opt) => {
+                    const selected = leadDraft.propertyType.split(',').map((s) => s.trim()).filter(Boolean);
+                    const isChecked = selected.includes(opt.value);
+                    return (
+                      <label key={opt.value} className={`crm-multi-checkbox ${isChecked ? 'is-checked' : ''}`}>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            const next = isChecked
+                              ? selected.filter((v) => v !== opt.value)
+                              : [...selected, opt.value];
+                            onSetLeadDraftField(lead.id, 'propertyType', next.sort().join(','));
+                          }}
+                        />
+                        {opt.label}
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="crm-modal-edit-grid crm-modal-edit-grid-three">
@@ -666,6 +716,35 @@ export function LeadProfileModal({
                 </label>
               </div>
 
+              <div className="crm-modal-edit-grid crm-modal-edit-grid-three">
+                <label className="crm-field">
+                  Acreage
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={leadDraft.acreage}
+                    onChange={(e) => onSetLeadDraftField(lead.id, 'acreage', e.target.value)}
+                    placeholder="e.g. 0.5"
+                  />
+                </label>
+                <label className="crm-field">
+                  Town
+                  <input
+                    value={leadDraft.town}
+                    onChange={(e) => onSetLeadDraftField(lead.id, 'town', e.target.value)}
+                    placeholder="e.g. Greenwich"
+                  />
+                </label>
+                <label className="crm-field">
+                  Neighborhood
+                  <input
+                    value={leadDraft.neighborhood}
+                    onChange={(e) => onSetLeadDraftField(lead.id, 'neighborhood', e.target.value)}
+                    placeholder="e.g. Back Country"
+                  />
+                </label>
+              </div>
+
               <div className="crm-modal-edit-grid">
                 <label className="crm-field crm-field-grow">
                   Timeframe
@@ -677,16 +756,15 @@ export function LeadProfileModal({
                 </label>
               </div>
 
-              <PropertyPreferences
-                listingAddress={lead.listingAddress ?? undefined}
-                priceMin={lead.priceMin}
-                priceMax={lead.priceMax}
-                propertyType={lead.propertyType}
-                beds={lead.beds}
-                baths={lead.baths}
-                sqft={lead.sqft}
-                timeframe={lead.timeframe}
-              />
+              <label className="crm-field crm-field-grow">
+                Preference Notes
+                <textarea
+                  value={leadDraft.preferenceNotes}
+                  onChange={(e) => onSetLeadDraftField(lead.id, 'preferenceNotes', e.target.value)}
+                  placeholder="Additional buyer/renter preferences, must-haves, deal-breakers..."
+                  rows={2}
+                />
+              </label>
             </CollapsibleSection>
 
             {/* Follow-Up Reminder — the SINGLE next-action widget */}
@@ -760,55 +838,60 @@ export function LeadProfileModal({
               }}
             />
 
-            {/* Message tools */}
-            <div className="crm-template-toggle" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {/* Communication Tools */}
+            <div className="crm-comm-tools-grid">
               <button
                 type="button"
-                className="crm-template-toggle__btn"
-                onClick={() => { setShowTemplates(!showTemplates); setShowAiComposer(false); }}
+                className={`crm-comm-tool-card ${showTemplates ? 'is-active' : ''}`}
+                onClick={() => { setShowTemplates(!showTemplates); setShowAiComposer(false); setShowGmailComposer(false); }}
               >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
                   <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
                   <path d="M5 5h6M5 8h6M5 11h3" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
                 </svg>
-                {showTemplates ? 'Hide Templates' : 'Message Templates'}
+                <span className="crm-comm-tool-card__title">Message Templates</span>
+                <span className="crm-comm-tool-card__subtitle">Pre-built message library</span>
               </button>
               <button
                 type="button"
-                className="crm-template-toggle__btn"
+                className={`crm-comm-tool-card ${showAiComposer ? 'is-active' : ''}`}
                 onClick={() => { setShowAiComposer(!showAiComposer); setShowTemplates(false); setShowGmailComposer(false); }}
               >
-                <span style={{ marginRight: '0.25rem' }}>◆</span>
-                {showAiComposer ? 'Hide Composer' : 'Draft with AI'}
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" opacity="0.7" />
+                </svg>
+                <span className="crm-comm-tool-card__title">Draft with AI</span>
+                <span className="crm-comm-tool-card__subtitle">Generate personalized messages</span>
               </button>
               {activeContact?.email && (
                 <button
                   type="button"
-                  className="crm-template-toggle__btn"
+                  className={`crm-comm-tool-card ${showGmailComposer ? 'is-active' : ''}`}
                   onClick={() => { setShowGmailComposer(!showGmailComposer); setShowTemplates(false); setShowAiComposer(false); }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
                     <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
                     <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  {showGmailComposer ? 'Hide Email' : googleConnected ? 'Send via Gmail' : 'Email'}
-                </button>
-              )}
-              {activeContact?.email && googleConnected && (
-                <button
-                  type="button"
-                  className="crm-template-toggle__btn"
-                  onClick={() => setShowGmailThreads(!showGmailThreads)}
-                >
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M5 9h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
-                  </svg>
-                  {showGmailThreads ? 'Hide Threads' : 'Email History'}
+                  <span className="crm-comm-tool-card__title">Send Email</span>
+                  <span className="crm-comm-tool-card__subtitle">{googleConnected ? 'via Gmail' : 'Compose email'}</span>
                 </button>
               )}
             </div>
+            {activeContact?.email && googleConnected && (
+              <button
+                type="button"
+                className="crm-template-toggle__btn"
+                onClick={() => setShowGmailThreads(!showGmailThreads)}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M5 9h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+                </svg>
+                {showGmailThreads ? 'Hide Threads' : 'Email History'}
+              </button>
+            )}
             {showTemplates && (
               <TemplateLibrary
                 mergeContext={{
@@ -845,7 +928,14 @@ export function LeadProfileModal({
                 contactPhone={activeContact?.phone ?? null}
                 propertyAddress={lead.listingAddress}
                 onClose={() => setShowAiComposer(false)}
-                onSend={() => setShowAiComposer(false)}
+                onSend={(data) => {
+                  if (data.channel === 'email') {
+                    void onLogContact('email_sent', 'AI-drafted email sent');
+                  } else {
+                    void onLogContact('text_logged', 'AI-drafted message copied');
+                  }
+                  setShowAiComposer(false);
+                }}
               />
             )}
             {showGmailComposer && activeContact?.email && (
@@ -855,9 +945,11 @@ export function LeadProfileModal({
                 contactName={activeContact.fullName ?? undefined}
                 propertyAddress={lead.listingAddress ?? undefined}
                 googleConnected={googleConnected ?? false}
-                onClose={() => setShowGmailComposer(false)}
+                replyToMessageId={replyContext?.threadId}
+                onClose={() => { setShowGmailComposer(false); setReplyContext(null); }}
                 onSent={() => {
                   setShowGmailComposer(false);
+                  setReplyContext(null);
                   void onLogContact('email_sent', `Email sent to ${activeContact.email}`);
                 }}
               />
@@ -865,7 +957,8 @@ export function LeadProfileModal({
             {showGmailThreads && activeContact?.email && googleConnected && (
               <GmailThreads
                 email={activeContact.email}
-                onReply={() => {
+                onReply={(threadId, subject) => {
+                  setReplyContext({ threadId, subject });
                   setShowGmailComposer(true);
                   setShowGmailThreads(false);
                 }}
@@ -878,9 +971,9 @@ export function LeadProfileModal({
         {/* ── Intelligence Tab ── */}
         {activeTab === 'intelligence' && (
           <div className="crm-modal-tab-content">
-            {/* AI Lead Score */}
+            {/* Lead Intelligence — consolidated score + activity */}
             <CollapsibleSection
-              title="AI Lead Score"
+              title="Lead Intelligence"
               icon={
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                   <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" opacity="0.7" />
@@ -889,25 +982,14 @@ export function LeadProfileModal({
             >
               <LeadEngagementGauge score={leadScore.score} label={leadScore.label} />
               <AiScoreExplanation leadId={lead.id} tenantId={lead.tenantId} />
+              {(searchSignals.length > 0 || listingSignals.length > 0) && (
+                <div className="crm-intel-compact-row">
+                  <LeadActivityChart activities={activities} />
+                  <PriceInterestBar signals={listingSignals} />
+                </div>
+              )}
               <AiPredictiveScore leadId={lead.id} tenantId={lead.tenantId} />
             </CollapsibleSection>
-
-            {/* Search Activity */}
-            {searchSignals.length > 0 && (
-              <CollapsibleSection
-                title="Search Activity"
-                badge={searchSignals.length}
-                icon={
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                }
-              >
-                <LeadActivityChart activities={activities} />
-                <PriceInterestBar signals={listingSignals} />
-              </CollapsibleSection>
-            )}
 
             {/* Listing Activity */}
             {listingSignals.length > 0 && (
@@ -940,14 +1022,29 @@ export function LeadProfileModal({
               </CollapsibleSection>
             )}
 
-            {/* AI Summary & Insights */}
-            <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
-            <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
-            <AiLeadRouting
-              leadId={lead.id}
-              tenantId={lead.tenantId}
-              currentAssignee={lead.assignedTo}
-            />
+            {/* AI Summary */}
+            <CollapsibleSection
+              title="AI Summary"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" opacity="0.7" />
+                </svg>
+              }
+            >
+              <AiLeadSummary leadId={lead.id} tenantId={lead.tenantId} />
+            </CollapsibleSection>
+
+            {/* Suggested Actions */}
+            <CollapsibleSection
+              title="Suggested Actions"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2v4l3 2M8 14a6 6 0 100-12 6 6 0 000 12z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              }
+            >
+              <AiNextActions leadId={lead.id} tenantId={lead.tenantId} />
+            </CollapsibleSection>
 
             {/* Suggested Properties */}
             {(propertyMatches.length > 0 || matchesLoading) && (
@@ -999,6 +1096,22 @@ export function LeadProfileModal({
                 )}
               </CollapsibleSection>
             )}
+
+            {/* Lead Routing */}
+            <CollapsibleSection
+              title="Lead Routing"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 8h4l2-3 2 6 2-3h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              }
+            >
+              <AiLeadRouting
+                leadId={lead.id}
+                tenantId={lead.tenantId}
+                currentAssignee={lead.assignedTo}
+              />
+            </CollapsibleSection>
           </div>
         )}
 
@@ -1029,6 +1142,39 @@ export function LeadProfileModal({
 
         {/* ── Unified Footer ── */}
         <div className="crm-modal-footer">
+          {onDeleteLead && !showDeleteConfirm && (
+            <button
+              type="button"
+              className="crm-btn-destructive"
+              onClick={() => setShowDeleteConfirm(true)}
+              style={{ marginRight: 'auto' }}
+            >
+              Delete Lead
+            </button>
+          )}
+          {showDeleteConfirm && (
+            <div className="crm-delete-confirm" style={{ marginRight: 'auto', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span className="crm-muted" style={{ fontSize: '0.78rem' }}>Are you sure? This cannot be undone.</span>
+              <button type="button" className="crm-btn-ghost" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+              <button
+                type="button"
+                className="crm-btn-destructive"
+                disabled={deleting}
+                onClick={async () => {
+                  setDeleting(true);
+                  try {
+                    await onDeleteLead!(lead.id);
+                    onClose();
+                  } catch {
+                    setDeleting(false);
+                    setShowDeleteConfirm(false);
+                  }
+                }}
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          )}
           <button
             type="button"
             className="crm-btn-ghost"
@@ -1054,6 +1200,17 @@ export function LeadProfileModal({
           listing={selectedListing}
           onClose={() => setSelectedListing(null)}
           leadName={activeContact?.fullName ?? undefined}
+          onScheduleShowing={(_listingId, address) => {
+            setSelectedListing(null);
+            setActiveTab('activity');
+            // ShowingScheduler uses defaultAddress from lead — update the draft address for context
+            if (address) onSetLeadDraftField(lead.id, 'listingAddress', address);
+          }}
+          onShareWithLead={() => {
+            setSelectedListing(null);
+            setActiveTab('communication');
+            setShowTemplates(true);
+          }}
         />
       )}
     </div>

@@ -35,10 +35,10 @@ interface AiSuggestion {
 // ---------------------------------------------------------------------------
 
 const CHANNELS: { value: ReminderChannel; label: string; icon: string }[] = [
-  { value: 'call', label: 'Call', icon: '\\u260E' },
-  { value: 'email', label: 'Email', icon: '\\u2709' },
-  { value: 'text', label: 'Text', icon: '\\u{1F4AC}' },
-  { value: 'any', label: 'Any', icon: '\\u{1F504}' },
+  { value: 'call', label: 'Call', icon: '\u260E' },
+  { value: 'email', label: 'Email', icon: '\u2709' },
+  { value: 'text', label: 'Text', icon: '\u{1F4AC}' },
+  { value: 'any', label: 'Any', icon: '\u{1F504}' },
 ];
 
 // ---------------------------------------------------------------------------

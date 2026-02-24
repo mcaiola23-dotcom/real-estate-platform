@@ -314,6 +314,10 @@ function toCrmLead(record: {
     closeReason: record.closeReason ?? null,
     closeNotes: record.closeNotes ?? null,
     closedAt: toNullableIso(record.closedAt),
+    acreage: record.acreage ?? null,
+    town: record.town ?? null,
+    neighborhood: record.neighborhood ?? null,
+    preferenceNotes: record.preferenceNotes ?? null,
     assignedTo: record.assignedTo ?? null,
     referredBy: record.referredBy ?? null,
     createdAt: toIsoString(record.createdAt),
@@ -376,6 +380,10 @@ export interface UpdateCrmLeadInput {
   closeReason?: string | null;
   closeNotes?: string | null;
   closedAt?: string | Date | null;
+  acreage?: number | null;
+  town?: string | null;
+  neighborhood?: string | null;
+  preferenceNotes?: string | null;
   assignedTo?: string | null;
   referredBy?: string | null;
 }
@@ -411,6 +419,10 @@ export interface CreateCrmLeadInput {
   sqft?: number | null;
   priceMin?: number | null;
   priceMax?: number | null;
+  acreage?: number | null;
+  town?: string | null;
+  neighborhood?: string | null;
+  preferenceNotes?: string | null;
   tags?: string[];
 }
 
@@ -1413,6 +1425,10 @@ export async function createLeadForTenant(tenantId: string, input: CreateCrmLead
         sqft: input.sqft ?? null,
         priceMin: input.priceMin ?? null,
         priceMax: input.priceMax ?? null,
+        acreage: input.acreage ?? null,
+        town: input.town?.trim() || null,
+        neighborhood: input.neighborhood?.trim() || null,
+        preferenceNotes: input.preferenceNotes?.trim() || null,
         tags: JSON.stringify(input.tags ?? []),
         createdAt: now,
         updatedAt: now,
@@ -1496,6 +1512,18 @@ export async function updateLeadForTenant(
   if (input.closedAt !== undefined) {
     data.closedAt = input.closedAt ? new Date(input.closedAt) : null;
   }
+  if (input.acreage !== undefined) {
+    data.acreage = input.acreage;
+  }
+  if (input.town !== undefined) {
+    data.town = input.town;
+  }
+  if (input.neighborhood !== undefined) {
+    data.neighborhood = input.neighborhood;
+  }
+  if (input.preferenceNotes !== undefined) {
+    data.preferenceNotes = input.preferenceNotes;
+  }
   if (input.assignedTo !== undefined) {
     data.assignedTo = input.assignedTo;
   }
@@ -1521,6 +1549,26 @@ export async function updateLeadForTenant(
     return toCrmLead(lead);
   } catch {
     return null;
+  }
+}
+
+export async function deleteLeadForTenant(tenantId: string, leadId: string): Promise<boolean> {
+  const prisma = await getPrismaClient();
+  if (!prisma) {
+    return false;
+  }
+  try {
+    const existing = await prisma.lead.findFirst({
+      where: { id: leadId, tenantId },
+      select: { id: true },
+    });
+    if (!existing) {
+      return false;
+    }
+    await prisma.lead.delete({ where: { id: leadId } });
+    return true;
+  } catch {
+    return false;
   }
 }
 

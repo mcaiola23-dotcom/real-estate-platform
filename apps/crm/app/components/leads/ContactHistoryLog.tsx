@@ -4,7 +4,6 @@ import { useState, type ReactNode } from 'react';
 import type { CrmActivity } from '@real-estate/types/crm';
 import { formatTimeAgo } from '../../lib/crm-formatters';
 import { ConversationInsights } from './ConversationInsights';
-import { VoiceNoteRecorder } from '../shared/VoiceNoteRecorder';
 
 /* SVG icons replacing emoji glyphs */
 const PhoneIcon = (
@@ -26,21 +25,14 @@ const EnvelopeIcon = (
   </svg>
 );
 
-const MicIcon = (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-    <rect x="5.5" y="2" width="5" height="8" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M3.5 8.5a4.5 4.5 0 009 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M8 13v1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
 const CONTACT_TYPES: Array<{ value: string; label: string; icon: ReactNode }> = [
   { value: 'call_logged', label: 'Call', icon: PhoneIcon },
   { value: 'text_logged', label: 'Text', icon: MessageIcon },
   { value: 'email_logged', label: 'Email', icon: EnvelopeIcon },
+  { value: 'email_sent', label: 'Email Sent', icon: EnvelopeIcon },
 ];
 
-const CONTACT_ACTIVITY_TYPES = new Set(['call_logged', 'text_logged', 'email_logged']);
+const CONTACT_ACTIVITY_TYPES = new Set(['call_logged', 'text_logged', 'email_logged', 'email_sent']);
 
 interface ExtractedInsight {
   category: string;
@@ -68,7 +60,6 @@ export function ContactHistoryLog({ leadId, tenantId, contactId, activities, onL
   const [saving, setSaving] = useState(false);
   const [lastLoggedNotes, setLastLoggedNotes] = useState('');
   const [expandedInsight, setExpandedInsight] = useState<string | null>(null);
-  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
 
   const contactActivities = activities.filter((a) =>
     CONTACT_ACTIVITY_TYPES.has(a.activityType) && (a.leadId === leadId || a.contactId === contactId)
@@ -104,14 +95,6 @@ export function ContactHistoryLog({ leadId, tenantId, contactId, activities, onL
               <span className="crm-contact-history-glyph">{ct.icon}</span> {ct.label}
             </button>
           ))}
-          <button
-            type="button"
-            className={`crm-contact-log-voice-toggle ${showVoiceRecorder ? 'is-active' : ''}`}
-            onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
-            title="Record voice note"
-          >
-            {MicIcon}
-          </button>
         </div>
         <textarea
           className="crm-contact-log-notes"
@@ -131,18 +114,6 @@ export function ContactHistoryLog({ leadId, tenantId, contactId, activities, onL
           </button>
         </div>
 
-        {showVoiceRecorder && (
-          <VoiceNoteRecorder
-            onRecordingComplete={async (blob, durationSeconds) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                void onLogContact('voice_note', `Voice note (${durationSeconds}s)`);
-              };
-              reader.readAsDataURL(blob);
-              setShowVoiceRecorder(false);
-            }}
-          />
-        )}
       </div>
 
       {/* Post-log insight extraction */}

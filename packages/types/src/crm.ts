@@ -41,6 +41,10 @@ export interface CrmLead {
   closeReason: string | null;
   closeNotes: string | null;
   closedAt: string | null;
+  acreage: number | null;
+  town: string | null;
+  neighborhood: string | null;
+  preferenceNotes: string | null;
   assignedTo: string | null;
   referredBy: string | null;
   createdAt: string;

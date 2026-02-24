@@ -34,6 +34,11 @@ export interface LeadDraft {
   closeNotes: string;
   assignedTo: string;
   referredBy: string;
+  acreage: string;
+  town: string;
+  neighborhood: string;
+  preferenceNotes: string;
+  tags: string[];
 }
 
 export interface ContactDraft {

@@ -771,3 +771,25 @@
 ### D-180: Embed VoiceNoteRecorder in ContactHistoryLog instead of standalone section
 **Decision**: Move VoiceNoteRecorder from a standalone orphaned section in the modal into an inline toggle within the ContactHistoryLog component. A microphone button toggles the recorder visibility alongside the call/text/email type selector.
 **Reason**: Voice notes are a form of contact logging. Having them as a separate modal section disconnected from the contact history was confusing and wasted vertical space. The toggle pattern keeps the UI clean while providing access when needed.
+
+## 2026-02-24
+
+### D-181: Remove VoiceNoteRecorder entirely instead of embedding it
+**Decision**: Delete `VoiceNoteRecorder.tsx` and all references/CSS. Previously D-180 embedded it in ContactHistoryLog, but the component was non-functional (no actual recording API) and added complexity.
+**Reason**: The VoiceNoteRecorder relied on browser APIs that aren't reliably available and had no backend to store recordings. Removing it simplifies the contact logging interface.
+
+### D-182: Store multi-select property type as comma-separated string in existing column
+**Decision**: Use the existing `propertyType String?` column with comma-separated values instead of adding a junction table or JSON column. Values are sorted alphabetically before storage.
+**Reason**: Avoids schema migration for a simple multi-select. The existing column is adequate since property types are a small fixed set. Sorted CSV ensures consistent comparison for dirty-checking.
+
+### D-183: Align tag saving with draft pattern instead of immediate PATCH
+**Decision**: Add `draftMode` prop to `LeadTagInput` that skips the component's own PATCH call. Tags are stored in `LeadDraft.tags` and saved/discarded with the unified footer. Added `tags: string[]` to `LeadDraft` and widened `setLeadDraftField` value type to `string | string[]`.
+**Reason**: Tags making independent PATCH calls conflicted with the modal's draft/save model where users expect Save/Discard to control all changes. Unifying under the draft pattern provides consistent behavior.
+
+### D-184: Show EscalationBanner for overdue leads in modal header
+**Decision**: Render `EscalationBanner` between the modal header and DuplicateWarning for leads where `nextActionAt` is in the past and status is not `won`/`lost`. Uses `computeLeadEscalationLevel` from the existing escalation engine.
+**Reason**: Overdue leads need immediate visual attention. The escalation engine already exists but was only used in the dashboard. Surfacing it in the modal header ensures agents see it when reviewing a specific lead.
+
+### D-185: Wire CrmListingModal action buttons with tab-switching callbacks
+**Decision**: Add `onScheduleShowing` and `onShareWithLead` callbacks to CrmListingModal. Schedule Showing closes the listing modal and switches to the Activity tab. Share with Lead closes and switches to Communication tab with templates open. Buttons are disabled when callbacks aren't provided.
+**Reason**: The listing modal action buttons were previously non-functional placeholders. Tab-switching provides a natural flow from viewing a listing to taking action on it without requiring the user to manually navigate.

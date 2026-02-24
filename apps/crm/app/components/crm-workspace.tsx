@@ -180,6 +180,8 @@ export function CrmWorkspace({
   // Load workspace data via hook
   useWorkspaceData();
 
+  const [dismissedDuplicateLeadIds, setDismissedDuplicateLeadIds] = useState(() => new Set<string>());
+
   const contactPanelRef = useRef<HTMLElement | null>(null);
   const activityPanelRef = useRef<HTMLElement | null>(null);
   const searchPanelRef = useRef<HTMLDivElement | null>(null);
@@ -299,7 +301,7 @@ export function CrmWorkspace({
   );
 
   const handleSetLeadDraftField = useCallback(
-    (leadId: string, field: keyof LeadDraft, value: string | CrmLeadStatus) => {
+    (leadId: string, field: keyof LeadDraft, value: string | CrmLeadStatus | string[]) => {
       const lead = leadById.get(leadId);
       if (!lead) {
         return;
@@ -326,7 +328,9 @@ export function CrmWorkspace({
         normalizeOptionalString(draft.nextActionChannel) !== normalizeOptionalString(lead.nextActionChannel) ||
         normalizeOptionalString(draft.reminderSnoozedUntil) !== normalizeOptionalString(lead.reminderSnoozedUntil) ||
         parseNullableNumber(draft.priceMin) !== lead.priceMin ||
-        parseNullableNumber(draft.priceMax) !== lead.priceMax
+        parseNullableNumber(draft.priceMax) !== lead.priceMax ||
+        draft.tags.length !== (lead.tags ?? []).length ||
+        draft.tags.some((t, i) => t !== (lead.tags ?? [])[i])
       );
     },
     [getLeadDraft]
@@ -522,6 +526,14 @@ export function CrmWorkspace({
   }, [activities]);
 
   const lastContactByLeadId = useMemo(() => {
+    const LAST_CONTACT_ACTIVITY_TYPES = new Set([
+      'call_logged',
+      'text_logged',
+      'email_logged',
+      'email_sent',
+      'showing_scheduled',
+    ]);
+
     const map = new Map<string, string>();
 
     for (const activity of activities) {
@@ -529,7 +541,7 @@ export function CrmWorkspace({
         continue;
       }
 
-      if (activity.activityType !== 'note' && activity.activityType !== 'lead_status_changed') {
+      if (!LAST_CONTACT_ACTIVITY_TYPES.has(activity.activityType)) {
         continue;
       }
 
@@ -982,8 +994,13 @@ export function CrmWorkspace({
       reminderSnoozedUntil?: string | null;
       priceMin?: number | null;
       priceMax?: number | null;
+      acreage?: number | null;
+      town?: string | null;
+      neighborhood?: string | null;
+      preferenceNotes?: string | null;
       assignedTo?: string | null;
       referredBy?: string | null;
+      tags?: string[];
     } = {};
 
     if (draft.status !== lead.status) {
@@ -1072,6 +1089,30 @@ export function CrmWorkspace({
     }
     if (normalizeOptionalString(draft.referredBy) !== normalizeOptionalString(lead.referredBy)) {
       payload.referredBy = normalizeOptionalString(draft.referredBy);
+    }
+
+    const acreage = parseNullableNumber(draft.acreage);
+    if (acreage === undefined) {
+      pushToast('error', 'Acreage must be a number.');
+      return;
+    }
+    if (acreage !== (lead.acreage ?? null)) {
+      payload.acreage = acreage;
+    }
+
+    if (normalizeOptionalString(draft.town) !== normalizeOptionalString(lead.town)) {
+      payload.town = normalizeOptionalString(draft.town);
+    }
+    if (normalizeOptionalString(draft.neighborhood) !== normalizeOptionalString(lead.neighborhood)) {
+      payload.neighborhood = normalizeOptionalString(draft.neighborhood);
+    }
+    if (normalizeOptionalString(draft.preferenceNotes) !== normalizeOptionalString(lead.preferenceNotes)) {
+      payload.preferenceNotes = normalizeOptionalString(draft.preferenceNotes);
+    }
+
+    const leadTags = lead.tags ?? [];
+    if (draft.tags.length !== leadTags.length || draft.tags.some((t, i) => t !== leadTags[i])) {
+      payload.tags = draft.tags;
     }
 
     if (Object.keys(payload).length === 0) {
@@ -1407,6 +1448,26 @@ export function CrmWorkspace({
     }
   }
 
+  async function handleDeleteLead(leadId: string) {
+    beginMutation();
+    try {
+      const response = await fetch(`/api/leads/${leadId}`, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error('Delete failed.');
+      }
+      removeLead(leadId);
+      clearLeadDraft(leadId);
+      storeCloseLeadProfile();
+      updateSummary({ leadCount: Math.max(0, summary.leadCount - 1) });
+      pushToast('success', 'Lead deleted.');
+    } catch (err) {
+      pushToast('error', err instanceof Error ? err.message : 'Failed to delete lead.');
+      throw err;
+    } finally {
+      endMutation();
+    }
+  }
+
   const openDashboard = useCallback(() => {
     handleNav('dashboard');
   }, [handleNav]);
@@ -1448,6 +1509,10 @@ export function CrmWorkspace({
       closedAt: null,
       assignedTo: null,
       referredBy: null,
+      acreage: null,
+      town: null,
+      neighborhood: null,
+      preferenceNotes: null,
       createdAt: nowIso,
       updatedAt: nowIso,
     };
@@ -2313,6 +2378,9 @@ export function CrmWorkspace({
           onClearLeadDraft={clearLeadDraft}
           onLogContact={logContactActivity}
           onViewLead={openLeadProfile}
+          onDeleteLead={handleDeleteLead}
+          dismissedDuplicateIds={dismissedDuplicateLeadIds}
+          onDismissDuplicate={(id) => setDismissedDuplicateLeadIds((prev) => new Set(prev).add(id))}
           onSaveReminder={(leadId, data) => {
             handleSetLeadDraftField(leadId, 'nextActionAt', data.nextActionAt);
             handleSetLeadDraftField(leadId, 'nextActionNote', data.nextActionNote);

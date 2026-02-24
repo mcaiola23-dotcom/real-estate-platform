@@ -9,6 +9,9 @@ interface CrmListingModalProps {
   listing: Listing | null;
   onClose: () => void;
   leadName?: string;
+  onAddToSuggested?: (listingId: string) => void;
+  onScheduleShowing?: (listingId: string, address: string) => void;
+  onShareWithLead?: (listingId: string) => void;
 }
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -17,7 +20,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0,
 });
 
-export function CrmListingModal({ listing, onClose, leadName }: CrmListingModalProps) {
+export function CrmListingModal({ listing, onClose, leadName, onAddToSuggested, onScheduleShowing, onShareWithLead }: CrmListingModalProps) {
   const [activePhoto, setActivePhoto] = useState(0);
 
   if (!listing) return null;
@@ -118,20 +121,35 @@ export function CrmListingModal({ listing, onClose, leadName }: CrmListingModalP
 
       {/* CRM Actions */}
       <div className="crm-listing-actions">
-        <button type="button" className="crm-btn-secondary">
+        <button
+          type="button"
+          className="crm-btn-secondary"
+          disabled={!onAddToSuggested}
+          onClick={() => onAddToSuggested?.(listing.id)}
+        >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           Add to Suggested
         </button>
-        <button type="button" className="crm-btn-secondary">
+        <button
+          type="button"
+          className="crm-btn-secondary"
+          disabled={!onScheduleShowing}
+          onClick={() => onScheduleShowing?.(listing.id, fullAddress)}
+        >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
             <path d="M2 6.5h12M5.5 3V1.5M10.5 3V1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           Schedule Showing
         </button>
-        <button type="button" className="crm-btn-secondary">
+        <button
+          type="button"
+          className="crm-btn-secondary"
+          disabled={!onShareWithLead}
+          onClick={() => onShareWithLead?.(listing.id)}
+        >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M4 12l-2 2V4.5A1.5 1.5 0 013.5 3h9A1.5 1.5 0 0114 4.5v6a1.5 1.5 0 01-1.5 1.5H6l-2 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

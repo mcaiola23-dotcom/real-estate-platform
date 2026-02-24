@@ -7,6 +7,7 @@ import { formatLeadSourceLabel } from '../../lib/crm-display';
 interface SourceAttributionChainProps {
   source: string;
   activities: CrmActivity[];
+  onNodeClick?: (node: ChainNode, activities: CrmActivity[]) => void;
 }
 
 const MAX_VISIBLE = 6;
@@ -34,7 +35,9 @@ interface ChainNode {
   isSource: boolean;
 }
 
-export function SourceAttributionChain({ source, activities }: SourceAttributionChainProps) {
+export { type ChainNode };
+
+export function SourceAttributionChain({ source, activities, onNodeClick }: SourceAttributionChainProps) {
   const chain = useMemo(() => {
     const nodes: ChainNode[] = [];
 
@@ -74,7 +77,25 @@ export function SourceAttributionChain({ source, activities }: SourceAttribution
     <div className="crm-attribution-chain" aria-label="Lead attribution path">
       <span className="crm-attribution-line" aria-hidden="true" />
       {visible.map((node, i) => (
-        <span key={`${node.label}-${i}`} className="crm-attribution-stop">
+        <span
+          key={`${node.label}-${i}`}
+          className={`crm-attribution-stop ${onNodeClick && !node.isSource ? 'crm-attribution-node-clickable' : ''}`}
+          onClick={() => {
+            if (onNodeClick && !node.isSource) {
+              const touchpointType = node.label;
+              const related = activities.filter((a) => activityToTouchpoint(a.activityType) === touchpointType);
+              onNodeClick(node, related);
+            }
+          }}
+          role={onNodeClick && !node.isSource ? 'button' : undefined}
+          tabIndex={onNodeClick && !node.isSource ? 0 : undefined}
+          onKeyDown={(e) => {
+            if (onNodeClick && !node.isSource && e.key === 'Enter') {
+              const related = activities.filter((a) => activityToTouchpoint(a.activityType) === node.label);
+              onNodeClick(node, related);
+            }
+          }}
+        >
           <span
             className={`crm-attribution-dot ${node.isSource ? 'crm-attribution-dot--origin' : ''}`}
             aria-hidden="true"

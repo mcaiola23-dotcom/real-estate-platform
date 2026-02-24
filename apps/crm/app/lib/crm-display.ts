@@ -29,6 +29,8 @@ const ACTIVITY_LABELS: Record<string, string> = {
   call_logged: 'Call Logged',
   text_logged: 'Text Logged',
   email_logged: 'Email Logged',
+  email_sent: 'Email Sent',
+  showing_scheduled: 'Showing Scheduled',
 };
 
 export function formatLeadTypeLabel(leadType: CrmLeadType): string {
@@ -45,4 +47,27 @@ export function formatLeadStatusLabel(status: CrmLeadStatus): string {
 
 export function formatActivityTypeLabel(activityType: string): string {
   return ACTIVITY_LABELS[activityType] ?? activityType;
+}
+
+export function getLeadTypeColorClass(leadType: string): string {
+  switch (leadType) {
+    case 'buyer': return 'crm-lead-type-buyer';
+    case 'seller': return 'crm-lead-type-seller';
+    case 'renter': return 'crm-lead-type-renter';
+    case 'investor': return 'crm-lead-type-investor';
+    default: return 'crm-lead-type-other';
+  }
+}
+
+export function formatPropertyTypeLabels(csv: string | null): string[] {
+  if (!csv) return [];
+  const LABELS: Record<string, string> = {
+    'single-family': 'Single Family',
+    'condo': 'Condo / Townhome',
+    'multi-family': 'Multifamily',
+    'commercial': 'Commercial',
+    'rental': 'Rental',
+    'other': 'Other',
+  };
+  return csv.split(',').map((t) => t.trim()).filter(Boolean).map((t) => LABELS[t] ?? t);
 }

@@ -15,10 +15,12 @@ interface DuplicateWarningProps {
   email: string | null;
   phone: string | null;
   address: string | null;
-  onViewLead: (leadId: string) => void;
+  onViewLead?: (leadId: string) => void;
+  dismissedIds?: Set<string>;
+  onDismiss?: (leadId: string) => void;
 }
 
-export function DuplicateWarning({ leadId, email, phone, address, onViewLead }: DuplicateWarningProps) {
+export function DuplicateWarning({ leadId, email, phone, address, onViewLead, dismissedIds, onDismiss }: DuplicateWarningProps) {
   const [duplicates, setDuplicates] = useState<DuplicateMatch[]>([]);
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,7 @@ export function DuplicateWarning({ leadId, email, phone, address, onViewLead }: 
     return () => { cancelled = true; };
   }, [leadId, email, phone, address, hasInput]);
 
-  if (dismissed || loading || duplicates.length === 0) return null;
+  if (dismissed || dismissedIds?.has(leadId) || loading || duplicates.length === 0) return null;
 
   return (
     <div className="crm-dup-warning" role="alert">
@@ -62,7 +64,7 @@ export function DuplicateWarning({ leadId, email, phone, address, onViewLead }: 
         <button
           type="button"
           className="crm-dup-warning-dismiss"
-          onClick={() => setDismissed(true)}
+          onClick={() => { setDismissed(true); onDismiss?.(leadId); }}
           aria-label="Dismiss duplicate warning"
         >
           ✕
@@ -82,13 +84,15 @@ export function DuplicateWarning({ leadId, email, phone, address, onViewLead }: 
                 {dup.matchReasons.join(' · ')}
               </span>
             </div>
-            <button
-              type="button"
-              className="crm-dup-warning-view"
-              onClick={() => onViewLead(dup.lead.id)}
-            >
-              View
-            </button>
+            {onViewLead && (
+              <button
+                type="button"
+                className="crm-dup-warning-view"
+                onClick={() => onViewLead(dup.lead.id)}
+              >
+                View
+              </button>
+            )}
           </div>
         ))}
       </div>

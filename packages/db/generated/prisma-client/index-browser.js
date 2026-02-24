@@ -287,6 +287,10 @@ exports.Prisma.LeadScalarFieldEnum = {
   closeReason: 'closeReason',
   closeNotes: 'closeNotes',
   closedAt: 'closedAt',
+  acreage: 'acreage',
+  town: 'town',
+  neighborhood: 'neighborhood',
+  preferenceNotes: 'preferenceNotes',
   assignedTo: 'assignedTo',
   referredBy: 'referredBy',
   createdAt: 'createdAt',
@@ -402,6 +406,119 @@ exports.Prisma.TransactionMilestoneScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.IntegrationTokenScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  actorId: 'actorId',
+  provider: 'provider',
+  accessTokenEnc: 'accessTokenEnc',
+  refreshTokenEnc: 'refreshTokenEnc',
+  scopesJson: 'scopesJson',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShowingScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  leadId: 'leadId',
+  contactId: 'contactId',
+  propertyAddress: 'propertyAddress',
+  scheduledAt: 'scheduledAt',
+  duration: 'duration',
+  status: 'status',
+  notes: 'notes',
+  calendarEventId: 'calendarEventId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CommissionSettingScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  defaultCommPct: 'defaultCommPct',
+  brokerageSplitPct: 'brokerageSplitPct',
+  marketingFee: 'marketingFee',
+  referralFee: 'referralFee',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CommissionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  transactionId: 'transactionId',
+  leadId: 'leadId',
+  salePrice: 'salePrice',
+  commPct: 'commPct',
+  brokerageSplitPct: 'brokerageSplitPct',
+  marketingFees: 'marketingFees',
+  referralFees: 'referralFees',
+  netAmount: 'netAmount',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CampaignScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  status: 'status',
+  stepsJson: 'stepsJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CampaignEnrollmentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  campaignId: 'campaignId',
+  leadId: 'leadId',
+  currentStep: 'currentStep',
+  status: 'status',
+  nextSendAt: 'nextSendAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AdSpendScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  platform: 'platform',
+  amount: 'amount',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  notes: 'notes',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TeamMemberScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  email: 'email',
+  role: 'role',
+  isActive: 'isActive',
+  leadCap: 'leadCap',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ESignatureRequestScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  transactionId: 'transactionId',
+  documentName: 'documentName',
+  recipientEmail: 'recipientEmail',
+  status: 'status',
+  sentAt: 'sentAt',
+  signedAt: 'signedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -433,7 +550,16 @@ exports.Prisma.ModelName = {
   Transaction: 'Transaction',
   TransactionParty: 'TransactionParty',
   TransactionDocument: 'TransactionDocument',
-  TransactionMilestone: 'TransactionMilestone'
+  TransactionMilestone: 'TransactionMilestone',
+  IntegrationToken: 'IntegrationToken',
+  Showing: 'Showing',
+  CommissionSetting: 'CommissionSetting',
+  Commission: 'Commission',
+  Campaign: 'Campaign',
+  CampaignEnrollment: 'CampaignEnrollment',
+  AdSpend: 'AdSpend',
+  TeamMember: 'TeamMember',
+  ESignatureRequest: 'ESignatureRequest'
 };
 
 /**

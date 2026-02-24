@@ -15,9 +15,11 @@ interface LeadTagInputProps {
   tenantId: string;
   initialTags: string[];
   onTagsChange: (tags: string[]) => void;
+  /** When true, tags are saved via the parent's draft/save flow instead of direct PATCH. */
+  draftMode?: boolean;
 }
 
-export function LeadTagInput({ leadId, tenantId, initialTags, onTagsChange }: LeadTagInputProps) {
+export function LeadTagInput({ leadId, tenantId, initialTags, onTagsChange, draftMode }: LeadTagInputProps) {
   const [tags, setTags] = useState<string[]>(initialTags);
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -53,6 +55,10 @@ export function LeadTagInput({ leadId, tenantId, initialTags, onTagsChange }: Le
   }, [initialTags]);
 
   const persistTags = useCallback(async (nextTags: string[]) => {
+    if (draftMode) {
+      // In draft mode, tags are saved with the parent's unified Save flow
+      return;
+    }
     setSaving(true);
     try {
       const res = await fetch(`/api/leads/${leadId}`, {
@@ -69,7 +75,7 @@ export function LeadTagInput({ leadId, tenantId, initialTags, onTagsChange }: Le
       }
     } catch { /* silent */ }
     setSaving(false);
-  }, [leadId, onTagsChange]);
+  }, [leadId, onTagsChange, draftMode]);
 
   const addTag = useCallback((raw: string) => {
     const normalized = raw.trim().toLowerCase().slice(0, MAX_TAG_LENGTH);

@@ -1354,13 +1354,13 @@ button:disabled {
 .crm-modal {
   width: min(1040px, 100%);
   max-height: calc(100vh - 2rem);
-  overflow: auto;
   border: 1px solid var(--crm-border);
   border-radius: 0.95rem;
   background: var(--crm-surface);
   box-shadow: 0 24px 60px rgba(24, 18, 13, 0.22);
   padding: 1.1rem;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
@@ -11500,101 +11500,6 @@ textarea:focus {
   gap: 0.5rem;
 }
 
-/* =========================================================================
-   Sprint 3C: Voice Note Recorder
-   ========================================================================= */
-
-.crm-voice-recorder {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.crm-voice-recorder-start {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
-  border: 1px dashed var(--crm-border, #e2e0dc);
-  border-radius: 0.4rem;
-  background: transparent;
-  font-size: 0.8rem;
-  cursor: pointer;
-  color: var(--crm-text-secondary, #6b6560);
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.crm-voice-recorder-start:hover {
-  border-color: var(--crm-accent, #a08060);
-  background: rgba(160, 128, 96, 0.04);
-}
-
-.crm-voice-recorder-mic {
-  font-size: 1rem;
-}
-
-.crm-voice-recorder-active {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #dc2626;
-  border-radius: 0.4rem;
-  background: rgba(220, 38, 38, 0.04);
-}
-
-.crm-voice-recorder-pulse {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #dc2626;
-  animation: crm-rec-pulse 1s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
-@keyframes crm-rec-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
-}
-
-.crm-voice-recorder-timer {
-  font-size: 0.85rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  flex: 1;
-}
-
-.crm-voice-recorder-stop {
-  padding: 0.25rem 0.6rem;
-  border: 1px solid #dc2626;
-  border-radius: 0.3rem;
-  background: #dc2626;
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.crm-voice-recorder-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  padding: 0.5rem;
-  border: 1px solid var(--crm-border, #e2e0dc);
-  border-radius: 0.4rem;
-}
-
-.crm-voice-recorder-audio {
-  width: 100%;
-  height: 32px;
-}
-
-.crm-voice-recorder-preview-actions {
-  display: flex;
-  gap: 0.4rem;
-  justify-content: flex-end;
-}
-
 /* ─── Dark mode overrides for Sprint 3 ─── */
 
 [data-theme="dark"] .crm-commission-breakdown {
@@ -11604,14 +11509,6 @@ textarea:focus {
 
 [data-theme="dark"] .crm-commission-net .crm-commission-value {
   color: #4ade80;
-}
-
-[data-theme="dark"] .crm-voice-recorder-start:hover {
-  background: rgba(160, 128, 96, 0.08);
-}
-
-[data-theme="dark"] .crm-voice-recorder-active {
-  background: rgba(220, 38, 38, 0.08);
 }
 
 /* =========================================================================
@@ -12778,6 +12675,9 @@ textarea:focus {
   display: grid;
   gap: 0.85rem;
   padding-top: 0.25rem;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 /* — Collapsible Section — */
@@ -12970,6 +12870,7 @@ textarea:focus {
   margin: 0 -1.1rem -1.1rem;
   background: var(--crm-surface-alt);
   border-radius: 0 0 0.95rem 0.95rem;
+  flex-shrink: 0;
 }
 
 /* — Clickable listing link in timeline — */
@@ -13217,4 +13118,268 @@ textarea:focus {
 [data-theme="dark"] .crm-modal-footer {
   background: var(--crm-surface);
   border-top-color: var(--crm-border);
+}
+
+/* =========================================================================
+   Lead Type Badge — colored pill in modal header
+   ========================================================================= */
+
+.crm-lead-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.crm-lead-type-buyer {
+  color: #1d4ed8;
+  background: #eaf2ff;
+}
+
+.crm-lead-type-seller {
+  color: #15803d;
+  background: #edf9f0;
+}
+
+.crm-lead-type-renter {
+  color: #7c3aed;
+  background: #f3f0ff;
+}
+
+.crm-lead-type-investor {
+  color: #b45309;
+  background: #fff6ea;
+}
+
+.crm-lead-type-other,
+.crm-lead-type-website_lead,
+.crm-lead-type-valuation_request {
+  color: var(--crm-text-secondary, #6b6560);
+  background: var(--crm-surface-alt, #f5f3f0);
+}
+
+[data-theme="dark"] .crm-lead-type-buyer {
+  color: #93bbfd;
+  background: rgba(29, 78, 216, 0.15);
+}
+
+[data-theme="dark"] .crm-lead-type-seller {
+  color: #6ee7a0;
+  background: rgba(21, 128, 61, 0.15);
+}
+
+[data-theme="dark"] .crm-lead-type-renter {
+  color: #c4b5fd;
+  background: rgba(124, 58, 237, 0.15);
+}
+
+[data-theme="dark"] .crm-lead-type-investor {
+  color: #fbbf24;
+  background: rgba(180, 83, 9, 0.15);
+}
+
+[data-theme="dark"] .crm-lead-type-other,
+[data-theme="dark"] .crm-lead-type-website_lead,
+[data-theme="dark"] .crm-lead-type-valuation_request {
+  color: var(--crm-text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* =========================================================================
+   Multi-checkbox property type selector
+   ========================================================================= */
+
+.crm-field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--crm-text-secondary, #6b6560);
+  margin-bottom: 0.3rem;
+}
+
+.crm-multi-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.crm-multi-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.4rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+  user-select: none;
+}
+
+.crm-multi-checkbox input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--crm-accent, #a08060);
+}
+
+.crm-multi-checkbox:hover {
+  border-color: var(--crm-accent, #a08060);
+}
+
+.crm-multi-checkbox.is-checked {
+  border-color: var(--crm-accent, #a08060);
+  background: rgba(160, 128, 96, 0.06);
+}
+
+[data-theme="dark"] .crm-multi-checkbox {
+  border-color: var(--crm-border, #333);
+}
+
+[data-theme="dark"] .crm-multi-checkbox.is-checked {
+  background: rgba(160, 128, 96, 0.12);
+}
+
+/* =========================================================================
+   Intelligence tab compact layout
+   ========================================================================= */
+
+.crm-intel-compact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.crm-intel-compact-row canvas,
+.crm-intel-compact-row .crm-activity-chart,
+.crm-intel-compact-row .crm-price-bar {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .crm-intel-compact-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================================
+   Destructive button
+   ========================================================================= */
+
+.crm-btn-destructive {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.crm-btn-destructive:hover {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.06);
+}
+
+.crm-btn-destructive:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .crm-btn-destructive {
+  color: #f87171;
+}
+
+[data-theme="dark"] .crm-btn-destructive:hover {
+  border-color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+/* =========================================================================
+   Communication tool cards
+   ========================================================================= */
+
+.crm-comm-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .crm-comm-tools-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.crm-comm-tool-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.65rem 0.5rem;
+  border: 1px solid var(--crm-border, #e2e0dc);
+  border-radius: 0.5rem;
+  background: var(--crm-surface, #fff);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.crm-comm-tool-card:hover {
+  border-color: var(--crm-accent, #a08060);
+  background: rgba(160, 128, 96, 0.03);
+}
+
+.crm-comm-tool-card.is-active {
+  border-color: var(--crm-accent, #a08060);
+  background: rgba(160, 128, 96, 0.06);
+  box-shadow: 0 0 0 1px var(--crm-accent, #a08060);
+}
+
+.crm-comm-tool-card__title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--crm-text, #1a1713);
+}
+
+.crm-comm-tool-card__subtitle {
+  font-size: 0.68rem;
+  color: var(--crm-text-secondary, #6b6560);
+}
+
+[data-theme="dark"] .crm-comm-tool-card {
+  background: var(--crm-surface, #1a1a1a);
+  border-color: var(--crm-border, #333);
+}
+
+[data-theme="dark"] .crm-comm-tool-card:hover {
+  background: rgba(160, 128, 96, 0.08);
+}
+
+[data-theme="dark"] .crm-comm-tool-card.is-active {
+  background: rgba(160, 128, 96, 0.12);
+}
+
+/* =========================================================================
+   Attribution chain clickable nodes
+   ========================================================================= */
+
+.crm-attribution-node-clickable {
+  cursor: pointer;
+}
+
+.crm-attribution-node-clickable:hover .crm-attribution-label {
+  color: var(--crm-accent, #a08060);
+}
+
+.crm-attribution-node-clickable:hover .crm-attribution-dot {
+  background: var(--crm-accent, #a08060);
 }

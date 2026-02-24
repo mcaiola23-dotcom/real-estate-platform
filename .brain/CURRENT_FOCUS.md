@@ -63,11 +63,13 @@ Lead Profile Modal redesign and Listing Modal CRM integration — **implemented*
 
 57. Lead Profile Modal redesign (Session 15) is now fully implemented in `apps/crm` with 4-tab navigation (Overview/Communication/Intelligence/Activity), CollapsibleSection grouping, unified Save Changes footer, focus trap for accessibility, emoji→SVG icon replacement, clickable listing references in timeline/signals, CrmListingModal slide-over with photo gallery/CRM actions, PropertyPreferences rename, embedded VoiceNoteRecorder in ContactHistoryLog, ShowingScheduler address sync fix, increased modal spacing/reduced nested borders, typography hierarchy (heading-lg/sm/label), and button hierarchy (btn-primary/secondary/ghost). 13 files changed, ~1,300 lines added, 0 type errors, 89/89 route tests, 4/4 workspace tests.
 
+58. Lead Profile Modal production-ready update (Session 16) is now fully implemented across 7 sprints: Sprint 1 — Fixed lastContactByLeadId bug (filter on actual contact types), added email_sent to ContactHistoryLog, wired AiDraftComposer activity logging, fixed SmartReminderForm Unicode escaping, removed non-functional VoiceNoteRecorder, changed modal title to contact name with lead type badge color coding, moved Last Contact to header. Sprint 2 — Schema migration for acreage/town/neighborhood/preferenceNotes, multi-select property type via comma-separated values, new preference fields in modal UI, removed redundant PropertyPreferences render. Sprint 3 — Consolidated Intelligence tab with Lead Intelligence CollapsibleSection, wrapped AI components in CollapsibleSections. Sprint 4 — Flexbox layout for always-visible footer, Delete Lead with inline confirmation and DELETE API handler. Sprint 5 — Card-based communication tool layout, Gmail reply threading with replyContext. Sprint 6 — Wired onViewLead for duplicates, session-scoped dismissals, clickable attribution chain nodes. Sprint 7 — EscalationBanner for overdue leads, CrmListingModal action button callbacks, tag saving aligned with draft pattern. ~30 files changed, 1 file deleted, 1 migration created, 0 type errors, 89/89 route tests, 4/4 workspace tests.
+
 ## Immediate Next Steps
-- Visual browser verification of Lead Profile Modal redesign (start `npm run dev:crm`, click through all 4 tabs, verify dark mode).
-- Commit CRM Elite Overhaul + Modal Redesign together (~5,000 total lines).
-- Remaining CRM Listing Modal enhancements: agent annotations, engagement data display, share actions integration (3 items still open).
-- AI content generation pipeline for website onboarding remains next non-CRM candidate after modal work.
+- Run Prisma migration for new preference fields: `npm run db:migrate:deploy --workspace @real-estate/db` + `npm run db:generate --workspace @real-estate/db`.
+- Visual browser verification of Lead Profile Modal (start `npm run dev:crm`, verify all 7 sprint changes).
+- Commit all CRM changes (Elite Overhaul + Modal Redesign + Production-Ready Update).
+- AI content generation pipeline for website onboarding remains next non-CRM candidate.
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes.
 
 ## Session Validation (2026-02-12)

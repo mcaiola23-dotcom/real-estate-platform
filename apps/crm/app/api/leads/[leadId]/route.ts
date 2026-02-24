@@ -1,6 +1,6 @@
 import type { CrmLeadStatus } from '@real-estate/types/crm';
 import type { TenantContext } from '@real-estate/types';
-import { createActivityForTenant, getLeadByIdForTenant, updateLeadForTenant } from '@real-estate/db/crm';
+import { createActivityForTenant, deleteLeadForTenant, getLeadByIdForTenant, updateLeadForTenant } from '@real-estate/db/crm';
 import { NextResponse } from 'next/server';
 
 import { requireTenantContext } from '../../lib/tenant-route';
@@ -83,6 +83,25 @@ function toNullableString(value: unknown): string | null | undefined {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function toNullableFloat(value: unknown): number | null | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null || value === '') {
+    return null;
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return undefined;
+}
+
 function toNullableInt(value: unknown): number | null | undefined {
   if (value === undefined) {
     return undefined;
@@ -141,6 +160,10 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
           closeReason?: string | null;
           closeNotes?: string | null;
           closedAt?: string | null;
+          acreage?: number | string | null;
+          town?: string | null;
+          neighborhood?: string | null;
+          preferenceNotes?: string | null;
           assignedTo?: string | null;
           referredBy?: string | null;
         }
@@ -180,6 +203,10 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
     const closeReason = toNullableString(payload.closeReason);
     const closeNotes = toNullableString(payload.closeNotes);
     const closedAt = toNullableString(payload.closedAt);
+    const acreage = toNullableFloat(payload.acreage);
+    const town = toNullableString(payload.town);
+    const neighborhood = toNullableString(payload.neighborhood);
+    const preferenceNotes = toNullableString(payload.preferenceNotes);
     const assignedTo = toNullableString(payload.assignedTo);
     const referredBy = toNullableString(payload.referredBy);
 
@@ -203,6 +230,10 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       closeReason === undefined &&
       closeNotes === undefined &&
       closedAt === undefined &&
+      acreage === undefined &&
+      town === undefined &&
+      neighborhood === undefined &&
+      preferenceNotes === undefined &&
       assignedTo === undefined &&
       referredBy === undefined
     ) {
@@ -235,6 +266,10 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       closeReason,
       closeNotes,
       closedAt,
+      acreage,
+      town,
+      neighborhood,
+      preferenceNotes,
       assignedTo,
       referredBy,
     });
@@ -267,5 +302,27 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
   };
 }
 
+export function createLeadDeleteHandler(deps: LeadPatchDeps = defaultDeps) {
+  return async function DELETE(request: Request, context: RouteContext) {
+    const { tenantContext, unauthorizedResponse } = await deps.requireTenantContext(request);
+    if (unauthorizedResponse) {
+      return unauthorizedResponse;
+    }
+
+    if (!tenantContext) {
+      return NextResponse.json({ ok: false, error: 'Tenant resolution failed.' }, { status: 401 });
+    }
+
+    const { leadId } = await context.params;
+    const deleted = await deleteLeadForTenant(tenantContext.tenantId, leadId);
+    if (!deleted) {
+      return NextResponse.json({ ok: false, error: 'Lead not found or delete failed.' }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, tenantId: tenantContext.tenantId });
+  };
+}
+
 export const PATCH = createLeadPatchHandler();
 export const GET = createLeadGetHandler();
+export const DELETE = createLeadDeleteHandler();

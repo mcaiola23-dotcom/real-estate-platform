@@ -111,7 +111,7 @@ interface DraftSlice {
   savingContactIds: Record<string, true>;
 
   setLeadDraft: (leadId: string, draft: LeadDraft) => void;
-  setLeadDraftField: (leadId: string, field: keyof LeadDraft, value: string | CrmLeadStatus, lead: CrmLead) => void;
+  setLeadDraftField: (leadId: string, field: keyof LeadDraft, value: string | CrmLeadStatus | string[], lead: CrmLead) => void;
   clearLeadDraft: (leadId: string) => void;
   clearAllLeadDrafts: () => void;
   setSavingLeadId: (leadId: string, saving: boolean) => void;
