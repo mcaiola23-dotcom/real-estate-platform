@@ -7,6 +7,7 @@ interface CollapsibleSectionProps {
   icon?: ReactNode;
   defaultOpen?: boolean;
   badge?: string | number;
+  headerExtra?: ReactNode;
   children: ReactNode;
 }
 
@@ -15,6 +16,7 @@ export function CollapsibleSection({
   icon,
   defaultOpen = true,
   badge,
+  headerExtra,
   children,
 }: CollapsibleSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
@@ -31,6 +33,7 @@ export function CollapsibleSection({
           {icon && <span className="crm-collapsible-section__icon">{icon}</span>}
           <span className="crm-collapsible-section__title">{title}</span>
           {badge != null && <span className="crm-collapsible-section__badge">{badge}</span>}
+          {headerExtra && <span className="crm-collapsible-section__header-extra" onClick={(e) => e.stopPropagation()}>{headerExtra}</span>}
         </span>
         <span className={`crm-collapsible-section__chevron ${open ? 'crm-collapsible-section__chevron--open' : ''}`}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">

@@ -4,7 +4,7 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- **Pick next backlog item** — Lead Profile Modal Round 2 polish is complete (leadType editability, badge fixes, escalation/duplicate removal, hover states). Needs git commit, then move to next priority. Top candidates:
+- **Pick next backlog item** — Lead Profile Modal Overview Tab Production Upgrade is complete and committed. Top candidates:
   - AI content generation pipeline for website onboarding
   - Generate Prisma migrations for Elite Overhaul's 8 new models (production DB target)
   - CRM Listing Modal remaining items (agent notes, engagement data, share actions, tenant-scoped data)
@@ -12,33 +12,29 @@ Use this file to start the next session quickly. Update it at the end of every w
   - Build actionable escalation flow (EscalationBanner removed pending useful resolution UX beyond "X days overdue")
 
 ## Why This Is Next
-- Lead Profile Modal Round 2 addressed all user-reported issues: leadType editability, color-coded header badge, last-contact hover, escalation/duplicate cleanup.
+- Lead Profile Modal Overview Tab Upgrade addressed all 18 review recommendations + 4 user-requested features + 3 rounds of visual polish feedback.
 - No other active workstream is in progress — this is a clean starting point.
 
-## Current Snapshot (2026-02-24, Session 18 start)
-- **Last commit**: `9f8e1ee` — Lead Profile Modal production-ready update (7 sprints, Session 16)
-- **Uncommitted**: Lead Profile Modal Round 2 polish (~20 files, ~360 lines net change)
-- **Branch**: `main`, 1 commit ahead of `origin/main`
-- **CRM status**: All route tests pass (89/89), 0 type errors in modified files
-- **Prisma**: Migration `202602230002_add_lead_preference_fields` applied, client generated
+## Current Snapshot (2026-02-24, Session 19 end)
+- **Last commit**: Pending — run `/git-update` to commit Overview Tab Production Upgrade
+- **Branch**: `main`
+- **CRM status**: All route tests pass (89/89), 0 type errors, build verified
+- **Prisma**: Migration `202602240001_add_lead_house_style` created (needs `db:migrate:deploy` for production)
 
 ## Key Changes This Session (uncommitted)
-1. `leadType` now editable full-stack: DB (`UpdateCrmLeadInput`) → API route (PATCH validation + activity log) → workspace (draft/dirty/optimistic) → modal (dropdown)
-2. `buildLeadDraft()` auto-classifies `website_lead` → `buyer`, `valuation_request` → `seller` via `classifyLeadType()`
-3. Ingestion auto-classifies: new website leads → `buyer`, new valuation requests → `seller`
-4. EscalationBanner removed from modal (aggressive, no actionable info)
-5. DuplicateWarning removed from modal (no merge flow built yet)
-6. Lead type badges now have distinct colors per variant (including `website_lead` = sky blue, `valuation_request` = purple)
-7. Last-contact badge is clickable (→ Activity tab) with color-matched hover (no dark flash)
-8. Delete button padding/radius/weight aligned with footer buttons
+1. **Sprint 1** — Lead Type + Status side-by-side, Address full-width, Notes rows=3, Contact layout (Name+Phone half, Email full), $ adornments on price, inputMode on numeric fields, helper text, responsive grid
+2. **Sprint 2** — Dead Link Contact button with feedback, SmartReminderForm hideHeader+CollapsibleSection, SVG checkmark, calendar hint, Timeframe dropdown with TIMEFRAME_OPTIONS
+3. **Sprint 3** — Full-stack `houseStyle` field (10+ files), PriceRangeSlider with custom pointer-event thumbs and piecewise log scale ($0-$5M linear @ $25K, $5M-$10M+ compressed @ $100K)
+4. **Sprint 4** — SourceAttributionChain with SVG icon markers, ResizeObserver auto-fit (most-recent events in single row), connecting line + equal spacing, hover tooltips, click expansion panel
+5. **Visual polish** — Source/status pills moved to CollapsibleSection header via headerExtra prop, urgency badges restyled (subtle tinted backgrounds + dark mode), scale markers positioned by actual value percentage, contact name half-width, timeline connecting lines restored
 
 ## First Actions Next Session
 1. Run `/session-bootstrap`.
-2. Commit Round 2 polish changes.
-3. Review open backlog items and pick highest priority.
+2. Review open backlog items and pick highest priority.
+3. Consider applying Prisma migration for `houseStyle` to production DB.
 
 ## Validation Context (Most Recent)
-- `tsc --noEmit -p apps/crm/tsconfig.json` — PASS (0 errors in modified files; pre-existing errors in `crm.ts` lines 317-320 are baseline)
+- `npm run build --workspace @real-estate/crm` — PASS
 - `npm run test:routes --workspace @real-estate/crm` — PASS (89/89 tests)
 
 ## Constraints To Keep

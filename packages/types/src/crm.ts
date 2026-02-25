@@ -44,6 +44,7 @@ export interface CrmLead {
   acreage: number | null;
   town: string | null;
   neighborhood: string | null;
+  houseStyle: string | null;
   preferenceNotes: string | null;
   assignedTo: string | null;
   referredBy: string | null;

@@ -811,3 +811,28 @@
 ### D-189: Auto-classify legacy lead types in draft to prevent false dirty flags
 **Decision**: `classifyLeadType()` is applied in `buildLeadDraft()`, `hasUnsavedLeadChange()`, and `updateLead()` so that legacy `website_lead`/`valuation_request` values are normalized before comparison. This prevents the "Discard unsaved changes?" warning from firing on unmodified leads.
 **Reason**: Without normalization, the draft value (`buyer`) would differ from the DB value (`website_lead`), causing every modal close to trigger the unsaved-changes warning even when no changes were made.
+
+## 2026-02-24 (Sessions 18-19)
+### D-190: Full-stack houseStyle field addition for lead property preferences
+**Decision**: Add `houseStyle String?` to Lead model with full-stack wiring (schema → types → data access → PATCH route → draft → workspace → UI with datalist suggestions). Migration `202602240001_add_lead_house_style`.
+**Reason**: Agents need to record architectural style preferences (Ranch, Colonial, Cape Cod, etc.) as a structured field for listing matching, not buried in free-text notes.
+
+### D-191: Use custom pointer-event thumbs instead of overlapping input[type=range] for dual-range slider
+**Decision**: Replace two overlapping `<input type="range">` elements with custom `<div>` thumbs using the Pointer Events API (`setPointerCapture`, `onPointerDown/Move/Up`). Track click moves nearest thumb.
+**Reason**: The standard dual-range technique (two inputs overlaid with `pointer-events: none` on track, `auto` on thumb) does not reliably work across browsers — the min thumb becomes uninteractable when obscured by the max input. Custom thumbs give full control over z-index and hit testing.
+
+### D-192: Piecewise linear scale for price slider ($0-$5M linear, $5M-$10M+ compressed)
+**Decision**: Map 0-80% of track to $0-$5M (linear, $25K steps) and 80-100% to $5M-$10M (compressed, $100K steps). At 100% value = $10M, displayed as "$10M+". Scale markers positioned by same `valueToPercent()` mapping.
+**Reason**: 80% of leads fall in the $0-$5M range and need fine granularity. The $5M-$10M+ range needs representation but not the same precision. This avoids a track where the common range is cramped into a small area.
+
+### D-193: SourceAttributionChain uses ResizeObserver auto-fit with most-recent-first truncation
+**Decision**: Measure container width with ResizeObserver, divide by ~72px per node to get max visible count. Always show source (first node) + N most recent events (from end of chain). Skipped middle events shown as `+N` badge with tooltip.
+**Reason**: Previous approaches (fixed MAX_VISIBLE=15 or flex-wrap) either caused horizontal scroll or multi-line wrapping. Dynamic measurement ensures the timeline always fits in exactly one row regardless of container width, showing the most relevant (recent) events.
+
+### D-194: CollapsibleSection headerExtra prop for inline header content
+**Decision**: Add `headerExtra?: ReactNode` prop to `CollapsibleSection` that renders inline after the title in the header row. Used to place source/status pills next to "Lead Profile" header.
+**Reason**: The pills were previously inside the collapsible body, wasting vertical space. Moving them to the header gives immediate context without expanding the section.
+
+### D-195: Urgency badges use subtle tinted backgrounds instead of solid colors
+**Decision**: Replace solid-color urgency badge backgrounds (#dc2626 red, #d97706 amber, #2563eb blue) with subtle tinted variants (light background + dark text + border). Overdue = soft red, Today = warm amber, Soon = gentle green, Scheduled = neutral. Dark mode overrides with rgba() translucent tints.
+**Reason**: The solid-color badges looked out of place in the stone-neutral design system. Subtle tinted badges are consistent with the overall refined aesthetic while still conveying urgency through color coding.

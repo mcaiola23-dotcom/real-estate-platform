@@ -59,6 +59,19 @@ export function getLeadTypeColorClass(leadType: string): string {
   }
 }
 
+const TIMEFRAME_LABELS: Record<string, string> = {
+  now: 'Now / ASAP',
+  '30_days': 'Within 30 days',
+  '1_3_months': '1–3 months',
+  '3_6_months': '3–6 months',
+  '6_12_months': '6–12 months',
+  '1_year_plus': '1 year+',
+};
+
+export function formatTimeframeLabel(value: string): string {
+  return TIMEFRAME_LABELS[value] ?? value;
+}
+
 export function formatPropertyTypeLabels(csv: string | null): string[] {
   if (!csv) return [];
   const LABELS: Record<string, string> = {

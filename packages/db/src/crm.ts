@@ -278,6 +278,11 @@ function toCrmLead(record: {
   closeReason?: string | null;
   closeNotes?: string | null;
   closedAt?: string | Date | null;
+  acreage?: number | null;
+  town?: string | null;
+  neighborhood?: string | null;
+  houseStyle?: string | null;
+  preferenceNotes?: string | null;
   assignedTo?: string | null;
   referredBy?: string | null;
   createdAt: string | Date;
@@ -317,6 +322,7 @@ function toCrmLead(record: {
     acreage: record.acreage ?? null,
     town: record.town ?? null,
     neighborhood: record.neighborhood ?? null,
+    houseStyle: record.houseStyle ?? null,
     preferenceNotes: record.preferenceNotes ?? null,
     assignedTo: record.assignedTo ?? null,
     referredBy: record.referredBy ?? null,
@@ -384,6 +390,7 @@ export interface UpdateCrmLeadInput {
   acreage?: number | null;
   town?: string | null;
   neighborhood?: string | null;
+  houseStyle?: string | null;
   preferenceNotes?: string | null;
   assignedTo?: string | null;
   referredBy?: string | null;
@@ -423,6 +430,7 @@ export interface CreateCrmLeadInput {
   acreage?: number | null;
   town?: string | null;
   neighborhood?: string | null;
+  houseStyle?: string | null;
   preferenceNotes?: string | null;
   tags?: string[];
 }
@@ -1429,6 +1437,7 @@ export async function createLeadForTenant(tenantId: string, input: CreateCrmLead
         acreage: input.acreage ?? null,
         town: input.town?.trim() || null,
         neighborhood: input.neighborhood?.trim() || null,
+        houseStyle: input.houseStyle?.trim() || null,
         preferenceNotes: input.preferenceNotes?.trim() || null,
         tags: JSON.stringify(input.tags ?? []),
         createdAt: now,
@@ -1524,6 +1533,9 @@ export async function updateLeadForTenant(
   }
   if (input.neighborhood !== undefined) {
     data.neighborhood = input.neighborhood;
+  }
+  if (input.houseStyle !== undefined) {
+    data.houseStyle = input.houseStyle;
   }
   if (input.preferenceNotes !== undefined) {
     data.preferenceNotes = input.preferenceNotes;

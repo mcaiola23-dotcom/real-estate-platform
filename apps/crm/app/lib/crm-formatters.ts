@@ -69,6 +69,7 @@ export function buildLeadDraft(lead: CrmLead): LeadDraft {
     acreage: lead.acreage === null || lead.acreage === undefined ? '' : String(lead.acreage),
     town: lead.town ?? '',
     neighborhood: lead.neighborhood ?? '',
+    houseStyle: lead.houseStyle ?? '',
     preferenceNotes: lead.preferenceNotes ?? '',
     tags: [...(lead.tags ?? [])],
   };

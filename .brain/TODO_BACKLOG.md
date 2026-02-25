@@ -229,6 +229,13 @@
 - [ ] Add "Copy Listing Link" and "Email Listing to Lead" share actions integrated with CRM communication tools.
 - [ ] Tenant-scope all listing data (remove hardcoded brand images).
 
+## Lead Profile Modal Overview Tab Upgrade (Implemented 2026-02-24)
+- [x] Sprint 1: Form field fixes — Lead Type + Status side-by-side, Address full-width, Notes rows, Contact layout, $ adornments, inputMode, helper text, responsive grid.
+- [x] Sprint 2: Component fixes — Link Contact feedback, SmartReminderForm hideHeader+CollapsibleSection, SVG checkmark, calendar hint, Timeframe dropdown.
+- [x] Sprint 3: House Style full-stack field + PriceRangeSlider component (custom thumb drag, piecewise log scale $0-$10M+).
+- [x] Sprint 4: SourceAttributionChain upgrade — SVG icons, ResizeObserver auto-fit, connecting line, tooltips, expansion panel.
+- [x] Visual polish: source/status pills in header, urgency badge restyle, scale marker positioning, timeline equal spacing, contact name half-width.
+
 ## AI Roadmap
 - [x] Create prompt registry and versioning. (Completed — `PROMPT_VERSIONS` registry in `packages/ai/src/prompts/crm-prompts.ts` with per-prompt version tracking.)
 - [x] Implement AI Market Digest (#55) — Dashboard market analytics widget with KPI strip, narrative, highlights, and agent takeaway. Rule-based baseline + AI enhancement. (Completed 2026-02-22.)

@@ -331,6 +331,7 @@ export function CrmWorkspace({
         normalizeOptionalString(draft.reminderSnoozedUntil) !== normalizeOptionalString(lead.reminderSnoozedUntil) ||
         parseNullableNumber(draft.priceMin) !== lead.priceMin ||
         parseNullableNumber(draft.priceMax) !== lead.priceMax ||
+        normalizeOptionalString(draft.houseStyle) !== normalizeOptionalString(lead.houseStyle) ||
         draft.tags.length !== (lead.tags ?? []).length ||
         draft.tags.some((t, i) => t !== (lead.tags ?? [])[i])
       );
@@ -1025,6 +1026,7 @@ export function CrmWorkspace({
       acreage?: number | null;
       town?: string | null;
       neighborhood?: string | null;
+      houseStyle?: string | null;
       preferenceNotes?: string | null;
       assignedTo?: string | null;
       referredBy?: string | null;
@@ -1137,6 +1139,9 @@ export function CrmWorkspace({
     }
     if (normalizeOptionalString(draft.neighborhood) !== normalizeOptionalString(lead.neighborhood)) {
       payload.neighborhood = normalizeOptionalString(draft.neighborhood);
+    }
+    if (normalizeOptionalString(draft.houseStyle) !== normalizeOptionalString(lead.houseStyle)) {
+      payload.houseStyle = normalizeOptionalString(draft.houseStyle);
     }
     if (normalizeOptionalString(draft.preferenceNotes) !== normalizeOptionalString(lead.preferenceNotes)) {
       payload.preferenceNotes = normalizeOptionalString(draft.preferenceNotes);
@@ -1545,6 +1550,7 @@ export function CrmWorkspace({
       acreage: null,
       town: null,
       neighborhood: null,
+      houseStyle: null,
       preferenceNotes: null,
       createdAt: nowIso,
       updatedAt: nowIso,

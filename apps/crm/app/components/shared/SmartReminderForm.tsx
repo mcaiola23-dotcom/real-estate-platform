@@ -19,6 +19,7 @@ interface SmartReminderFormProps {
     nextActionChannel: string;
   }) => void;
   onSnooze: (durationMs: number) => void;
+  hideHeader?: boolean;
 }
 
 interface AiSuggestion {
@@ -53,6 +54,7 @@ export const SmartReminderForm = memo(function SmartReminderForm({
   currentChannel,
   onSave,
   onSnooze,
+  hideHeader,
 }: SmartReminderFormProps) {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('09:00');
@@ -124,22 +126,26 @@ export const SmartReminderForm = memo(function SmartReminderForm({
     onSnooze(durationMs);
   };
 
+  const showBody = hideHeader || expanded;
+
   return (
     <div className="crm-reminder-form">
-      <div className="crm-reminder-form__header" onClick={() => setExpanded(!expanded)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setExpanded(!expanded)}>
-        <span className="crm-reminder-form__header-icon" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" fill="none" />
-            <path d="M8 4v4l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </span>
-        <span className="crm-reminder-form__header-title">Follow-Up Reminder</span>
-        <span className={`crm-reminder-form__chevron ${expanded ? 'crm-reminder-form__chevron--open' : ''}`}>
-          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg>
-        </span>
-      </div>
+      {!hideHeader && (
+        <div className="crm-reminder-form__header" onClick={() => setExpanded(!expanded)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setExpanded(!expanded)}>
+          <span className="crm-reminder-form__header-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <path d="M8 4v4l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </span>
+          <span className="crm-reminder-form__header-title">Follow-Up Reminder</span>
+          <span className={`crm-reminder-form__chevron ${expanded ? 'crm-reminder-form__chevron--open' : ''}`}>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" fill="none" /></svg>
+          </span>
+        </div>
+      )}
 
-      {expanded && (
+      {showBody && (
         <div className="crm-reminder-form__body">
           {/* AI Suggestions */}
           {loadingAi && (

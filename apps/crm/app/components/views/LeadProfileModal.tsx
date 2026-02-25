@@ -9,7 +9,7 @@ import type {
   LeadListingSignal,
   LeadSearchSignal,
 } from '../../lib/crm-types';
-import { LEAD_STATUSES } from '../../lib/crm-types';
+import { LEAD_STATUSES, TIMEFRAME_OPTIONS } from '../../lib/crm-types';
 import { formatDateTime, formatTimeAgo } from '../../lib/crm-formatters';
 import {
   formatLeadSourceLabel,
@@ -29,6 +29,7 @@ import { LeadTagInput } from '../leads/LeadTagInput';
 import { SourceAttributionChain } from '../leads/SourceAttributionChain';
 import { UnifiedTimeline } from '../leads/UnifiedTimeline';
 import { SmartReminderForm } from '../shared/SmartReminderForm';
+import { PriceRangeSlider } from '../shared/PriceRangeSlider';
 import { AiPredictiveScore } from '../shared/AiPredictiveScore';
 import { AiLeadRouting } from '../shared/AiLeadRouting';
 import { TemplateLibrary } from '../shared/TemplateLibrary';
@@ -175,6 +176,7 @@ export function LeadProfileModal({
   const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
   const [addingToCalendar, setAddingToCalendar] = useState(false);
   const [calendarAdded, setCalendarAdded] = useState(false);
+  const [linkContactMsg, setLinkContactMsg] = useState<string | null>(null);
   const [showings, setShowings] = useState<CrmShowing[]>([]);
   const [portalLink, setPortalLink] = useState<string | null>(null);
   const [generatingPortal, setGeneratingPortal] = useState(false);
@@ -480,15 +482,21 @@ export function LeadProfileModal({
                   <path d="M2.5 14c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               }
-            >
-              <div className="crm-chip-row">
-                <span className="crm-chip">{formatLeadSourceLabel(lead.source)}</span>
-                <span className={`crm-status-badge crm-status-${leadDraft.status}`}>
-                  {formatLeadStatusLabel(leadDraft.status)}
+              headerExtra={
+                <span className="crm-chip-row" style={{ marginLeft: '0.5rem' }}>
+                  <span className="crm-chip">{formatLeadSourceLabel(lead.source)}</span>
+                  <span className={`crm-status-badge crm-status-${leadDraft.status}`}>
+                    {formatLeadStatusLabel(leadDraft.status)}
+                  </span>
                 </span>
-              </div>
+              }
+            >
 
-              <SourceAttributionChain source={lead.source} activities={activities} />
+              <SourceAttributionChain
+                source={lead.source}
+                activities={activities}
+                onNodeClick={() => { /* future: filter activity tab */ }}
+              />
 
               <LeadTagInput
                 leadId={lead.id}
@@ -500,7 +508,22 @@ export function LeadProfileModal({
                 }}
               />
 
-              <div className="crm-modal-edit-grid">
+              <div className="crm-modal-edit-grid--equal">
+                <label className="crm-field">
+                  Lead Type
+                  <select
+                    value={leadDraft.leadType}
+                    onChange={(event) => {
+                      onSetLeadDraftField(lead.id, 'leadType', event.target.value);
+                    }}
+                  >
+                    {(['buyer', 'seller', 'investor', 'renter', 'other'] as const).map((type) => (
+                      <option key={type} value={type}>
+                        {formatLeadTypeLabel(type)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <label className="crm-field">
                   Status
                   <select
@@ -517,29 +540,15 @@ export function LeadProfileModal({
                     ))}
                   </select>
                 </label>
-                <label className="crm-field crm-field-grow">
-                  Address
-                  <input
-                    value={leadDraft.listingAddress}
-                    onChange={(event) => onSetLeadDraftField(lead.id, 'listingAddress', event.target.value)}
-                  />
-                </label>
-                <label className="crm-field">
-                  Lead Type
-                  <select
-                    value={leadDraft.leadType}
-                    onChange={(event) => {
-                      onSetLeadDraftField(lead.id, 'leadType', event.target.value);
-                    }}
-                  >
-                    {(['buyer', 'seller', 'investor', 'renter', 'other'] as const).map((type) => (
-                      <option key={type} value={type}>
-                        {formatLeadTypeLabel(type)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
               </div>
+
+              <label className="crm-field crm-field-grow">
+                Address
+                <input
+                  value={leadDraft.listingAddress}
+                  onChange={(event) => onSetLeadDraftField(lead.id, 'listingAddress', event.target.value)}
+                />
+              </label>
 
               <label className="crm-field crm-field-grow">
                 Notes
@@ -547,6 +556,7 @@ export function LeadProfileModal({
                   value={leadDraft.notes}
                   onChange={(event) => onSetLeadDraftField(lead.id, 'notes', event.target.value)}
                   placeholder="Capture call outcomes, objections, and next actions..."
+                  rows={3}
                 />
               </label>
             </CollapsibleSection>
@@ -564,8 +574,8 @@ export function LeadProfileModal({
             >
               {activeContact ? (
                 <>
-                  <div className="crm-modal-edit-grid">
-                    <label className="crm-field crm-field-grow">
+                  <div className="crm-modal-edit-grid--equal">
+                    <label className="crm-field">
                       Contact Name
                       <input
                         value={activeContactDraft?.fullName ?? ''}
@@ -586,31 +596,10 @@ export function LeadProfileModal({
                         placeholder="Full name"
                       />
                     </label>
-                    <label className="crm-field crm-field-grow">
-                      Email
-                      <input
-                        value={activeContactDraft?.email ?? ''}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          onSetContactDraft((prev) => ({
-                            ...prev,
-                            [activeContact.id]: {
-                              ...(prev[activeContact.id] ?? {
-                                fullName: activeContact.fullName ?? '',
-                                email: activeContact.email ?? '',
-                                phone: activeContact.phone ?? '',
-                              }),
-                              email: value,
-                            },
-                          }));
-                        }}
-                      />
-                    </label>
-                  </div>
-                  <div className="crm-modal-edit-grid">
-                    <label className="crm-field crm-field-grow">
+                    <label className="crm-field">
                       Phone
                       <input
+                        inputMode="tel"
                         value={activeContactDraft?.phone ?? ''}
                         onChange={(event) => {
                           const value = event.target.value;
@@ -629,11 +618,41 @@ export function LeadProfileModal({
                       />
                     </label>
                   </div>
+                  <label className="crm-field crm-field-grow">
+                    Email
+                    <input
+                      type="email"
+                      value={activeContactDraft?.email ?? ''}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        onSetContactDraft((prev) => ({
+                          ...prev,
+                          [activeContact.id]: {
+                            ...(prev[activeContact.id] ?? {
+                              fullName: activeContact.fullName ?? '',
+                              email: activeContact.email ?? '',
+                              phone: activeContact.phone ?? '',
+                            }),
+                            email: value,
+                          },
+                        }));
+                      }}
+                    />
+                  </label>
                 </>
               ) : (
                 <div className="crm-contact-link-cta">
                   <p>No linked contact. Create or link one to enable communication tools.</p>
-                  <button type="button" className="crm-btn-secondary">Link Contact</button>
+                  <button
+                    type="button"
+                    className="crm-btn-secondary"
+                    onClick={() => {
+                      setLinkContactMsg('Contact linking coming soon');
+                      setTimeout(() => setLinkContactMsg(null), 2500);
+                    }}
+                  >
+                    {linkContactMsg ?? 'Link Contact'}
+                  </button>
                 </div>
               )}
             </CollapsibleSection>
@@ -647,27 +666,16 @@ export function LeadProfileModal({
                 </svg>
               }
             >
-              <div className="crm-inline-edit-row">
-                <div className="crm-inline-edit-field">
-                  <label>Min Price ($)</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={leadDraft.priceMin}
-                    onChange={(e) => onSetLeadDraftField(lead.id, 'priceMin', e.target.value)}
-                    placeholder="350000"
-                  />
-                </div>
-                <div className="crm-inline-edit-field">
-                  <label>Max Price ($)</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={leadDraft.priceMax}
-                    onChange={(e) => onSetLeadDraftField(lead.id, 'priceMax', e.target.value)}
-                    placeholder="550000"
-                  />
-                </div>
+              <p className="crm-section-helper-text">Fill in what you know — preferences help match listings automatically.</p>
+
+              <div className="crm-field">
+                <span className="crm-field-label">Price Range</span>
+                <PriceRangeSlider
+                  minValue={Number(leadDraft.priceMin) || 0}
+                  maxValue={Number(leadDraft.priceMax) || 0}
+                  onMinChange={(v) => onSetLeadDraftField(lead.id, 'priceMin', String(v))}
+                  onMaxChange={(v) => onSetLeadDraftField(lead.id, 'priceMax', String(v))}
+                />
               </div>
 
               <div className="crm-field">
@@ -706,6 +714,7 @@ export function LeadProfileModal({
                 <label className="crm-field">
                   Beds desired
                   <input
+                    inputMode="numeric"
                     value={leadDraft.beds}
                     onChange={(event) => onSetLeadDraftField(lead.id, 'beds', event.target.value)}
                   />
@@ -713,6 +722,7 @@ export function LeadProfileModal({
                 <label className="crm-field">
                   Baths desired
                   <input
+                    inputMode="numeric"
                     value={leadDraft.baths}
                     onChange={(event) => onSetLeadDraftField(lead.id, 'baths', event.target.value)}
                   />
@@ -720,8 +730,10 @@ export function LeadProfileModal({
                 <label className="crm-field">
                   Size desired (sqft)
                   <input
+                    inputMode="numeric"
                     value={leadDraft.sqft}
                     onChange={(event) => onSetLeadDraftField(lead.id, 'sqft', event.target.value)}
+                    placeholder="e.g. 2000"
                   />
                 </label>
               </div>
@@ -755,14 +767,38 @@ export function LeadProfileModal({
                 </label>
               </div>
 
-              <div className="crm-modal-edit-grid">
-                <label className="crm-field crm-field-grow">
-                  Timeframe
+              <div className="crm-modal-edit-grid crm-modal-edit-grid--equal">
+                <label className="crm-field">
+                  House Style
                   <input
-                    value={leadDraft.timeframe}
-                    onChange={(event) => onSetLeadDraftField(lead.id, 'timeframe', event.target.value)}
-                    placeholder="e.g. Next 3 months"
+                    value={leadDraft.houseStyle}
+                    onChange={(e) => onSetLeadDraftField(lead.id, 'houseStyle', e.target.value)}
+                    placeholder="e.g. Ranch, Colonial, Cape Cod..."
+                    list="crm-house-style-suggestions"
                   />
+                  <datalist id="crm-house-style-suggestions">
+                    <option value="Ranch" />
+                    <option value="Colonial" />
+                    <option value="Split Level" />
+                    <option value="Cape Cod" />
+                    <option value="Contemporary" />
+                    <option value="Tudor" />
+                    <option value="Victorian" />
+                    <option value="Craftsman" />
+                    <option value="Mediterranean" />
+                    <option value="Other" />
+                  </datalist>
+                </label>
+                <label className="crm-field">
+                  Timeframe
+                  <select
+                    value={TIMEFRAME_OPTIONS.some((o) => o.value === leadDraft.timeframe) ? leadDraft.timeframe : ''}
+                    onChange={(event) => onSetLeadDraftField(lead.id, 'timeframe', event.target.value)}
+                  >
+                    {TIMEFRAME_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
                 </label>
               </div>
 
@@ -778,55 +814,76 @@ export function LeadProfileModal({
             </CollapsibleSection>
 
             {/* Follow-Up Reminder — the SINGLE next-action widget */}
-            <SmartReminderForm
-              leadId={lead.id}
-              tenantId={lead.tenantId}
-              currentNextAction={lead.nextActionAt}
-              currentNextActionNote={lead.nextActionNote}
-              currentChannel={lead.nextActionChannel}
-              onSave={(data) => onSaveReminder?.(lead.id, data)}
-              onSnooze={(ms) => onSnoozeReminder?.(lead.id, ms)}
-            />
-            {lead.nextActionAt && (
-              <div className="crm-calendar-add-row">
-                {googleConnected ? (
-                  <button
-                    type="button"
-                    className="crm-btn-secondary"
-                    disabled={addingToCalendar || calendarAdded}
-                    onClick={async () => {
-                      setAddingToCalendar(true);
-                      try {
-                        const res = await fetch('/api/integrations/google/calendar/sync', { method: 'POST' });
-                        const data = await res.json();
-                        if (data.ok) setCalendarAdded(true);
-                      } catch { /* handled by sync result */ }
-                      setAddingToCalendar(false);
-                    }}
-                  >
-                    {calendarAdded ? '✓ Synced to Calendar' : addingToCalendar ? 'Adding...' : 'Add to Google Calendar'}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="crm-btn-secondary"
-                    onClick={() => {
-                      downloadIcsFile({
-                        title: `Follow up: ${activeContact?.fullName ?? 'Lead'} — ${lead.nextActionNote || 'Follow up'}`,
-                        startDate: new Date(lead.nextActionAt!),
-                        description: lead.notes || undefined,
-                      });
-                    }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                      <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M2 6.5h12M5.5 3V1.5M10.5 3V1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    Download .ics
-                  </button>
-                )}
-              </div>
-            )}
+            <CollapsibleSection
+              title="Follow-Up Reminder"
+              icon={
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <path d="M8 4v4l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              }
+            >
+              <SmartReminderForm
+                leadId={lead.id}
+                tenantId={lead.tenantId}
+                currentNextAction={lead.nextActionAt}
+                currentNextActionNote={lead.nextActionNote}
+                currentChannel={lead.nextActionChannel}
+                onSave={(data) => onSaveReminder?.(lead.id, data)}
+                onSnooze={(ms) => onSnoozeReminder?.(lead.id, ms)}
+                hideHeader
+              />
+              {lead.nextActionAt && (
+                <div className="crm-calendar-add-row">
+                  {googleConnected ? (
+                    <button
+                      type="button"
+                      className="crm-btn-secondary"
+                      disabled={addingToCalendar || calendarAdded}
+                      onClick={async () => {
+                        setAddingToCalendar(true);
+                        try {
+                          const res = await fetch('/api/integrations/google/calendar/sync', { method: 'POST' });
+                          const data = await res.json();
+                          if (data.ok) setCalendarAdded(true);
+                        } catch { /* handled by sync result */ }
+                        setAddingToCalendar(false);
+                      }}
+                    >
+                      {calendarAdded ? (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <path d="M3 8.5l3.5 3.5 6.5-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          {' '}Synced to Calendar
+                        </>
+                      ) : addingToCalendar ? 'Adding...' : 'Add to Google Calendar'}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="crm-btn-secondary"
+                        onClick={() => {
+                          downloadIcsFile({
+                            title: `Follow up: ${activeContact?.fullName ?? 'Lead'} — ${lead.nextActionNote || 'Follow up'}`,
+                            startDate: new Date(lead.nextActionAt!),
+                            description: lead.notes || undefined,
+                          });
+                        }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                          <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                          <path d="M2 6.5h12M5.5 3V1.5M10.5 3V1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        Download .ics
+                      </button>
+                      <p className="crm-calendar-hint">Connect Google Calendar in Settings for one-click sync.</p>
+                    </>
+                  )}
+                </div>
+              )}
+            </CollapsibleSection>
           </div>
         )}
 

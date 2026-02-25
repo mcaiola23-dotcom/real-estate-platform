@@ -38,6 +38,7 @@ export interface LeadDraft {
   acreage: string;
   town: string;
   neighborhood: string;
+  houseStyle: string;
   preferenceNotes: string;
   tags: string[];
 }
@@ -129,3 +130,13 @@ export const ALL_LEAD_TYPE_FILTER = 'all';
 export type LeadStatusFilter = CrmLeadStatus | typeof ALL_STATUS_FILTER;
 export type LeadSourceFilter = string | typeof ALL_SOURCE_FILTER;
 export type LeadTypeFilter = CrmLead['leadType'] | typeof ALL_LEAD_TYPE_FILTER;
+
+export const TIMEFRAME_OPTIONS = [
+  { value: '', label: 'Select timeframe...' },
+  { value: 'now', label: 'Now / ASAP' },
+  { value: '30_days', label: 'Within 30 days' },
+  { value: '1_3_months', label: '1–3 months' },
+  { value: '3_6_months', label: '3–6 months' },
+  { value: '6_12_months', label: '6–12 months' },
+  { value: '1_year_plus', label: '1 year+' },
+] as const;

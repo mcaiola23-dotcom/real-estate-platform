@@ -240,6 +240,7 @@ model Lead {
   acreage        Float?
   town           String?
   neighborhood   String?
+  houseStyle     String?
   preferenceNotes String?
   assignedTo     String?
   referredBy     String?

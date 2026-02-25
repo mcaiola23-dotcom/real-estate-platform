@@ -165,6 +165,7 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
           acreage?: number | string | null;
           town?: string | null;
           neighborhood?: string | null;
+          houseStyle?: string | null;
           preferenceNotes?: string | null;
           assignedTo?: string | null;
           referredBy?: string | null;
@@ -212,6 +213,7 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
     const acreage = toNullableFloat(payload.acreage);
     const town = toNullableString(payload.town);
     const neighborhood = toNullableString(payload.neighborhood);
+    const houseStyle = toNullableString(payload.houseStyle);
     const preferenceNotes = toNullableString(payload.preferenceNotes);
     const assignedTo = toNullableString(payload.assignedTo);
     const referredBy = toNullableString(payload.referredBy);
@@ -240,6 +242,7 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       acreage === undefined &&
       town === undefined &&
       neighborhood === undefined &&
+      houseStyle === undefined &&
       preferenceNotes === undefined &&
       assignedTo === undefined &&
       referredBy === undefined
@@ -277,6 +280,7 @@ export function createLeadPatchHandler(deps: LeadPatchDeps = defaultDeps) {
       acreage,
       town,
       neighborhood,
+      houseStyle,
       preferenceNotes,
       assignedTo,
       referredBy,
