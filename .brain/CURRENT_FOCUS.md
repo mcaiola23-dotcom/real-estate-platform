@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Lead Profile Modal Overview Tab Production Upgrade — **implemented** (Sessions 17-19, 2026-02-24). 4-sprint plan covering 18 review recommendations plus 4 user-requested features, followed by 3 rounds of visual polish feedback. All 89 route tests pass, 0 type errors, build verified. Needs git commit.
+Communications Hub Implementation — **Phase 1 (UI Redesign), Phase 4 (Custom Templates CRUD), and Phase 5 (AI Draft Enhancement) implemented** (Session 20, 2026-02-27). Phase 2 (Google OAuth activation) and Phase 3 (Twilio integration) remain pending — both need external provider credentials. All route tests pass, 0 type errors, build verified. Needs git commit + migration deploy for MessageTemplate table.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -67,9 +67,13 @@ Lead Profile Modal Overview Tab Production Upgrade — **implemented** (Sessions
 
 59. Lead Profile Modal Overview Tab Production Upgrade (Sessions 17-19, 2026-02-24) — 4-sprint plan + 3 rounds of visual polish. Key changes: Sprint 1 — Lead Type + Status side-by-side, Address full-width, Notes rows=3, Contact layout restructured, price field $ adornments, inputMode attributes, helper text, responsive grid. Sprint 2 — Dead Link Contact button feedback, SmartReminderForm hideHeader+CollapsibleSection, SVG checkmark, calendar hint, Timeframe dropdown with TIMEFRAME_OPTIONS. Sprint 3 — Full-stack houseStyle field (schema→types→DB→route→formatter→workspace→UI→tests), PriceRangeSlider component with custom pointer-event thumbs and piecewise log scale ($0-$5M linear, $5M-$10M+ compressed). Sprint 4 — SourceAttributionChain with SVG icon markers, ResizeObserver auto-fit (most-recent events in single row), connecting line + equal spacing, hover tooltips, click expansion panel. Polish rounds: source/status pills in CollapsibleSection header via headerExtra prop, urgency badges restyled (subtle tinted backgrounds), scale markers positioned by actual value percentage. 15 files changed, 3 new files, 1 migration, +1,082 lines, 89/89 route tests, 0 type errors.
 
+60. Communications Hub Implementation (Session 20, 2026-02-27) — 3 of 5 phases completed. Phase 1 (UI Redesign): New `CommunicationsHub.tsx` replacing toggle-card layout in LeadProfileModal Communication tab with unified timeline, channel filters, compose bar, and integration status. Phase 4 (Templates CRUD): Prisma `MessageTemplate` model + migration `202602270001_add_message_template`, 6 DB CRUD helpers, 2 API route files (list/create + get/patch/delete), `TemplateLibrary` rewrite with create form, favorites, delete, merge field picker. Phase 5 (AI Enhancement): Multi-draft generation (`draftMultipleMessages`), template-to-draft pipeline (`draftFromTemplate`), communication history context extraction, SMS-specific prompts, `AiDraftComposer` rewrite with multi-draft tabs and enhanced SMS counter. ~30 files changed, 6 new files, ~600 lines new CSS.
+
 ## Immediate Next Steps
-- All changes need git commit (15 modified files, 3 untracked).
-- Apply Prisma migration `202602240001_add_lead_house_style` when targeting production DB.
+- All changes need git commit (~30 modified files, ~10 untracked).
+- Apply Prisma migration `202602270001_add_message_template` when targeting production DB.
+- **Communications Hub Phase 2 (Google OAuth activation)**: Needs user to configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `INTEGRATION_ENCRYPTION_KEY` env vars. Backend code is fully built — only needs env vars + "Connect Google" prompt in CommunicationsHub + route AI drafts through GmailComposer.
+- **Communications Hub Phase 3 (Twilio integration)**: Needs user to set up Twilio account + env vars (`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`). Requires building: twilio package code, SMS/voice API routes, SmsComposer/CallLogger components.
 - AI content generation pipeline for website onboarding is the next non-CRM candidate.
 - Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes.
 - Remaining CRM Listing Modal items: agent notes/annotations, listing engagement data display, "Copy/Email Listing" share actions, tenant-scoped listing data.

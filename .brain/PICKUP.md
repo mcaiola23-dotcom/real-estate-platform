@@ -4,34 +4,53 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- **Pick next backlog item** — Lead Profile Modal Overview Tab Production Upgrade is complete and committed. Top candidates:
-  - AI content generation pipeline for website onboarding
-  - Generate Prisma migrations for Elite Overhaul's 8 new models (production DB target)
-  - CRM Listing Modal remaining items (agent notes, engagement data, share actions, tenant-scoped data)
-  - Build duplicate lead merge/resolution flow (DuplicateWarning component exists but was removed from modal pending actionable UX)
-  - Build actionable escalation flow (EscalationBanner removed pending useful resolution UX beyond "X days overdue")
+- **Communications Hub Phase 2 (Google OAuth Activation)** — The Google OAuth backend is fully built (OAuth flow, encrypted token storage, Gmail send/threads/calendar APIs, all API routes exist). It just needs environment variables configured and minor UI wiring.
 
 ## Why This Is Next
-- Lead Profile Modal Overview Tab Upgrade addressed all 18 review recommendations + 4 user-requested features + 3 rounds of visual polish feedback.
-- No other active workstream is in progress — this is a clean starting point.
+- Phases 1, 4, and 5 of the Communications Hub are complete (UI redesign, custom templates CRUD, AI draft enhancement).
+- Phase 2 is the highest-impact remaining item because it activates real Gmail sending from the CRM instead of mailto: fallback.
+- Phase 3 (Twilio) has zero code and more setup overhead — do Phase 2 first.
 
-## Current Snapshot (2026-02-24, Session 19 end)
-- **Last commit**: Pending — run `/git-update` to commit Overview Tab Production Upgrade
+## Current Snapshot (2026-02-27, Session 20 end)
+- **Last commit**: Pending — run `/git-update` to commit Communications Hub implementation
 - **Branch**: `main`
 - **CRM status**: All route tests pass (89/89), 0 type errors, build verified
-- **Prisma**: Migration `202602240001_add_lead_house_style` created (needs `db:migrate:deploy` for production)
+- **Prisma**: Migration `202602270001_add_message_template` created (needs `db:migrate:deploy` for production)
 
 ## Key Changes This Session (uncommitted)
-1. **Sprint 1** — Lead Type + Status side-by-side, Address full-width, Notes rows=3, Contact layout (Name+Phone half, Email full), $ adornments on price, inputMode on numeric fields, helper text, responsive grid
-2. **Sprint 2** — Dead Link Contact button with feedback, SmartReminderForm hideHeader+CollapsibleSection, SVG checkmark, calendar hint, Timeframe dropdown with TIMEFRAME_OPTIONS
-3. **Sprint 3** — Full-stack `houseStyle` field (10+ files), PriceRangeSlider with custom pointer-event thumbs and piecewise log scale ($0-$5M linear @ $25K, $5M-$10M+ compressed @ $100K)
-4. **Sprint 4** — SourceAttributionChain with SVG icon markers, ResizeObserver auto-fit (most-recent events in single row), connecting line + equal spacing, hover tooltips, click expansion panel
-5. **Visual polish** — Source/status pills moved to CollapsibleSection header via headerExtra prop, urgency badges restyled (subtle tinted backgrounds + dark mode), scale markers positioned by actual value percentage, contact name half-width, timeline connecting lines restored
+1. **Phase 1 — CommunicationsHub UI Redesign**: New `CommunicationsHub.tsx` component, LeadProfileModal simplified (5 state vars removed), GmailComposer `initialBody` prop, ~220 lines hub CSS
+2. **Phase 4 — Custom Templates CRUD**: Prisma `MessageTemplate` model + migration, 6 DB CRUD functions in `crm.ts`, 2 new API route files (`/api/templates`, `/api/templates/[templateId]`), `TemplateLibrary.tsx` rewrite with full CRUD UI, merge field picker
+3. **Phase 5 — AI Draft Enhancement**: `draftMultipleMessages()` and `draftFromTemplate()` in message-drafting.ts, enhanced crm-prompts.ts with communication history/template/SMS context, draft-message route with multiDraft + templateBody support, `AiDraftComposer.tsx` rewrite with multi-draft tabs
+
+## What Remains for Communications Hub
+### Phase 2: Google OAuth Activation (needs env vars from user)
+- **External setup**: User must create Google Cloud project and set:
+  ```
+  GOOGLE_CLIENT_ID=
+  GOOGLE_CLIENT_SECRET=
+  GOOGLE_REDIRECT_URI=http://localhost:3001/api/integrations/google/callback
+  INTEGRATION_ENCRYPTION_KEY=  # node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
+- **Code changes needed** (minimal):
+  - `CommunicationsHub.tsx` — Add "Connect Google" prompt when not connected
+  - `AiDraftComposer.tsx` — Route email sends through GmailComposer instead of mailto: when Google connected
+  - `GmailComposer.tsx` — May need `initialSubject` prop (already has `initialBody`)
+  - `TemplateLibrary.tsx` — Route email templates through GmailComposer when connected
+
+### Phase 3: Twilio Integration (needs Twilio account)
+- **External setup**: Twilio account + phone number + ngrok for webhooks
+- **Code to build**:
+  - `packages/integrations/src/twilio/` — config.ts, sms.ts, voice.ts, webhooks.ts
+  - API routes: `/api/integrations/twilio/status`, `/api/integrations/twilio/sms/send`, `/api/integrations/twilio/sms/webhook`, `/api/integrations/twilio/voice/initiate`
+  - `SmsComposer.tsx`, `CallLogger.tsx` components
+  - Activity types: `sms_sent`, `sms_received`, `call_initiated`
 
 ## First Actions Next Session
 1. Run `/session-bootstrap`.
-2. Review open backlog items and pick highest priority.
-3. Consider applying Prisma migration for `houseStyle` to production DB.
+2. Ask user if they've set up Google Cloud credentials for Phase 2.
+3. If yes → implement Phase 2 code changes (small scope).
+4. If no → pick next backlog item (duplicate merge flow, escalation UX, or website AI pipeline).
+5. Consider applying Prisma migration for `MessageTemplate` to production DB.
 
 ## Validation Context (Most Recent)
 - `npm run build --workspace @real-estate/crm` — PASS

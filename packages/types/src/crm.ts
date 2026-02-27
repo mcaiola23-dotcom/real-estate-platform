@@ -64,6 +64,28 @@ export interface CrmActivity {
   createdAt: string;
 }
 
+export type CrmReminderStatus = 'pending' | 'completed' | 'dismissed';
+
+export interface CrmReminder {
+  id: string;
+  tenantId: string;
+  leadId: string;
+  scheduledFor: string;
+  note: string | null;
+  channel: string | null;
+  status: CrmReminderStatus;
+  snoozedUntil: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmReminderListQuery {
+  leadId?: string;
+  status?: CrmReminderStatus;
+  limit?: number;
+  offset?: number;
+}
+
 export interface CrmLeadIngestionSummary {
   tenantId: string;
   contactCount: number;
@@ -209,4 +231,30 @@ export interface CrmESignatureRequest {
   signedAt: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export type CrmTemplateCategory = 'outreach' | 'follow_up' | 'listing' | 'transaction' | 'general';
+export type CrmTemplateChannel = 'email' | 'sms';
+
+export interface CrmMessageTemplate {
+  id: string;
+  tenantId: string;
+  name: string;
+  category: CrmTemplateCategory;
+  channel: CrmTemplateChannel;
+  subject: string | null;
+  body: string;
+  description: string;
+  isFavorite: boolean;
+  useCount: number;
+  createdBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmMessageTemplateListQuery {
+  category?: CrmTemplateCategory;
+  channel?: CrmTemplateChannel;
+  limit?: number;
+  offset?: number;
 }

@@ -290,6 +290,7 @@ exports.Prisma.LeadScalarFieldEnum = {
   acreage: 'acreage',
   town: 'town',
   neighborhood: 'neighborhood',
+  houseStyle: 'houseStyle',
   preferenceNotes: 'preferenceNotes',
   assignedTo: 'assignedTo',
   referredBy: 'referredBy',
@@ -307,6 +308,19 @@ exports.Prisma.ActivityScalarFieldEnum = {
   summary: 'summary',
   metadataJson: 'metadataJson',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.ReminderScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  leadId: 'leadId',
+  scheduledFor: 'scheduledFor',
+  note: 'note',
+  channel: 'channel',
+  status: 'status',
+  snoozedUntil: 'snoozedUntil',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.IngestedEventScalarFieldEnum = {
@@ -519,6 +533,22 @@ exports.Prisma.ESignatureRequestScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.MessageTemplateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  category: 'category',
+  channel: 'channel',
+  subject: 'subject',
+  body: 'body',
+  description: 'description',
+  isFavorite: 'isFavorite',
+  useCount: 'useCount',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -544,6 +574,7 @@ exports.Prisma.ModelName = {
   Contact: 'Contact',
   Lead: 'Lead',
   Activity: 'Activity',
+  Reminder: 'Reminder',
   IngestedEvent: 'IngestedEvent',
   IngestionQueueJob: 'IngestionQueueJob',
   AdminAuditEvent: 'AdminAuditEvent',
@@ -559,7 +590,8 @@ exports.Prisma.ModelName = {
   CampaignEnrollment: 'CampaignEnrollment',
   AdSpend: 'AdSpend',
   TeamMember: 'TeamMember',
-  ESignatureRequest: 'ESignatureRequest'
+  ESignatureRequest: 'ESignatureRequest',
+  MessageTemplate: 'MessageTemplate'
 };
 
 /**

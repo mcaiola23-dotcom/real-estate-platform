@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma-client"
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma-client"
+  binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -36,6 +37,8 @@ model Tenant {
   adSpends            AdSpend[]
   teamMembers         TeamMember[]
   esignatureRequests  ESignatureRequest[]
+  reminders           Reminder[]
+  messageTemplates    MessageTemplate[]
 }
 
 model TenantDomain {
@@ -239,6 +242,7 @@ model Lead {
   acreage              Float?
   town                 String?
   neighborhood         String?
+  houseStyle           String?
   preferenceNotes      String?
   assignedTo           String?
   referredBy           String?
@@ -249,6 +253,7 @@ model Lead {
   activities           Activity[]
   showings             Showing[]
   commissions          Commission[]
+  reminders            Reminder[]
 
   @@index([tenantId, createdAt])
   @@index([tenantId, status])
@@ -273,6 +278,24 @@ model Activity {
   @@index([tenantId, leadId, createdAt])
   @@index([contactId])
   @@index([leadId])
+}
+
+model Reminder {
+  id           String    @id
+  tenantId     String
+  leadId       String
+  scheduledFor DateTime
+  note         String?
+  channel      String?
+  status       String    @default("pending")
+  snoozedUntil DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lead         Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, scheduledFor])
+  @@index([leadId, status])
 }
 
 model IngestedEvent {
@@ -558,4 +581,24 @@ model ESignatureRequest {
   updatedAt      DateTime  @updatedAt
 
   @@index([tenantId, status])
+}
+
+model MessageTemplate {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  category    String
+  channel     String
+  subject     String?
+  body        String
+  description String   @default("")
+  isFavorite  Boolean  @default(false)
+  useCount    Int      @default(0)
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, category])
+  @@index([tenantId, channel])
 }

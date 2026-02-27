@@ -79,6 +79,11 @@ export type Lead = $Result.DefaultSelection<Prisma.$LeadPayload>
  */
 export type Activity = $Result.DefaultSelection<Prisma.$ActivityPayload>
 /**
+ * Model Reminder
+ * 
+ */
+export type Reminder = $Result.DefaultSelection<Prisma.$ReminderPayload>
+/**
  * Model IngestedEvent
  * 
  */
@@ -158,6 +163,11 @@ export type TeamMember = $Result.DefaultSelection<Prisma.$TeamMemberPayload>
  * 
  */
 export type ESignatureRequest = $Result.DefaultSelection<Prisma.$ESignatureRequestPayload>
+/**
+ * Model MessageTemplate
+ * 
+ */
+export type MessageTemplate = $Result.DefaultSelection<Prisma.$MessageTemplatePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -408,6 +418,16 @@ export class PrismaClient<
   get activity(): Prisma.ActivityDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.reminder`: Exposes CRUD operations for the **Reminder** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Reminders
+    * const reminders = await prisma.reminder.findMany()
+    * ```
+    */
+  get reminder(): Prisma.ReminderDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.ingestedEvent`: Exposes CRUD operations for the **IngestedEvent** model.
     * Example usage:
     * ```ts
@@ -566,6 +586,16 @@ export class PrismaClient<
     * ```
     */
   get eSignatureRequest(): Prisma.ESignatureRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.messageTemplate`: Exposes CRUD operations for the **MessageTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MessageTemplates
+    * const messageTemplates = await prisma.messageTemplate.findMany()
+    * ```
+    */
+  get messageTemplate(): Prisma.MessageTemplateDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1020,6 +1050,7 @@ export namespace Prisma {
     Contact: 'Contact',
     Lead: 'Lead',
     Activity: 'Activity',
+    Reminder: 'Reminder',
     IngestedEvent: 'IngestedEvent',
     IngestionQueueJob: 'IngestionQueueJob',
     AdminAuditEvent: 'AdminAuditEvent',
@@ -1035,7 +1066,8 @@ export namespace Prisma {
     CampaignEnrollment: 'CampaignEnrollment',
     AdSpend: 'AdSpend',
     TeamMember: 'TeamMember',
-    ESignatureRequest: 'ESignatureRequest'
+    ESignatureRequest: 'ESignatureRequest',
+    MessageTemplate: 'MessageTemplate'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1054,7 +1086,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "tenantBillingSubscription" | "tenantBillingSyncEvent" | "tenantControlActor" | "tenantOnboardingPlan" | "tenantOnboardingTask" | "moduleConfig" | "contact" | "lead" | "activity" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent" | "transaction" | "transactionParty" | "transactionDocument" | "transactionMilestone" | "integrationToken" | "showing" | "commissionSetting" | "commission" | "campaign" | "campaignEnrollment" | "adSpend" | "teamMember" | "eSignatureRequest"
+      modelProps: "tenant" | "tenantDomain" | "websiteConfig" | "tenantControlSettings" | "tenantBillingSubscription" | "tenantBillingSyncEvent" | "tenantControlActor" | "tenantOnboardingPlan" | "tenantOnboardingTask" | "moduleConfig" | "contact" | "lead" | "activity" | "reminder" | "ingestedEvent" | "ingestionQueueJob" | "adminAuditEvent" | "transaction" | "transactionParty" | "transactionDocument" | "transactionMilestone" | "integrationToken" | "showing" | "commissionSetting" | "commission" | "campaign" | "campaignEnrollment" | "adSpend" | "teamMember" | "eSignatureRequest" | "messageTemplate"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2017,6 +2049,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ActivityCountArgs<ExtArgs>
             result: $Utils.Optional<ActivityCountAggregateOutputType> | number
+          }
+        }
+      }
+      Reminder: {
+        payload: Prisma.$ReminderPayload<ExtArgs>
+        fields: Prisma.ReminderFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReminderFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReminderFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>
+          }
+          findFirst: {
+            args: Prisma.ReminderFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReminderFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>
+          }
+          findMany: {
+            args: Prisma.ReminderFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>[]
+          }
+          create: {
+            args: Prisma.ReminderCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>
+          }
+          createMany: {
+            args: Prisma.ReminderCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ReminderCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>[]
+          }
+          delete: {
+            args: Prisma.ReminderDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>
+          }
+          update: {
+            args: Prisma.ReminderUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReminderDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReminderUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ReminderUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>[]
+          }
+          upsert: {
+            args: Prisma.ReminderUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReminderPayload>
+          }
+          aggregate: {
+            args: Prisma.ReminderAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateReminder>
+          }
+          groupBy: {
+            args: Prisma.ReminderGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ReminderGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReminderCountArgs<ExtArgs>
+            result: $Utils.Optional<ReminderCountAggregateOutputType> | number
           }
         }
       }
@@ -3204,6 +3310,80 @@ export namespace Prisma {
           }
         }
       }
+      MessageTemplate: {
+        payload: Prisma.$MessageTemplatePayload<ExtArgs>
+        fields: Prisma.MessageTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MessageTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MessageTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.MessageTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MessageTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.MessageTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.MessageTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.MessageTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MessageTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.MessageTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          update: {
+            args: Prisma.MessageTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.MessageTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MessageTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MessageTemplateUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+          }
+          upsert: {
+            args: Prisma.MessageTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.MessageTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMessageTemplate>
+          }
+          groupBy: {
+            args: Prisma.MessageTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MessageTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MessageTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<MessageTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3313,6 +3493,7 @@ export namespace Prisma {
     contact?: ContactOmit
     lead?: LeadOmit
     activity?: ActivityOmit
+    reminder?: ReminderOmit
     ingestedEvent?: IngestedEventOmit
     ingestionQueueJob?: IngestionQueueJobOmit
     adminAuditEvent?: AdminAuditEventOmit
@@ -3329,6 +3510,7 @@ export namespace Prisma {
     adSpend?: AdSpendOmit
     teamMember?: TeamMemberOmit
     eSignatureRequest?: ESignatureRequestOmit
+    messageTemplate?: MessageTemplateOmit
   }
 
   /* Types for Logging */
@@ -3426,6 +3608,8 @@ export namespace Prisma {
     adSpends: number
     teamMembers: number
     esignatureRequests: number
+    reminders: number
+    messageTemplates: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3446,6 +3630,8 @@ export namespace Prisma {
     adSpends?: boolean | TenantCountOutputTypeCountAdSpendsArgs
     teamMembers?: boolean | TenantCountOutputTypeCountTeamMembersArgs
     esignatureRequests?: boolean | TenantCountOutputTypeCountEsignatureRequestsArgs
+    reminders?: boolean | TenantCountOutputTypeCountRemindersArgs
+    messageTemplates?: boolean | TenantCountOutputTypeCountMessageTemplatesArgs
   }
 
   // Custom InputTypes
@@ -3578,6 +3764,20 @@ export namespace Prisma {
     where?: ESignatureRequestWhereInput
   }
 
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountRemindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReminderWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountMessageTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageTemplateWhereInput
+  }
+
 
   /**
    * Count Type WebsiteConfigCountOutputType
@@ -3698,12 +3898,14 @@ export namespace Prisma {
     activities: number
     showings: number
     commissions: number
+    reminders: number
   }
 
   export type LeadCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     activities?: boolean | LeadCountOutputTypeCountActivitiesArgs
     showings?: boolean | LeadCountOutputTypeCountShowingsArgs
     commissions?: boolean | LeadCountOutputTypeCountCommissionsArgs
+    reminders?: boolean | LeadCountOutputTypeCountRemindersArgs
   }
 
   // Custom InputTypes
@@ -3736,6 +3938,13 @@ export namespace Prisma {
    */
   export type LeadCountOutputTypeCountCommissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CommissionWhereInput
+  }
+
+  /**
+   * LeadCountOutputType without action
+   */
+  export type LeadCountOutputTypeCountRemindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReminderWhereInput
   }
 
 
@@ -4025,6 +4234,8 @@ export namespace Prisma {
     adSpends?: boolean | Tenant$adSpendsArgs<ExtArgs>
     teamMembers?: boolean | Tenant$teamMembersArgs<ExtArgs>
     esignatureRequests?: boolean | Tenant$esignatureRequestsArgs<ExtArgs>
+    reminders?: boolean | Tenant$remindersArgs<ExtArgs>
+    messageTemplates?: boolean | Tenant$messageTemplatesArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -4078,6 +4289,8 @@ export namespace Prisma {
     adSpends?: boolean | Tenant$adSpendsArgs<ExtArgs>
     teamMembers?: boolean | Tenant$teamMembersArgs<ExtArgs>
     esignatureRequests?: boolean | Tenant$esignatureRequestsArgs<ExtArgs>
+    reminders?: boolean | Tenant$remindersArgs<ExtArgs>
+    messageTemplates?: boolean | Tenant$messageTemplatesArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4107,6 +4320,8 @@ export namespace Prisma {
       adSpends: Prisma.$AdSpendPayload<ExtArgs>[]
       teamMembers: Prisma.$TeamMemberPayload<ExtArgs>[]
       esignatureRequests: Prisma.$ESignatureRequestPayload<ExtArgs>[]
+      reminders: Prisma.$ReminderPayload<ExtArgs>[]
+      messageTemplates: Prisma.$MessageTemplatePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4530,6 +4745,8 @@ export namespace Prisma {
     adSpends<T extends Tenant$adSpendsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$adSpendsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdSpendPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     teamMembers<T extends Tenant$teamMembersArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$teamMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     esignatureRequests<T extends Tenant$esignatureRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$esignatureRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ESignatureRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reminders<T extends Tenant$remindersArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    messageTemplates<T extends Tenant$messageTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$messageTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5432,6 +5649,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ESignatureRequestScalarFieldEnum | ESignatureRequestScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.reminders
+   */
+  export type Tenant$remindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    where?: ReminderWhereInput
+    orderBy?: ReminderOrderByWithRelationInput | ReminderOrderByWithRelationInput[]
+    cursor?: ReminderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReminderScalarFieldEnum | ReminderScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.messageTemplates
+   */
+  export type Tenant$messageTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    where?: MessageTemplateWhereInput
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    cursor?: MessageTemplateWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
   }
 
   /**
@@ -16921,6 +17186,7 @@ export namespace Prisma {
     acreage: number | null
     town: string | null
     neighborhood: string | null
+    houseStyle: string | null
     preferenceNotes: string | null
     assignedTo: string | null
     referredBy: string | null
@@ -16958,6 +17224,7 @@ export namespace Prisma {
     acreage: number | null
     town: string | null
     neighborhood: string | null
+    houseStyle: string | null
     preferenceNotes: string | null
     assignedTo: string | null
     referredBy: string | null
@@ -16995,6 +17262,7 @@ export namespace Prisma {
     acreage: number
     town: number
     neighborhood: number
+    houseStyle: number
     preferenceNotes: number
     assignedTo: number
     referredBy: number
@@ -17052,6 +17320,7 @@ export namespace Prisma {
     acreage?: true
     town?: true
     neighborhood?: true
+    houseStyle?: true
     preferenceNotes?: true
     assignedTo?: true
     referredBy?: true
@@ -17089,6 +17358,7 @@ export namespace Prisma {
     acreage?: true
     town?: true
     neighborhood?: true
+    houseStyle?: true
     preferenceNotes?: true
     assignedTo?: true
     referredBy?: true
@@ -17126,6 +17396,7 @@ export namespace Prisma {
     acreage?: true
     town?: true
     neighborhood?: true
+    houseStyle?: true
     preferenceNotes?: true
     assignedTo?: true
     referredBy?: true
@@ -17250,6 +17521,7 @@ export namespace Prisma {
     acreage: number | null
     town: string | null
     neighborhood: string | null
+    houseStyle: string | null
     preferenceNotes: string | null
     assignedTo: string | null
     referredBy: string | null
@@ -17306,6 +17578,7 @@ export namespace Prisma {
     acreage?: boolean
     town?: boolean
     neighborhood?: boolean
+    houseStyle?: boolean
     preferenceNotes?: boolean
     assignedTo?: boolean
     referredBy?: boolean
@@ -17316,6 +17589,7 @@ export namespace Prisma {
     activities?: boolean | Lead$activitiesArgs<ExtArgs>
     showings?: boolean | Lead$showingsArgs<ExtArgs>
     commissions?: boolean | Lead$commissionsArgs<ExtArgs>
+    reminders?: boolean | Lead$remindersArgs<ExtArgs>
     _count?: boolean | LeadCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
 
@@ -17349,6 +17623,7 @@ export namespace Prisma {
     acreage?: boolean
     town?: boolean
     neighborhood?: boolean
+    houseStyle?: boolean
     preferenceNotes?: boolean
     assignedTo?: boolean
     referredBy?: boolean
@@ -17388,6 +17663,7 @@ export namespace Prisma {
     acreage?: boolean
     town?: boolean
     neighborhood?: boolean
+    houseStyle?: boolean
     preferenceNotes?: boolean
     assignedTo?: boolean
     referredBy?: boolean
@@ -17427,6 +17703,7 @@ export namespace Prisma {
     acreage?: boolean
     town?: boolean
     neighborhood?: boolean
+    houseStyle?: boolean
     preferenceNotes?: boolean
     assignedTo?: boolean
     referredBy?: boolean
@@ -17434,13 +17711,14 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "contactId" | "status" | "leadType" | "source" | "timeframe" | "notes" | "listingId" | "listingUrl" | "listingAddress" | "propertyType" | "beds" | "baths" | "sqft" | "lastContactAt" | "nextActionAt" | "nextActionNote" | "nextActionChannel" | "reminderSnoozedUntil" | "priceMin" | "priceMax" | "tags" | "closeReason" | "closeNotes" | "closedAt" | "acreage" | "town" | "neighborhood" | "preferenceNotes" | "assignedTo" | "referredBy" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "contactId" | "status" | "leadType" | "source" | "timeframe" | "notes" | "listingId" | "listingUrl" | "listingAddress" | "propertyType" | "beds" | "baths" | "sqft" | "lastContactAt" | "nextActionAt" | "nextActionNote" | "nextActionChannel" | "reminderSnoozedUntil" | "priceMin" | "priceMax" | "tags" | "closeReason" | "closeNotes" | "closedAt" | "acreage" | "town" | "neighborhood" | "houseStyle" | "preferenceNotes" | "assignedTo" | "referredBy" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     contact?: boolean | Lead$contactArgs<ExtArgs>
     activities?: boolean | Lead$activitiesArgs<ExtArgs>
     showings?: boolean | Lead$showingsArgs<ExtArgs>
     commissions?: boolean | Lead$commissionsArgs<ExtArgs>
+    reminders?: boolean | Lead$remindersArgs<ExtArgs>
     _count?: boolean | LeadCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17460,6 +17738,7 @@ export namespace Prisma {
       activities: Prisma.$ActivityPayload<ExtArgs>[]
       showings: Prisma.$ShowingPayload<ExtArgs>[]
       commissions: Prisma.$CommissionPayload<ExtArgs>[]
+      reminders: Prisma.$ReminderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17491,6 +17770,7 @@ export namespace Prisma {
       acreage: number | null
       town: string | null
       neighborhood: string | null
+      houseStyle: string | null
       preferenceNotes: string | null
       assignedTo: string | null
       referredBy: string | null
@@ -17895,6 +18175,7 @@ export namespace Prisma {
     activities<T extends Lead$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, Lead$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     showings<T extends Lead$showingsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$showingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     commissions<T extends Lead$commissionsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$commissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reminders<T extends Lead$remindersArgs<ExtArgs> = {}>(args?: Subset<T, Lead$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17953,6 +18234,7 @@ export namespace Prisma {
     readonly acreage: FieldRef<"Lead", 'Float'>
     readonly town: FieldRef<"Lead", 'String'>
     readonly neighborhood: FieldRef<"Lead", 'String'>
+    readonly houseStyle: FieldRef<"Lead", 'String'>
     readonly preferenceNotes: FieldRef<"Lead", 'String'>
     readonly assignedTo: FieldRef<"Lead", 'String'>
     readonly referredBy: FieldRef<"Lead", 'String'>
@@ -18440,6 +18722,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CommissionScalarFieldEnum | CommissionScalarFieldEnum[]
+  }
+
+  /**
+   * Lead.reminders
+   */
+  export type Lead$remindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    where?: ReminderWhereInput
+    orderBy?: ReminderOrderByWithRelationInput | ReminderOrderByWithRelationInput[]
+    cursor?: ReminderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReminderScalarFieldEnum | ReminderScalarFieldEnum[]
   }
 
   /**
@@ -19620,6 +19926,1135 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ActivityInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Reminder
+   */
+
+  export type AggregateReminder = {
+    _count: ReminderCountAggregateOutputType | null
+    _min: ReminderMinAggregateOutputType | null
+    _max: ReminderMaxAggregateOutputType | null
+  }
+
+  export type ReminderMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    leadId: string | null
+    scheduledFor: Date | null
+    note: string | null
+    channel: string | null
+    status: string | null
+    snoozedUntil: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ReminderMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    leadId: string | null
+    scheduledFor: Date | null
+    note: string | null
+    channel: string | null
+    status: string | null
+    snoozedUntil: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ReminderCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    leadId: number
+    scheduledFor: number
+    note: number
+    channel: number
+    status: number
+    snoozedUntil: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ReminderMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    leadId?: true
+    scheduledFor?: true
+    note?: true
+    channel?: true
+    status?: true
+    snoozedUntil?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ReminderMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    leadId?: true
+    scheduledFor?: true
+    note?: true
+    channel?: true
+    status?: true
+    snoozedUntil?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ReminderCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    leadId?: true
+    scheduledFor?: true
+    note?: true
+    channel?: true
+    status?: true
+    snoozedUntil?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ReminderAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Reminder to aggregate.
+     */
+    where?: ReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reminders to fetch.
+     */
+    orderBy?: ReminderOrderByWithRelationInput | ReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reminders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Reminders
+    **/
+    _count?: true | ReminderCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReminderMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReminderMaxAggregateInputType
+  }
+
+  export type GetReminderAggregateType<T extends ReminderAggregateArgs> = {
+        [P in keyof T & keyof AggregateReminder]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReminder[P]>
+      : GetScalarType<T[P], AggregateReminder[P]>
+  }
+
+
+
+
+  export type ReminderGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReminderWhereInput
+    orderBy?: ReminderOrderByWithAggregationInput | ReminderOrderByWithAggregationInput[]
+    by: ReminderScalarFieldEnum[] | ReminderScalarFieldEnum
+    having?: ReminderScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReminderCountAggregateInputType | true
+    _min?: ReminderMinAggregateInputType
+    _max?: ReminderMaxAggregateInputType
+  }
+
+  export type ReminderGroupByOutputType = {
+    id: string
+    tenantId: string
+    leadId: string
+    scheduledFor: Date
+    note: string | null
+    channel: string | null
+    status: string
+    snoozedUntil: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ReminderCountAggregateOutputType | null
+    _min: ReminderMinAggregateOutputType | null
+    _max: ReminderMaxAggregateOutputType | null
+  }
+
+  type GetReminderGroupByPayload<T extends ReminderGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReminderGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReminderGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReminderGroupByOutputType[P]>
+            : GetScalarType<T[P], ReminderGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReminderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    leadId?: boolean
+    scheduledFor?: boolean
+    note?: boolean
+    channel?: boolean
+    status?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["reminder"]>
+
+  export type ReminderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    leadId?: boolean
+    scheduledFor?: boolean
+    note?: boolean
+    channel?: boolean
+    status?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["reminder"]>
+
+  export type ReminderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    leadId?: boolean
+    scheduledFor?: boolean
+    note?: boolean
+    channel?: boolean
+    status?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["reminder"]>
+
+  export type ReminderSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    leadId?: boolean
+    scheduledFor?: boolean
+    note?: boolean
+    channel?: boolean
+    status?: boolean
+    snoozedUntil?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ReminderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "leadId" | "scheduledFor" | "note" | "channel" | "status" | "snoozedUntil" | "createdAt" | "updatedAt", ExtArgs["result"]["reminder"]>
+  export type ReminderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }
+  export type ReminderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }
+  export type ReminderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }
+
+  export type $ReminderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Reminder"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      lead: Prisma.$LeadPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      leadId: string
+      scheduledFor: Date
+      note: string | null
+      channel: string | null
+      status: string
+      snoozedUntil: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["reminder"]>
+    composites: {}
+  }
+
+  type ReminderGetPayload<S extends boolean | null | undefined | ReminderDefaultArgs> = $Result.GetResult<Prisma.$ReminderPayload, S>
+
+  type ReminderCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ReminderFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ReminderCountAggregateInputType | true
+    }
+
+  export interface ReminderDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Reminder'], meta: { name: 'Reminder' } }
+    /**
+     * Find zero or one Reminder that matches the filter.
+     * @param {ReminderFindUniqueArgs} args - Arguments to find a Reminder
+     * @example
+     * // Get one Reminder
+     * const reminder = await prisma.reminder.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ReminderFindUniqueArgs>(args: SelectSubset<T, ReminderFindUniqueArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Reminder that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ReminderFindUniqueOrThrowArgs} args - Arguments to find a Reminder
+     * @example
+     * // Get one Reminder
+     * const reminder = await prisma.reminder.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ReminderFindUniqueOrThrowArgs>(args: SelectSubset<T, ReminderFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Reminder that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReminderFindFirstArgs} args - Arguments to find a Reminder
+     * @example
+     * // Get one Reminder
+     * const reminder = await prisma.reminder.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ReminderFindFirstArgs>(args?: SelectSubset<T, ReminderFindFirstArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Reminder that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReminderFindFirstOrThrowArgs} args - Arguments to find a Reminder
+     * @example
+     * // Get one Reminder
+     * const reminder = await prisma.reminder.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ReminderFindFirstOrThrowArgs>(args?: SelectSubset<T, ReminderFindFirstOrThrowArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Reminders that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReminderFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Reminders
+     * const reminders = await prisma.reminder.findMany()
+     * 
+     * // Get first 10 Reminders
+     * const reminders = await prisma.reminder.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const reminderWithIdOnly = await prisma.reminder.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ReminderFindManyArgs>(args?: SelectSubset<T, ReminderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Reminder.
+     * @param {ReminderCreateArgs} args - Arguments to create a Reminder.
+     * @example
+     * // Create one Reminder
+     * const Reminder = await prisma.reminder.create({
+     *   data: {
+     *     // ... data to create a Reminder
+     *   }
+     * })
+     * 
+     */
+    create<T extends ReminderCreateArgs>(args: SelectSubset<T, ReminderCreateArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Reminders.
+     * @param {ReminderCreateManyArgs} args - Arguments to create many Reminders.
+     * @example
+     * // Create many Reminders
+     * const reminder = await prisma.reminder.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ReminderCreateManyArgs>(args?: SelectSubset<T, ReminderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Reminders and returns the data saved in the database.
+     * @param {ReminderCreateManyAndReturnArgs} args - Arguments to create many Reminders.
+     * @example
+     * // Create many Reminders
+     * const reminder = await prisma.reminder.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Reminders and only return the `id`
+     * const reminderWithIdOnly = await prisma.reminder.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ReminderCreateManyAndReturnArgs>(args?: SelectSubset<T, ReminderCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Reminder.
+     * @param {ReminderDeleteArgs} args - Arguments to delete one Reminder.
+     * @example
+     * // Delete one Reminder
+     * const Reminder = await prisma.reminder.delete({
+     *   where: {
+     *     // ... filter to delete one Reminder
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ReminderDeleteArgs>(args: SelectSubset<T, ReminderDeleteArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Reminder.
+     * @param {ReminderUpdateArgs} args - Arguments to update one Reminder.
+     * @example
+     * // Update one Reminder
+     * const reminder = await prisma.reminder.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ReminderUpdateArgs>(args: SelectSubset<T, ReminderUpdateArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Reminders.
+     * @param {ReminderDeleteManyArgs} args - Arguments to filter Reminders to delete.
+     * @example
+     * // Delete a few Reminders
+     * const { count } = await prisma.reminder.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ReminderDeleteManyArgs>(args?: SelectSubset<T, ReminderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reminders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReminderUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Reminders
+     * const reminder = await prisma.reminder.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ReminderUpdateManyArgs>(args: SelectSubset<T, ReminderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reminders and returns the data updated in the database.
+     * @param {ReminderUpdateManyAndReturnArgs} args - Arguments to update many Reminders.
+     * @example
+     * // Update many Reminders
+     * const reminder = await prisma.reminder.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Reminders and only return the `id`
+     * const reminderWithIdOnly = await prisma.reminder.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ReminderUpdateManyAndReturnArgs>(args: SelectSubset<T, ReminderUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Reminder.
+     * @param {ReminderUpsertArgs} args - Arguments to update or create a Reminder.
+     * @example
+     * // Update or create a Reminder
+     * const reminder = await prisma.reminder.upsert({
+     *   create: {
+     *     // ... data to create a Reminder
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Reminder we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ReminderUpsertArgs>(args: SelectSubset<T, ReminderUpsertArgs<ExtArgs>>): Prisma__ReminderClient<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Reminders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReminderCountArgs} args - Arguments to filter Reminders to count.
+     * @example
+     * // Count the number of Reminders
+     * const count = await prisma.reminder.count({
+     *   where: {
+     *     // ... the filter for the Reminders we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReminderCountArgs>(
+      args?: Subset<T, ReminderCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReminderCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Reminder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReminderAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReminderAggregateArgs>(args: Subset<T, ReminderAggregateArgs>): Prisma.PrismaPromise<GetReminderAggregateType<T>>
+
+    /**
+     * Group by Reminder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReminderGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReminderGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReminderGroupByArgs['orderBy'] }
+        : { orderBy?: ReminderGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReminderGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReminderGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Reminder model
+   */
+  readonly fields: ReminderFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Reminder.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReminderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    lead<T extends LeadDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LeadDefaultArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Reminder model
+   */
+  interface ReminderFieldRefs {
+    readonly id: FieldRef<"Reminder", 'String'>
+    readonly tenantId: FieldRef<"Reminder", 'String'>
+    readonly leadId: FieldRef<"Reminder", 'String'>
+    readonly scheduledFor: FieldRef<"Reminder", 'DateTime'>
+    readonly note: FieldRef<"Reminder", 'String'>
+    readonly channel: FieldRef<"Reminder", 'String'>
+    readonly status: FieldRef<"Reminder", 'String'>
+    readonly snoozedUntil: FieldRef<"Reminder", 'DateTime'>
+    readonly createdAt: FieldRef<"Reminder", 'DateTime'>
+    readonly updatedAt: FieldRef<"Reminder", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Reminder findUnique
+   */
+  export type ReminderFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which Reminder to fetch.
+     */
+    where: ReminderWhereUniqueInput
+  }
+
+  /**
+   * Reminder findUniqueOrThrow
+   */
+  export type ReminderFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which Reminder to fetch.
+     */
+    where: ReminderWhereUniqueInput
+  }
+
+  /**
+   * Reminder findFirst
+   */
+  export type ReminderFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which Reminder to fetch.
+     */
+    where?: ReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reminders to fetch.
+     */
+    orderBy?: ReminderOrderByWithRelationInput | ReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reminders.
+     */
+    cursor?: ReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reminders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reminders.
+     */
+    distinct?: ReminderScalarFieldEnum | ReminderScalarFieldEnum[]
+  }
+
+  /**
+   * Reminder findFirstOrThrow
+   */
+  export type ReminderFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which Reminder to fetch.
+     */
+    where?: ReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reminders to fetch.
+     */
+    orderBy?: ReminderOrderByWithRelationInput | ReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reminders.
+     */
+    cursor?: ReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reminders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reminders.
+     */
+    distinct?: ReminderScalarFieldEnum | ReminderScalarFieldEnum[]
+  }
+
+  /**
+   * Reminder findMany
+   */
+  export type ReminderFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * Filter, which Reminders to fetch.
+     */
+    where?: ReminderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reminders to fetch.
+     */
+    orderBy?: ReminderOrderByWithRelationInput | ReminderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Reminders.
+     */
+    cursor?: ReminderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reminders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reminders.
+     */
+    skip?: number
+    distinct?: ReminderScalarFieldEnum | ReminderScalarFieldEnum[]
+  }
+
+  /**
+   * Reminder create
+   */
+  export type ReminderCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Reminder.
+     */
+    data: XOR<ReminderCreateInput, ReminderUncheckedCreateInput>
+  }
+
+  /**
+   * Reminder createMany
+   */
+  export type ReminderCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Reminders.
+     */
+    data: ReminderCreateManyInput | ReminderCreateManyInput[]
+  }
+
+  /**
+   * Reminder createManyAndReturn
+   */
+  export type ReminderCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * The data used to create many Reminders.
+     */
+    data: ReminderCreateManyInput | ReminderCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Reminder update
+   */
+  export type ReminderUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Reminder.
+     */
+    data: XOR<ReminderUpdateInput, ReminderUncheckedUpdateInput>
+    /**
+     * Choose, which Reminder to update.
+     */
+    where: ReminderWhereUniqueInput
+  }
+
+  /**
+   * Reminder updateMany
+   */
+  export type ReminderUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Reminders.
+     */
+    data: XOR<ReminderUpdateManyMutationInput, ReminderUncheckedUpdateManyInput>
+    /**
+     * Filter which Reminders to update
+     */
+    where?: ReminderWhereInput
+    /**
+     * Limit how many Reminders to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Reminder updateManyAndReturn
+   */
+  export type ReminderUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * The data used to update Reminders.
+     */
+    data: XOR<ReminderUpdateManyMutationInput, ReminderUncheckedUpdateManyInput>
+    /**
+     * Filter which Reminders to update
+     */
+    where?: ReminderWhereInput
+    /**
+     * Limit how many Reminders to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Reminder upsert
+   */
+  export type ReminderUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Reminder to update in case it exists.
+     */
+    where: ReminderWhereUniqueInput
+    /**
+     * In case the Reminder found by the `where` argument doesn't exist, create a new Reminder with this data.
+     */
+    create: XOR<ReminderCreateInput, ReminderUncheckedCreateInput>
+    /**
+     * In case the Reminder was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReminderUpdateInput, ReminderUncheckedUpdateInput>
+  }
+
+  /**
+   * Reminder delete
+   */
+  export type ReminderDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    /**
+     * Filter which Reminder to delete.
+     */
+    where: ReminderWhereUniqueInput
+  }
+
+  /**
+   * Reminder deleteMany
+   */
+  export type ReminderDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Reminders to delete
+     */
+    where?: ReminderWhereInput
+    /**
+     * Limit how many Reminders to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Reminder without action
+   */
+  export type ReminderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
   }
 
 
@@ -38064,6 +39499,1200 @@ export namespace Prisma {
 
 
   /**
+   * Model MessageTemplate
+   */
+
+  export type AggregateMessageTemplate = {
+    _count: MessageTemplateCountAggregateOutputType | null
+    _avg: MessageTemplateAvgAggregateOutputType | null
+    _sum: MessageTemplateSumAggregateOutputType | null
+    _min: MessageTemplateMinAggregateOutputType | null
+    _max: MessageTemplateMaxAggregateOutputType | null
+  }
+
+  export type MessageTemplateAvgAggregateOutputType = {
+    useCount: number | null
+  }
+
+  export type MessageTemplateSumAggregateOutputType = {
+    useCount: number | null
+  }
+
+  export type MessageTemplateMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    category: string | null
+    channel: string | null
+    subject: string | null
+    body: string | null
+    description: string | null
+    isFavorite: boolean | null
+    useCount: number | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MessageTemplateMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    category: string | null
+    channel: string | null
+    subject: string | null
+    body: string | null
+    description: string | null
+    isFavorite: boolean | null
+    useCount: number | null
+    createdBy: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MessageTemplateCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    name: number
+    category: number
+    channel: number
+    subject: number
+    body: number
+    description: number
+    isFavorite: number
+    useCount: number
+    createdBy: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type MessageTemplateAvgAggregateInputType = {
+    useCount?: true
+  }
+
+  export type MessageTemplateSumAggregateInputType = {
+    useCount?: true
+  }
+
+  export type MessageTemplateMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    category?: true
+    channel?: true
+    subject?: true
+    body?: true
+    description?: true
+    isFavorite?: true
+    useCount?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MessageTemplateMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    category?: true
+    channel?: true
+    subject?: true
+    body?: true
+    description?: true
+    isFavorite?: true
+    useCount?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MessageTemplateCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    category?: true
+    channel?: true
+    subject?: true
+    body?: true
+    description?: true
+    isFavorite?: true
+    useCount?: true
+    createdBy?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type MessageTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MessageTemplate to aggregate.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MessageTemplates
+    **/
+    _count?: true | MessageTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MessageTemplateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MessageTemplateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MessageTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MessageTemplateMaxAggregateInputType
+  }
+
+  export type GetMessageTemplateAggregateType<T extends MessageTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateMessageTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMessageTemplate[P]>
+      : GetScalarType<T[P], AggregateMessageTemplate[P]>
+  }
+
+
+
+
+  export type MessageTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageTemplateWhereInput
+    orderBy?: MessageTemplateOrderByWithAggregationInput | MessageTemplateOrderByWithAggregationInput[]
+    by: MessageTemplateScalarFieldEnum[] | MessageTemplateScalarFieldEnum
+    having?: MessageTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MessageTemplateCountAggregateInputType | true
+    _avg?: MessageTemplateAvgAggregateInputType
+    _sum?: MessageTemplateSumAggregateInputType
+    _min?: MessageTemplateMinAggregateInputType
+    _max?: MessageTemplateMaxAggregateInputType
+  }
+
+  export type MessageTemplateGroupByOutputType = {
+    id: string
+    tenantId: string
+    name: string
+    category: string
+    channel: string
+    subject: string | null
+    body: string
+    description: string
+    isFavorite: boolean
+    useCount: number
+    createdBy: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: MessageTemplateCountAggregateOutputType | null
+    _avg: MessageTemplateAvgAggregateOutputType | null
+    _sum: MessageTemplateSumAggregateOutputType | null
+    _min: MessageTemplateMinAggregateOutputType | null
+    _max: MessageTemplateMaxAggregateOutputType | null
+  }
+
+  type GetMessageTemplateGroupByPayload<T extends MessageTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MessageTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MessageTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MessageTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], MessageTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MessageTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    category?: boolean
+    channel?: boolean
+    subject?: boolean
+    body?: boolean
+    description?: boolean
+    isFavorite?: boolean
+    useCount?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageTemplate"]>
+
+  export type MessageTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    category?: boolean
+    channel?: boolean
+    subject?: boolean
+    body?: boolean
+    description?: boolean
+    isFavorite?: boolean
+    useCount?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageTemplate"]>
+
+  export type MessageTemplateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    category?: boolean
+    channel?: boolean
+    subject?: boolean
+    body?: boolean
+    description?: boolean
+    isFavorite?: boolean
+    useCount?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageTemplate"]>
+
+  export type MessageTemplateSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    category?: boolean
+    channel?: boolean
+    subject?: boolean
+    body?: boolean
+    description?: boolean
+    isFavorite?: boolean
+    useCount?: boolean
+    createdBy?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type MessageTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "name" | "category" | "channel" | "subject" | "body" | "description" | "isFavorite" | "useCount" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["messageTemplate"]>
+  export type MessageTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type MessageTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type MessageTemplateIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $MessageTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MessageTemplate"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      name: string
+      category: string
+      channel: string
+      subject: string | null
+      body: string
+      description: string
+      isFavorite: boolean
+      useCount: number
+      createdBy: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["messageTemplate"]>
+    composites: {}
+  }
+
+  type MessageTemplateGetPayload<S extends boolean | null | undefined | MessageTemplateDefaultArgs> = $Result.GetResult<Prisma.$MessageTemplatePayload, S>
+
+  type MessageTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MessageTemplateFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MessageTemplateCountAggregateInputType | true
+    }
+
+  export interface MessageTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MessageTemplate'], meta: { name: 'MessageTemplate' } }
+    /**
+     * Find zero or one MessageTemplate that matches the filter.
+     * @param {MessageTemplateFindUniqueArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MessageTemplateFindUniqueArgs>(args: SelectSubset<T, MessageTemplateFindUniqueArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MessageTemplate that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MessageTemplateFindUniqueOrThrowArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MessageTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MessageTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateFindFirstArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MessageTemplateFindFirstArgs>(args?: SelectSubset<T, MessageTemplateFindFirstArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MessageTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateFindFirstOrThrowArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MessageTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MessageTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MessageTemplates
+     * const messageTemplates = await prisma.messageTemplate.findMany()
+     * 
+     * // Get first 10 MessageTemplates
+     * const messageTemplates = await prisma.messageTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const messageTemplateWithIdOnly = await prisma.messageTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MessageTemplateFindManyArgs>(args?: SelectSubset<T, MessageTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MessageTemplate.
+     * @param {MessageTemplateCreateArgs} args - Arguments to create a MessageTemplate.
+     * @example
+     * // Create one MessageTemplate
+     * const MessageTemplate = await prisma.messageTemplate.create({
+     *   data: {
+     *     // ... data to create a MessageTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends MessageTemplateCreateArgs>(args: SelectSubset<T, MessageTemplateCreateArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MessageTemplates.
+     * @param {MessageTemplateCreateManyArgs} args - Arguments to create many MessageTemplates.
+     * @example
+     * // Create many MessageTemplates
+     * const messageTemplate = await prisma.messageTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MessageTemplateCreateManyArgs>(args?: SelectSubset<T, MessageTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MessageTemplates and returns the data saved in the database.
+     * @param {MessageTemplateCreateManyAndReturnArgs} args - Arguments to create many MessageTemplates.
+     * @example
+     * // Create many MessageTemplates
+     * const messageTemplate = await prisma.messageTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MessageTemplates and only return the `id`
+     * const messageTemplateWithIdOnly = await prisma.messageTemplate.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MessageTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MessageTemplate.
+     * @param {MessageTemplateDeleteArgs} args - Arguments to delete one MessageTemplate.
+     * @example
+     * // Delete one MessageTemplate
+     * const MessageTemplate = await prisma.messageTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one MessageTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MessageTemplateDeleteArgs>(args: SelectSubset<T, MessageTemplateDeleteArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MessageTemplate.
+     * @param {MessageTemplateUpdateArgs} args - Arguments to update one MessageTemplate.
+     * @example
+     * // Update one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MessageTemplateUpdateArgs>(args: SelectSubset<T, MessageTemplateUpdateArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MessageTemplates.
+     * @param {MessageTemplateDeleteManyArgs} args - Arguments to filter MessageTemplates to delete.
+     * @example
+     * // Delete a few MessageTemplates
+     * const { count } = await prisma.messageTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MessageTemplateDeleteManyArgs>(args?: SelectSubset<T, MessageTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MessageTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MessageTemplates
+     * const messageTemplate = await prisma.messageTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MessageTemplateUpdateManyArgs>(args: SelectSubset<T, MessageTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MessageTemplates and returns the data updated in the database.
+     * @param {MessageTemplateUpdateManyAndReturnArgs} args - Arguments to update many MessageTemplates.
+     * @example
+     * // Update many MessageTemplates
+     * const messageTemplate = await prisma.messageTemplate.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MessageTemplates and only return the `id`
+     * const messageTemplateWithIdOnly = await prisma.messageTemplate.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MessageTemplateUpdateManyAndReturnArgs>(args: SelectSubset<T, MessageTemplateUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MessageTemplate.
+     * @param {MessageTemplateUpsertArgs} args - Arguments to update or create a MessageTemplate.
+     * @example
+     * // Update or create a MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.upsert({
+     *   create: {
+     *     // ... data to create a MessageTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MessageTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MessageTemplateUpsertArgs>(args: SelectSubset<T, MessageTemplateUpsertArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MessageTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateCountArgs} args - Arguments to filter MessageTemplates to count.
+     * @example
+     * // Count the number of MessageTemplates
+     * const count = await prisma.messageTemplate.count({
+     *   where: {
+     *     // ... the filter for the MessageTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends MessageTemplateCountArgs>(
+      args?: Subset<T, MessageTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MessageTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MessageTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MessageTemplateAggregateArgs>(args: Subset<T, MessageTemplateAggregateArgs>): Prisma.PrismaPromise<GetMessageTemplateAggregateType<T>>
+
+    /**
+     * Group by MessageTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MessageTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MessageTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: MessageTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MessageTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMessageTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MessageTemplate model
+   */
+  readonly fields: MessageTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MessageTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MessageTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MessageTemplate model
+   */
+  interface MessageTemplateFieldRefs {
+    readonly id: FieldRef<"MessageTemplate", 'String'>
+    readonly tenantId: FieldRef<"MessageTemplate", 'String'>
+    readonly name: FieldRef<"MessageTemplate", 'String'>
+    readonly category: FieldRef<"MessageTemplate", 'String'>
+    readonly channel: FieldRef<"MessageTemplate", 'String'>
+    readonly subject: FieldRef<"MessageTemplate", 'String'>
+    readonly body: FieldRef<"MessageTemplate", 'String'>
+    readonly description: FieldRef<"MessageTemplate", 'String'>
+    readonly isFavorite: FieldRef<"MessageTemplate", 'Boolean'>
+    readonly useCount: FieldRef<"MessageTemplate", 'Int'>
+    readonly createdBy: FieldRef<"MessageTemplate", 'String'>
+    readonly createdAt: FieldRef<"MessageTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"MessageTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MessageTemplate findUnique
+   */
+  export type MessageTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate findUniqueOrThrow
+   */
+  export type MessageTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate findFirst
+   */
+  export type MessageTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MessageTemplates.
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MessageTemplates.
+     */
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate findFirstOrThrow
+   */
+  export type MessageTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MessageTemplates.
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MessageTemplates.
+     */
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate findMany
+   */
+  export type MessageTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplates to fetch.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MessageTemplates.
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate create
+   */
+  export type MessageTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MessageTemplate.
+     */
+    data: XOR<MessageTemplateCreateInput, MessageTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * MessageTemplate createMany
+   */
+  export type MessageTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MessageTemplates.
+     */
+    data: MessageTemplateCreateManyInput | MessageTemplateCreateManyInput[]
+  }
+
+  /**
+   * MessageTemplate createManyAndReturn
+   */
+  export type MessageTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to create many MessageTemplates.
+     */
+    data: MessageTemplateCreateManyInput | MessageTemplateCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MessageTemplate update
+   */
+  export type MessageTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MessageTemplate.
+     */
+    data: XOR<MessageTemplateUpdateInput, MessageTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which MessageTemplate to update.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate updateMany
+   */
+  export type MessageTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MessageTemplates.
+     */
+    data: XOR<MessageTemplateUpdateManyMutationInput, MessageTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which MessageTemplates to update
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * Limit how many MessageTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MessageTemplate updateManyAndReturn
+   */
+  export type MessageTemplateUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to update MessageTemplates.
+     */
+    data: XOR<MessageTemplateUpdateManyMutationInput, MessageTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which MessageTemplates to update
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * Limit how many MessageTemplates to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MessageTemplate upsert
+   */
+  export type MessageTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MessageTemplate to update in case it exists.
+     */
+    where: MessageTemplateWhereUniqueInput
+    /**
+     * In case the MessageTemplate found by the `where` argument doesn't exist, create a new MessageTemplate with this data.
+     */
+    create: XOR<MessageTemplateCreateInput, MessageTemplateUncheckedCreateInput>
+    /**
+     * In case the MessageTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MessageTemplateUpdateInput, MessageTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * MessageTemplate delete
+   */
+  export type MessageTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which MessageTemplate to delete.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate deleteMany
+   */
+  export type MessageTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MessageTemplates to delete
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * Limit how many MessageTemplates to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MessageTemplate without action
+   */
+  export type MessageTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MessageTemplate
+     */
+    omit?: MessageTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -38279,6 +40908,7 @@ export namespace Prisma {
     acreage: 'acreage',
     town: 'town',
     neighborhood: 'neighborhood',
+    houseStyle: 'houseStyle',
     preferenceNotes: 'preferenceNotes',
     assignedTo: 'assignedTo',
     referredBy: 'referredBy',
@@ -38302,6 +40932,22 @@ export namespace Prisma {
   };
 
   export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
+
+
+  export const ReminderScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    leadId: 'leadId',
+    scheduledFor: 'scheduledFor',
+    note: 'note',
+    channel: 'channel',
+    status: 'status',
+    snoozedUntil: 'snoozedUntil',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typeof ReminderScalarFieldEnum]
 
 
   export const IngestedEventScalarFieldEnum: {
@@ -38562,6 +41208,25 @@ export namespace Prisma {
   export type ESignatureRequestScalarFieldEnum = (typeof ESignatureRequestScalarFieldEnum)[keyof typeof ESignatureRequestScalarFieldEnum]
 
 
+  export const MessageTemplateScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    name: 'name',
+    category: 'category',
+    channel: 'channel',
+    subject: 'subject',
+    body: 'body',
+    description: 'description',
+    isFavorite: 'isFavorite',
+    useCount: 'useCount',
+    createdBy: 'createdBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type MessageTemplateScalarFieldEnum = (typeof MessageTemplateScalarFieldEnum)[keyof typeof MessageTemplateScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -38652,6 +41317,8 @@ export namespace Prisma {
     adSpends?: AdSpendListRelationFilter
     teamMembers?: TeamMemberListRelationFilter
     esignatureRequests?: ESignatureRequestListRelationFilter
+    reminders?: ReminderListRelationFilter
+    messageTemplates?: MessageTemplateListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -38682,6 +41349,8 @@ export namespace Prisma {
     adSpends?: AdSpendOrderByRelationAggregateInput
     teamMembers?: TeamMemberOrderByRelationAggregateInput
     esignatureRequests?: ESignatureRequestOrderByRelationAggregateInput
+    reminders?: ReminderOrderByRelationAggregateInput
+    messageTemplates?: MessageTemplateOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -38715,6 +41384,8 @@ export namespace Prisma {
     adSpends?: AdSpendListRelationFilter
     teamMembers?: TeamMemberListRelationFilter
     esignatureRequests?: ESignatureRequestListRelationFilter
+    reminders?: ReminderListRelationFilter
+    messageTemplates?: MessageTemplateListRelationFilter
   }, "id" | "slug">
 
   export type TenantOrderByWithAggregationInput = {
@@ -39614,6 +42285,7 @@ export namespace Prisma {
     acreage?: FloatNullableFilter<"Lead"> | number | null
     town?: StringNullableFilter<"Lead"> | string | null
     neighborhood?: StringNullableFilter<"Lead"> | string | null
+    houseStyle?: StringNullableFilter<"Lead"> | string | null
     preferenceNotes?: StringNullableFilter<"Lead"> | string | null
     assignedTo?: StringNullableFilter<"Lead"> | string | null
     referredBy?: StringNullableFilter<"Lead"> | string | null
@@ -39624,6 +42296,7 @@ export namespace Prisma {
     activities?: ActivityListRelationFilter
     showings?: ShowingListRelationFilter
     commissions?: CommissionListRelationFilter
+    reminders?: ReminderListRelationFilter
   }
 
   export type LeadOrderByWithRelationInput = {
@@ -39656,6 +42329,7 @@ export namespace Prisma {
     acreage?: SortOrderInput | SortOrder
     town?: SortOrderInput | SortOrder
     neighborhood?: SortOrderInput | SortOrder
+    houseStyle?: SortOrderInput | SortOrder
     preferenceNotes?: SortOrderInput | SortOrder
     assignedTo?: SortOrderInput | SortOrder
     referredBy?: SortOrderInput | SortOrder
@@ -39666,6 +42340,7 @@ export namespace Prisma {
     activities?: ActivityOrderByRelationAggregateInput
     showings?: ShowingOrderByRelationAggregateInput
     commissions?: CommissionOrderByRelationAggregateInput
+    reminders?: ReminderOrderByRelationAggregateInput
   }
 
   export type LeadWhereUniqueInput = Prisma.AtLeast<{
@@ -39701,6 +42376,7 @@ export namespace Prisma {
     acreage?: FloatNullableFilter<"Lead"> | number | null
     town?: StringNullableFilter<"Lead"> | string | null
     neighborhood?: StringNullableFilter<"Lead"> | string | null
+    houseStyle?: StringNullableFilter<"Lead"> | string | null
     preferenceNotes?: StringNullableFilter<"Lead"> | string | null
     assignedTo?: StringNullableFilter<"Lead"> | string | null
     referredBy?: StringNullableFilter<"Lead"> | string | null
@@ -39711,6 +42387,7 @@ export namespace Prisma {
     activities?: ActivityListRelationFilter
     showings?: ShowingListRelationFilter
     commissions?: CommissionListRelationFilter
+    reminders?: ReminderListRelationFilter
   }, "id">
 
   export type LeadOrderByWithAggregationInput = {
@@ -39743,6 +42420,7 @@ export namespace Prisma {
     acreage?: SortOrderInput | SortOrder
     town?: SortOrderInput | SortOrder
     neighborhood?: SortOrderInput | SortOrder
+    houseStyle?: SortOrderInput | SortOrder
     preferenceNotes?: SortOrderInput | SortOrder
     assignedTo?: SortOrderInput | SortOrder
     referredBy?: SortOrderInput | SortOrder
@@ -39788,6 +42466,7 @@ export namespace Prisma {
     acreage?: FloatNullableWithAggregatesFilter<"Lead"> | number | null
     town?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     neighborhood?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    houseStyle?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     preferenceNotes?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     assignedTo?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     referredBy?: StringNullableWithAggregatesFilter<"Lead"> | string | null
@@ -39874,6 +42553,89 @@ export namespace Prisma {
     summary?: StringWithAggregatesFilter<"Activity"> | string
     metadataJson?: StringNullableWithAggregatesFilter<"Activity"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Activity"> | Date | string
+  }
+
+  export type ReminderWhereInput = {
+    AND?: ReminderWhereInput | ReminderWhereInput[]
+    OR?: ReminderWhereInput[]
+    NOT?: ReminderWhereInput | ReminderWhereInput[]
+    id?: StringFilter<"Reminder"> | string
+    tenantId?: StringFilter<"Reminder"> | string
+    leadId?: StringFilter<"Reminder"> | string
+    scheduledFor?: DateTimeFilter<"Reminder"> | Date | string
+    note?: StringNullableFilter<"Reminder"> | string | null
+    channel?: StringNullableFilter<"Reminder"> | string | null
+    status?: StringFilter<"Reminder"> | string
+    snoozedUntil?: DateTimeNullableFilter<"Reminder"> | Date | string | null
+    createdAt?: DateTimeFilter<"Reminder"> | Date | string
+    updatedAt?: DateTimeFilter<"Reminder"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    lead?: XOR<LeadScalarRelationFilter, LeadWhereInput>
+  }
+
+  export type ReminderOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    leadId?: SortOrder
+    scheduledFor?: SortOrder
+    note?: SortOrderInput | SortOrder
+    channel?: SortOrderInput | SortOrder
+    status?: SortOrder
+    snoozedUntil?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    lead?: LeadOrderByWithRelationInput
+  }
+
+  export type ReminderWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ReminderWhereInput | ReminderWhereInput[]
+    OR?: ReminderWhereInput[]
+    NOT?: ReminderWhereInput | ReminderWhereInput[]
+    tenantId?: StringFilter<"Reminder"> | string
+    leadId?: StringFilter<"Reminder"> | string
+    scheduledFor?: DateTimeFilter<"Reminder"> | Date | string
+    note?: StringNullableFilter<"Reminder"> | string | null
+    channel?: StringNullableFilter<"Reminder"> | string | null
+    status?: StringFilter<"Reminder"> | string
+    snoozedUntil?: DateTimeNullableFilter<"Reminder"> | Date | string | null
+    createdAt?: DateTimeFilter<"Reminder"> | Date | string
+    updatedAt?: DateTimeFilter<"Reminder"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    lead?: XOR<LeadScalarRelationFilter, LeadWhereInput>
+  }, "id">
+
+  export type ReminderOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    leadId?: SortOrder
+    scheduledFor?: SortOrder
+    note?: SortOrderInput | SortOrder
+    channel?: SortOrderInput | SortOrder
+    status?: SortOrder
+    snoozedUntil?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ReminderCountOrderByAggregateInput
+    _max?: ReminderMaxOrderByAggregateInput
+    _min?: ReminderMinOrderByAggregateInput
+  }
+
+  export type ReminderScalarWhereWithAggregatesInput = {
+    AND?: ReminderScalarWhereWithAggregatesInput | ReminderScalarWhereWithAggregatesInput[]
+    OR?: ReminderScalarWhereWithAggregatesInput[]
+    NOT?: ReminderScalarWhereWithAggregatesInput | ReminderScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Reminder"> | string
+    tenantId?: StringWithAggregatesFilter<"Reminder"> | string
+    leadId?: StringWithAggregatesFilter<"Reminder"> | string
+    scheduledFor?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
+    note?: StringNullableWithAggregatesFilter<"Reminder"> | string | null
+    channel?: StringNullableWithAggregatesFilter<"Reminder"> | string | null
+    status?: StringWithAggregatesFilter<"Reminder"> | string
+    snoozedUntil?: DateTimeNullableWithAggregatesFilter<"Reminder"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
   }
 
   export type IngestedEventWhereInput = {
@@ -41210,6 +43972,103 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ESignatureRequest"> | Date | string
   }
 
+  export type MessageTemplateWhereInput = {
+    AND?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    OR?: MessageTemplateWhereInput[]
+    NOT?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    id?: StringFilter<"MessageTemplate"> | string
+    tenantId?: StringFilter<"MessageTemplate"> | string
+    name?: StringFilter<"MessageTemplate"> | string
+    category?: StringFilter<"MessageTemplate"> | string
+    channel?: StringFilter<"MessageTemplate"> | string
+    subject?: StringNullableFilter<"MessageTemplate"> | string | null
+    body?: StringFilter<"MessageTemplate"> | string
+    description?: StringFilter<"MessageTemplate"> | string
+    isFavorite?: BoolFilter<"MessageTemplate"> | boolean
+    useCount?: IntFilter<"MessageTemplate"> | number
+    createdBy?: StringNullableFilter<"MessageTemplate"> | string | null
+    createdAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }
+
+  export type MessageTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrder
+    description?: SortOrder
+    isFavorite?: SortOrder
+    useCount?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+  }
+
+  export type MessageTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    OR?: MessageTemplateWhereInput[]
+    NOT?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    tenantId?: StringFilter<"MessageTemplate"> | string
+    name?: StringFilter<"MessageTemplate"> | string
+    category?: StringFilter<"MessageTemplate"> | string
+    channel?: StringFilter<"MessageTemplate"> | string
+    subject?: StringNullableFilter<"MessageTemplate"> | string | null
+    body?: StringFilter<"MessageTemplate"> | string
+    description?: StringFilter<"MessageTemplate"> | string
+    isFavorite?: BoolFilter<"MessageTemplate"> | boolean
+    useCount?: IntFilter<"MessageTemplate"> | number
+    createdBy?: StringNullableFilter<"MessageTemplate"> | string | null
+    createdAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }, "id">
+
+  export type MessageTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrder
+    description?: SortOrder
+    isFavorite?: SortOrder
+    useCount?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: MessageTemplateCountOrderByAggregateInput
+    _avg?: MessageTemplateAvgOrderByAggregateInput
+    _max?: MessageTemplateMaxOrderByAggregateInput
+    _min?: MessageTemplateMinOrderByAggregateInput
+    _sum?: MessageTemplateSumOrderByAggregateInput
+  }
+
+  export type MessageTemplateScalarWhereWithAggregatesInput = {
+    AND?: MessageTemplateScalarWhereWithAggregatesInput | MessageTemplateScalarWhereWithAggregatesInput[]
+    OR?: MessageTemplateScalarWhereWithAggregatesInput[]
+    NOT?: MessageTemplateScalarWhereWithAggregatesInput | MessageTemplateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    tenantId?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    name?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    category?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    channel?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    subject?: StringNullableWithAggregatesFilter<"MessageTemplate"> | string | null
+    body?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    description?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    isFavorite?: BoolWithAggregatesFilter<"MessageTemplate"> | boolean
+    useCount?: IntWithAggregatesFilter<"MessageTemplate"> | number
+    createdBy?: StringNullableWithAggregatesFilter<"MessageTemplate"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"MessageTemplate"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id: string
     slug: string
@@ -41238,6 +44097,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -41268,6 +44129,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -41298,6 +44161,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -41328,6 +44193,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -42326,6 +45193,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -42336,6 +45204,7 @@ export namespace Prisma {
     activities?: ActivityCreateNestedManyWithoutLeadInput
     showings?: ShowingCreateNestedManyWithoutLeadInput
     commissions?: CommissionCreateNestedManyWithoutLeadInput
+    reminders?: ReminderCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateInput = {
@@ -42368,6 +45237,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -42376,6 +45246,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     showings?: ShowingUncheckedCreateNestedManyWithoutLeadInput
     commissions?: CommissionUncheckedCreateNestedManyWithoutLeadInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUpdateInput = {
@@ -42406,6 +45277,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42416,6 +45288,7 @@ export namespace Prisma {
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     showings?: ShowingUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateInput = {
@@ -42448,6 +45321,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42456,6 +45330,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     showings?: ShowingUncheckedUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUncheckedUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadCreateManyInput = {
@@ -42488,6 +45363,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -42523,6 +45399,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42560,6 +45437,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42646,6 +45524,95 @@ export namespace Prisma {
     summary?: StringFieldUpdateOperationsInput | string
     metadataJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderCreateInput = {
+    id: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutRemindersInput
+    lead: LeadCreateNestedOneWithoutRemindersInput
+  }
+
+  export type ReminderUncheckedCreateInput = {
+    id: string
+    tenantId: string
+    leadId: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReminderUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutRemindersNestedInput
+    lead?: LeadUpdateOneRequiredWithoutRemindersNestedInput
+  }
+
+  export type ReminderUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderCreateManyInput = {
+    id: string
+    tenantId: string
+    leadId: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReminderUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IngestedEventCreateInput = {
@@ -44119,6 +47086,117 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MessageTemplateCreateInput = {
+    id?: string
+    name: string
+    category: string
+    channel: string
+    subject?: string | null
+    body: string
+    description?: string
+    isFavorite?: boolean
+    useCount?: number
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutMessageTemplatesInput
+  }
+
+  export type MessageTemplateUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    name: string
+    category: string
+    channel: string
+    subject?: string | null
+    body: string
+    description?: string
+    isFavorite?: boolean
+    useCount?: number
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MessageTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    useCount?: IntFieldUpdateOperationsInput | number
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutMessageTemplatesNestedInput
+  }
+
+  export type MessageTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    useCount?: IntFieldUpdateOperationsInput | number
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageTemplateCreateManyInput = {
+    id?: string
+    tenantId: string
+    name: string
+    category: string
+    channel: string
+    subject?: string | null
+    body: string
+    description?: string
+    isFavorite?: boolean
+    useCount?: number
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MessageTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    useCount?: IntFieldUpdateOperationsInput | number
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    useCount?: IntFieldUpdateOperationsInput | number
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -44266,6 +47344,18 @@ export namespace Prisma {
     none?: ESignatureRequestWhereInput
   }
 
+  export type ReminderListRelationFilter = {
+    every?: ReminderWhereInput
+    some?: ReminderWhereInput
+    none?: ReminderWhereInput
+  }
+
+  export type MessageTemplateListRelationFilter = {
+    every?: MessageTemplateWhereInput
+    some?: MessageTemplateWhereInput
+    none?: MessageTemplateWhereInput
+  }
+
   export type TenantDomainOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -44331,6 +47421,14 @@ export namespace Prisma {
   }
 
   export type ESignatureRequestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReminderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MessageTemplateOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -45020,6 +48118,7 @@ export namespace Prisma {
     acreage?: SortOrder
     town?: SortOrder
     neighborhood?: SortOrder
+    houseStyle?: SortOrder
     preferenceNotes?: SortOrder
     assignedTo?: SortOrder
     referredBy?: SortOrder
@@ -45066,6 +48165,7 @@ export namespace Prisma {
     acreage?: SortOrder
     town?: SortOrder
     neighborhood?: SortOrder
+    houseStyle?: SortOrder
     preferenceNotes?: SortOrder
     assignedTo?: SortOrder
     referredBy?: SortOrder
@@ -45103,6 +48203,7 @@ export namespace Prisma {
     acreage?: SortOrder
     town?: SortOrder
     neighborhood?: SortOrder
+    houseStyle?: SortOrder
     preferenceNotes?: SortOrder
     assignedTo?: SortOrder
     referredBy?: SortOrder
@@ -45190,6 +48291,50 @@ export namespace Prisma {
     summary?: SortOrder
     metadataJson?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type LeadScalarRelationFilter = {
+    is?: LeadWhereInput
+    isNot?: LeadWhereInput
+  }
+
+  export type ReminderCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    leadId?: SortOrder
+    scheduledFor?: SortOrder
+    note?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    snoozedUntil?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ReminderMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    leadId?: SortOrder
+    scheduledFor?: SortOrder
+    note?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    snoozedUntil?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ReminderMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    leadId?: SortOrder
+    scheduledFor?: SortOrder
+    note?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    snoozedUntil?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type IngestedEventTenantIdEventKeyCompoundUniqueInput = {
@@ -46002,6 +49147,62 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type MessageTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    description?: SortOrder
+    isFavorite?: SortOrder
+    useCount?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MessageTemplateAvgOrderByAggregateInput = {
+    useCount?: SortOrder
+  }
+
+  export type MessageTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    description?: SortOrder
+    isFavorite?: SortOrder
+    useCount?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MessageTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    description?: SortOrder
+    isFavorite?: SortOrder
+    useCount?: SortOrder
+    createdBy?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MessageTemplateSumOrderByAggregateInput = {
+    useCount?: SortOrder
+  }
+
   export type TenantDomainCreateNestedManyWithoutTenantInput = {
     create?: XOR<TenantDomainCreateWithoutTenantInput, TenantDomainUncheckedCreateWithoutTenantInput> | TenantDomainCreateWithoutTenantInput[] | TenantDomainUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: TenantDomainCreateOrConnectWithoutTenantInput | TenantDomainCreateOrConnectWithoutTenantInput[]
@@ -46145,6 +49346,20 @@ export namespace Prisma {
     connect?: ESignatureRequestWhereUniqueInput | ESignatureRequestWhereUniqueInput[]
   }
 
+  export type ReminderCreateNestedManyWithoutTenantInput = {
+    create?: XOR<ReminderCreateWithoutTenantInput, ReminderUncheckedCreateWithoutTenantInput> | ReminderCreateWithoutTenantInput[] | ReminderUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutTenantInput | ReminderCreateOrConnectWithoutTenantInput[]
+    createMany?: ReminderCreateManyTenantInputEnvelope
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+  }
+
+  export type MessageTemplateCreateNestedManyWithoutTenantInput = {
+    create?: XOR<MessageTemplateCreateWithoutTenantInput, MessageTemplateUncheckedCreateWithoutTenantInput> | MessageTemplateCreateWithoutTenantInput[] | MessageTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutTenantInput | MessageTemplateCreateOrConnectWithoutTenantInput[]
+    createMany?: MessageTemplateCreateManyTenantInputEnvelope
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+  }
+
   export type TenantDomainUncheckedCreateNestedManyWithoutTenantInput = {
     create?: XOR<TenantDomainCreateWithoutTenantInput, TenantDomainUncheckedCreateWithoutTenantInput> | TenantDomainCreateWithoutTenantInput[] | TenantDomainUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: TenantDomainCreateOrConnectWithoutTenantInput | TenantDomainCreateOrConnectWithoutTenantInput[]
@@ -46286,6 +49501,20 @@ export namespace Prisma {
     connectOrCreate?: ESignatureRequestCreateOrConnectWithoutTenantInput | ESignatureRequestCreateOrConnectWithoutTenantInput[]
     createMany?: ESignatureRequestCreateManyTenantInputEnvelope
     connect?: ESignatureRequestWhereUniqueInput | ESignatureRequestWhereUniqueInput[]
+  }
+
+  export type ReminderUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<ReminderCreateWithoutTenantInput, ReminderUncheckedCreateWithoutTenantInput> | ReminderCreateWithoutTenantInput[] | ReminderUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutTenantInput | ReminderCreateOrConnectWithoutTenantInput[]
+    createMany?: ReminderCreateManyTenantInputEnvelope
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+  }
+
+  export type MessageTemplateUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<MessageTemplateCreateWithoutTenantInput, MessageTemplateUncheckedCreateWithoutTenantInput> | MessageTemplateCreateWithoutTenantInput[] | MessageTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutTenantInput | MessageTemplateCreateOrConnectWithoutTenantInput[]
+    createMany?: MessageTemplateCreateManyTenantInputEnvelope
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -46574,6 +49803,34 @@ export namespace Prisma {
     deleteMany?: ESignatureRequestScalarWhereInput | ESignatureRequestScalarWhereInput[]
   }
 
+  export type ReminderUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<ReminderCreateWithoutTenantInput, ReminderUncheckedCreateWithoutTenantInput> | ReminderCreateWithoutTenantInput[] | ReminderUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutTenantInput | ReminderCreateOrConnectWithoutTenantInput[]
+    upsert?: ReminderUpsertWithWhereUniqueWithoutTenantInput | ReminderUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: ReminderCreateManyTenantInputEnvelope
+    set?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    disconnect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    delete?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    update?: ReminderUpdateWithWhereUniqueWithoutTenantInput | ReminderUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: ReminderUpdateManyWithWhereWithoutTenantInput | ReminderUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
+  }
+
+  export type MessageTemplateUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<MessageTemplateCreateWithoutTenantInput, MessageTemplateUncheckedCreateWithoutTenantInput> | MessageTemplateCreateWithoutTenantInput[] | MessageTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutTenantInput | MessageTemplateCreateOrConnectWithoutTenantInput[]
+    upsert?: MessageTemplateUpsertWithWhereUniqueWithoutTenantInput | MessageTemplateUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: MessageTemplateCreateManyTenantInputEnvelope
+    set?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    disconnect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    delete?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    update?: MessageTemplateUpdateWithWhereUniqueWithoutTenantInput | MessageTemplateUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: MessageTemplateUpdateManyWithWhereWithoutTenantInput | MessageTemplateUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
+  }
+
   export type TenantDomainUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<TenantDomainCreateWithoutTenantInput, TenantDomainUncheckedCreateWithoutTenantInput> | TenantDomainCreateWithoutTenantInput[] | TenantDomainUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: TenantDomainCreateOrConnectWithoutTenantInput | TenantDomainCreateOrConnectWithoutTenantInput[]
@@ -46850,6 +50107,34 @@ export namespace Prisma {
     update?: ESignatureRequestUpdateWithWhereUniqueWithoutTenantInput | ESignatureRequestUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: ESignatureRequestUpdateManyWithWhereWithoutTenantInput | ESignatureRequestUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: ESignatureRequestScalarWhereInput | ESignatureRequestScalarWhereInput[]
+  }
+
+  export type ReminderUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<ReminderCreateWithoutTenantInput, ReminderUncheckedCreateWithoutTenantInput> | ReminderCreateWithoutTenantInput[] | ReminderUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutTenantInput | ReminderCreateOrConnectWithoutTenantInput[]
+    upsert?: ReminderUpsertWithWhereUniqueWithoutTenantInput | ReminderUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: ReminderCreateManyTenantInputEnvelope
+    set?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    disconnect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    delete?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    update?: ReminderUpdateWithWhereUniqueWithoutTenantInput | ReminderUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: ReminderUpdateManyWithWhereWithoutTenantInput | ReminderUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
+  }
+
+  export type MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<MessageTemplateCreateWithoutTenantInput, MessageTemplateUncheckedCreateWithoutTenantInput> | MessageTemplateCreateWithoutTenantInput[] | MessageTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutTenantInput | MessageTemplateCreateOrConnectWithoutTenantInput[]
+    upsert?: MessageTemplateUpsertWithWhereUniqueWithoutTenantInput | MessageTemplateUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: MessageTemplateCreateManyTenantInputEnvelope
+    set?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    disconnect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    delete?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    update?: MessageTemplateUpdateWithWhereUniqueWithoutTenantInput | MessageTemplateUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: MessageTemplateUpdateManyWithWhereWithoutTenantInput | MessageTemplateUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutDomainsInput = {
@@ -47255,6 +50540,13 @@ export namespace Prisma {
     connect?: CommissionWhereUniqueInput | CommissionWhereUniqueInput[]
   }
 
+  export type ReminderCreateNestedManyWithoutLeadInput = {
+    create?: XOR<ReminderCreateWithoutLeadInput, ReminderUncheckedCreateWithoutLeadInput> | ReminderCreateWithoutLeadInput[] | ReminderUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutLeadInput | ReminderCreateOrConnectWithoutLeadInput[]
+    createMany?: ReminderCreateManyLeadInputEnvelope
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+  }
+
   export type ActivityUncheckedCreateNestedManyWithoutLeadInput = {
     create?: XOR<ActivityCreateWithoutLeadInput, ActivityUncheckedCreateWithoutLeadInput> | ActivityCreateWithoutLeadInput[] | ActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutLeadInput | ActivityCreateOrConnectWithoutLeadInput[]
@@ -47274,6 +50566,13 @@ export namespace Prisma {
     connectOrCreate?: CommissionCreateOrConnectWithoutLeadInput | CommissionCreateOrConnectWithoutLeadInput[]
     createMany?: CommissionCreateManyLeadInputEnvelope
     connect?: CommissionWhereUniqueInput | CommissionWhereUniqueInput[]
+  }
+
+  export type ReminderUncheckedCreateNestedManyWithoutLeadInput = {
+    create?: XOR<ReminderCreateWithoutLeadInput, ReminderUncheckedCreateWithoutLeadInput> | ReminderCreateWithoutLeadInput[] | ReminderUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutLeadInput | ReminderCreateOrConnectWithoutLeadInput[]
+    createMany?: ReminderCreateManyLeadInputEnvelope
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -47352,6 +50651,20 @@ export namespace Prisma {
     deleteMany?: CommissionScalarWhereInput | CommissionScalarWhereInput[]
   }
 
+  export type ReminderUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<ReminderCreateWithoutLeadInput, ReminderUncheckedCreateWithoutLeadInput> | ReminderCreateWithoutLeadInput[] | ReminderUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutLeadInput | ReminderCreateOrConnectWithoutLeadInput[]
+    upsert?: ReminderUpsertWithWhereUniqueWithoutLeadInput | ReminderUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: ReminderCreateManyLeadInputEnvelope
+    set?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    disconnect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    delete?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    update?: ReminderUpdateWithWhereUniqueWithoutLeadInput | ReminderUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: ReminderUpdateManyWithWhereWithoutLeadInput | ReminderUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
+  }
+
   export type ActivityUncheckedUpdateManyWithoutLeadNestedInput = {
     create?: XOR<ActivityCreateWithoutLeadInput, ActivityUncheckedCreateWithoutLeadInput> | ActivityCreateWithoutLeadInput[] | ActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutLeadInput | ActivityCreateOrConnectWithoutLeadInput[]
@@ -47392,6 +50705,20 @@ export namespace Prisma {
     update?: CommissionUpdateWithWhereUniqueWithoutLeadInput | CommissionUpdateWithWhereUniqueWithoutLeadInput[]
     updateMany?: CommissionUpdateManyWithWhereWithoutLeadInput | CommissionUpdateManyWithWhereWithoutLeadInput[]
     deleteMany?: CommissionScalarWhereInput | CommissionScalarWhereInput[]
+  }
+
+  export type ReminderUncheckedUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<ReminderCreateWithoutLeadInput, ReminderUncheckedCreateWithoutLeadInput> | ReminderCreateWithoutLeadInput[] | ReminderUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutLeadInput | ReminderCreateOrConnectWithoutLeadInput[]
+    upsert?: ReminderUpsertWithWhereUniqueWithoutLeadInput | ReminderUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: ReminderCreateManyLeadInputEnvelope
+    set?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    disconnect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    delete?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    update?: ReminderUpdateWithWhereUniqueWithoutLeadInput | ReminderUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: ReminderUpdateManyWithWhereWithoutLeadInput | ReminderUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutActivitiesInput = {
@@ -47438,6 +50765,34 @@ export namespace Prisma {
     delete?: LeadWhereInput | boolean
     connect?: LeadWhereUniqueInput
     update?: XOR<XOR<LeadUpdateToOneWithWhereWithoutActivitiesInput, LeadUpdateWithoutActivitiesInput>, LeadUncheckedUpdateWithoutActivitiesInput>
+  }
+
+  export type TenantCreateNestedOneWithoutRemindersInput = {
+    create?: XOR<TenantCreateWithoutRemindersInput, TenantUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutRemindersInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type LeadCreateNestedOneWithoutRemindersInput = {
+    create?: XOR<LeadCreateWithoutRemindersInput, LeadUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutRemindersInput
+    connect?: LeadWhereUniqueInput
+  }
+
+  export type TenantUpdateOneRequiredWithoutRemindersNestedInput = {
+    create?: XOR<TenantCreateWithoutRemindersInput, TenantUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutRemindersInput
+    upsert?: TenantUpsertWithoutRemindersInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutRemindersInput, TenantUpdateWithoutRemindersInput>, TenantUncheckedUpdateWithoutRemindersInput>
+  }
+
+  export type LeadUpdateOneRequiredWithoutRemindersNestedInput = {
+    create?: XOR<LeadCreateWithoutRemindersInput, LeadUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutRemindersInput
+    upsert?: LeadUpsertWithoutRemindersInput
+    connect?: LeadWhereUniqueInput
+    update?: XOR<XOR<LeadUpdateToOneWithWhereWithoutRemindersInput, LeadUpdateWithoutRemindersInput>, LeadUncheckedUpdateWithoutRemindersInput>
   }
 
   export type TenantCreateNestedOneWithoutIngestedEventsInput = {
@@ -47928,6 +51283,20 @@ export namespace Prisma {
     upsert?: TenantUpsertWithoutEsignatureRequestsInput
     connect?: TenantWhereUniqueInput
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutEsignatureRequestsInput, TenantUpdateWithoutEsignatureRequestsInput>, TenantUncheckedUpdateWithoutEsignatureRequestsInput>
+  }
+
+  export type TenantCreateNestedOneWithoutMessageTemplatesInput = {
+    create?: XOR<TenantCreateWithoutMessageTemplatesInput, TenantUncheckedCreateWithoutMessageTemplatesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutMessageTemplatesInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type TenantUpdateOneRequiredWithoutMessageTemplatesNestedInput = {
+    create?: XOR<TenantCreateWithoutMessageTemplatesInput, TenantUncheckedCreateWithoutMessageTemplatesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutMessageTemplatesInput
+    upsert?: TenantUpsertWithoutMessageTemplatesInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutMessageTemplatesInput, TenantUpdateWithoutMessageTemplatesInput>, TenantUncheckedUpdateWithoutMessageTemplatesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -48463,6 +51832,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -48472,6 +51842,7 @@ export namespace Prisma {
     activities?: ActivityCreateNestedManyWithoutLeadInput
     showings?: ShowingCreateNestedManyWithoutLeadInput
     commissions?: CommissionCreateNestedManyWithoutLeadInput
+    reminders?: ReminderCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutTenantInput = {
@@ -48503,6 +51874,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -48511,6 +51883,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     showings?: ShowingUncheckedCreateNestedManyWithoutLeadInput
     commissions?: CommissionUncheckedCreateNestedManyWithoutLeadInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutTenantInput = {
@@ -48934,6 +52307,78 @@ export namespace Prisma {
     data: ESignatureRequestCreateManyTenantInput | ESignatureRequestCreateManyTenantInput[]
   }
 
+  export type ReminderCreateWithoutTenantInput = {
+    id: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lead: LeadCreateNestedOneWithoutRemindersInput
+  }
+
+  export type ReminderUncheckedCreateWithoutTenantInput = {
+    id: string
+    leadId: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReminderCreateOrConnectWithoutTenantInput = {
+    where: ReminderWhereUniqueInput
+    create: XOR<ReminderCreateWithoutTenantInput, ReminderUncheckedCreateWithoutTenantInput>
+  }
+
+  export type ReminderCreateManyTenantInputEnvelope = {
+    data: ReminderCreateManyTenantInput | ReminderCreateManyTenantInput[]
+  }
+
+  export type MessageTemplateCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    category: string
+    channel: string
+    subject?: string | null
+    body: string
+    description?: string
+    isFavorite?: boolean
+    useCount?: number
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MessageTemplateUncheckedCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    category: string
+    channel: string
+    subject?: string | null
+    body: string
+    description?: string
+    isFavorite?: boolean
+    useCount?: number
+    createdBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MessageTemplateCreateOrConnectWithoutTenantInput = {
+    where: MessageTemplateWhereUniqueInput
+    create: XOR<MessageTemplateCreateWithoutTenantInput, MessageTemplateUncheckedCreateWithoutTenantInput>
+  }
+
+  export type MessageTemplateCreateManyTenantInputEnvelope = {
+    data: MessageTemplateCreateManyTenantInput | MessageTemplateCreateManyTenantInput[]
+  }
+
   export type TenantDomainUpsertWithWhereUniqueWithoutTenantInput = {
     where: TenantDomainWhereUniqueInput
     update: XOR<TenantDomainUpdateWithoutTenantInput, TenantDomainUncheckedUpdateWithoutTenantInput>
@@ -49249,6 +52694,7 @@ export namespace Prisma {
     acreage?: FloatNullableFilter<"Lead"> | number | null
     town?: StringNullableFilter<"Lead"> | string | null
     neighborhood?: StringNullableFilter<"Lead"> | string | null
+    houseStyle?: StringNullableFilter<"Lead"> | string | null
     preferenceNotes?: StringNullableFilter<"Lead"> | string | null
     assignedTo?: StringNullableFilter<"Lead"> | string | null
     referredBy?: StringNullableFilter<"Lead"> | string | null
@@ -49646,6 +53092,73 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ESignatureRequest"> | Date | string
   }
 
+  export type ReminderUpsertWithWhereUniqueWithoutTenantInput = {
+    where: ReminderWhereUniqueInput
+    update: XOR<ReminderUpdateWithoutTenantInput, ReminderUncheckedUpdateWithoutTenantInput>
+    create: XOR<ReminderCreateWithoutTenantInput, ReminderUncheckedCreateWithoutTenantInput>
+  }
+
+  export type ReminderUpdateWithWhereUniqueWithoutTenantInput = {
+    where: ReminderWhereUniqueInput
+    data: XOR<ReminderUpdateWithoutTenantInput, ReminderUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type ReminderUpdateManyWithWhereWithoutTenantInput = {
+    where: ReminderScalarWhereInput
+    data: XOR<ReminderUpdateManyMutationInput, ReminderUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type ReminderScalarWhereInput = {
+    AND?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
+    OR?: ReminderScalarWhereInput[]
+    NOT?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
+    id?: StringFilter<"Reminder"> | string
+    tenantId?: StringFilter<"Reminder"> | string
+    leadId?: StringFilter<"Reminder"> | string
+    scheduledFor?: DateTimeFilter<"Reminder"> | Date | string
+    note?: StringNullableFilter<"Reminder"> | string | null
+    channel?: StringNullableFilter<"Reminder"> | string | null
+    status?: StringFilter<"Reminder"> | string
+    snoozedUntil?: DateTimeNullableFilter<"Reminder"> | Date | string | null
+    createdAt?: DateTimeFilter<"Reminder"> | Date | string
+    updatedAt?: DateTimeFilter<"Reminder"> | Date | string
+  }
+
+  export type MessageTemplateUpsertWithWhereUniqueWithoutTenantInput = {
+    where: MessageTemplateWhereUniqueInput
+    update: XOR<MessageTemplateUpdateWithoutTenantInput, MessageTemplateUncheckedUpdateWithoutTenantInput>
+    create: XOR<MessageTemplateCreateWithoutTenantInput, MessageTemplateUncheckedCreateWithoutTenantInput>
+  }
+
+  export type MessageTemplateUpdateWithWhereUniqueWithoutTenantInput = {
+    where: MessageTemplateWhereUniqueInput
+    data: XOR<MessageTemplateUpdateWithoutTenantInput, MessageTemplateUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type MessageTemplateUpdateManyWithWhereWithoutTenantInput = {
+    where: MessageTemplateScalarWhereInput
+    data: XOR<MessageTemplateUpdateManyMutationInput, MessageTemplateUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type MessageTemplateScalarWhereInput = {
+    AND?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
+    OR?: MessageTemplateScalarWhereInput[]
+    NOT?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
+    id?: StringFilter<"MessageTemplate"> | string
+    tenantId?: StringFilter<"MessageTemplate"> | string
+    name?: StringFilter<"MessageTemplate"> | string
+    category?: StringFilter<"MessageTemplate"> | string
+    channel?: StringFilter<"MessageTemplate"> | string
+    subject?: StringNullableFilter<"MessageTemplate"> | string | null
+    body?: StringFilter<"MessageTemplate"> | string
+    description?: StringFilter<"MessageTemplate"> | string
+    isFavorite?: BoolFilter<"MessageTemplate"> | boolean
+    useCount?: IntFilter<"MessageTemplate"> | number
+    createdBy?: StringNullableFilter<"MessageTemplate"> | string | null
+    createdAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+  }
+
   export type TenantCreateWithoutDomainsInput = {
     id: string
     slug: string
@@ -49673,6 +53186,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDomainsInput = {
@@ -49702,6 +53217,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDomainsInput = {
@@ -49747,6 +53264,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDomainsInput = {
@@ -49776,6 +53295,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutWebsiteConfigInput = {
@@ -49805,6 +53326,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutWebsiteConfigInput = {
@@ -49834,6 +53357,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutWebsiteConfigInput = {
@@ -49908,6 +53433,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutWebsiteConfigInput = {
@@ -49937,6 +53464,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ModuleConfigUpsertWithWhereUniqueWithoutWebsiteConfigInput = {
@@ -49996,6 +53525,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutControlSettingsInput = {
@@ -50025,6 +53556,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutControlSettingsInput = {
@@ -50070,6 +53603,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutControlSettingsInput = {
@@ -50099,6 +53634,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutBillingSubscriptionInput = {
@@ -50128,6 +53665,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutBillingSubscriptionInput = {
@@ -50157,6 +53696,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutBillingSubscriptionInput = {
@@ -50202,6 +53743,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutBillingSubscriptionInput = {
@@ -50231,6 +53774,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutControlActorsInput = {
@@ -50260,6 +53805,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutControlActorsInput = {
@@ -50289,6 +53836,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutControlActorsInput = {
@@ -50334,6 +53883,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutControlActorsInput = {
@@ -50363,6 +53914,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutOnboardingPlansInput = {
@@ -50392,6 +53945,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutOnboardingPlansInput = {
@@ -50421,6 +53976,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutOnboardingPlansInput = {
@@ -50515,6 +54072,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutOnboardingPlansInput = {
@@ -50544,6 +54103,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantOnboardingTaskUpsertWithWhereUniqueWithoutOnboardingPlanInput = {
@@ -50589,6 +54150,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutOnboardingTasksInput = {
@@ -50618,6 +54181,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutOnboardingTasksInput = {
@@ -50696,6 +54261,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutOnboardingTasksInput = {
@@ -50725,6 +54292,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantOnboardingPlanUpsertWithoutTasksInput = {
@@ -50837,6 +54406,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutContactsInput = {
@@ -50866,6 +54437,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutContactsInput = {
@@ -50901,6 +54474,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -50910,6 +54484,7 @@ export namespace Prisma {
     activities?: ActivityCreateNestedManyWithoutLeadInput
     showings?: ShowingCreateNestedManyWithoutLeadInput
     commissions?: CommissionCreateNestedManyWithoutLeadInput
+    reminders?: ReminderCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutContactInput = {
@@ -50941,6 +54516,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -50949,6 +54525,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     showings?: ShowingUncheckedCreateNestedManyWithoutLeadInput
     commissions?: CommissionUncheckedCreateNestedManyWithoutLeadInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutContactInput = {
@@ -51066,6 +54643,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutContactsInput = {
@@ -51095,6 +54674,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutContactInput = {
@@ -51172,6 +54753,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLeadsInput = {
@@ -51201,6 +54784,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLeadsInput = {
@@ -51350,6 +54935,39 @@ export namespace Prisma {
     data: CommissionCreateManyLeadInput | CommissionCreateManyLeadInput[]
   }
 
+  export type ReminderCreateWithoutLeadInput = {
+    id: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutRemindersInput
+  }
+
+  export type ReminderUncheckedCreateWithoutLeadInput = {
+    id: string
+    tenantId: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReminderCreateOrConnectWithoutLeadInput = {
+    where: ReminderWhereUniqueInput
+    create: XOR<ReminderCreateWithoutLeadInput, ReminderUncheckedCreateWithoutLeadInput>
+  }
+
+  export type ReminderCreateManyLeadInputEnvelope = {
+    data: ReminderCreateManyLeadInput | ReminderCreateManyLeadInput[]
+  }
+
   export type TenantUpsertWithoutLeadsInput = {
     update: XOR<TenantUpdateWithoutLeadsInput, TenantUncheckedUpdateWithoutLeadsInput>
     create: XOR<TenantCreateWithoutLeadsInput, TenantUncheckedCreateWithoutLeadsInput>
@@ -51388,6 +55006,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLeadsInput = {
@@ -51417,6 +55037,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ContactUpsertWithoutLeadsInput = {
@@ -51508,6 +55130,22 @@ export namespace Prisma {
     data: XOR<CommissionUpdateManyMutationInput, CommissionUncheckedUpdateManyWithoutLeadInput>
   }
 
+  export type ReminderUpsertWithWhereUniqueWithoutLeadInput = {
+    where: ReminderWhereUniqueInput
+    update: XOR<ReminderUpdateWithoutLeadInput, ReminderUncheckedUpdateWithoutLeadInput>
+    create: XOR<ReminderCreateWithoutLeadInput, ReminderUncheckedCreateWithoutLeadInput>
+  }
+
+  export type ReminderUpdateWithWhereUniqueWithoutLeadInput = {
+    where: ReminderWhereUniqueInput
+    data: XOR<ReminderUpdateWithoutLeadInput, ReminderUncheckedUpdateWithoutLeadInput>
+  }
+
+  export type ReminderUpdateManyWithWhereWithoutLeadInput = {
+    where: ReminderScalarWhereInput
+    data: XOR<ReminderUpdateManyMutationInput, ReminderUncheckedUpdateManyWithoutLeadInput>
+  }
+
   export type TenantCreateWithoutActivitiesInput = {
     id: string
     slug: string
@@ -51535,6 +55173,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutActivitiesInput = {
@@ -51564,6 +55204,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutActivitiesInput = {
@@ -51634,6 +55276,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -51643,6 +55286,7 @@ export namespace Prisma {
     contact?: ContactCreateNestedOneWithoutLeadsInput
     showings?: ShowingCreateNestedManyWithoutLeadInput
     commissions?: CommissionCreateNestedManyWithoutLeadInput
+    reminders?: ReminderCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutActivitiesInput = {
@@ -51675,6 +55319,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -51682,6 +55327,7 @@ export namespace Prisma {
     updatedAt: Date | string
     showings?: ShowingUncheckedCreateNestedManyWithoutLeadInput
     commissions?: CommissionUncheckedCreateNestedManyWithoutLeadInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutActivitiesInput = {
@@ -51727,6 +55373,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutActivitiesInput = {
@@ -51756,6 +55404,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ContactUpsertWithoutActivitiesInput = {
@@ -51838,6 +55488,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51847,6 +55498,7 @@ export namespace Prisma {
     contact?: ContactUpdateOneWithoutLeadsNestedInput
     showings?: ShowingUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutActivitiesInput = {
@@ -51879,11 +55531,333 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    showings?: ShowingUncheckedUpdateManyWithoutLeadNestedInput
+    commissions?: CommissionUncheckedUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type TenantCreateWithoutRemindersInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
+    contacts?: ContactCreateNestedManyWithoutTenantInput
+    leads?: LeadCreateNestedManyWithoutTenantInput
+    activities?: ActivityCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobCreateNestedManyWithoutTenantInput
+    transactions?: TransactionCreateNestedManyWithoutTenantInput
+    integrationTokens?: IntegrationTokenCreateNestedManyWithoutTenantInput
+    showings?: ShowingCreateNestedManyWithoutTenantInput
+    commissionSettings?: CommissionSettingCreateNestedOneWithoutTenantInput
+    commissions?: CommissionCreateNestedManyWithoutTenantInput
+    campaigns?: CampaignCreateNestedManyWithoutTenantInput
+    adSpends?: AdSpendCreateNestedManyWithoutTenantInput
+    teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
+    esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutRemindersInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
+    leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedCreateNestedManyWithoutTenantInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutTenantInput
+    integrationTokens?: IntegrationTokenUncheckedCreateNestedManyWithoutTenantInput
+    showings?: ShowingUncheckedCreateNestedManyWithoutTenantInput
+    commissionSettings?: CommissionSettingUncheckedCreateNestedOneWithoutTenantInput
+    commissions?: CommissionUncheckedCreateNestedManyWithoutTenantInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutTenantInput
+    adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
+    teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
+    esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutRemindersInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutRemindersInput, TenantUncheckedCreateWithoutRemindersInput>
+  }
+
+  export type LeadCreateWithoutRemindersInput = {
+    id: string
+    status: string
+    leadType: string
+    source: string
+    timeframe?: string | null
+    notes?: string | null
+    listingId?: string | null
+    listingUrl?: string | null
+    listingAddress?: string | null
+    propertyType?: string | null
+    beds?: number | null
+    baths?: number | null
+    sqft?: number | null
+    lastContactAt?: Date | string | null
+    nextActionAt?: Date | string | null
+    nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
+    priceMin?: number | null
+    priceMax?: number | null
+    tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    acreage?: number | null
+    town?: string | null
+    neighborhood?: string | null
+    houseStyle?: string | null
+    preferenceNotes?: string | null
+    assignedTo?: string | null
+    referredBy?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    tenant: TenantCreateNestedOneWithoutLeadsInput
+    contact?: ContactCreateNestedOneWithoutLeadsInput
+    activities?: ActivityCreateNestedManyWithoutLeadInput
+    showings?: ShowingCreateNestedManyWithoutLeadInput
+    commissions?: CommissionCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutRemindersInput = {
+    id: string
+    tenantId: string
+    contactId?: string | null
+    status: string
+    leadType: string
+    source: string
+    timeframe?: string | null
+    notes?: string | null
+    listingId?: string | null
+    listingUrl?: string | null
+    listingAddress?: string | null
+    propertyType?: string | null
+    beds?: number | null
+    baths?: number | null
+    sqft?: number | null
+    lastContactAt?: Date | string | null
+    nextActionAt?: Date | string | null
+    nextActionNote?: string | null
+    nextActionChannel?: string | null
+    reminderSnoozedUntil?: Date | string | null
+    priceMin?: number | null
+    priceMax?: number | null
+    tags?: string
+    closeReason?: string | null
+    closeNotes?: string | null
+    closedAt?: Date | string | null
+    acreage?: number | null
+    town?: string | null
+    neighborhood?: string | null
+    houseStyle?: string | null
+    preferenceNotes?: string | null
+    assignedTo?: string | null
+    referredBy?: string | null
+    createdAt: Date | string
+    updatedAt: Date | string
+    activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
+    showings?: ShowingUncheckedCreateNestedManyWithoutLeadInput
+    commissions?: CommissionUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutRemindersInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutRemindersInput, LeadUncheckedCreateWithoutRemindersInput>
+  }
+
+  export type TenantUpsertWithoutRemindersInput = {
+    update: XOR<TenantUpdateWithoutRemindersInput, TenantUncheckedUpdateWithoutRemindersInput>
+    create: XOR<TenantCreateWithoutRemindersInput, TenantUncheckedCreateWithoutRemindersInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutRemindersInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutRemindersInput, TenantUncheckedUpdateWithoutRemindersInput>
+  }
+
+  export type TenantUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUpdateManyWithoutTenantNestedInput
+    leads?: LeadUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUpdateManyWithoutTenantNestedInput
+    integrationTokens?: IntegrationTokenUpdateManyWithoutTenantNestedInput
+    showings?: ShowingUpdateManyWithoutTenantNestedInput
+    commissionSettings?: CommissionSettingUpdateOneWithoutTenantNestedInput
+    commissions?: CommissionUpdateManyWithoutTenantNestedInput
+    campaigns?: CampaignUpdateManyWithoutTenantNestedInput
+    adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
+    teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
+    esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutTenantNestedInput
+    integrationTokens?: IntegrationTokenUncheckedUpdateManyWithoutTenantNestedInput
+    showings?: ShowingUncheckedUpdateManyWithoutTenantNestedInput
+    commissionSettings?: CommissionSettingUncheckedUpdateOneWithoutTenantNestedInput
+    commissions?: CommissionUncheckedUpdateManyWithoutTenantNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutTenantNestedInput
+    adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
+    teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
+    esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type LeadUpsertWithoutRemindersInput = {
+    update: XOR<LeadUpdateWithoutRemindersInput, LeadUncheckedUpdateWithoutRemindersInput>
+    create: XOR<LeadCreateWithoutRemindersInput, LeadUncheckedCreateWithoutRemindersInput>
+    where?: LeadWhereInput
+  }
+
+  export type LeadUpdateToOneWithWhereWithoutRemindersInput = {
+    where?: LeadWhereInput
+    data: XOR<LeadUpdateWithoutRemindersInput, LeadUncheckedUpdateWithoutRemindersInput>
+  }
+
+  export type LeadUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    leadType?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    timeframe?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
+    listingUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    listingAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyType?: NullableStringFieldUpdateOperationsInput | string | null
+    beds?: NullableIntFieldUpdateOperationsInput | number | null
+    baths?: NullableIntFieldUpdateOperationsInput | number | null
+    sqft?: NullableIntFieldUpdateOperationsInput | number | null
+    lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceMin?: NullableIntFieldUpdateOperationsInput | number | null
+    priceMax?: NullableIntFieldUpdateOperationsInput | number | null
+    tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acreage?: NullableFloatFieldUpdateOperationsInput | number | null
+    town?: NullableStringFieldUpdateOperationsInput | string | null
+    neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
+    preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutLeadsNestedInput
+    contact?: ContactUpdateOneWithoutLeadsNestedInput
+    activities?: ActivityUpdateManyWithoutLeadNestedInput
+    showings?: ShowingUpdateManyWithoutLeadNestedInput
+    commissions?: CommissionUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    contactId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    leadType?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    timeframe?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    listingId?: NullableStringFieldUpdateOperationsInput | string | null
+    listingUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    listingAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyType?: NullableStringFieldUpdateOperationsInput | string | null
+    beds?: NullableIntFieldUpdateOperationsInput | number | null
+    baths?: NullableIntFieldUpdateOperationsInput | number | null
+    sqft?: NullableIntFieldUpdateOperationsInput | number | null
+    lastContactAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextActionAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextActionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    nextActionChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderSnoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    priceMin?: NullableIntFieldUpdateOperationsInput | number | null
+    priceMax?: NullableIntFieldUpdateOperationsInput | number | null
+    tags?: StringFieldUpdateOperationsInput | string
+    closeReason?: NullableStringFieldUpdateOperationsInput | string | null
+    closeNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acreage?: NullableFloatFieldUpdateOperationsInput | number | null
+    town?: NullableStringFieldUpdateOperationsInput | string | null
+    neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
+    preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     showings?: ShowingUncheckedUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUncheckedUpdateManyWithoutLeadNestedInput
   }
@@ -51915,6 +55889,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutIngestedEventsInput = {
@@ -51944,6 +55920,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutIngestedEventsInput = {
@@ -51989,6 +55967,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutIngestedEventsInput = {
@@ -52018,6 +55998,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutIngestionQueueJobsInput = {
@@ -52047,6 +56029,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutIngestionQueueJobsInput = {
@@ -52076,6 +56060,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutIngestionQueueJobsInput = {
@@ -52121,6 +56107,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutIngestionQueueJobsInput = {
@@ -52150,6 +56138,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutTransactionsInput = {
@@ -52179,6 +56169,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTransactionsInput = {
@@ -52208,6 +56200,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTransactionsInput = {
@@ -52385,6 +56379,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTransactionsInput = {
@@ -52414,6 +56410,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TransactionPartyUpsertWithWhereUniqueWithoutTransactionInput = {
@@ -52876,6 +56874,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutIntegrationTokensInput = {
@@ -52905,6 +56905,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutIntegrationTokensInput = {
@@ -52950,6 +56952,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutIntegrationTokensInput = {
@@ -52979,6 +56983,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutShowingsInput = {
@@ -53008,6 +57014,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutShowingsInput = {
@@ -53037,6 +57045,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutShowingsInput = {
@@ -53072,6 +57082,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -53081,6 +57092,7 @@ export namespace Prisma {
     contact?: ContactCreateNestedOneWithoutLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     commissions?: CommissionCreateNestedManyWithoutLeadInput
+    reminders?: ReminderCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutShowingsInput = {
@@ -53113,6 +57125,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -53120,6 +57133,7 @@ export namespace Prisma {
     updatedAt: Date | string
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     commissions?: CommissionUncheckedCreateNestedManyWithoutLeadInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutShowingsInput = {
@@ -53200,6 +57214,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutShowingsInput = {
@@ -53229,6 +57245,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LeadUpsertWithoutShowingsInput = {
@@ -53270,6 +57288,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53279,6 +57298,7 @@ export namespace Prisma {
     contact?: ContactUpdateOneWithoutLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutShowingsInput = {
@@ -53311,6 +57331,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53318,6 +57339,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUncheckedUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type ContactUpsertWithoutShowingsInput = {
@@ -53388,6 +57410,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCommissionSettingsInput = {
@@ -53417,6 +57441,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCommissionSettingsInput = {
@@ -53462,6 +57488,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCommissionSettingsInput = {
@@ -53491,6 +57519,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutCommissionsInput = {
@@ -53520,6 +57550,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCommissionsInput = {
@@ -53549,6 +57581,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCommissionsInput = {
@@ -53635,6 +57669,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -53644,6 +57679,7 @@ export namespace Prisma {
     contact?: ContactCreateNestedOneWithoutLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     showings?: ShowingCreateNestedManyWithoutLeadInput
+    reminders?: ReminderCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutCommissionsInput = {
@@ -53676,6 +57712,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -53683,6 +57720,7 @@ export namespace Prisma {
     updatedAt: Date | string
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     showings?: ShowingUncheckedCreateNestedManyWithoutLeadInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutCommissionsInput = {
@@ -53728,6 +57766,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCommissionsInput = {
@@ -53757,6 +57797,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TransactionUpsertWithoutCommissionsInput = {
@@ -53855,6 +57897,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53864,6 +57907,7 @@ export namespace Prisma {
     contact?: ContactUpdateOneWithoutLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     showings?: ShowingUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutCommissionsInput = {
@@ -53896,6 +57940,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53903,6 +57948,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     showings?: ShowingUncheckedUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type TenantCreateWithoutCampaignsInput = {
@@ -53932,6 +57978,8 @@ export namespace Prisma {
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCampaignsInput = {
@@ -53961,6 +58009,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCampaignsInput = {
@@ -54037,6 +58087,8 @@ export namespace Prisma {
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCampaignsInput = {
@@ -54066,6 +58118,8 @@ export namespace Prisma {
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CampaignEnrollmentUpsertWithWhereUniqueWithoutCampaignInput = {
@@ -54182,6 +58236,8 @@ export namespace Prisma {
     campaigns?: CampaignCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutAdSpendsInput = {
@@ -54211,6 +58267,8 @@ export namespace Prisma {
     campaigns?: CampaignUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutAdSpendsInput = {
@@ -54256,6 +58314,8 @@ export namespace Prisma {
     campaigns?: CampaignUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutAdSpendsInput = {
@@ -54285,6 +58345,8 @@ export namespace Prisma {
     campaigns?: CampaignUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutTeamMembersInput = {
@@ -54314,6 +58376,8 @@ export namespace Prisma {
     campaigns?: CampaignCreateNestedManyWithoutTenantInput
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTeamMembersInput = {
@@ -54343,6 +58407,8 @@ export namespace Prisma {
     campaigns?: CampaignUncheckedCreateNestedManyWithoutTenantInput
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTeamMembersInput = {
@@ -54388,6 +58454,8 @@ export namespace Prisma {
     campaigns?: CampaignUpdateManyWithoutTenantNestedInput
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTeamMembersInput = {
@@ -54417,6 +58485,8 @@ export namespace Prisma {
     campaigns?: CampaignUncheckedUpdateManyWithoutTenantNestedInput
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutEsignatureRequestsInput = {
@@ -54446,6 +58516,8 @@ export namespace Prisma {
     campaigns?: CampaignCreateNestedManyWithoutTenantInput
     adSpends?: AdSpendCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutEsignatureRequestsInput = {
@@ -54475,6 +58547,8 @@ export namespace Prisma {
     campaigns?: CampaignUncheckedCreateNestedManyWithoutTenantInput
     adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
     teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutEsignatureRequestsInput = {
@@ -54520,6 +58594,8 @@ export namespace Prisma {
     campaigns?: CampaignUpdateManyWithoutTenantNestedInput
     adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutEsignatureRequestsInput = {
@@ -54549,6 +58625,148 @@ export namespace Prisma {
     campaigns?: CampaignUncheckedUpdateManyWithoutTenantNestedInput
     adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
     teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutMessageTemplatesInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskCreateNestedManyWithoutTenantInput
+    contacts?: ContactCreateNestedManyWithoutTenantInput
+    leads?: LeadCreateNestedManyWithoutTenantInput
+    activities?: ActivityCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobCreateNestedManyWithoutTenantInput
+    transactions?: TransactionCreateNestedManyWithoutTenantInput
+    integrationTokens?: IntegrationTokenCreateNestedManyWithoutTenantInput
+    showings?: ShowingCreateNestedManyWithoutTenantInput
+    commissionSettings?: CommissionSettingCreateNestedOneWithoutTenantInput
+    commissions?: CommissionCreateNestedManyWithoutTenantInput
+    campaigns?: CampaignCreateNestedManyWithoutTenantInput
+    adSpends?: AdSpendCreateNestedManyWithoutTenantInput
+    teamMembers?: TeamMemberCreateNestedManyWithoutTenantInput
+    esignatureRequests?: ESignatureRequestCreateNestedManyWithoutTenantInput
+    reminders?: ReminderCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutMessageTemplatesInput = {
+    id: string
+    slug: string
+    name: string
+    status: string
+    createdAt: Date | string
+    updatedAt: Date | string
+    domains?: TenantDomainUncheckedCreateNestedManyWithoutTenantInput
+    websiteConfig?: WebsiteConfigUncheckedCreateNestedOneWithoutTenantInput
+    controlSettings?: TenantControlSettingsUncheckedCreateNestedOneWithoutTenantInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedCreateNestedOneWithoutTenantInput
+    controlActors?: TenantControlActorUncheckedCreateNestedManyWithoutTenantInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedCreateNestedManyWithoutTenantInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedCreateNestedManyWithoutTenantInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutTenantInput
+    leads?: LeadUncheckedCreateNestedManyWithoutTenantInput
+    activities?: ActivityUncheckedCreateNestedManyWithoutTenantInput
+    ingestedEvents?: IngestedEventUncheckedCreateNestedManyWithoutTenantInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedCreateNestedManyWithoutTenantInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutTenantInput
+    integrationTokens?: IntegrationTokenUncheckedCreateNestedManyWithoutTenantInput
+    showings?: ShowingUncheckedCreateNestedManyWithoutTenantInput
+    commissionSettings?: CommissionSettingUncheckedCreateNestedOneWithoutTenantInput
+    commissions?: CommissionUncheckedCreateNestedManyWithoutTenantInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutTenantInput
+    adSpends?: AdSpendUncheckedCreateNestedManyWithoutTenantInput
+    teamMembers?: TeamMemberUncheckedCreateNestedManyWithoutTenantInput
+    esignatureRequests?: ESignatureRequestUncheckedCreateNestedManyWithoutTenantInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutMessageTemplatesInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutMessageTemplatesInput, TenantUncheckedCreateWithoutMessageTemplatesInput>
+  }
+
+  export type TenantUpsertWithoutMessageTemplatesInput = {
+    update: XOR<TenantUpdateWithoutMessageTemplatesInput, TenantUncheckedUpdateWithoutMessageTemplatesInput>
+    create: XOR<TenantCreateWithoutMessageTemplatesInput, TenantUncheckedCreateWithoutMessageTemplatesInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutMessageTemplatesInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutMessageTemplatesInput, TenantUncheckedUpdateWithoutMessageTemplatesInput>
+  }
+
+  export type TenantUpdateWithoutMessageTemplatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUpdateManyWithoutTenantNestedInput
+    leads?: LeadUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUpdateManyWithoutTenantNestedInput
+    integrationTokens?: IntegrationTokenUpdateManyWithoutTenantNestedInput
+    showings?: ShowingUpdateManyWithoutTenantNestedInput
+    commissionSettings?: CommissionSettingUpdateOneWithoutTenantNestedInput
+    commissions?: CommissionUpdateManyWithoutTenantNestedInput
+    campaigns?: CampaignUpdateManyWithoutTenantNestedInput
+    adSpends?: AdSpendUpdateManyWithoutTenantNestedInput
+    teamMembers?: TeamMemberUpdateManyWithoutTenantNestedInput
+    esignatureRequests?: ESignatureRequestUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutMessageTemplatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: TenantDomainUncheckedUpdateManyWithoutTenantNestedInput
+    websiteConfig?: WebsiteConfigUncheckedUpdateOneWithoutTenantNestedInput
+    controlSettings?: TenantControlSettingsUncheckedUpdateOneWithoutTenantNestedInput
+    billingSubscription?: TenantBillingSubscriptionUncheckedUpdateOneWithoutTenantNestedInput
+    controlActors?: TenantControlActorUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingPlans?: TenantOnboardingPlanUncheckedUpdateManyWithoutTenantNestedInput
+    onboardingTasks?: TenantOnboardingTaskUncheckedUpdateManyWithoutTenantNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutTenantNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutTenantNestedInput
+    activities?: ActivityUncheckedUpdateManyWithoutTenantNestedInput
+    ingestedEvents?: IngestedEventUncheckedUpdateManyWithoutTenantNestedInput
+    ingestionQueueJobs?: IngestionQueueJobUncheckedUpdateManyWithoutTenantNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutTenantNestedInput
+    integrationTokens?: IntegrationTokenUncheckedUpdateManyWithoutTenantNestedInput
+    showings?: ShowingUncheckedUpdateManyWithoutTenantNestedInput
+    commissionSettings?: CommissionSettingUncheckedUpdateOneWithoutTenantNestedInput
+    commissions?: CommissionUncheckedUpdateManyWithoutTenantNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutTenantNestedInput
+    adSpends?: AdSpendUncheckedUpdateManyWithoutTenantNestedInput
+    teamMembers?: TeamMemberUncheckedUpdateManyWithoutTenantNestedInput
+    esignatureRequests?: ESignatureRequestUncheckedUpdateManyWithoutTenantNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantDomainCreateManyTenantInput = {
@@ -54651,6 +58869,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -54793,6 +59012,33 @@ export namespace Prisma {
     status?: string
     sentAt?: Date | string | null
     signedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReminderCreateManyTenantInput = {
+    id: string
+    leadId: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MessageTemplateCreateManyTenantInput = {
+    id?: string
+    name: string
+    category: string
+    channel: string
+    subject?: string | null
+    body: string
+    description?: string
+    isFavorite?: boolean
+    useCount?: number
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -55046,6 +59292,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55055,6 +59302,7 @@ export namespace Prisma {
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     showings?: ShowingUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutTenantInput = {
@@ -55086,6 +59334,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55094,6 +59343,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     showings?: ShowingUncheckedUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUncheckedUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutTenantInput = {
@@ -55125,6 +59375,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55559,6 +59810,87 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ReminderUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lead?: LeadUpdateOneRequiredWithoutRemindersNestedInput
+  }
+
+  export type ReminderUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageTemplateUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    useCount?: IntFieldUpdateOperationsInput | number
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageTemplateUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    useCount?: IntFieldUpdateOperationsInput | number
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageTemplateUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    isFavorite?: BoolFieldUpdateOperationsInput | boolean
+    useCount?: IntFieldUpdateOperationsInput | number
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ModuleConfigCreateManyWebsiteConfigInput = {
     id: string
     tenantId: string
@@ -55708,6 +60040,7 @@ export namespace Prisma {
     acreage?: number | null
     town?: string | null
     neighborhood?: string | null
+    houseStyle?: string | null
     preferenceNotes?: string | null
     assignedTo?: string | null
     referredBy?: string | null
@@ -55768,6 +60101,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55777,6 +60111,7 @@ export namespace Prisma {
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     showings?: ShowingUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutContactInput = {
@@ -55808,6 +60143,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55816,6 +60152,7 @@ export namespace Prisma {
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     showings?: ShowingUncheckedUpdateManyWithoutLeadNestedInput
     commissions?: CommissionUncheckedUpdateManyWithoutLeadNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutContactInput = {
@@ -55847,6 +60184,7 @@ export namespace Prisma {
     acreage?: NullableFloatFieldUpdateOperationsInput | number | null
     town?: NullableStringFieldUpdateOperationsInput | string | null
     neighborhood?: NullableStringFieldUpdateOperationsInput | string | null
+    houseStyle?: NullableStringFieldUpdateOperationsInput | string | null
     preferenceNotes?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     referredBy?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55969,6 +60307,18 @@ export namespace Prisma {
     updatedAt: Date | string
   }
 
+  export type ReminderCreateManyLeadInput = {
+    id: string
+    tenantId: string
+    scheduledFor: Date | string
+    note?: string | null
+    channel?: string | null
+    status?: string
+    snoozedUntil?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ActivityUpdateWithoutLeadInput = {
     id?: StringFieldUpdateOperationsInput | string
     activityType?: StringFieldUpdateOperationsInput | string
@@ -56085,6 +60435,42 @@ export namespace Prisma {
     referralFees?: IntFieldUpdateOperationsInput | number
     netAmount?: IntFieldUpdateOperationsInput | number
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderUpdateWithoutLeadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutRemindersNestedInput
+  }
+
+  export type ReminderUncheckedUpdateWithoutLeadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderUncheckedUpdateManyWithoutLeadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    snoozedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

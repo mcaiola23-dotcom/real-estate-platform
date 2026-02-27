@@ -1,10 +1,12 @@
 'use client';
 
-import { memo, useState, useMemo, useCallback } from 'react';
+import { memo, useState, useMemo, useCallback, useEffect } from 'react';
 import type { AiTonePreset } from '@real-estate/ai/types';
 import {
   BUILT_IN_TEMPLATES,
   resolveMergeFields,
+  mergeTemplates,
+  AVAILABLE_MERGE_FIELDS,
   type MessageTemplate,
   type TemplateCategory,
   type TemplateChannel,
@@ -41,6 +43,9 @@ const TONE_OPTIONS: { value: AiTonePreset; label: string }[] = [
   { value: 'casual', label: 'Casual' },
 ];
 
+const CATEGORY_OPTIONS: TemplateCategory[] = ['outreach', 'follow_up', 'listing', 'transaction', 'general'];
+const CHANNEL_OPTIONS: TemplateChannel[] = ['email', 'sms'];
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -61,24 +66,68 @@ export const TemplateLibrary = memo(function TemplateLibrary({
   const [improvingWithAi, setImprovingWithAi] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  // Custom template CRUD state
+  const [customTemplates, setCustomTemplates] = useState<Array<{
+    id: string;
+    name: string;
+    category: string;
+    channel: string;
+    subject: string | null;
+    body: string;
+    description: string;
+    isFavorite: boolean;
+  }>>([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    category: 'general' as TemplateCategory,
+    channel: 'email' as TemplateChannel,
+    subject: '',
+    body: '',
+    description: '',
+  });
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  // Fetch custom templates
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/templates`, {
+      headers: { 'x-tenant-id': tenantId },
+      cache: 'no-store',
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.templates) {
+          setCustomTemplates(data.templates);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [tenantId]);
+
+  // Merge built-in + custom
+  const allTemplates = useMemo(() => mergeTemplates(customTemplates), [customTemplates]);
+
   const filteredTemplates = useMemo(() => {
-    return BUILT_IN_TEMPLATES.filter((t) => {
+    return allTemplates.filter((t) => {
       if (selectedCategory !== 'all' && t.category !== selectedCategory) return false;
       if (selectedChannel !== 'all' && t.channel !== selectedChannel) return false;
       return true;
     });
-  }, [selectedCategory, selectedChannel]);
+  }, [allTemplates, selectedCategory, selectedChannel]);
 
   const categories = useMemo(() => {
-    const cats = new Set(BUILT_IN_TEMPLATES.map((t) => t.category));
+    const cats = new Set(allTemplates.map((t) => t.category));
     return ['all', ...cats] as Array<TemplateCategory | 'all'>;
-  }, []);
+  }, [allTemplates]);
 
   const handleSelectTemplate = useCallback((template: MessageTemplate) => {
     setSelectedTemplate(template);
     setPreviewBody(resolveMergeFields(template.body, mergeContext));
     setPreviewSubject(template.subject ? resolveMergeFields(template.subject, mergeContext) : null);
     setIsEditing(false);
+    setShowCreateForm(false);
   }, [mergeContext]);
 
   const handleImproveWithAi = useCallback(async () => {
@@ -120,12 +169,99 @@ export const TemplateLibrary = memo(function TemplateLibrary({
 
   const handleUse = useCallback(() => {
     if (!selectedTemplate) return;
+
+    // Track use count for custom templates
+    if (!selectedTemplate.isBuiltIn) {
+      fetch(`/api/templates/${selectedTemplate.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': tenantId },
+        body: JSON.stringify({ action: 'use' }),
+      }).catch(() => {});
+    }
+
     onUseTemplate({
       subject: previewSubject,
       body: previewBody,
       channel: selectedTemplate.channel,
     });
-  }, [selectedTemplate, previewSubject, previewBody, onUseTemplate]);
+  }, [selectedTemplate, previewSubject, previewBody, onUseTemplate, tenantId]);
+
+  const handleCreateTemplate = useCallback(async () => {
+    if (!createForm.name.trim() || !createForm.body.trim()) return;
+    setSaving(true);
+
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': tenantId },
+        body: JSON.stringify({
+          name: createForm.name.trim(),
+          category: createForm.category,
+          channel: createForm.channel,
+          subject: createForm.channel === 'email' ? createForm.subject.trim() || null : null,
+          body: createForm.body.trim(),
+          description: createForm.description.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (data.ok && data.template) {
+        setCustomTemplates((prev) => [data.template, ...prev]);
+        setCreateForm({ name: '', category: 'general', channel: 'email', subject: '', body: '', description: '' });
+        setShowCreateForm(false);
+      }
+    } catch {
+      // Keep form open on error
+    } finally {
+      setSaving(false);
+    }
+  }, [createForm, tenantId]);
+
+  const handleDeleteTemplate = useCallback(async (templateId: string) => {
+    setDeleting(templateId);
+    try {
+      const res = await fetch(`/api/templates/${templateId}`, {
+        method: 'DELETE',
+        headers: { 'x-tenant-id': tenantId },
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setCustomTemplates((prev) => prev.filter((t) => t.id !== templateId));
+        if (selectedTemplate?.id === templateId) {
+          setSelectedTemplate(null);
+        }
+      }
+    } catch {
+      // Silent failure
+    } finally {
+      setDeleting(null);
+    }
+  }, [tenantId, selectedTemplate?.id]);
+
+  const handleToggleFavorite = useCallback(async (templateId: string, currentFavorite: boolean) => {
+    // Optimistic update
+    setCustomTemplates((prev) =>
+      prev.map((t) => t.id === templateId ? { ...t, isFavorite: !currentFavorite } : t)
+    );
+
+    try {
+      await fetch(`/api/templates/${templateId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': tenantId },
+        body: JSON.stringify({ isFavorite: !currentFavorite }),
+      });
+    } catch {
+      // Revert on failure
+      setCustomTemplates((prev) =>
+        prev.map((t) => t.id === templateId ? { ...t, isFavorite: currentFavorite } : t)
+      );
+    }
+  }, [tenantId]);
+
+  const insertMergeField = useCallback((field: string) => {
+    setPreviewBody((prev) => prev + field);
+    setIsEditing(true);
+  }, []);
 
   return (
     <div className="crm-template-lib">
@@ -137,11 +273,20 @@ export const TemplateLibrary = memo(function TemplateLibrary({
           </svg>
           Message Templates
         </h3>
-        {onClose && (
-          <button type="button" className="crm-template-lib__close" onClick={onClose} aria-label="Close">
-            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.5" /></svg>
+        <div className="crm-template-lib__header-actions">
+          <button
+            type="button"
+            className="crm-template-lib__create-btn"
+            onClick={() => { setShowCreateForm(!showCreateForm); setSelectedTemplate(null); }}
+          >
+            + New
           </button>
-        )}
+          {onClose && (
+            <button type="button" className="crm-template-lib__close" onClick={onClose} aria-label="Close">
+              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.5" /></svg>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="crm-template-lib__content">
@@ -199,11 +344,17 @@ export const TemplateLibrary = memo(function TemplateLibrary({
                 className={`crm-template-lib__item ${selectedTemplate?.id === t.id ? 'crm-template-lib__item--active' : ''}`}
                 onClick={() => handleSelectTemplate(t)}
               >
-                <span className="crm-template-lib__item-name">{t.name}</span>
+                <span className="crm-template-lib__item-name">
+                  {!t.isBuiltIn && t.isFavorite && <span className="crm-template-lib__fav-star">★</span>}
+                  {t.name}
+                </span>
                 <span className="crm-template-lib__item-meta">
                   <span className={`crm-template-lib__item-channel crm-template-lib__item-channel--${t.channel}`}>
                     {t.channel}
                   </span>
+                  {!t.isBuiltIn && (
+                    <span className="crm-template-lib__item-custom">custom</span>
+                  )}
                 </span>
               </button>
             ))}
@@ -215,23 +366,160 @@ export const TemplateLibrary = memo(function TemplateLibrary({
 
         {/* Preview pane */}
         <div className="crm-template-lib__preview">
-          {selectedTemplate ? (
+          {/* ── Create Form ── */}
+          {showCreateForm && (
+            <div className="crm-template-lib__create-form">
+              <h4 className="crm-template-lib__preview-name">Create Custom Template</h4>
+
+              <label className="crm-template-lib__form-field">
+                <span>Name</span>
+                <input
+                  type="text"
+                  className="crm-template-lib__preview-input"
+                  value={createForm.name}
+                  onChange={(e) => setCreateForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="Template name..."
+                />
+              </label>
+
+              <div className="crm-template-lib__form-row">
+                <label className="crm-template-lib__form-field">
+                  <span>Category</span>
+                  <select
+                    className="crm-template-lib__select"
+                    value={createForm.category}
+                    onChange={(e) => setCreateForm((f) => ({ ...f, category: e.target.value as TemplateCategory }))}
+                  >
+                    {CATEGORY_OPTIONS.map((c) => (
+                      <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="crm-template-lib__form-field">
+                  <span>Channel</span>
+                  <select
+                    className="crm-template-lib__select"
+                    value={createForm.channel}
+                    onChange={(e) => setCreateForm((f) => ({ ...f, channel: e.target.value as TemplateChannel }))}
+                  >
+                    {CHANNEL_OPTIONS.map((c) => (
+                      <option key={c} value={c}>{c.toUpperCase()}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              {createForm.channel === 'email' && (
+                <label className="crm-template-lib__form-field">
+                  <span>Subject</span>
+                  <input
+                    type="text"
+                    className="crm-template-lib__preview-input"
+                    value={createForm.subject}
+                    onChange={(e) => setCreateForm((f) => ({ ...f, subject: e.target.value }))}
+                    placeholder="Email subject..."
+                  />
+                </label>
+              )}
+
+              <label className="crm-template-lib__form-field">
+                <span>Body</span>
+                <textarea
+                  className="crm-template-lib__preview-textarea"
+                  value={createForm.body}
+                  onChange={(e) => setCreateForm((f) => ({ ...f, body: e.target.value }))}
+                  rows={6}
+                  placeholder="Type your message template... Use merge fields like {{lead.name}}"
+                />
+              </label>
+
+              {/* Merge field picker for create form */}
+              <div className="crm-template-lib__merge-picker">
+                <span className="crm-template-lib__merge-label">Insert:</span>
+                {AVAILABLE_MERGE_FIELDS.map((mf) => (
+                  <button
+                    key={mf.field}
+                    type="button"
+                    className="crm-template-lib__merge-btn"
+                    onClick={() => setCreateForm((f) => ({ ...f, body: f.body + mf.field }))}
+                  >
+                    {mf.label}
+                  </button>
+                ))}
+              </div>
+
+              <label className="crm-template-lib__form-field">
+                <span>Description (optional)</span>
+                <input
+                  type="text"
+                  className="crm-template-lib__preview-input"
+                  value={createForm.description}
+                  onChange={(e) => setCreateForm((f) => ({ ...f, description: e.target.value }))}
+                  placeholder="Brief description..."
+                />
+              </label>
+
+              <div className="crm-template-lib__form-actions">
+                <button
+                  type="button"
+                  className="crm-template-lib__use-btn"
+                  onClick={() => void handleCreateTemplate()}
+                  disabled={saving || !createForm.name.trim() || !createForm.body.trim()}
+                >
+                  {saving ? 'Saving...' : 'Create Template'}
+                </button>
+                <button
+                  type="button"
+                  className="crm-template-lib__cancel-btn"
+                  onClick={() => setShowCreateForm(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Template Preview ── */}
+          {!showCreateForm && selectedTemplate ? (
             <>
               <div className="crm-template-lib__preview-header">
                 <div>
                   <h4 className="crm-template-lib__preview-name">{selectedTemplate.name}</h4>
                   <p className="crm-template-lib__preview-desc">{selectedTemplate.description}</p>
                 </div>
-                <button
-                  type="button"
-                  className="crm-template-lib__edit-btn"
-                  onClick={() => setIsEditing(!isEditing)}
-                >
-                  {isEditing ? 'Preview' : 'Edit'}
-                </button>
+                <div className="crm-template-lib__preview-actions">
+                  {!selectedTemplate.isBuiltIn && (
+                    <>
+                      <button
+                        type="button"
+                        className="crm-template-lib__fav-btn"
+                        onClick={() => handleToggleFavorite(selectedTemplate.id, selectedTemplate.isFavorite)}
+                        title={selectedTemplate.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        {selectedTemplate.isFavorite ? '★' : '☆'}
+                      </button>
+                      <button
+                        type="button"
+                        className="crm-template-lib__delete-btn"
+                        onClick={() => void handleDeleteTemplate(selectedTemplate.id)}
+                        disabled={deleting === selectedTemplate.id}
+                        title="Delete template"
+                      >
+                        {deleting === selectedTemplate.id ? '...' : '✕'}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    className="crm-template-lib__edit-btn"
+                    onClick={() => setIsEditing(!isEditing)}
+                  >
+                    {isEditing ? 'Preview' : 'Edit'}
+                  </button>
+                </div>
               </div>
 
-              {previewSubject && (
+              {previewSubject !== null && (
                 <div className="crm-template-lib__preview-subject">
                   <label className="crm-template-lib__preview-label">Subject</label>
                   {isEditing ? (
@@ -260,6 +548,23 @@ export const TemplateLibrary = memo(function TemplateLibrary({
                   <div className="crm-template-lib__preview-text">{previewBody}</div>
                 )}
               </div>
+
+              {/* Merge field picker (edit mode) */}
+              {isEditing && (
+                <div className="crm-template-lib__merge-picker">
+                  <span className="crm-template-lib__merge-label">Insert:</span>
+                  {AVAILABLE_MERGE_FIELDS.map((mf) => (
+                    <button
+                      key={mf.field}
+                      type="button"
+                      className="crm-template-lib__merge-btn"
+                      onClick={() => insertMergeField(mf.field)}
+                    >
+                      {mf.label}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* AI tone adjustment */}
               <div className="crm-template-lib__ai-section">
@@ -315,7 +620,7 @@ export const TemplateLibrary = memo(function TemplateLibrary({
                 </button>
               </div>
             </>
-          ) : (
+          ) : !showCreateForm && (
             <div className="crm-template-lib__no-selection">
               <svg width="32" height="32" viewBox="0 0 16 16" fill="none" opacity="0.3">
                 <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none" />

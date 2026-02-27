@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import type { CrmActivity, CrmContact, CrmLead, CrmShowing, CrmCommission, CrmCommissionSetting, CrmCampaign, CrmAdSpend, CrmTeamMember, TenantContext } from '@real-estate/types';
+import type { CrmActivity, CrmContact, CrmLead, CrmShowing, CrmReminder, CrmCommission, CrmCommissionSetting, CrmCampaign, CrmAdSpend, CrmTeamMember, TenantContext } from '@real-estate/types';
 
 import type { LeadScoreExplanation, NextActionResult, LeadSummary, PredictiveScoreResult, LeadRoutingResult } from '@real-estate/ai/types';
 
@@ -28,6 +28,8 @@ import { createAdSpendGetHandler, createAdSpendPostHandler } from '../ad-spend/r
 import { createTeamGetHandler, createTeamPostHandler } from '../team/route';
 import { createDailyDigestGetHandler } from '../ai/daily-digest/route';
 import { createNlQueryPostHandler } from '../ai/natural-language/route';
+import { createLeadRemindersGetHandler, createLeadRemindersPostHandler } from '../leads/[leadId]/reminders/route';
+import { createReminderPatchHandler, createReminderDeleteHandler } from '../reminders/[reminderId]/route';
 
 const tenantContext: TenantContext = {
   tenantId: 'tenant_fairfield',
@@ -916,6 +918,8 @@ test('AI draft-message POST returns 400 when leadId is missing', async () => {
     listActivitiesByTenantId: async () => [],
     getContactByIdForTenant: async () => null,
     draftMessage: async () => ({ subject: null, body: '', tone: 'professional', provenance: {} as LeadSummary['provenance'] }),
+    draftMultipleMessages: async () => [],
+    draftFromTemplate: async () => ({ subject: null, body: '', tone: 'professional', provenance: {} as LeadSummary['provenance'] }),
   });
 
   const response = await handler(
@@ -935,6 +939,8 @@ test('AI draft-message POST returns 404 when lead is missing', async () => {
     listActivitiesByTenantId: async () => [],
     getContactByIdForTenant: async () => null,
     draftMessage: async () => ({ subject: null, body: '', tone: 'professional', provenance: {} as LeadSummary['provenance'] }),
+    draftMultipleMessages: async () => [],
+    draftFromTemplate: async () => ({ subject: null, body: '', tone: 'professional', provenance: {} as LeadSummary['provenance'] }),
   });
 
   const response = await handler(
@@ -2563,4 +2569,224 @@ test('natural-language POST falls back to search for unknown queries', async () 
   };
   assert.equal(body.intent.action, 'search');
   assert.ok(body.intent.searchTerm);
+});
+
+// ─── Reminder Routes ──────────────────────────────────────────────────────────
+
+test('lead reminders GET returns 401 when unauthorized', async () => {
+  const handler = createLeadRemindersGetHandler({
+    requireTenantContext: unauthorizedContext,
+    listRemindersForTenant: async () => [],
+    createReminderForTenant: async () => null,
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/leads/lead_1/reminders'),
+    { params: Promise.resolve({ leadId: 'lead_1' }) }
+  );
+  assert.equal(response.status, 401);
+});
+
+test('lead reminders GET returns tenant-scoped list', async () => {
+  const reminder: CrmReminder = {
+    id: 'rem_1',
+    tenantId: 'tenant_fairfield',
+    leadId: 'lead_1',
+    scheduledFor: '2026-03-01T10:00:00.000Z',
+    note: 'Follow up on offer',
+    channel: 'call',
+    status: 'pending',
+    snoozedUntil: null,
+    createdAt: '2026-02-26T00:00:00.000Z',
+    updatedAt: '2026-02-26T00:00:00.000Z',
+  };
+
+  const handler = createLeadRemindersGetHandler({
+    requireTenantContext: authorizedContext,
+    listRemindersForTenant: async (tenantId) => {
+      assert.equal(tenantId, 'tenant_fairfield');
+      return [reminder];
+    },
+    createReminderForTenant: async () => null,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/leads/lead_1/reminders'),
+    { params: Promise.resolve({ leadId: 'lead_1' }) }
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as { ok: boolean; reminders: CrmReminder[] };
+  assert.equal(body.ok, true);
+  assert.equal(body.reminders.length, 1);
+  assert.equal(body.reminders[0]!.note, 'Follow up on offer');
+});
+
+test('lead reminders POST returns 400 when scheduledFor is missing', async () => {
+  const handler = createLeadRemindersPostHandler({
+    requireTenantContext: authorizedContext,
+    listRemindersForTenant: async () => [],
+    createReminderForTenant: async () => null,
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/leads/lead_1/reminders', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ note: 'test' }),
+    }),
+    { params: Promise.resolve({ leadId: 'lead_1' }) }
+  );
+  assert.equal(response.status, 400);
+});
+
+test('lead reminders POST creates tenant-scoped reminder', async () => {
+  const reminder: CrmReminder = {
+    id: 'rem_2',
+    tenantId: 'tenant_fairfield',
+    leadId: 'lead_1',
+    scheduledFor: '2026-03-05T14:00:00.000Z',
+    note: 'Check listing status',
+    channel: 'email',
+    status: 'pending',
+    snoozedUntil: null,
+    createdAt: '2026-02-26T00:00:00.000Z',
+    updatedAt: '2026-02-26T00:00:00.000Z',
+  };
+
+  const handler = createLeadRemindersPostHandler({
+    requireTenantContext: authorizedContext,
+    listRemindersForTenant: async () => [],
+    createReminderForTenant: async (tenantId) => {
+      assert.equal(tenantId, 'tenant_fairfield');
+      return reminder;
+    },
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/leads/lead_1/reminders', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ scheduledFor: '2026-03-05T14:00:00.000Z', note: 'Check listing status', channel: 'email' }),
+    }),
+    { params: Promise.resolve({ leadId: 'lead_1' }) }
+  );
+  assert.equal(response.status, 201);
+  const body = (await response.json()) as { ok: boolean; reminder: CrmReminder };
+  assert.equal(body.ok, true);
+  assert.equal(body.reminder.channel, 'email');
+});
+
+test('reminder PATCH returns 401 when unauthorized', async () => {
+  const handler = createReminderPatchHandler({
+    requireTenantContext: unauthorizedContext,
+    updateReminderForTenant: async () => null,
+    deleteReminderForTenant: async () => false,
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/reminders/rem_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ note: 'updated' }),
+    }),
+    { params: Promise.resolve({ reminderId: 'rem_1' }) }
+  );
+  assert.equal(response.status, 401);
+});
+
+test('reminder PATCH updates reminder fields', async () => {
+  const updated: CrmReminder = {
+    id: 'rem_1',
+    tenantId: 'tenant_fairfield',
+    leadId: 'lead_1',
+    scheduledFor: '2026-03-02T10:00:00.000Z',
+    note: 'Updated note',
+    channel: 'text',
+    status: 'pending',
+    snoozedUntil: null,
+    createdAt: '2026-02-26T00:00:00.000Z',
+    updatedAt: '2026-02-26T12:00:00.000Z',
+  };
+
+  const handler = createReminderPatchHandler({
+    requireTenantContext: authorizedContext,
+    updateReminderForTenant: async (tenantId, reminderId) => {
+      assert.equal(tenantId, 'tenant_fairfield');
+      assert.equal(reminderId, 'rem_1');
+      return updated;
+    },
+    deleteReminderForTenant: async () => false,
+  });
+
+  const response = await handler(
+    new Request('http://crm.local/api/reminders/rem_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ note: 'Updated note', channel: 'text' }),
+    }),
+    { params: Promise.resolve({ reminderId: 'rem_1' }) }
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as { ok: boolean; reminder: CrmReminder };
+  assert.equal(body.ok, true);
+  assert.equal(body.reminder.note, 'Updated note');
+});
+
+test('reminder PATCH returns 400 when no fields provided', async () => {
+  const handler = createReminderPatchHandler({
+    requireTenantContext: authorizedContext,
+    updateReminderForTenant: async () => null,
+    deleteReminderForTenant: async () => false,
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/reminders/rem_1', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({}),
+    }),
+    { params: Promise.resolve({ reminderId: 'rem_1' }) }
+  );
+  assert.equal(response.status, 400);
+});
+
+test('reminder DELETE returns 401 when unauthorized', async () => {
+  const handler = createReminderDeleteHandler({
+    requireTenantContext: unauthorizedContext,
+    updateReminderForTenant: async () => null,
+    deleteReminderForTenant: async () => false,
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/reminders/rem_1', { method: 'DELETE' }),
+    { params: Promise.resolve({ reminderId: 'rem_1' }) }
+  );
+  assert.equal(response.status, 401);
+});
+
+test('reminder DELETE removes reminder', async () => {
+  const handler = createReminderDeleteHandler({
+    requireTenantContext: authorizedContext,
+    updateReminderForTenant: async () => null,
+    deleteReminderForTenant: async (tenantId, reminderId) => {
+      assert.equal(tenantId, 'tenant_fairfield');
+      assert.equal(reminderId, 'rem_1');
+      return true;
+    },
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/reminders/rem_1', { method: 'DELETE' }),
+    { params: Promise.resolve({ reminderId: 'rem_1' }) }
+  );
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as { ok: boolean };
+  assert.equal(body.ok, true);
+});
+
+test('reminder DELETE returns 404 for missing reminder', async () => {
+  const handler = createReminderDeleteHandler({
+    requireTenantContext: authorizedContext,
+    updateReminderForTenant: async () => null,
+    deleteReminderForTenant: async () => false,
+  });
+  const response = await handler(
+    new Request('http://crm.local/api/reminders/nonexistent', { method: 'DELETE' }),
+    { params: Promise.resolve({ reminderId: 'nonexistent' }) }
+  );
+  assert.equal(response.status, 404);
 });

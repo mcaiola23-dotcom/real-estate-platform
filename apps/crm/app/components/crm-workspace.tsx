@@ -79,7 +79,6 @@ import {
   Mail,
   Settings,
   Search,
-  Bell,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { KpiSparkline } from './shared/KpiSparkline';
@@ -112,6 +111,8 @@ import { useWorkspaceData, refreshLead } from '../lib/stores/use-query-hooks';
 import { FloatingActivityLog } from './shared/FloatingActivityLog';
 import { SpeedToLeadTimer } from './dashboard/SpeedToLeadTimer';
 import { usePushNotifications } from '../lib/use-push-notifications';
+import { useReminderAlerts } from '../lib/use-reminder-alerts';
+import { ReminderAlertStack } from './shared/ReminderAlert';
 const ActivityView = dynamic(() => import('./views/ActivityView').then(m => ({ default: m.ActivityView })), { ssr: false });
 const SettingsView = dynamic(() => import('./views/SettingsView').then(m => ({ default: m.SettingsView })), { ssr: false });
 const LeadProfileModal = dynamic(() => import('./views/LeadProfileModal').then(m => ({ default: m.LeadProfileModal })), { ssr: false });
@@ -188,6 +189,7 @@ export function CrmWorkspace({
   const searchPanelRef = useRef<HTMLDivElement | null>(null);
   const avatarMenuRef = useRef<HTMLDivElement | null>(null);
   const notificationPanelRef = useRef<HTMLDivElement | null>(null);
+  const notificationContentRef = useRef<HTMLDivElement | null>(null);
 
   const brandStorageKey = useMemo(() => `crm.branding.${tenantContext.tenantId}`, [tenantContext.tenantId]);
   const profileStorageKey = useMemo(() => `crm.profile.${tenantContext.tenantId}`, [tenantContext.tenantId]);
@@ -266,6 +268,7 @@ export function CrmWorkspace({
   const { pinnedIds, togglePin, isPinned } = usePinnedLeads(tenantContext.tenantId);
   const { isOnline, pendingCount: offlinePendingCount, enqueue: enqueueOffline } = useOfflineQueue(tenantContext.tenantId);
   const pushNotifications = usePushNotifications(tenantContext.tenantId);
+  const { activeAlerts, dismissAlert, snoozeAlert, dismissAll: dismissAllAlerts } = useReminderAlerts(leads, tenantContext.tenantId, contactById, pushNotifications.notifyOverdueFollowUp);
 
   // Unclaimed leads for speed-to-lead (new leads without any contact/response)
   const unclaimedLeads = useMemo(() => {
@@ -990,7 +993,8 @@ export function CrmWorkspace({
         setAvatarMenuOpen(false);
       }
 
-      if (notificationPanelRef.current && target && !notificationPanelRef.current.contains(target)) {
+      if (notificationPanelRef.current && target && !notificationPanelRef.current.contains(target) &&
+          !(notificationContentRef.current && notificationContentRef.current.contains(target))) {
         setNotificationsOpen(false);
       }
     }
@@ -1847,12 +1851,12 @@ export function CrmWorkspace({
 
             <div className="crm-header-pop" ref={notificationPanelRef}>
               <button
-                className="crm-icon-button crm-notif-trigger"
+                className="crm-icon-button crm-alert-trigger"
                 type="button"
-                aria-label="Notifications"
+                aria-label="Alerts"
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
               >
-                <Bell size={18} />
+                <span className="crm-alert-trigger__icon" aria-hidden="true" />
                 {unreadCount > 0 && (
                   <span className="crm-notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
                 )}
@@ -2420,17 +2424,6 @@ export function CrmWorkspace({
           onDeleteLead={handleDeleteLead}
           dismissedDuplicateIds={dismissedDuplicateLeadIds}
           onDismissDuplicate={(id) => setDismissedDuplicateLeadIds((prev) => new Set(prev).add(id))}
-          onSaveReminder={(leadId, data) => {
-            handleSetLeadDraftField(leadId, 'nextActionAt', data.nextActionAt);
-            handleSetLeadDraftField(leadId, 'nextActionNote', data.nextActionNote);
-            handleSetLeadDraftField(leadId, 'nextActionChannel', data.nextActionChannel);
-            void updateLead(leadId);
-          }}
-          onSnoozeReminder={(leadId, durationMs) => {
-            const snoozedUntil = new Date(Date.now() + durationMs).toISOString();
-            handleSetLeadDraftField(leadId, 'reminderSnoozedUntil', snoozedUntil);
-            void updateLead(leadId);
-          }}
         />
       ) : null}
 
@@ -2484,14 +2477,16 @@ export function CrmWorkspace({
         contacts={contacts}
       />
 
-      <NotificationCenter
-        open={notificationsOpen}
-        onClose={() => setNotificationsOpen(false)}
-        notifications={notifications}
-        onOpenLead={openLeadProfile}
-        onDismiss={dismissNotification}
-        onClearAll={clearAllNotifications}
-      />
+      <div ref={notificationContentRef}>
+        <NotificationCenter
+          open={notificationsOpen}
+          onClose={() => setNotificationsOpen(false)}
+          notifications={notifications}
+          onOpenLead={openLeadProfile}
+          onDismiss={dismissNotification}
+          onClearAll={clearAllNotifications}
+        />
+      </div>
 
       <MobileActionBar
         onSearchClick={() => {
@@ -2658,6 +2653,14 @@ export function CrmWorkspace({
           </div>
         </div>
       )}
+
+      <ReminderAlertStack
+        alerts={activeAlerts}
+        onDismiss={dismissAlert}
+        onSnooze={snoozeAlert}
+        onDismissAll={dismissAllAlerts}
+        onOpenLead={openLeadProfile}
+      />
 
       <div className="crm-toast-stack" aria-live="polite" aria-label="CRM notifications">
         {toasts.map((toast) => (

@@ -207,6 +207,12 @@ export interface DraftMessageContext {
   leadStatus: string;
   recentActivities: string[];
   propertyInterest: string | null;
+  /** Recent communication summaries for context-aware drafting */
+  communicationHistory?: string[];
+  /** Template body to use as starting point */
+  templateBase?: string | null;
+  /** Character limit hint (primarily for SMS) */
+  maxLength?: number | null;
 }
 
 export function buildDraftMessagePrompt(ctx: DraftMessageContext): string {
@@ -224,7 +230,20 @@ export function buildDraftMessagePrompt(ctx: DraftMessageContext): string {
     lines.push(`Recent activity: ${ctx.recentActivities.slice(0, 3).join('; ')}`);
   }
 
-  if (ctx.messageType === 'email') {
+  if (ctx.communicationHistory && ctx.communicationHistory.length > 0) {
+    lines.push(`Communication history (most recent first): ${ctx.communicationHistory.slice(0, 5).join('; ')}`);
+    lines.push('Reference this history to make the message feel like a natural continuation of the conversation.');
+  }
+
+  if (ctx.templateBase) {
+    lines.push('', `Start from this template and personalize it:\n${ctx.templateBase}`);
+  }
+
+  if (ctx.messageType === 'sms') {
+    const limit = ctx.maxLength || 160;
+    lines.push('', `IMPORTANT: SMS must be under ${limit} characters. Be concise and direct.`);
+    lines.push('', 'Respond as JSON: { "body": "..." }');
+  } else if (ctx.messageType === 'email') {
     lines.push('', 'Respond as JSON: { "subject": "...", "body": "..." }');
   } else {
     lines.push('', 'Respond as JSON: { "body": "..." }');

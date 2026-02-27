@@ -21,6 +21,8 @@ export interface MessageTemplate {
   body: string;
   description: string;
   mergeFields: string[];
+  isBuiltIn: boolean;
+  isFavorite: boolean;
 }
 
 export interface MergeFieldContext {
@@ -72,6 +74,8 @@ export const BUILT_IN_TEMPLATES: MessageTemplate[] = [
     name: 'Initial Outreach',
     category: 'outreach',
     channel: 'email',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: 'Great to connect — let me help with your property search',
     body: `Hello {{lead.name}},
 
@@ -91,6 +95,8 @@ Best regards,
     name: 'Follow-Up Check-In',
     category: 'follow_up',
     channel: 'email',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: 'Checking in on your home search',
     body: `Hi {{lead.name}},
 
@@ -110,6 +116,8 @@ Warm regards,
     name: 'Price Update Alert',
     category: 'listing',
     channel: 'email',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: 'Price update on {{property.address}}',
     body: `Hi {{lead.name}},
 
@@ -127,6 +135,8 @@ Best,
     name: 'Open House Invitation',
     category: 'listing',
     channel: 'email',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: 'You\'re invited — Open House at {{property.address}}',
     body: `Hi {{lead.name}},
 
@@ -144,6 +154,8 @@ Hope to see you there!
     name: 'New Listing Alert',
     category: 'listing',
     channel: 'email',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: 'New listing that matches your criteria',
     body: `Hi {{lead.name}},
 
@@ -161,6 +173,8 @@ Let me know!
     name: 'Under Contract Update',
     category: 'transaction',
     channel: 'email',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: 'Great news — {{property.address}} is under contract!',
     body: `Hi {{lead.name}},
 
@@ -182,6 +196,8 @@ Congratulations!
     name: 'Closing Congratulations',
     category: 'transaction',
     channel: 'email',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: 'Congratulations on your new home!',
     body: `Dear {{lead.name}},
 
@@ -202,6 +218,8 @@ Warm regards,
     name: 'Quick Follow-Up',
     category: 'follow_up',
     channel: 'sms',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: null,
     body: `Hi {{lead.name}}, it's {{agent.name}}. Just checking in on your home search — any questions I can help with? Feel free to call or text anytime.`,
     description: 'Brief SMS check-in for active leads.',
@@ -212,6 +230,8 @@ Warm regards,
     name: 'Showing Reminder',
     category: 'listing',
     channel: 'sms',
+    isBuiltIn: true,
+    isFavorite: false,
     subject: null,
     body: `Hi {{lead.name}}, this is {{agent.name}} — just a reminder about the showing at {{property.address}}. Looking forward to seeing you! Let me know if anything changes.`,
     description: 'Remind a lead about an upcoming property showing.',
@@ -234,3 +254,47 @@ export function getTemplatesByCategory(category: TemplateCategory): MessageTempl
 export function getTemplatesByChannel(channel: TemplateChannel): MessageTemplate[] {
   return BUILT_IN_TEMPLATES.filter((t) => t.channel === channel);
 }
+
+/**
+ * Merge built-in templates with custom (DB-backed) templates.
+ * Custom templates appear first (favorites first, then by use count).
+ */
+export function mergeTemplates(
+  customTemplates: Array<{
+    id: string;
+    name: string;
+    category: string;
+    channel: string;
+    subject: string | null;
+    body: string;
+    description: string;
+    isFavorite: boolean;
+  }>
+): MessageTemplate[] {
+  const custom: MessageTemplate[] = customTemplates.map((t) => ({
+    id: t.id,
+    name: t.name,
+    category: t.category as TemplateCategory,
+    channel: t.channel as TemplateChannel,
+    subject: t.subject,
+    body: t.body,
+    description: t.description,
+    mergeFields: extractMergeFields(t.body + (t.subject || '')),
+    isBuiltIn: false,
+    isFavorite: t.isFavorite,
+  }));
+
+  return [...custom, ...BUILT_IN_TEMPLATES];
+}
+
+/** Available merge fields for the merge field picker UI */
+export const AVAILABLE_MERGE_FIELDS = [
+  { field: '{{lead.name}}', label: 'Lead Name' },
+  { field: '{{agent.name}}', label: 'Agent Name' },
+  { field: '{{property.address}}', label: 'Property Address' },
+  { field: '{{property.type}}', label: 'Property Type' },
+  { field: '{{price.range}}', label: 'Price Range' },
+  { field: '{{timeframe}}', label: 'Timeframe' },
+  { field: '{{agent.phone}}', label: 'Agent Phone' },
+  { field: '{{agent.email}}', label: 'Agent Email' },
+];

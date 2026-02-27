@@ -1,9 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CrmActivity, CrmContact, CrmLead } from '@real-estate/types/crm';
 
 export interface CrmNotification {
   id: string;
-  category: 'overdue' | 'activity' | 'milestone';
+  category: 'overdue' | 'activity' | 'milestone' | 'reminder';
   title: string;
   detail: string;
   timestamp: string;
@@ -36,6 +36,13 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
     }
   });
 
+  // Minute-based ticker so overdue/reminder notifications refresh over time
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 30_000);
+    return () => clearInterval(interval);
+  }, []);
+
   const persistDismissed = useCallback((ids: Set<string>) => {
     if (!tenantId) return;
     try {
@@ -63,17 +70,50 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
   const allNotifications = useMemo<CrmNotification[]>(() => {
     const items: CrmNotification[] = [];
     const now = new Date();
+    const oneDayAgo = now.getTime() - 24 * 60 * 60 * 1000;
+    const endOfToday = new Date(now);
+    endOfToday.setHours(23, 59, 59, 999);
 
-    // Overdue follow-ups
     for (const lead of leads) {
-      if (!lead.nextActionAt || lead.status === 'won' || lead.status === 'lost') continue;
+      if (lead.status === 'won' || lead.status === 'lost') continue;
+      if (!lead.nextActionAt) continue;
+
+      // Respect snooze
+      if (lead.reminderSnoozedUntil) {
+        const snoozeUntil = new Date(lead.reminderSnoozedUntil).getTime();
+        if (snoozeUntil > now.getTime()) continue;
+      }
+
       const due = new Date(lead.nextActionAt);
+      const name = getLeadName(lead, contactById);
+
       if (due.getTime() < now.getTime()) {
+        // Overdue
         items.push({
           id: `overdue-${lead.id}`,
           category: 'overdue',
-          title: `Overdue: ${getLeadName(lead, contactById)}`,
+          title: `Overdue: ${name}`,
           detail: lead.nextActionNote || 'Follow-up overdue',
+          timestamp: lead.nextActionAt,
+          leadId: lead.id,
+        });
+      } else if (due.getTime() <= endOfToday.getTime()) {
+        // Due today (upcoming)
+        items.push({
+          id: `reminder-${lead.id}`,
+          category: 'reminder',
+          title: `Today: ${name}`,
+          detail: lead.nextActionNote || 'Follow-up scheduled for today',
+          timestamp: lead.nextActionAt,
+          leadId: lead.id,
+        });
+      } else {
+        // Scheduled for future — show in reminders section
+        items.push({
+          id: `reminder-${lead.id}`,
+          category: 'reminder',
+          title: `Scheduled: ${name}`,
+          detail: lead.nextActionNote || `Follow-up on ${due.toLocaleDateString()}`,
           timestamp: lead.nextActionAt,
           leadId: lead.id,
         });
@@ -81,7 +121,6 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
     }
 
     // Recent activity (last 24h)
-    const oneDayAgo = now.getTime() - 24 * 60 * 60 * 1000;
     for (const activity of activities.slice(0, 20)) {
       if (new Date(activity.occurredAt).getTime() < oneDayAgo) continue;
       items.push({
@@ -110,7 +149,7 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
 
     items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     return items;
-  }, [leads, activities, contactById]);
+  }, [leads, activities, contactById, tick]); // tick forces periodic recalculation
 
   const notifications = useMemo(() => {
     return allNotifications.filter((n) => !dismissedIds.has(n.id));

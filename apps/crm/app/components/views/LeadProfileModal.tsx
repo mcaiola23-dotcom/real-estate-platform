@@ -20,7 +20,6 @@ import { LeadEngagementGauge } from '../shared/LeadEngagementGauge';
 import { AiScoreExplanation } from '../shared/AiScoreExplanation';
 import { LeadActivityChart } from '../shared/LeadActivityChart';
 import { PriceInterestBar } from '../shared/PriceInterestBar';
-import { ContactHistoryLog } from '../leads/ContactHistoryLog';
 import { AiLeadSummary } from '../leads/AiLeadSummary';
 import { AiNextActions } from '../leads/AiNextActions';
 // DuplicateWarning removed — revisit when duplicate merge flow is built
@@ -32,14 +31,10 @@ import { SmartReminderForm } from '../shared/SmartReminderForm';
 import { PriceRangeSlider } from '../shared/PriceRangeSlider';
 import { AiPredictiveScore } from '../shared/AiPredictiveScore';
 import { AiLeadRouting } from '../shared/AiLeadRouting';
-import { TemplateLibrary } from '../shared/TemplateLibrary';
-import { AiDraftComposer } from '../shared/AiDraftComposer';
-import { GmailComposer } from '../shared/GmailComposer';
-import { GmailThreads } from '../shared/GmailThreads';
+import { CommunicationsHub } from '../shared/CommunicationsHub';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { CrmListingModal } from '../shared/CrmListingModal';
 import type { MergeFieldContext } from '../../lib/crm-templates';
-import { downloadIcsFile } from '../../lib/crm-calendar';
 import type { CrmShowing } from '@real-estate/types/crm';
 import { ShowingScheduler } from '../shared/ShowingScheduler';
 // EscalationBanner removed — was too aggressive without actionable info
@@ -132,8 +127,6 @@ interface LeadProfileModalProps {
   onDeleteLead?: (leadId: string) => Promise<void>;
   dismissedDuplicateIds?: Set<string>;
   onDismissDuplicate?: (leadId: string) => void;
-  onSaveReminder?: (leadId: string, data: { nextActionAt: string; nextActionNote: string; nextActionChannel: string }) => void;
-  onSnoozeReminder?: (leadId: string, durationMs: number) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -165,17 +158,9 @@ export function LeadProfileModal({
   onDeleteLead,
   dismissedDuplicateIds,
   onDismissDuplicate,
-  onSaveReminder,
-  onSnoozeReminder,
 }: LeadProfileModalProps) {
   const [activeTab, setActiveTab] = useState<ModalTab>('overview');
-  const [showTemplates, setShowTemplates] = useState(false);
-  const [showAiComposer, setShowAiComposer] = useState(false);
-  const [showGmailComposer, setShowGmailComposer] = useState(false);
-  const [showGmailThreads, setShowGmailThreads] = useState(false);
   const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
-  const [addingToCalendar, setAddingToCalendar] = useState(false);
-  const [calendarAdded, setCalendarAdded] = useState(false);
   const [linkContactMsg, setLinkContactMsg] = useState<string | null>(null);
   const [showings, setShowings] = useState<CrmShowing[]>([]);
   const [portalLink, setPortalLink] = useState<string | null>(null);
@@ -183,8 +168,6 @@ export function LeadProfileModal({
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [replyContext, setReplyContext] = useState<{ threadId: string; subject: string } | null>(null);
-
   // Escalation banner removed — revisit when actionable resolution flow is built
 
   // Color-coded last contact badge
@@ -826,63 +809,8 @@ export function LeadProfileModal({
               <SmartReminderForm
                 leadId={lead.id}
                 tenantId={lead.tenantId}
-                currentNextAction={lead.nextActionAt}
-                currentNextActionNote={lead.nextActionNote}
-                currentChannel={lead.nextActionChannel}
-                onSave={(data) => onSaveReminder?.(lead.id, data)}
-                onSnooze={(ms) => onSnoozeReminder?.(lead.id, ms)}
                 hideHeader
               />
-              {lead.nextActionAt && (
-                <div className="crm-calendar-add-row">
-                  {googleConnected ? (
-                    <button
-                      type="button"
-                      className="crm-btn-secondary"
-                      disabled={addingToCalendar || calendarAdded}
-                      onClick={async () => {
-                        setAddingToCalendar(true);
-                        try {
-                          const res = await fetch('/api/integrations/google/calendar/sync', { method: 'POST' });
-                          const data = await res.json();
-                          if (data.ok) setCalendarAdded(true);
-                        } catch { /* handled by sync result */ }
-                        setAddingToCalendar(false);
-                      }}
-                    >
-                      {calendarAdded ? (
-                        <>
-                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <path d="M3 8.5l3.5 3.5 6.5-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                          {' '}Synced to Calendar
-                        </>
-                      ) : addingToCalendar ? 'Adding...' : 'Add to Google Calendar'}
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        className="crm-btn-secondary"
-                        onClick={() => {
-                          downloadIcsFile({
-                            title: `Follow up: ${activeContact?.fullName ?? 'Lead'} — ${lead.nextActionNote || 'Follow up'}`,
-                            startDate: new Date(lead.nextActionAt!),
-                            description: lead.notes || undefined,
-                          });
-                        }}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                          <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                          <path d="M2 6.5h12M5.5 3V1.5M10.5 3V1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                        Download .ics
-                      </button>
-                      <p className="crm-calendar-hint">Connect Google Calendar in Settings for one-click sync.</p>
-                    </>
-                  )}
-                </div>
-              )}
             </CollapsibleSection>
           </div>
         )}
@@ -890,11 +818,21 @@ export function LeadProfileModal({
         {/* ── Communication Tab ── */}
         {activeTab === 'communication' && (
           <div className="crm-modal-tab-content">
-            <ContactHistoryLog
-              leadId={lead.id}
-              tenantId={lead.tenantId}
-              contactId={lead.contactId}
+            <CommunicationsHub
+              lead={lead}
+              activeContact={activeContact}
               activities={activities}
+              googleConnected={googleConnected}
+              mergeContext={{
+                leadName: activeContact?.fullName ?? null,
+                agentName: null,
+                propertyAddress: lead.listingAddress,
+                propertyType: lead.propertyType,
+                priceRange: lead.priceMin && lead.priceMax ? `$${lead.priceMin.toLocaleString()}-$${lead.priceMax.toLocaleString()}` : null,
+                timeframe: lead.timeframe,
+                agentPhone: null,
+                agentEmail: null,
+              } satisfies MergeFieldContext}
               onLogContact={onLogContact}
               onApplyInsights={(insights) => {
                 const insightText = insights.map((i) => `[${i.category}] ${i.value}`).join('\n');
@@ -904,134 +842,6 @@ export function LeadProfileModal({
                 void onUpdateLead(lead.id);
               }}
             />
-
-            {/* Communication Tools */}
-            <div className="crm-comm-tools-grid">
-              <button
-                type="button"
-                className={`crm-comm-tool-card ${showTemplates ? 'is-active' : ''}`}
-                onClick={() => { setShowTemplates(!showTemplates); setShowAiComposer(false); setShowGmailComposer(false); }}
-              >
-                <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                  <path d="M5 5h6M5 8h6M5 11h3" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
-                </svg>
-                <span className="crm-comm-tool-card__title">Message Templates</span>
-                <span className="crm-comm-tool-card__subtitle">Pre-built message library</span>
-              </button>
-              <button
-                type="button"
-                className={`crm-comm-tool-card ${showAiComposer ? 'is-active' : ''}`}
-                onClick={() => { setShowAiComposer(!showAiComposer); setShowTemplates(false); setShowGmailComposer(false); }}
-              >
-                <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" opacity="0.7" />
-                </svg>
-                <span className="crm-comm-tool-card__title">Draft with AI</span>
-                <span className="crm-comm-tool-card__subtitle">Generate personalized messages</span>
-              </button>
-              {activeContact?.email && (
-                <button
-                  type="button"
-                  className={`crm-comm-tool-card ${showGmailComposer ? 'is-active' : ''}`}
-                  onClick={() => { setShowGmailComposer(!showGmailComposer); setShowTemplates(false); setShowAiComposer(false); }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span className="crm-comm-tool-card__title">Send Email</span>
-                  <span className="crm-comm-tool-card__subtitle">{googleConnected ? 'via Gmail' : 'Compose email'}</span>
-                </button>
-              )}
-            </div>
-            {activeContact?.email && googleConnected && (
-              <button
-                type="button"
-                className="crm-template-toggle__btn"
-                onClick={() => setShowGmailThreads(!showGmailThreads)}
-              >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                  <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M5 9h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
-                </svg>
-                {showGmailThreads ? 'Hide Threads' : 'Email History'}
-              </button>
-            )}
-            {showTemplates && (
-              <TemplateLibrary
-                mergeContext={{
-                  leadName: activeContact?.fullName ?? null,
-                  agentName: null,
-                  propertyAddress: lead.listingAddress,
-                  propertyType: lead.propertyType,
-                  priceRange: lead.priceMin && lead.priceMax ? `$${lead.priceMin.toLocaleString()}-$${lead.priceMax.toLocaleString()}` : null,
-                  timeframe: lead.timeframe,
-                  agentPhone: null,
-                  agentEmail: null,
-                } satisfies MergeFieldContext}
-                tenantId={lead.tenantId}
-                leadId={lead.id}
-                onUseTemplate={(data) => {
-                  if (data.channel === 'email' && activeContact?.email) {
-                    const subject = encodeURIComponent(data.subject || '');
-                    const body = encodeURIComponent(data.body);
-                    window.open(`mailto:${activeContact.email}?subject=${subject}&body=${body}`, '_blank');
-                  } else {
-                    void navigator.clipboard.writeText(data.body);
-                  }
-                  setShowTemplates(false);
-                }}
-                onClose={() => setShowTemplates(false)}
-              />
-            )}
-            {showAiComposer && (
-              <AiDraftComposer
-                leadId={lead.id}
-                tenantId={lead.tenantId}
-                contactName={activeContact?.fullName ?? null}
-                contactEmail={activeContact?.email ?? null}
-                contactPhone={activeContact?.phone ?? null}
-                propertyAddress={lead.listingAddress}
-                onClose={() => setShowAiComposer(false)}
-                onSend={(data) => {
-                  if (data.channel === 'email') {
-                    void onLogContact('email_sent', 'AI-drafted email sent');
-                  } else {
-                    void onLogContact('text_logged', 'AI-drafted message copied');
-                  }
-                  setShowAiComposer(false);
-                }}
-              />
-            )}
-            {showGmailComposer && activeContact?.email && (
-              <GmailComposer
-                to={activeContact.email}
-                leadId={lead.id}
-                contactName={activeContact.fullName ?? undefined}
-                propertyAddress={lead.listingAddress ?? undefined}
-                googleConnected={googleConnected ?? false}
-                replyToMessageId={replyContext?.threadId}
-                onClose={() => { setShowGmailComposer(false); setReplyContext(null); }}
-                onSent={() => {
-                  setShowGmailComposer(false);
-                  setReplyContext(null);
-                  void onLogContact('email_sent', `Email sent to ${activeContact.email}`);
-                }}
-              />
-            )}
-            {showGmailThreads && activeContact?.email && googleConnected && (
-              <GmailThreads
-                email={activeContact.email}
-                onReply={(threadId, subject) => {
-                  setReplyContext({ threadId, subject });
-                  setShowGmailComposer(true);
-                  setShowGmailThreads(false);
-                }}
-                onClose={() => setShowGmailThreads(false)}
-              />
-            )}
           </div>
         )}
 
@@ -1276,7 +1086,6 @@ export function LeadProfileModal({
           onShareWithLead={() => {
             setSelectedListing(null);
             setActiveTab('communication');
-            setShowTemplates(true);
           }}
         />
       )}

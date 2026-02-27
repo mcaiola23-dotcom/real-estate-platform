@@ -12,12 +12,16 @@ import type {
   CrmLeadType,
   CrmShowing,
   CrmShowingListQuery,
+  CrmReminder,
+  CrmReminderListQuery,
   CrmCommissionSetting,
   CrmCommission,
   CrmCampaign,
   CrmAdSpend,
   CrmTeamMember,
   CrmESignatureRequest,
+  CrmMessageTemplate,
+  CrmMessageTemplateListQuery,
 } from '@real-estate/types/crm';
 import type {
   WebsiteEvent,
@@ -2575,5 +2579,390 @@ export async function updateESignatureRequestForTenant(
     return toCrmESignatureRequest(updated);
   } catch {
     return null;
+  }
+}
+
+// ─── Reminder Helpers ─────────────────────────────────────────────────────────
+
+function toCrmReminder(record: {
+  id: string;
+  tenantId: string;
+  leadId: string;
+  scheduledFor: string | Date;
+  note: string | null;
+  channel: string | null;
+  status: string;
+  snoozedUntil: string | Date | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): CrmReminder {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    leadId: record.leadId,
+    scheduledFor: toIsoString(record.scheduledFor),
+    note: record.note,
+    channel: record.channel,
+    status: record.status as CrmReminder['status'],
+    snoozedUntil: record.snoozedUntil ? toIsoString(record.snoozedUntil) : null,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export interface CreateReminderInput {
+  leadId: string;
+  scheduledFor: string | Date;
+  note?: string | null;
+  channel?: string | null;
+}
+
+export interface UpdateReminderInput {
+  scheduledFor?: string | Date;
+  note?: string | null;
+  channel?: string | null;
+  status?: string;
+  snoozedUntil?: string | Date | null;
+}
+
+export async function createReminderForTenant(
+  tenantId: string,
+  input: CreateReminderInput
+): Promise<CrmReminder | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const lead = await prisma.lead.findFirst({
+      where: { id: input.leadId, tenantId },
+      select: { id: true },
+    });
+    if (!lead) return null;
+
+    const now = new Date();
+    const reminder = await prisma.reminder.create({
+      data: {
+        id: randomUUID(),
+        tenantId,
+        leadId: input.leadId,
+        scheduledFor: new Date(input.scheduledFor),
+        note: input.note?.trim() || null,
+        channel: input.channel?.trim() || null,
+        status: 'pending',
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+
+    return toCrmReminder(reminder);
+  } catch {
+    return null;
+  }
+}
+
+export async function updateReminderForTenant(
+  tenantId: string,
+  reminderId: string,
+  input: UpdateReminderInput
+): Promise<CrmReminder | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  const data: Record<string, unknown> = { updatedAt: new Date() };
+
+  if (input.scheduledFor !== undefined) data.scheduledFor = new Date(input.scheduledFor);
+  if (input.note !== undefined) data.note = input.note?.trim() || null;
+  if (input.channel !== undefined) data.channel = input.channel?.trim() || null;
+  if (input.status !== undefined) data.status = input.status;
+  if (input.snoozedUntil !== undefined) data.snoozedUntil = input.snoozedUntil ? new Date(input.snoozedUntil) : null;
+
+  try {
+    const existing = await prisma.reminder.findFirst({
+      where: { id: reminderId, tenantId },
+      select: { id: true },
+    });
+    if (!existing) return null;
+
+    const updated = await prisma.reminder.update({
+      where: { id: reminderId },
+      data,
+    });
+    return toCrmReminder(updated);
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteReminderForTenant(
+  tenantId: string,
+  reminderId: string
+): Promise<boolean> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return false;
+
+  try {
+    const existing = await prisma.reminder.findFirst({
+      where: { id: reminderId, tenantId },
+      select: { id: true },
+    });
+    if (!existing) return false;
+
+    await prisma.reminder.delete({ where: { id: reminderId } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function listRemindersForTenant(
+  tenantId: string,
+  query: CrmReminderListQuery = {}
+): Promise<CrmReminder[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+
+  const take = Math.min(Math.max(query.limit ?? 50, 1), 200);
+  const skip = Math.max(query.offset ?? 0, 0);
+
+  try {
+    const reminders = await prisma.reminder.findMany({
+      where: {
+        tenantId,
+        ...(query.leadId ? { leadId: query.leadId } : {}),
+        ...(query.status ? { status: query.status } : {}),
+      },
+      orderBy: { scheduledFor: 'asc' },
+      take,
+      skip,
+    });
+    return reminders.map(toCrmReminder);
+  } catch {
+    return [];
+  }
+}
+
+export async function getReminderByIdForTenant(
+  tenantId: string,
+  reminderId: string
+): Promise<CrmReminder | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const reminder = await prisma.reminder.findFirst({
+      where: { id: reminderId, tenantId },
+    });
+    return reminder ? toCrmReminder(reminder) : null;
+  } catch {
+    return null;
+  }
+}
+
+// ===========================================================================
+// MessageTemplate CRUD
+// ===========================================================================
+
+function toCrmMessageTemplate(record: {
+  id: string;
+  tenantId: string;
+  name: string;
+  category: string;
+  channel: string;
+  subject: string | null;
+  body: string;
+  description: string;
+  isFavorite: boolean;
+  useCount: number;
+  createdBy: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}): CrmMessageTemplate {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    name: record.name,
+    category: record.category as CrmMessageTemplate['category'],
+    channel: record.channel as CrmMessageTemplate['channel'],
+    subject: record.subject,
+    body: record.body,
+    description: record.description,
+    isFavorite: record.isFavorite,
+    useCount: record.useCount,
+    createdBy: record.createdBy,
+    createdAt: toIsoString(record.createdAt),
+    updatedAt: toIsoString(record.updatedAt),
+  };
+}
+
+export interface CreateMessageTemplateInput {
+  name: string;
+  category: string;
+  channel: string;
+  subject?: string | null;
+  body: string;
+  description?: string;
+  createdBy?: string | null;
+}
+
+export interface UpdateMessageTemplateInput {
+  name?: string;
+  category?: string;
+  channel?: string;
+  subject?: string | null;
+  body?: string;
+  description?: string;
+  isFavorite?: boolean;
+}
+
+export async function createMessageTemplateForTenant(
+  tenantId: string,
+  input: CreateMessageTemplateInput
+): Promise<CrmMessageTemplate | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  const name = input.name?.trim();
+  const body = input.body?.trim();
+  if (!name || !body || !input.category || !input.channel) return null;
+
+  try {
+    const now = new Date();
+    const template = await prisma.messageTemplate.create({
+      data: {
+        id: randomUUID(),
+        tenantId,
+        name,
+        category: input.category.trim(),
+        channel: input.channel.trim(),
+        subject: input.subject?.trim() || null,
+        body,
+        description: input.description?.trim() || '',
+        isFavorite: false,
+        useCount: 0,
+        createdBy: input.createdBy?.trim() || null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+    return toCrmMessageTemplate(template);
+  } catch {
+    return null;
+  }
+}
+
+export async function updateMessageTemplateForTenant(
+  tenantId: string,
+  templateId: string,
+  input: UpdateMessageTemplateInput
+): Promise<CrmMessageTemplate | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  const data: Record<string, unknown> = { updatedAt: new Date() };
+
+  if (input.name !== undefined) data.name = input.name.trim();
+  if (input.category !== undefined) data.category = input.category.trim();
+  if (input.channel !== undefined) data.channel = input.channel.trim();
+  if (input.subject !== undefined) data.subject = input.subject?.trim() || null;
+  if (input.body !== undefined) data.body = input.body.trim();
+  if (input.description !== undefined) data.description = input.description.trim();
+  if (input.isFavorite !== undefined) data.isFavorite = input.isFavorite;
+
+  try {
+    const existing = await prisma.messageTemplate.findFirst({
+      where: { id: templateId, tenantId },
+      select: { id: true },
+    });
+    if (!existing) return null;
+
+    const updated = await prisma.messageTemplate.update({
+      where: { id: templateId },
+      data,
+    });
+    return toCrmMessageTemplate(updated);
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteMessageTemplateForTenant(
+  tenantId: string,
+  templateId: string
+): Promise<boolean> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return false;
+
+  try {
+    const existing = await prisma.messageTemplate.findFirst({
+      where: { id: templateId, tenantId },
+      select: { id: true },
+    });
+    if (!existing) return false;
+
+    await prisma.messageTemplate.delete({ where: { id: templateId } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function listMessageTemplatesForTenant(
+  tenantId: string,
+  query: CrmMessageTemplateListQuery = {}
+): Promise<CrmMessageTemplate[]> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return [];
+
+  const take = Math.min(Math.max(query.limit ?? 100, 1), 200);
+  const skip = Math.max(query.offset ?? 0, 0);
+
+  try {
+    const templates = await prisma.messageTemplate.findMany({
+      where: {
+        tenantId,
+        ...(query.category ? { category: query.category } : {}),
+        ...(query.channel ? { channel: query.channel } : {}),
+      },
+      orderBy: [{ isFavorite: 'desc' }, { useCount: 'desc' }, { createdAt: 'desc' }],
+      take,
+      skip,
+    });
+    return templates.map(toCrmMessageTemplate);
+  } catch {
+    return [];
+  }
+}
+
+export async function getMessageTemplateByIdForTenant(
+  tenantId: string,
+  templateId: string
+): Promise<CrmMessageTemplate | null> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return null;
+
+  try {
+    const template = await prisma.messageTemplate.findFirst({
+      where: { id: templateId, tenantId },
+    });
+    return template ? toCrmMessageTemplate(template) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function incrementTemplateUseCount(
+  tenantId: string,
+  templateId: string
+): Promise<void> {
+  const prisma = await getPrismaClient();
+  if (!prisma) return;
+
+  try {
+    await prisma.messageTemplate.updateMany({
+      where: { id: templateId, tenantId },
+      data: { useCount: { increment: 1 }, updatedAt: new Date() },
+    });
+  } catch {
+    // Non-critical — fire and forget
   }
 }

@@ -143,6 +143,11 @@
 - [x] Lead Profile Modal Round 2 Polish: leadType editability (full-stack DB→API→workspace→modal), auto-classification of legacy types, color-coded lead type badges, last-contact clickable badge with color-matched hover, delete button alignment. (Completed 2026-02-24, session 17.)
 - [x] Remove EscalationBanner from modal (aggressive, no actionable resolution). Component retained for future use. (Completed 2026-02-24, session 17.)
 - [x] Remove DuplicateWarning from modal (no merge flow). Component retained for future use. (Completed 2026-02-24, session 17.)
+- [x] Communications Hub Phase 1 (UI Redesign) — `CommunicationsHub.tsx` replacing toggle-card layout with unified timeline, channel filters, compose bar, integration status. LeadProfileModal Communication tab simplified. (Completed 2026-02-27, session 20.)
+- [x] Communications Hub Phase 4 (Custom Templates CRUD) — Prisma `MessageTemplate` model + migration, 6 DB CRUD helpers, 2 API route files, `TemplateLibrary` rewrite with create/edit/delete/favorite/merge-field-picker. (Completed 2026-02-27, session 20.)
+- [x] Communications Hub Phase 5 (AI Draft Enhancement) — Multi-draft generation, template-to-draft pipeline, communication history context, SMS-specific prompts, `AiDraftComposer` rewrite with multi-draft tabs. (Completed 2026-02-27, session 20.)
+- [ ] Communications Hub Phase 2 (Google OAuth Activation) — Backend fully built. Needs env vars: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `INTEGRATION_ENCRYPTION_KEY`. Then add "Connect Google" prompt in CommunicationsHub + route AI drafts through GmailComposer.
+- [ ] Communications Hub Phase 3 (Twilio Integration) — Needs Twilio account + env vars. Build: twilio package code, SMS/voice API routes, SmsComposer + CallLogger components, webhook handlers.
 - [ ] Build duplicate lead merge/resolution flow — DuplicateWarning component exists, re-enable in modal when merge UX is built.
 - [ ] Build actionable escalation resolution flow — EscalationBanner component exists, re-enable when it provides actionable steps beyond "X days overdue."
 
@@ -246,6 +251,18 @@
 - [ ] Implement AI content generation pipeline for website onboarding.
 - [ ] Implement CRM next-best-action service.
 - [ ] Add AI result feedback loop and quality scoring.
+
+## Phase 10: AI Copilot (CRM-Wide Assistant)
+- [ ] Design AI Copilot conversation persistence model (per-user message history, context window management, tenant-scoped storage).
+- [ ] Build context assembly layer — dynamically pull relevant leads/contacts/activities/pipeline state into prompt based on user's current page and query.
+- [ ] Build streaming chat UI — persistent floating panel or slide-over accessible from any CRM page, with message history and typing indicators.
+- [ ] Build action execution bridge — Copilot can trigger existing CRM actions (set reminder, draft message, schedule showing, send listing, update lead status) through structured tool-use patterns.
+- [ ] Build proactive suggestion engine — Copilot surfaces unprompted recommendations ("You haven't contacted Sarah in 12 days — she was actively browsing last week") based on lead signals and user activity patterns.
+- [ ] Build user preference/memory layer — learns agent workflow patterns over time (preferred communication channels, follow-up cadence, working hours) to personalize suggestions.
+- [ ] Integrate with existing `packages/ai` infrastructure (prompt registry, LLM client, orchestration modules) — Copilot consumes the same next-action, lead-intelligence, message-drafting, and escalation engines already built.
+- [ ] Add Google Calendar integration (OAuth consent flow for calendar read/write scope, real-time reminder sync, availability-aware scheduling suggestions).
+- **LLM**: 3rd-party model (Claude Sonnet 4.6 via Anthropic API) — not a custom-trained model. All prompts versioned in `packages/ai` prompt registry.
+- **Dependencies**: Requires CRM Lead Modal polish completion, existing AI module stabilization, and Google OAuth integration.
 
 ## Business / GTM
 - [x] Define plan matrix (Starter/Growth/Pro/Team). (Completed 2026-02-20 in `.brain/PRODUCT_SPEC.md` section `5.1` with canonical control-plane plan mapping, pricing targets, and commercial constraints.)

@@ -836,3 +836,29 @@
 ### D-195: Urgency badges use subtle tinted backgrounds instead of solid colors
 **Decision**: Replace solid-color urgency badge backgrounds (#dc2626 red, #d97706 amber, #2563eb blue) with subtle tinted variants (light background + dark text + border). Overdue = soft red, Today = warm amber, Soon = gentle green, Scheduled = neutral. Dark mode overrides with rgba() translucent tints.
 **Reason**: The solid-color badges looked out of place in the stone-neutral design system. Subtle tinted badges are consistent with the overall refined aesthetic while still conveying urgency through color coding.
+
+## 2026-02-27
+
+### D-196: CommunicationsHub replaces toggle-card layout in LeadProfileModal Communication tab
+**Decision**: Create a dedicated `CommunicationsHub.tsx` component that absorbs 5 state variables from LeadProfileModal and presents a unified timeline + channel filters + compose bar, replacing the previous toggle-card layout with individual show/hide buttons for each tool.
+**Reason**: The toggle-card approach (show templates / show AI composer / show Gmail) was disjointed and required users to manage multiple open/close states. A hub pattern gives a cohesive communication center.
+
+### D-197: Custom templates use Prisma MessageTemplate model merged with built-in templates
+**Decision**: Store custom templates in a new `MessageTemplate` Prisma model and merge them with the 9 built-in templates at render time via `mergeTemplates()`. Custom templates appear first, sorted by favorites then use count.
+**Reason**: Allows agents to create their own templates while preserving the curated built-in set. The merge approach avoids duplicating built-ins into the database.
+
+### D-198: AI multi-draft generates variations by calling draftMessage with different tones
+**Decision**: `draftMultipleMessages()` generates up to 3 draft variations by calling the existing `draftMessage()` function with different tone presets (professional, friendly, casual) in parallel, rather than using a single complex prompt for multiple outputs.
+**Reason**: Reusing the existing single-draft function with different tones is simpler, more predictable, and leverages the already-tested prompt pipeline. Each variation is independently coherent.
+
+### D-199: AI draft-message route extracts communication history from Activity metadataJson
+**Decision**: The `/api/ai/draft-message` route now filters activities by COMMUNICATION_ACTIVITY_TYPES, parses `metadataJson` for email snippets, and passes up to 5 recent communication summaries to the AI prompt context.
+**Reason**: Context-aware drafting produces more relevant messages. Agents previously got generic drafts with no awareness of prior conversation threads.
+
+### D-200: Template-to-draft pipeline uses AI personalization with lower temperature
+**Decision**: `draftFromTemplate()` takes a template body as a base and uses AI (temperature 0.6) to personalize it with lead context, contact name, and property interest, rather than simply doing find/replace on merge fields.
+**Reason**: AI personalization produces more natural-sounding messages than mechanical merge field substitution, while the lower temperature keeps the output close to the original template intent.
+
+### D-201: CommunicationsHub smart routing pattern for AI drafts to GmailComposer
+**Decision**: When AI drafts or templates produce content for email, the hub sets `draftForEmail` state then switches `activeComposer` to 'email', pre-filling GmailComposer's `initialBody` and `initialSubject` props.
+**Reason**: Creates a seamless workflow where AI-generated content flows directly into the real email composer, avoiding the previous mailto: fallback or clipboard-copy pattern when Gmail is connected.

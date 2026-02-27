@@ -13,6 +13,19 @@ interface NotificationCenterProps {
 
 function formatRelativeTime(timestamp: string): string {
   const diff = Date.now() - new Date(timestamp).getTime();
+
+  // Future timestamps
+  if (diff < 0) {
+    const absDiff = Math.abs(diff);
+    const mins = Math.floor(absDiff / 60000);
+    if (mins < 1) return 'Now';
+    if (mins < 60) return `in ${mins}m`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `in ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `in ${days}d`;
+  }
+
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return 'Just now';
   if (mins < 60) return `${mins}m ago`;
@@ -24,18 +37,20 @@ function formatRelativeTime(timestamp: string): string {
 
 const CATEGORY_CONFIG = {
   overdue: { label: 'Overdue', color: '#ef4444', icon: '!' },
+  reminder: { label: 'Reminders', color: '#d97706', icon: '⏰' },
   activity: { label: 'Activity', color: 'var(--crm-accent)', icon: '↻' },
   milestone: { label: 'Milestone', color: '#2d6a4f', icon: '★' },
 } as const;
 
+const CATEGORY_ORDER: (keyof typeof CATEGORY_CONFIG)[] = ['overdue', 'reminder', 'activity', 'milestone'];
+
 export function NotificationCenter({ open, onClose, notifications, onOpenLead, onDismiss, onClearAll }: NotificationCenterProps) {
   if (!open) return null;
 
-  const grouped = {
-    overdue: notifications.filter((n) => n.category === 'overdue'),
-    activity: notifications.filter((n) => n.category === 'activity'),
-    milestone: notifications.filter((n) => n.category === 'milestone'),
-  };
+  const grouped: Record<string, CrmNotification[]> = {};
+  for (const cat of CATEGORY_ORDER) {
+    grouped[cat] = notifications.filter((n) => n.category === cat);
+  }
 
   return (
     <>
@@ -61,9 +76,9 @@ export function NotificationCenter({ open, onClose, notifications, onOpenLead, o
           {notifications.length === 0 ? (
             <div className="crm-notif-panel__empty">No notifications</div>
           ) : (
-            (['overdue', 'activity', 'milestone'] as const).map((cat) => {
+            CATEGORY_ORDER.map((cat) => {
               const items = grouped[cat];
-              if (items.length === 0) return null;
+              if (!items || items.length === 0) return null;
               const config = CATEGORY_CONFIG[cat];
               return (
                 <div key={cat} className="crm-notif-panel__section">
@@ -87,7 +102,10 @@ export function NotificationCenter({ open, onClose, notifications, onOpenLead, o
                         </span>
                         <div className="crm-notif-panel__item-content">
                           <span className="crm-notif-panel__item-title">{notif.title}</span>
-                          <span className="crm-notif-panel__item-time">{formatRelativeTime(notif.timestamp)}</span>
+                          <span className="crm-notif-panel__item-time">
+                            {notif.detail && <span className="crm-notif-panel__item-detail">{notif.detail}</span>}
+                            {formatRelativeTime(notif.timestamp)}
+                          </span>
                         </div>
                       </button>
                       {onDismiss && (

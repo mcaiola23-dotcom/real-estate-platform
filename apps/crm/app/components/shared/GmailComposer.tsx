@@ -10,6 +10,7 @@ interface GmailComposerProps {
   googleConnected: boolean;
   replyToMessageId?: string;
   initialSubject?: string;
+  initialBody?: string;
   onClose: () => void;
   onSent: () => void;
 }
@@ -22,13 +23,14 @@ export function GmailComposer({
   googleConnected,
   replyToMessageId,
   initialSubject,
+  initialBody,
   onClose,
   onSent,
 }: GmailComposerProps) {
   const [subject, setSubject] = useState(
     initialSubject ?? (propertyAddress ? `Re: ${propertyAddress}` : '')
   );
-  const [body, setBody] = useState('');
+  const [body, setBody] = useState(initialBody ?? '');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
