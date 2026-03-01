@@ -49,6 +49,7 @@ Based on the comprehensive review from both a Luxury Real Estate Professional an
   - [ ] `RealEstateAgent` and `Organization` schema on the homepage/about pages (include `knowsAbout`, `areaServed`, social profiles, and partner affiliations like Forbes).
   - [ ] `RealEstateListing` or `Product` schema on every property detail page (must include price, sqft, bed/bath, high-res image URLs).
   - [ ] `FAQPage` schema on town guides and buyer/seller guide pages to feed LLM Q&A features directly.
+    > **[Opus 4.6 Review — Approved ✅]:** Excellent recommendation. `FAQPage` schema directly triggers expandable Q&A rich snippets in SERPs, which dramatically increase visual real estate and CTR. Ensure FAQ content is CMS-driven (Sanity) so each tenant agent can customize for their market.
 - [ ] **Entity-Based Content Architecture:** Shift from keyword-stuffing to entity relationships. When writing about "Greenwich Real Estate," explicitly connect related entities (e.g., specific neighborhoods like Belle Haven, local schools, architectural styles).
 - [ ] **Conversational Semantic HTML:** Structure `H2` and `H3` tags as natural language questions that buyers/sellers ask (e.g., "What are the best waterfront neighborhoods in Westport?") and answer them concisely in the immediately following paragraph.
 
@@ -66,6 +67,7 @@ Based on the comprehensive review from both a Luxury Real Estate Professional an
   - [ ] Auto-updating market trends (Avg Days on Market, Median Sale Price).
   - [ ] API integrations for walkability scores and school district ratings.
   - [ ] Unique, lifestyle-focused descriptions for each micro-neighborhood.
+  > **[Opus 4.6 Review — Approved ✅]:** This is the #1 long-term SEO moat in the entire plan. Auto-generating "Westport Real Estate: Median Price $X, DOM Y, Z Listings" with fresh data makes this site the source-of-truth that both Google and LLMs will cite. Highest-priority content architecture item.
 - [ ] **IDX/MLS Native Routing:** Avoid traditional iframe-based IDX solutions that block search engines. Ensure your IDX API pulls data server-side and renders it as clean, native HTML on your domain (e.g., `/properties/123-main-st-westport`) so Googlebot indexes every single property as your own page.
 
 ### E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness)
@@ -91,6 +93,7 @@ To truly dominate the luxury market and separate this SaaS product from standard
   - [ ] Historical price-per-square-foot trend graphs for specific micro-neighborhoods.
   - [ ] Absorption rate (months of inventory supply) for specific luxury price tiers.
   - [ ] LLMs love quoting statistics. If you are the only site publishing that "Westport homes over $3M are selling 14% faster this quarter," you get the citation.
+  > **[Opus 4.6 Review — Approved ✅]:** Best "moat" idea in the plan. Commodity MLS data is table stakes; unique analytical/derivative data creates citation authority that competitors can't replicate. This is what earns LLM citations.
 - [ ] **Structured Market Reports:** Publish quarterly "State of the Luxury Market" reports using markdown tables and structured lists. LLMs process tables exceptionally well and often regurgitate them directly during summarization tasks for users.
 
 ### Advanced Crawl Optimization
@@ -107,11 +110,17 @@ To truly squeeze every last drop of performance and authority out of a Next.js A
 ### Dynamic Open Graph (OG) & Twitter Cards Generation
 - [ ] **Programmatic Edge Images (`@vercel/og` or `satori`):** When someone (or an AI bot) scrapes a dynamic URL like `/towns/greenwich`, the `og:image` should not be a static, generic firm logo. Set up an edge function route (e.g., `/api/og?town=Greenwich&price=$3M`) that dynamically generates an image containing the text "Greenwich Real Estate: $3M Median" combined with a background photo. This guarantees absurdly high click-through rates (CTR) on social media, which acts as a massive secondary signal for Google.
 - [ ] **Rich Video Integration:** LLMs and Google heavily prioritize mixed media. Embed a hyper-optimized, muted, auto-playing `<video>` loop of the town/property in the hero section serving an `.mp4` or `.webm`, ensuring it does not block the First Contentful Paint. Provide a VTT track for accessibility (transcribing any context).
+  > **[Opus 4.6 Review — Updated ⚠️]:** If using a stock video (e.g., Adobe Stock) in the hero:
+  > - **Mobile devices:** Serve a static hero **image** instead of video. Video on mobile drains battery, uses excessive data, and tanks LCP. Use a `<picture>` element or media query to swap.
+  > - **Desktop video:** Use a **poster image** that loads instantly (`<video poster="/hero-poster.webp">`), then lazy-swap the actual video *after* LCP fires. This preserves the cinematic effect without hurting Core Web Vitals.
+  > - **Image attributes:** Always set `priority` and `fetchPriority="high"` on the hero image/poster to tell the browser to load it first.
+  > - **Google's crawler cannot watch video** — it only reads surrounding HTML, alt text, and structured data. The visual impact benefits users, not crawlers.
 
 ### Accessibility (A11y) as an SEO Multiplier
 AI bots process web content much like screen readers do. If your site is perfectly structured for the blind, it is perfectly structured for ChatGPT.
 - [ ] **ARIA Landmarks & Roles:** Ensure complex interactive modules (like the dynamic map search or mortgage calculator) have flawless `aria-label`, `aria-hidden`, and `role="region"` attributes. If an LLM cannot logically "tab" through the DOM of the search map data, it will classify the data as inaccessible/unstructured.
 - [ ] **Data Table Semantic Handoffs:** If you display statistical charts (e.g., Line charts of price trends), include a visually hidden `<table className="sr-only">` that contains the exact tabular data powering the chart. The AI cannot "read" a Canvas/SVG chart image, but it will instantly consume a semantic HTML table hidden behind it.
+  > **[Opus 4.6 Review — Approved ✅]:** Clever and low-effort technique. Any chart or visualization should have a companion `sr-only` semantic table. This ensures screen readers, AI crawlers, and LLMs can all consume the underlying data. High impact, minimal implementation cost.
 
 ### Continuous Content Invalidation
 - [ ] **Database-Triggered ISR (On-Demand Revalidation):** Rather than standard timed revalidation (e.g., every 60 seconds), write a webhook handler in Next.js (`/api/revalidate`) that listens to your backend database (Prisma/Supabase). The absolute millisecond a property drops in price or goes pending, the backend fires the webhook, instantly invalidating the cache for that specific URL. Googlebot is alerted immediately via sitemap ping. Your data is literally never out of sync, establishing you as the ground-truth authority faster than Zillow's bulk processing windows.
@@ -122,10 +131,14 @@ What you are seeing on Twitter (X) revolves around the fact that LLMs struggle t
 
 ### The `llms.txt` Protocol
 - [ ] **Establish `/.well-known/llms.txt`:** Implement the emerging `/llms.txt` standard. This is the equivalent of a `robots.txt` but exclusively for AI crawlers. It should contain a plain markdown directory pointing directly to your AI-optimized endpoints (e.g., "Market Data: /api/llm/market.md", "About Agent: /api/llm/agent.md").
+  > **[Opus 4.6 Review — Approved ✅]:** Cheap to implement, forward-looking, and the *correct* way to direct AI crawlers to structured content. This is the proper mechanism (vs. User-Agent cloaking) to serve AI-friendly formats. Prioritize over more exotic approaches.
 
 ### AI-Native Markdown Content Endpoints
-- [ ] **Serve "Naked" Content via Content Negotiation:** Use Next.js Middleware to check the `User-Agent` HTTP header. If the incoming request is `GPTBot`, `PerplexityBot`, or `ClaudeBot`, do NOT render the heavy React UI. Instead, instantly return a purely semantic, naked Markdown (`.md`) representation of the page.
-  - *Example:* If an AI scrapes `/properties/123-main-st`, return a markdown file with `## 123 Main St, Westport` followed by bullet points of the price, square footage, and property description. The AI parses markdown flawlessly and uses it directly in conversational answers, heavily favoring it over scraping HTML.
+> **[Opus 4.6 Review — Revised ⚠️]:** The original recommendation below suggested serving different content to bots vs. users on the *same URL* via User-Agent detection. This is technically **cloaking**, which Google penalizes. The revised approach below uses **separate, dedicated URLs** for markdown content, which is compliant and equally effective.
+
+- [ ] **Dedicated Markdown Content Endpoints (Separate URLs):** Instead of checking `User-Agent` headers and serving different content on the same URL, create dedicated markdown endpoints at separate paths (e.g., `/api/content/properties/123-main-st.md`, `/api/content/towns/greenwich.md`). Reference these alternate endpoints in your `llms.txt` file so AI crawlers discover them organically.
+  - *Example:* An AI or Custom GPT following your `llms.txt` directory finds `/api/content/properties/123-main-st.md` and retrieves a clean markdown file with `## 123 Main St, Westport` followed by bullet points of the price, square footage, and property description. The AI parses this flawlessly while your primary HTML pages remain consistent for all visitors.
+  - This approach gives the best of both worlds: AI crawlers get clean, structured data from dedicated endpoints, Google sees consistent content on your main URLs, and you stay fully compliant with search engine policies.
 - [ ] **Expose RAG-Ready APIs for Custom GPTs:** If agents want to build their own "Custom GPTs" or AI chatbots, provide them with an authenticated API endpoint that returns JSON structured perfectly for Retrieval-Augmented Generation (RAG). This allows their custom AI assistants to query their live inventory instantly without ever visiting the website.
 
 ## 7. The Unattainable Apex (AI Native Search & Deep Systems)
@@ -143,7 +156,57 @@ Standard real estate search filters (Beds, Baths, Price) require the user to do 
 
 ### Proactive Crawl Notification (IndexNow)
 - [ ] **The `IndexNow` Protocol Implementation:** Don't wait around for Bing, Yandex, or Seznam to hopefully discover your updated sitemap. Implement the `IndexNow` API. The exact second a listing's price drops or a property goes under contract, your backend instantly fires a programmatic ping to the IndexNow endpoint containing the URL. Within milliseconds, the major search engines are notified. You are officially faster than Zillow.
+  > **[Opus 4.6 Review — Approved ✅]:** Trivially easy to implement (single HTTP POST per URL change) and provides measurable indexing speed improvements. Note: Google does *not* support IndexNow — they use their own push mechanisms via Search Console API. IndexNow benefits Bing, Yandex, and Seznam. Should be higher priority than many items above it (recommend P2-P3).
 
 ### Next-Gen Asset Injection
 - [ ] **Speculation Rules API (Literal Instant Loading):** Go beyond standard Next.js `<Link prefetch>`. Implement the Chrome `Speculation Rules API`. Code an algorithm that tracks the user's mouse trajectory. If their cursor moves towards the "View Listing" button and hovers for 50ms, the browser preemptively begins rendering the destination page in the background *before they even click*. When they finally click, the page loads in 0.0 seconds. Google Chrome records this instantaneous load time and passes that data directly into its ranking algorithm.
+  > **[Opus 4.6 Review — Clarification ⚠️]:** The Speculation Rules API *does* genuinely make navigation feel instant by prerendering likely targets — great UX. However, the SEO claim is overstated: CrUX (Chrome User Experience Report) measures the *destination* page's load performance, not the originating page's speculation accuracy. Prerendered pages don't "trick" the ranking algorithm. The real benefit is improved user engagement metrics (lower bounce rate, higher pages/session) which are indirect ranking signals. **Practical recommendation:** Next.js `<Link>` with automatic prefetch already provides ~80% of this benefit. For the remaining 20%, implement `<script type="speculationrules">` for top navigation targets (town pages, featured listings). Skip the mouse-trajectory over-engineering — it adds complexity with minimal incremental gain.
 - [ ] **Programmatic EXIF Metadata Injection:** For property photos, don't just compress them. Use a library (like `exiftool` on the server) to programmatically inject EXIF metadata into the binary header of every single `.webp` or `.jpg` image before it is served to the client. Inject the agent's name, the property's GPS coordinates, and copyright information. AI Image models (like Google Lens) read this hidden binary data to establish geographic authority and image ownership for the agent.
+
+---
+
+## 8. Google Business Profile Optimization (Local SEO Foundation)
+*[Section added by Opus 4.6]*
+
+For local real estate SEO, Google Business Profile (GBP) is arguably more important than the website itself. When someone searches "real estate agent Westport CT," the **Local Pack** (map + 3 listings) appears *above* organic results. Without Local Pack presence, organic rankings alone leave significant traffic on the table.
+
+- [ ] **GBP Listing Optimization:** Fully optimize the GBP listing with all relevant categories: "Real Estate Agent," "Real Estate Agency," "Real Estate Consultant." Include complete business hours, service descriptions, and high-quality photos.
+- [ ] **Service Area Configuration:** Service areas must match the `areaServed` property in the site's JSON-LD schema (Greenwich, Stamford, Darien, New Canaan, Westport, Fairfield, Norwalk, Wilton, Ridgefield) for consistency signals.
+- [ ] **Weekly GBP Posts:** Google treats GBP posts as freshness signals. Automate weekly posts: new listings, market stats, open house announcements, and community spotlights.
+- [ ] **Review Acquisition Strategy:** Reviews are the #1 and #2 local ranking factors (star rating and review count). Implement a post-closing automated email drip requesting a Google review. Target: 50+ reviews with 4.8+ average.
+- [ ] **GBP Q&A Seeding:** Pre-populate the Q&A section with common buyer/seller questions and answers (e.g., "What towns do you serve?", "Do you specialize in luxury properties?"). These appear directly in search results and get cited by LLMs.
+- [ ] **Programmatic Review Integration:** Pull GBP reviews into the website's testimonials/social proof section and mark them up with `Review` schema. This creates a feedback loop between GBP authority and website E-E-A-T.
+
+---
+
+## 9. Backlink Acquisition Strategy
+*[Section added by Opus 4.6]*
+
+The plan's on-site optimization is comprehensive, but off-site authority (backlinks) remains a top-3 Google ranking factor. For a luxury real estate site, the following backlink sources carry the highest domain authority and topical relevance.
+
+### High-Value Link Targets
+- [ ] **Local News & Media Outlets:** Pitch market commentary and expert quotes to CT Post, Stamford Advocate, Greenwich Time, and Hartford Courant. "Local expert says Fairfield County luxury market is up 12%" → backlink to market report page.
+- [ ] **Municipal & Civic Sites:** Volunteer for town planning boards, sponsor local charity events or school fundraisers. `.gov` and `.org` backlinks carry outsized domain authority.
+- [ ] **Luxury/Lifestyle Publications:** Pursue guest columns or expert features in Mansion Global, Robb Report, Connecticut Cottages & Gardens, and CT Magazine.
+- [ ] **Brokerage Website:** Ensure the Higgins Group website has a prominent agent profile page linking to this domain. Brokerage sites have established domain history and authority that passes via the link.
+- [ ] **Real Estate Portal Profiles:** Maintain optimized agent profiles on Zillow, Realtor.com, and Homes.com with consistent NAP (Name, Address, Phone) data linking back to the website.
+
+### NAP Consistency
+- [ ] **Directory Audit:** Ensure identical Name, Address, and Phone across all online directories (Yelp, Zillow, Realtor.com, local chambers of commerce, BBB, etc.). Inconsistent NAP data confuses Google's local ranking algorithm.
+- [ ] **Structured Citation Building:** Submit to high-quality local directories and real estate-specific directories. Prioritize quality over quantity.
+
+### Content-Driven Link Acquisition
+- [ ] **Linkable Assets:** The derivative data displays and quarterly market reports from Section 4 double as natural link magnets — local journalists and bloggers cite unique statistics. Promote these reports via email outreach to local press contacts.
+- [ ] **HARO / Featured Expert Pitching:** Register on Help A Reporter Out (HARO) and similar platforms. Respond to real estate and housing market queries to earn backlinks from national publications.
+
+---
+
+## 10. Canonical URL Strategy
+*[Section added by Opus 4.6]*
+
+Real estate sites are notorious for URL duplication. The home-search page alone can generate thousands of unique filter permutation URLs. Without proper canonicalization, Google wastes crawl budget on duplicates and may flag thin content.
+
+- [ ] **Search Result Page Canonicalization:** Add `rel="canonical"` tags on search/filter pages pointing to a normalized URL (consistent parameter order, default values stripped). This prevents Google from indexing thousands of near-duplicate filter URLs.
+- [ ] **`noindex` on Filter Permutations:** Apply `<meta name="robots" content="noindex, follow">` to search filter result pages. Let Google index only the definitive content: town pages, individual listing pages, and blog posts — not filtered search grids.
+- [ ] **Listing Page as Canonical Source:** Every individual listing must have a single canonical URL (e.g., `/properties/123-main-st-westport`). If the same property appears on search results, town page sidebars, or saved homes, all references should use `rel="canonical"` pointing to the definitive listing page.
+- [ ] **Parameter Order Normalization:** Implement middleware or utility function that normalizes URL query parameters into a consistent alphabetical order (e.g., `?baths=2&beds=3&towns=westport` not `?towns=westport&beds=3&baths=2`) to prevent Google from treating reordered parameters as separate pages.
