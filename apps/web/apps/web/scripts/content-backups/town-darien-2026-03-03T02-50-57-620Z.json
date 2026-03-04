@@ -1,0 +1,90 @@
+{
+  "_createdAt": "2026-01-06T17:39:33Z",
+  "_id": "4f8ea013-0779-499d-ba9f-39c820ef3d56",
+  "_rev": "n1R3vnrXP7D7ze4juabntr",
+  "_type": "town",
+  "_updatedAt": "2026-02-11T17:59:41Z",
+  "center": {
+    "_type": "geopoint",
+    "lat": 41.0785,
+    "lng": -73.4687
+  },
+  "faqs": [
+    {
+      "_key": "9ccd8c7c55bd",
+      "_ref": "3b2e25a4-5e26-4c98-999a-eb49d15a2acc",
+      "_type": "reference"
+    },
+    {
+      "_key": "7e8c96a38f13",
+      "_ref": "91416d8b-8441-4699-908c-9a754a0a3e5f",
+      "_type": "reference"
+    },
+    {
+      "_key": "2d8ce554dd7a",
+      "_ref": "74800cdc-904d-4f0e-9e71-80f8f77e3cfb",
+      "_type": "reference"
+    }
+  ],
+  "highlights": [
+    "Walkable downtown village with shops, restaurants, and daily essentials close to home",
+    "Metro-North commuter rail access on the New Haven Line for convenient NYC commuting",
+    "Coastal lifestyle with easy access to beaches, including Weed Beach and Pear Tree Point Beach",
+    "Predominantly single-family neighborhoods with a strong sense of community",
+    "A refined, quiet day-to-day rhythm that stays practical for commuters",
+    "Seasonal shoreline routines - beach days, waterfront parks, and outdoor recreation"
+  ],
+  "lastReviewedAt": "2026-01-06T17:39:00.000Z",
+  "lifestyle": "Darien’s lifestyle is defined by simplicity and coastal access. The town is compact, so the day-to-day is efficient—most residents are a short drive (or walk, depending on neighborhood) from downtown, the beach, and Metro-North.\n\nIn the warmer months, beach routines become part of daily life in a way that feels very “Connecticut shoreline.” Weed Beach is a major local landmark and—per the Town—includes tennis and paddle courts, a clubhouse, a playground, picnic areas, and a seasonal concession, in addition to the sandy beach and swimming area.\n\nFrom my perspective, Darien is a strong fit for clients who want a quieter home base with real community energy, not constant activity. You get the benefits of a coastal town, with the practicality of an easy commute corridor.",
+  "marketNotes": "Darien’s housing stock is predominantly single-family, and the market tends to reward location and lifestyle fit—especially proximity to the train, downtown, and the shoreline.\n\nWhen I advise buyers here, I focus on two things: how the neighborhood supports the daily routine you actually want, and how the property will hold up as a long-term decision. My finance background helps me look at pricing and tradeoffs clearly, but the on-the-ground details matter just as much—street feel, train access, and what you’ll actually use day-to-day.\n\nFor sellers, Darien is a market where presentation and positioning matter. The best results typically come from a clean strategy: price with discipline, tell the story of the lifestyle, and make it easy for buyers to understand why the home fits Darien.",
+  "name": "Darien",
+  "overviewLong": [
+    {
+      "_key": "7840a0ef6198",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "b0bb96b91257",
+          "_type": "span",
+          "marks": [],
+          "text": "Darien has a very specific kind of appeal: coastal Connecticut living with a compact footprint and a true sense of community. The town feels residential and refined, but not isolated—most daily needs are close by, and the shoreline is a real part of the lifestyle rather than a postcard."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "03780a7c8f93",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "5f2ded9e8e56",
+          "_type": "span",
+          "marks": [],
+          "text": "What I like about Darien for many clients is how “easy” it feels once you’re here. You can get to beaches, town amenities, and the train without making everything a production. It’s a town that rewards people who value routine—morning coffee, school drop-off, an evening walk, a simple dinner plan—while still feeling special in the summer months."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "a3622365201a",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "c148ed59cb08",
+          "_type": "span",
+          "marks": [],
+          "text": "Darien isn’t trying to be everything to everyone, and that’s a strength. If you’re looking for a coastal town with a clean, quiet cadence—and you want the commute to remain realistic—Darien tends to rise to the top quickly."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "overviewShort": "Darien is a polished coastal town with a strong community feel, beaches that shape summer life, and a straightforward Metro-North commute. The town is compact, easy to learn quickly, and consistently attracts buyers who want a calm, residential setting without feeling far from New York. If you value shoreline access and a tight-knit day-to-day routine, Darien delivers.",
+  "slug": {
+    "_type": "slug",
+    "current": "darien"
+  }
+}

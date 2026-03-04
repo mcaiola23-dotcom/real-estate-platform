@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:26Z",
+  "_id": "fbcb92a8-0144-4d49-8bd3-cd2c40ad0740",
+  "_rev": "mB2cUx9aVkdRk2GqAC5DTz",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:52Z",
+  "description": [
+    {
+      "_key": "37ec9b03fda1",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "2bb4c1b0758e",
+          "_type": "span",
+          "marks": [],
+          "text": "Downtown Darien is where the town feels most connected and walkable. The atmosphere is classic Fairfield County—tree-lined streets, a refined village feel, and a pace that’s busy enough to be convenient without feeling chaotic. For many buyers, this is the part of Darien that offers the easiest day-to-day rhythm."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "8e8c46247b34",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "60b4b866099e",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate around downtown includes a mix of traditional single-family homes and newer options, with pockets of more compact living closer to the village. Depending on the street, you’ll see everything from classic colonials to renovated homes with modern layouts—often on more manageable lots than Darien’s larger, more estate-style neighborhoods."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "005f24497aa7",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "1846fa451d5a",
+          "_type": "span",
+          "marks": [],
+          "text": "Transit access is a key draw. Darien station is on the Metro-North New Haven Line, and the MTA notes there are ticket machines on the westbound platform and no ticket office on site. With CTtransit connections and quick access to Darien’s shoreline parks and beaches, downtown Darien offers a clean, efficient lifestyle with a premium Fairfield County setting."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Walkable village lifestyle with shops, restaurants, and daily errands close to home",
+    "Darien Metro-North station (New Haven Line) for commuter rail access",
+    "Easy access to Darien's shoreline parks and beaches, including Weed Beach and Pear Tree Point Beach",
+    "A charming downtown setting with a blend of convenience and coastal-town character",
+    "Strong community atmosphere with local events and neighborhood traditions"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Downtown Darien",
+  "overview": "Downtown Darien is the town’s walkable center—polished, understated, and designed for day-to-day ease. Homes nearby range from classic New England colonials on quiet side streets to newer builds and townhome-style living closer to the village. The lifestyle is defined by convenience: coffee, errands, dinner plans, and Metro-North access are all close by. For clients who want the Darien experience without feeling tucked away, downtown is the natural fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "downtown"
+  },
+  "town": {
+    "_ref": "4f8ea013-0779-499d-ba9f-39c820ef3d56",
+    "_type": "reference"
+  }
+}

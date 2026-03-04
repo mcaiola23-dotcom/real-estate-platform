@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "grasmere",
+  "townSlug": "fairfield",
+  "overview": "Grasmere is Fairfield's most walkable residential neighborhood, anchored by its proximity to the restaurants and shops along Fairfield Avenue. McKinley Elementary School serves the area's families, and Gould Manor Park provides 30-plus acres of ball fields, tennis courts, and a pond trail less than a mile from the neighborhood's center. With a Walk Score near 80 and a housing stock priced well below the Fairfield median, Grasmere draws first-time buyers and young professionals who want a suburban address without surrendering urban convenience.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Most Fairfield neighborhoods require a car. Grasmere does not. The neighborhood sits between Fairfield Avenue's commercial corridor and the Post Road, with a grid of sidewalked streets that puts coffee shops, a grocery run, and a barstool at a neighborhood restaurant within a ten-minute walk. That density of daily-life amenities is rare in a town otherwise defined by half-acre lots and two-car garages."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The housing stock is compact and varied. Cape Cods and bungalows from the 1920s through the 1950s line the residential streets, many updated with modern kitchens and open floor plans behind their original facades. Brick-front condominium buildings from the early 2000s add a townhome option that barely exists elsewhere in Fairfield. Lot sizes are small by local standards, but that compression is the point: neighbors are close, the streets are active, and the neighborhood has a rhythm that larger-lot sections of town simply lack."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "The Fairfield-Black Rock Metro-North station sits at the neighborhood's eastern edge, placing Grand Central Terminal roughly 75 to 80 minutes away on the New Haven Line. Jennings Beach is a two-mile drive south. Gould Manor Park, just north of the neighborhood, stretches across 30 acres with ball fields, pickleball and tennis courts, and a looped nature trail around a small pond. For a neighborhood often described as an entry point into the Fairfield market, Grasmere delivers a surprising amount of infrastructure."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Pricing reflects both value and velocity. The median sale price hovers near $620,000, well below the Fairfield-wide median, and homes typically move within 30 days. Buyers here are not choosing between Grasmere and Greenwich; they are choosing between renting in Stamford and owning in a walkable Fairfield neighborhood with strong public schools. That calculus keeps demand consistent even when the broader luxury market slows."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Walk Score near 80 with sidewalked streets connecting to Fairfield Avenue's restaurants, bars, and independent shops",
+    "Gould Manor Park offers 30 acres of ball fields, pickleball and tennis courts, and a nature trail with a pond",
+    "Fairfield-Black Rock Metro-North station at the neighborhood's edge provides New Haven Line service to Grand Central Terminal",
+    "Median home prices near $620,000 make Grasmere one of the most accessible neighborhoods in Fairfield",
+    "McKinley Elementary, Tomlinson Middle, and Fairfield Ludlowe High School serve the neighborhood's families"
+  ],
+  "housingCharacteristics": "Grasmere's building stock skews older and smaller than Fairfield's norm. Cape Cods, bungalows, and Colonial Revivals built between the 1920s and the 1950s make up the majority of single-family inventory, typically on lots under a quarter acre. Many have been renovated with updated kitchens, expanded second floors, and new mechanicals, but the footprints remain modest — most homes fall between 1,200 and 2,000 square feet.\n\nBrick condominium buildings from the early 2000s line portions of Grasmere Avenue and nearby streets, offering two- and three-bedroom units with garage parking and low-maintenance ownership. This townhome segment attracts downsizers, young professionals, and investors — buyer profiles that are underserved elsewhere in Fairfield. Overall, the neighborhood's housing is defined by attainability: prices sit meaningfully below the town median, and the variety of formats gives buyers flexibility that more homogeneous Fairfield neighborhoods cannot match.",
+  "marketNotes": "Grasmere is one of the fastest-moving markets in Fairfield. The median sale price sits near $620,000 — roughly half the town-wide median — and average days on market hover around 30. Well-priced listings, particularly updated capes and condominiums, attract multiple offers and often sell above asking price.\n\nThe buyer pool here differs from other Fairfield neighborhoods. First-time purchasers relocating from Stamford or Bridgeport rentals make up a significant share, drawn by the school district and the relative affordability. Investors targeting rental income also compete for condominiums and multi-family properties. Inventory is limited, and new construction is rare given the neighborhood's built-out density. When the spring market arrives, competition intensifies quickly.",
+  "locationAccess": "Grasmere sits between Fairfield Avenue to the south and the Post Road (Route 1) to the north, roughly two miles west of Fairfield's town center. The Fairfield-Black Rock Metro-North station is at the neighborhood's eastern boundary, with New Haven Line trains reaching Grand Central Terminal in approximately 75 to 80 minutes.\n\nInterstate 95 is accessible within minutes via the Kings Highway or Round Hill Road connectors. Jennings Beach is a short drive south along Fairfield Beach Road. Downtown Fairfield's shops and restaurants on the Post Road are a five-minute drive or a fifteen-minute walk east. Black Rock, Bridgeport's historic waterfront neighborhood, borders Grasmere to the west, adding additional dining and nightlife options within walking distance.",
+  "seoTitle": "Grasmere Fairfield CT Homes for Sale & Neighborhood",
+  "seoDescription": "Explore Grasmere in Fairfield, CT — a walkable neighborhood with homes near $620K. View listings and contact Matt Caiola to schedule a private showing today.",
+  "faqs": [
+    {
+      "question": "What makes Grasmere different from other Fairfield neighborhoods?",
+      "answer": "Grasmere is the most walkable neighborhood in Fairfield, with a Walk Score near 80 and direct sidewalk access to Fairfield Avenue's restaurants, bars, and shops. Unlike most Fairfield neighborhoods that require a car for daily errands, Grasmere's compact grid puts essential amenities within a ten-minute walk. It also offers the town's most attainable home prices, with a median near $620,000.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Grasmere, Fairfield CT?",
+      "answer": "The median sale price in Grasmere is approximately $620,000, making it one of the most affordable neighborhoods in Fairfield. Homes range from updated Cape Cods and bungalows in the $500,000 to $750,000 range to brick condominiums priced below $500,000. Properties typically sell within 30 days, with well-priced listings attracting multiple offers during peak selling seasons.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Which train station serves the Grasmere neighborhood?",
+      "answer": "The Fairfield-Black Rock Metro-North station sits at Grasmere's eastern edge on the New Haven Line. Trains reach Grand Central Terminal in approximately 75 to 80 minutes depending on the service. The station is walkable from most parts of the neighborhood, which eliminates the need for a parking permit — a meaningful advantage given that Fairfield's station parking lots are frequently waitlisted.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What schools serve the Grasmere neighborhood in Fairfield?",
+      "answer": "Grasmere is zoned for McKinley Elementary School, Tomlinson Middle School, and Fairfield Ludlowe High School. All three schools carry strong ratings within Fairfield's public school system, which consistently ranks among the top districts in Connecticut. The school assignment is a significant draw for families purchasing in the neighborhood.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

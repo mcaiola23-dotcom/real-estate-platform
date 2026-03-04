@@ -1,0 +1,92 @@
+{
+  "type": "neighborhood",
+  "slug": "downtown",
+  "townSlug": "greenwich",
+  "overview": "Greenwich Avenue is the spine of downtown — a mile-long stretch where Saks Fifth Avenue, Richards, Hermes, and Tiffany & Co. share the sidewalk with Elm Street Oyster House and Boxcar Cantina. This is the only truly walkable district in Greenwich, and the Bruce Museum sits just south of the Avenue near Greenwich Harbor. Condominiums and townhouses within walking distance of the Greenwich Metro-North station make up the primary housing stock.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "dg1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dg1s1",
+          "text": "Every other neighborhood in Greenwich requires a car. Downtown does not. That single fact — the ability to walk from your front door to a restaurant, a train platform, a world-class museum, and a half-dozen luxury retailers without starting an engine — makes this district fundamentally different from the rest of town. Greenwich Avenue runs north from the Post Road toward the Merritt Parkway, and the blocks on either side contain the densest concentration of commerce, dining, and culture in Fairfield County."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dg2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dg2s1",
+          "text": "The retail mix is specific. Saks Fifth Avenue anchors the southern end. Richards, the multi-brand luxury clothier that started here in 1990, occupies a flagship space that draws shoppers from across the tri-state area. Hermes, Tiffany & Co., Brooks Brothers, and Tory Burch line the Avenue alongside independent boutiques, jewelers, and galleries. The dining scene is equally layered: Elm Street Oyster House has served raw bars since the 1980s, Penang Grill brings Malaysian cuisine to Lewis Street, and Boxcar Cantina packs its patio on summer evenings. The Greenwich Library, a major civic institution, sits just off the Avenue on West Putnam."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dg3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dg3s1",
+          "text": "Housing downtown is vertical by Greenwich standards. Condominium buildings, townhouse rows, and a limited number of single-family homes on small lots make up the inventory. The condos range from one-bedroom units near $700,000 to renovated three-bedroom penthouses above $2 million. Townhouses with private garages and outdoor space trade in the $1.5 million to $3 million range. The buyer profile is distinct: empty nesters leaving larger Greenwich homes, Manhattan transplants who want to maintain a walkable lifestyle, and professionals who prioritize the three-minute walk to the train over lawn acreage."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dg4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dg4s1",
+          "text": "The Bruce Museum, recently expanded with a major renovation completed in 2023, stands at the southern gateway to the Avenue near Greenwich Harbor and Roger Sherman Baldwin Park. Its art and science exhibitions add a cultural layer that most suburban downtowns lack entirely. On Saturday mornings the Avenue fills with a specific rhythm — coffee at Meli-Melo, errands on foot, a stop at the farmers market in season. It is the closest thing to a Manhattan neighborhood that exists on the Connecticut side of the state line."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Greenwich Avenue features Saks, Richards, Hermes, Tiffany & Co., and dozens of independent boutiques",
+    "Only walkable district in Greenwich with condos and townhouses steps from dining, retail, and transit",
+    "Greenwich Metro-North station provides express service to Grand Central in approximately 47 minutes",
+    "Bruce Museum, expanded in 2023, anchors the cultural scene near Greenwich Harbor"
+  ],
+  "housingCharacteristics": "Downtown Greenwich housing is predominantly condominiums and townhouses, a sharp contrast to the single-family inventory that defines the rest of town. Condominium units range from one-bedroom apartments starting near $700,000 to spacious three-bedroom residences and penthouses above $2 million. Townhouses with attached garages, private outdoor terraces, and higher-end finishes trade between $1.5 million and $3 million. A small number of single-family homes on compact lots exist on side streets off the Avenue, typically older colonials or Victorians that have been subdivided or converted.\n\nThe housing stock tends to attract two primary buyer profiles: downsizers who are selling larger Greenwich properties and want to stay in town without the maintenance burden, and Manhattan transplants who prioritize walkability and train access over yard space. New construction downtown is rare due to limited available land, which keeps resale inventory in high demand for updated, move-in-ready units.",
+  "marketNotes": "Downtown Greenwich condominiums and townhouses trade at a pace driven by lifestyle demand rather than the land-value calculus that governs the Back Country or waterfront markets. Well-maintained units in buildings with doorman service, parking, and proximity to Greenwich Avenue sell within weeks when priced accurately. Dated units or those requiring renovation sit longer, as downtown buyers tend to prioritize convenience and are less willing to manage construction projects than buyers in single-family neighborhoods.\n\nThe rental market downtown is also active, with monthly rents for two-bedroom units ranging from $3,500 to $6,000 depending on building amenities and condition. This rental activity creates a pipeline of buyers who rent first, learn the neighborhood, and purchase when the right unit becomes available.",
+  "locationAccess": "Greenwich Metro-North station sits at the foot of Greenwich Avenue, providing direct New Haven Line service with express trains reaching Grand Central Terminal in approximately 47 minutes. The station is walkable from virtually every residential address in the downtown district — most residents are within a five-to-ten-minute walk of the platform. That walk-to-train access is the primary transportation advantage and a key reason buyers choose downtown over other Greenwich neighborhoods.\n\nI-95 is accessible within minutes via the Arch Street interchange. The Post Road (Route 1) runs along the southern edge of downtown, connecting east to Cos Cob, Old Greenwich, and Stamford and west toward Port Chester and Westchester County. For drivers, downtown's position at the intersection of these corridors means quick access in every direction, though parking on Greenwich Avenue itself requires a town permit or use of metered spots and garages.",
+  "seoTitle": "Downtown Greenwich CT | Condos & Greenwich Avenue",
+  "seoDescription": "Find condos and townhouses in downtown Greenwich near the Avenue's luxury shops and restaurants. Browse listings now. Contact Matt Caiola for availability.",
+  "faqs": [
+    {
+      "question": "What is Greenwich Avenue known for?",
+      "answer": "Greenwich Avenue is the commercial and social center of Greenwich, Connecticut. The mile-long street features luxury retailers including Saks Fifth Avenue, Richards, Hermes, Tiffany & Co., Brooks Brothers, and Tory Burch alongside independent boutiques and galleries. Dining ranges from Elm Street Oyster House and Penang Grill to newer arrivals. The Greenwich Library and Bruce Museum are nearby, making the Avenue the cultural and retail hub of lower Fairfield County.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do condos cost in downtown Greenwich?",
+      "answer": "Downtown Greenwich condominium prices range from approximately $700,000 for a one-bedroom unit to above $2 million for a renovated three-bedroom penthouse. Townhouses with private garages and outdoor space typically trade between $1.5 million and $3 million. Pricing varies by building, floor level, condition, and proximity to Greenwich Avenue and the Metro-North station. Updated, move-in-ready units command the strongest premiums.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Can you walk to the train from downtown Greenwich?",
+      "answer": "Yes. Greenwich Metro-North station sits at the southern end of Greenwich Avenue, and virtually every residential address in the downtown district is within a five-to-ten-minute walk of the platform. This walk-to-train convenience is a primary reason buyers choose downtown Greenwich over other neighborhoods in town. Express trains reach Grand Central Terminal in approximately 47 minutes on the New Haven Line.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

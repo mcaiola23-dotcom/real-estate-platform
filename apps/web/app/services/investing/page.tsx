@@ -7,7 +7,7 @@ import EmailSignupSection from "@/app/components/EmailSignupSection";
 export const metadata: Metadata = {
   title: "Investing & Commercial Real Estate | Fairfield County CT",
   description:
-    "Investment and commercial real estate guidance in Fairfield County—multifamily focus, disciplined underwriting, and discreet execution. Licensed with Higgins Group Private Brokerage.",
+    "Investment and commercial real estate in Fairfield County—multifamily acquisitions, dispositions, and leasing with disciplined underwriting. Higgins Group Private Brokerage.",
 };
 
 export default function InvestingPage() {
@@ -68,9 +68,8 @@ export default function InvestingPage() {
               <p className="text-lg text-slate-600 leading-relaxed">
                 My core focus is medium and large multifamily, supported by
                 experience across a range of commercial property types. Whether
-                you are acquiring, selling, or leasing, I bring a disciplined,
-                analytical approach and a calm process that prioritizes clarity
-                over hype.
+                you are acquiring, selling, or leasing, I bring disciplined
+                underwriting and a direct process built on real assumptions.
               </p>
             </div>
           </Container>
@@ -122,7 +121,7 @@ export default function InvestingPage() {
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
                   Landlord and tenant representation with market context, term
-                  strategy, and clean negotiation.
+                  strategy, and direct negotiation.
                 </p>
               </div>
               <div className="bg-white border border-slate-200 rounded-xl p-8 hover:shadow-sm transition-shadow">
@@ -130,8 +129,8 @@ export default function InvestingPage() {
                   Relationship-driven outreach
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Tap into trusted relationships that can surface
-                  opportunities when available and aligned.
+                  Tap into established relationships that surface
+                  opportunities before they reach the broader market.
                 </p>
               </div>
             </div>
@@ -195,7 +194,7 @@ export default function InvestingPage() {
                 How We Work
               </h2>
               <p className="text-lg text-stone-300">
-                A disciplined process for confident execution.
+                From buy box to closing table in four steps.
               </p>
             </div>
 
@@ -310,7 +309,7 @@ export default function InvestingPage() {
               Ready to Discuss an Opportunity?
             </h2>
             <p className="text-lg text-stone-300 mb-8 leading-relaxed">
-              Whether you're acquiring, disposing, or leasing, let's start with a conversation about your goals.
+              Whether you&apos;re acquiring, disposing, or leasing, the first step is a direct conversation about your objectives.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link

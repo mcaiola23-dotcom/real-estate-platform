@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "downtown",
+  "townSlug": "stamford",
+  "overview": "Downtown Stamford is the urban core of Fairfield County's largest employment center, where Bedford Street's restaurant row, the Harbor Point waterfront development, and the Palace Theatre create a walkable density that no other Connecticut city replicates at this scale. Condominiums, lofts, townhomes, and new high-rise construction have reshaped the residential landscape over the past decade, and the Stamford Metro-North station sits within walking distance of most downtown addresses.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "dt1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dt1s1",
+          "text": "Harbor Point is the transformation story that defines modern downtown Stamford. A former industrial brownfield on the waterfront has become a six-million-square-foot mixed-use development with over 4,000 residential units, a hotel complex, retail space, and parks including the 18-acre Kosciuszko Park and Commons Park. Buildings like 111 Harbor Point deliver contemporary finishes — floor-to-ceiling glass, stainless steel appliances, rooftop amenity decks — in a setting that faces directly onto the harbor. The median condo listing in Harbor Point sits near $577,000, though premium units with water views push well above that."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dt2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dt2s1",
+          "text": "Bedford Street runs north from the Stamford Town Center and anchors the dining and nightlife district. Barcelona Wine Bar, Columbus Park Trattoria, Dinosaur Bar-B-Que, and Bradford's Grill & Tavern represent a cross-section of the strip's range. Summer Street adds cocktail bars and newer openings. The corridor is active six nights a week, which distinguishes downtown Stamford from the quieter evening character of most Fairfield County town centers. Seasonal events like Brews on Bedford and WineFest bring outdoor festivals to the streetscape."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dt3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dt3s1",
+          "text": "Mill River Park threads through the center of downtown, providing 23 acres of restored riverbed, walking paths, a carousel pavilion, and seasonal programming that includes an ice skating rink in winter and outdoor concerts in warmer months. The park won a 2015 Design Honor Award from the American Society of Landscape Architects. A few blocks south, the Palace Theatre occupies a 1927 Thomas Lamb-designed auditorium with over 1,500 seats and a year-round performance calendar spanning Broadway touring productions, concerts, and comedy. UConn's Stamford campus adds a college presence to the downtown mix."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dt4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dt4s1",
+          "text": "The residential proposition is straightforward: walk to the train, walk to dinner, walk to the park. Stamford's Metro-North station is the busiest in Connecticut, with express service to Grand Central Terminal in 50 minutes and connections to the New Canaan and Danbury branch lines. Corporate offices for Charter Communications, Deloitte, and Synchrony Financial are all within the downtown footprint, which means some residents can eliminate the commute entirely. Condo pricing starts in the mid-$300,000s for studios and one-bedrooms, rising to $1 million for larger units with harbor views. Single-family inventory within downtown is essentially nonexistent — this is a vertical market."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Harbor Point waterfront development delivers 4,000+ residential units and six million square feet of mixed-use space",
+    "Bedford Street restaurant district includes Barcelona Wine Bar, Columbus Park Trattoria, and Dinosaur Bar-B-Que",
+    "Downtown's 23-acre Mill River Park, an ASLA award winner, features a carousel pavilion, walking paths, and seasonal ice skating",
+    "Walking distance to Stamford Metro-North station with express trains to Grand Central Terminal in 50 minutes",
+    "A 1927 Thomas Lamb-designed Palace Theatre hosts Broadway touring shows, concerts, and community events"
+  ],
+  "housingCharacteristics": "Downtown Stamford is a vertical residential market. Harbor Point's new-construction apartments and condominiums account for the largest share of inventory, with units ranging from studios to three-bedroom penthouses. Older condominium buildings along Tresser Boulevard and Greyrock Place offer entry-level pricing. Loft-style conversions in former commercial buildings appear intermittently. Townhome developments along the southern edge of downtown add a limited supply of attached single-family options.\n\nCondo pricing starts in the mid-$300,000s for studios and compact one-bedrooms in older buildings. Updated two-bedroom units in newer construction typically trade between $500,000 and $750,000. Premium units with harbor views, high floors, and upgraded finishes can reach or exceed $1 million. The rental market is equally active, driven by young professionals working at the downtown corporate campuses and by commuters who prefer urban living with a direct train connection. Single-family detached homes within the downtown boundary are essentially nonexistent.",
+  "marketNotes": "Downtown Stamford's residential market has gained meaningful momentum since the Harbor Point buildout accelerated. The median sale price for downtown condos has risen to approximately $485,000, with recent year-over-year appreciation running near 30% in some periods. Demand is driven by two distinct buyer profiles: young professionals working at Stamford's corporate employers who want to walk to the office, and Manhattan transplants seeking more space at a lower cost per square foot while retaining urban amenities.\n\nThe rental market competes directly with the sales market, and many buyers start as renters in Harbor Point or Tresser Boulevard buildings before converting to ownership. Inventory is not constrained in the same way as Stamford's established single-family neighborhoods — new units continue to come online as Harbor Point's later phases deliver. Pricing discipline matters: the most desirable units with water views and top-floor positions sell quickly, while interior-facing units in older buildings require competitive pricing to attract offers.",
+  "locationAccess": "Stamford's Metro-North station anchors downtown transit. The station serves the New Haven mainline with express service to Grand Central Terminal in approximately 50 minutes, plus connections to the New Canaan and Danbury branch lines. Trains run every 15 minutes during peak hours. Most downtown addresses are within a ten-minute walk of the platform.\n\nI-95 passes through the eastern edge of downtown with interchanges at Atlantic Street and Elm Street. The Merritt Parkway is accessible via Route 137 or High Ridge Road in approximately ten minutes. Downtown's street grid is compact and walkable, with Bedford Street, Tresser Boulevard, and Atlantic Street forming the primary axes. Harbor Point connects to the downtown core via Washington Boulevard. Stamford Town Center provides structured parking for residents and visitors.",
+  "seoTitle": "Downtown Stamford CT | Condos, Lofts & Urban Living",
+  "seoDescription": "Downtown Stamford CT condos and lofts from $350K to $1M near Harbor Point waterfront with walkable restaurants and Metro-North trains. Call Matt Caiola.",
+  "faqs": [
+    {
+      "question": "What is Harbor Point in Stamford?",
+      "answer": "Harbor Point is a large-scale waterfront mixed-use development in downtown Stamford built on a former industrial brownfield site. The project encompasses over six million square feet of floor space with more than 4,000 residential units, a hotel, retail, office space, and public parks including the 18-acre Kosciuszko Park and Commons Park. It has fundamentally reshaped downtown Stamford's waterfront and residential inventory since construction began in the late 2000s.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are condo prices in Downtown Stamford?",
+      "answer": "Downtown Stamford condominiums start in the mid-$300,000s for studios and compact one-bedrooms in older buildings along Tresser Boulevard and Greyrock Place. Newer construction in Harbor Point and surrounding developments typically ranges from $500,000 to $750,000 for two-bedroom units. Premium penthouses and units with direct harbor views can reach or exceed $1 million. The median downtown sale price sits near $485,000, reflecting the range from entry-level to luxury inventory.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Can you walk to the train from Downtown Stamford?",
+      "answer": "Yes. The Stamford Metro-North station is within a ten-minute walk of most downtown addresses, including Harbor Point, the Bedford Street corridor, and the Tresser Boulevard condominium buildings. Express trains reach Grand Central Terminal in approximately 50 minutes, with service every 15 minutes during peak commuting hours. The station also connects to the New Canaan and Danbury branch lines, making it one of the most connected stations in the Metro-North system.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

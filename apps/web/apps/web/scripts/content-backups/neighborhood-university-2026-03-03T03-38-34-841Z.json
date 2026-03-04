@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:40Z",
+  "_id": "c73a4d00-70d7-4dc4-a941-22cbd87e4725",
+  "_rev": "mB2cUx9aVkdRk2GqAC55sA",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:34Z",
+  "description": [
+    {
+      "_key": "daeafbff3114",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "f8fbd1890f94",
+          "_type": "span",
+          "marks": [],
+          "text": "The University neighborhood in Fairfield is defined by proximity to Fairfield University, which creates a distinct day-to-day rhythm. The area feels connected and active, with a mix of residential streets and the kind of nearby services that make routines simple."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "1278e0f14153",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "44af66b87bd3",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate here varies by block, but you’ll generally find a mix of single-family homes and more compact living options compared to Fairfield’s larger-lot areas. For some buyers, that means a more approachable entry point into Fairfield; for others, it’s about being close to the university and the conveniences that come with it."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "c46b1e7d54a4",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "c4d0622d1082",
+          "_type": "span",
+          "marks": [],
+          "text": "Fairfield University’s main campus address is 1073 North Benson Road, and being nearby offers a sense of place—campus architecture, events, and a steady pulse of activity. From here, Fairfield Center and Metro-North access remain within easy reach, and Fairfield Recreation’s shoreline amenities (like Jennings Beach at 880 South Benson Road) are a straightforward drive away. The University area is best for buyers who want Fairfield convenience with a more connected, active feel."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Vibrant neighborhood feel influenced by proximity to Fairfield University",
+    "Quick access to Fairfield Center dining, shops, and Metro-North service",
+    "Easy drive to shoreline beaches and waterfront parks",
+    "A mix of housing options including single-family streets and more compact inventory",
+    "Active community with university events and local amenities"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "University",
+  "overview": "The University neighborhood centers around Fairfield University and has a lively, well-connected feel compared to some of Fairfield’s quieter enclaves. Housing includes a mix of single-family streets and more compact options, with an energy shaped in part by the campus and its events. The lifestyle here is convenience-forward: quick access to town services, shopping corridors, and an easy drive to Fairfield’s beaches. For buyers who like being close to a major local institution and want Fairfield access in every direction, the University area works well.",
+  "slug": {
+    "_type": "slug",
+    "current": "university"
+  },
+  "town": {
+    "_ref": "26acc116-bdab-4b0d-9fba-12b96c6993a5",
+    "_type": "reference"
+  }
+}

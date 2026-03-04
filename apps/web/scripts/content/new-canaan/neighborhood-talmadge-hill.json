@@ -1,0 +1,92 @@
+{
+  "type": "neighborhood",
+  "slug": "talmadge-hill",
+  "townSlug": "new-canaan",
+  "overview": "Talmadge Hill takes its name from William Talmadge, who donated the land for the railroad station in 1868 when the New Canaan Branch line was completed. The neighborhood occupies southwest New Canaan between the Merritt Parkway and the Stamford border, centered on Talmadge Hill Road and its wooded residential corridors. Its own Metro-North station gives some homeowners a walk-to-train commute, a distinction shared by only a handful of neighborhoods outside downtown New Canaan.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Talmadge Hill Road climbs south from the Merritt Parkway overpass through a corridor of mature oaks and maples, passing the Metro-North station before continuing toward the Stamford line. The railroad stop is the neighborhood's most distinctive asset. Built on land William Talmadge donated in 1868, the station replaced the old name Millville and gave the area an identity it has carried for more than 150 years. For homeowners within a half-mile radius, the platform is a short downhill walk, and the ride to Stamford's transfer hub takes under ten minutes."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The housing here is residential and consistent. Colonials dominate, many built in the 1950s through 1970s on one-to-two-acre lots that follow the area's rolling terrain. Raised ranches from the same era appear on several streets, and newer construction has introduced updated colonial designs with open floor plans and higher-end finishes. Lots are wooded, setbacks are generous, and the overall character is established suburban — not flashy, not dated, simply maintained at a level that reflects its price tier."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "The Talmadge Hill Community Church, located at the intersection of Talmadge Hill Road and Hollow Tree Ridge Road, has served as a gathering point since 1870. Its presence reflects the neighborhood's long residential history, which predates the surrounding suburban development by a full century. The Thomas Talmadge house, built in 1739 at the corner of Jelliff Mill and Old Stamford roads, still stands as a private residence. Thomas was a nephew of Elihu Yale, and his grandson William is the figure who shaped the neighborhood's modern identity by securing the railroad station."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Proximity to Stamford is a practical advantage. The city's corporate offices, hospitals, and retail centers along High Ridge Road are a short drive south. Downtown New Canaan is roughly ten minutes north. The Merritt Parkway interchange provides direct highway access without crossing through town. Talmadge Hill does not offer the walkable village setting of New Canaan's center or the rural expanse of its northern neighborhoods. What it offers is a commuter-friendly location on wooded acreage, with a train station that most Fairfield County neighborhoods can only envy."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Talmadge Hill Metro-North station provides direct New Canaan Branch service, with Stamford connections under ten minutes away",
+    "One-to-two-acre wooded lots with generous setbacks define the residential character along Talmadge Hill Road",
+    "Historic roots trace to the 1739 Thomas Talmadge house, built by a nephew of Elihu Yale",
+    "Talmadge Hill Community Church has anchored the neighborhood at Hollow Tree Ridge Road since 1870"
+  ],
+  "housingCharacteristics": "Colonials represent the majority of Talmadge Hill's housing stock, with most built between the 1950s and 1970s on one-to-two-acre lots. Raised ranches from the same era appear on several interior streets, particularly along the roads branching off Talmadge Hill Road. Newer construction has added updated colonial designs with contemporary kitchens, open layouts, and energy-efficient systems, though the overall pace of teardown-and-rebuild is slower here than in New Canaan's more visible neighborhoods.\n\nHomes generally trade between $1.2 million and $2.5 million. Properties closest to the Metro-North station command a premium for walk-to-train convenience, while larger parcels near the Stamford border attract buyers seeking acreage. The median sale price in the Ponus-Talmadge Hill area has exceeded $2.2 million, placing it among the more expensive neighborhoods in a town where the baseline is already high.",
+  "marketNotes": "Talmadge Hill draws a specific buyer profile: families and commuters who want New Canaan schools, Metro-North access, and wooded privacy without paying the premium associated with downtown proximity. The train station is the differentiator. Neighborhoods with their own platform in Fairfield County are rare, and the handful of homes within walking distance of Talmadge Hill station trade at a noticeable premium over comparable properties farther from the tracks.\n\nInventory is limited because the neighborhood is fully built out and homeowners tend to stay. Renovated colonials in the $1.5 million to $2 million range move fastest. Buyers should expect competition for properties that combine updated interiors with genuine walk-to-station proximity.",
+  "locationAccess": "Talmadge Hill sits in southwest New Canaan, just north of the Stamford border. The Talmadge Hill Metro-North station serves the New Canaan Branch, with trains connecting to Stamford in under ten minutes; from Stamford, express service reaches Grand Central Terminal in approximately 50 minutes, making the total commute roughly one hour to midtown Manhattan.\n\nThe Merritt Parkway interchange is minutes away, providing highway access toward Greenwich to the south or Bridgeport and New Haven to the north. Stamford's High Ridge Road commercial corridor, including Stamford Hospital and major corporate campuses, is a short drive across the town line. Downtown New Canaan's Elm Street shops and restaurants are roughly ten minutes north via South Avenue or Ponus Ridge Road.",
+  "seoTitle": "Talmadge Hill, New Canaan CT | Train, Homes & Schools",
+  "seoDescription": "Discover Talmadge Hill homes in New Canaan CT — wooded acre-plus lots with walk-to-train Metro-North access. Contact Matt Caiola to schedule a showing.",
+  "faqs": [
+    {
+      "question": "Does Talmadge Hill have its own train station?",
+      "answer": "Yes. Talmadge Hill station is a Metro-North stop on the New Canaan Branch line, located just south of the Merritt Parkway overpass. Trains connect to Stamford in under ten minutes, where passengers transfer to New Haven Line express service reaching Grand Central Terminal in approximately 50 minutes. The station was named for William Talmadge, who donated the land when the New Canaan Branch was completed in 1868. Parking permits are available with no current waitlist, and daily parking costs $5.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the price range for homes in Talmadge Hill, New Canaan?",
+      "answer": "Homes in Talmadge Hill generally trade between $1.2 million and $2.5 million, with the median sale price exceeding $2.2 million. Colonials and raised ranches on one-to-two-acre lots make up most of the housing stock. Properties within walking distance of the Talmadge Hill Metro-North station tend to command higher prices due to commuter convenience, while larger parcels near the Stamford border attract buyers prioritizing acreage and privacy.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How close is Talmadge Hill to Stamford and downtown New Canaan?",
+      "answer": "Talmadge Hill borders Stamford to the south. The High Ridge Road commercial corridor, Stamford Hospital, and major corporate offices are a short drive across the town line. Downtown New Canaan is roughly ten minutes north via South Avenue or Ponus Ridge Road, providing access to Elm Street shopping, restaurants, and the New Canaan Library. The Merritt Parkway interchange is within minutes of the neighborhood, connecting to both directions of the highway.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

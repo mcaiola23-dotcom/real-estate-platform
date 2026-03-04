@@ -1,0 +1,92 @@
+{
+  "type": "neighborhood",
+  "slug": "west-side",
+  "townSlug": "stamford",
+  "overview": "West Side anchors the western edge of downtown Stamford, stretching along West Main Street and Tresser Boulevard into a neighborhood where urban energy and residential renovation coexist block by block. The area is home to Jackie Robinson Park of Fame, a civic landmark honoring the baseball legend who lived in Stamford from 1955 until his death in 1972, and the 18-acre Kosciuszko Park on its waterfront peninsula along the Long Island Sound. Roughly 1,200 properties range from pre-war colonials and multifamily conversions to newly renovated townhomes, with pricing between $400,000 and $800,000 making West Side one of Stamford's most accessible neighborhoods for buyers entering the market.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "West Side is defined by its proximity to downtown Stamford without being consumed by it. Walk east along West Main Street and the commercial core appears within minutes — the Stamford Town Center, Harbor Point restaurants, and Tresser Boulevard office towers are all reachable on foot. Turn west, and the streetscape shifts to tree-lined blocks of older colonials, two-family and three-family houses with covered porches, and scattered new construction where investors have gutted tired properties down to the studs. The neighborhood has attracted significant renovation capital over the past decade, and the results are visible: updated kitchens behind century-old facades, converted attics adding livable square footage, and new siding giving entire blocks a second life."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Jackie Robinson Park of Fame on West Main Street at Richmond Hill serves as the neighborhood's civic centerpiece. A life-size bronze statue of Robinson stands at the entrance, inscribed with the words \"Courage, Confidence, and Perseverance.\" The Connecticut Legislature designated the park as a stop on the state's Freedom Trail in 1995, and the city has committed funding to a restoration initiative expanding the park's programming and green space. A few blocks south, Kosciuszko Park occupies an 18-acre waterfront peninsula with a one-mile perimeter trail, soccer and baseball fields, a children's playground, and a five-acre coastal meadow installed in 2010 that draws migrating shorebirds each spring and fall."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "The housing stock on West Side is more varied than most Stamford neighborhoods. Multifamily properties — two-unit, three-unit, and four-unit buildings — account for a substantial share of the inventory, a feature that appeals to owner-occupants looking to offset mortgage costs with rental income. Single-family colonials from the early and mid-twentieth century line the residential side streets, many on compact lots that keep maintenance manageable. Stamford High School, located on Strawberry Hill Avenue at the neighborhood's eastern edge, serves a portion of West Side students and holds a B rating from Niche. The Stamford Government Center on Washington Boulevard and Tresser Boulevard sits just across the border, reinforcing the area's connection to the city's institutional core."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Dining and retail options along the West Side corridor have expanded steadily. Tresser Boulevard hosts restaurants spanning multiple cuisines, including Terra Gaucha Brazilian Steakhouse and The Capital Grille, while West Main Street supports a mix of independent shops and neighborhood eateries. Interstate 95 sits less than a mile north via Exits 6 and 7, and the Stamford Transportation Center is a short drive or bus ride east, providing Metro-North express service to Grand Central Terminal in under fifty minutes. Anyone prioritizing walkability, renovation upside, and proximity to Stamford's employment base will find West Side delivers those elements at a price point well below the city median."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Jackie Robinson Park of Fame on West Main Street features a bronze statue of the baseball legend and is a designated stop on Connecticut's Freedom Trail",
+    "Kosciuszko Park spans 18 waterfront acres with a one-mile loop trail, sports fields, and a five-acre coastal meadow attracting migratory birds along Long Island Sound",
+    "Multifamily properties — duplexes through four-units — represent a significant share of inventory, offering owner-occupant rental income potential uncommon in Stamford",
+    "Tresser Boulevard and West Main Street put downtown dining, the Stamford Town Center, and Harbor Point within walking distance"
+  ],
+  "housingCharacteristics": "West Side's building stock skews older and denser than most Stamford neighborhoods. Pre-war and mid-century colonials on compact lots form the single-family base, typically offering three or four bedrooms with original hardwood floors, plaster walls, and covered front porches. Many have been updated with modern kitchens, replacement windows, and finished basements.\n\nMultifamily properties — two-family, three-family, and four-family buildings — are a defining feature. These structures date primarily from the early twentieth century and have been maintained or renovated to varying degrees. Investors have been active in acquiring and modernizing units along West Main Street and the surrounding blocks. Townhome and condominium developments have also appeared where older lots have been consolidated. Pricing ranges from approximately $400,000 for smaller condos and entry-level properties to $800,000 for renovated single-family colonials or well-positioned multifamily buildings.",
+  "marketNotes": "West Side's market operates on a renovation-driven cycle. Properties in original condition attract investor interest, and fully updated homes generate competition from first-time buyers and young professionals working in Stamford's downtown office corridor. The price gap between unrenovated and renovated comparable properties can exceed $150,000, creating a value-add opportunity for buyers willing to manage a construction project.\n\nMultifamily properties trade on a rental yield basis in addition to owner-occupant demand, which introduces a floor under pricing that pure residential neighborhoods lack. Listings below $500,000 move quickly, often within two weeks of hitting the market. The neighborhood's proximity to the Stamford Transportation Center and Interstate 95 keeps demand steady from commuters who need reliable access to New York City without paying Stamford's premium waterfront or North Stamford prices.",
+  "locationAccess": "West Side sits immediately west of downtown Stamford, bounded roughly by West Main Street to the north and the waterfront to the south. Interstate 95 is accessible from Exits 6 and 7, both less than a mile from the neighborhood's core. The Stamford Transportation Center — serving Metro-North Railroad, Amtrak, and CT Transit bus lines — is approximately one mile east, with express trains reaching Grand Central Terminal in under fifty minutes.\n\nThe Merritt Parkway connects through northern Stamford for drivers heading toward Fairfield County's interior towns. Greenwich Avenue is roughly ten minutes west via I-95. Downtown Stamford's restaurants, Harbor Point waterfront retail, and the Stamford Town Center mall are all within a fifteen-minute walk from most West Side addresses.",
+  "seoTitle": "West Side, Stamford CT Real Estate & Homes for Sale",
+  "seoDescription": "Explore West Side in Stamford, CT — renovated colonials, multifamily homes, and downtown walkability. Contact Matt Caiola to tour available properties.",
+  "faqs": [
+    {
+      "question": "What types of homes are available in West Side, Stamford CT?",
+      "answer": "West Side offers a diverse housing mix that includes single-family colonials from the early and mid-twentieth century, multifamily properties ranging from duplexes to four-unit buildings, renovated townhomes, and condominium developments. Many older homes have been updated with modern kitchens and finishes while retaining original architectural details like covered porches and hardwood floors. Pricing generally ranges from $400,000 for entry-level condos to approximately $800,000 for renovated single-family homes or well-maintained multifamily properties.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is West Side from downtown Stamford and the train station?",
+      "answer": "West Side borders downtown Stamford directly to the west, making most of the neighborhood's commercial and dining destinations walkable along West Main Street and Tresser Boulevard. The Stamford Transportation Center is approximately one mile east, reachable by a short drive or CT Transit bus. Metro-North express trains from the Transportation Center reach Grand Central Terminal in under fifty minutes. Interstate 95 access via Exits 6 and 7 is less than a mile from the neighborhood core.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What parks and landmarks are in Stamford's West Side neighborhood?",
+      "answer": "West Side is home to Jackie Robinson Park of Fame on West Main Street, which features a life-size bronze statue of Jackie Robinson and holds designation as a stop on Connecticut's Freedom Trail. Kosciuszko Park occupies an 18-acre waterfront peninsula along Long Island Sound, offering a one-mile loop trail, sports fields, picnic facilities, and a restored five-acre coastal meadow that supports migratory bird populations each spring and fall. Both parks anchor the neighborhood's recreational and civic identity.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

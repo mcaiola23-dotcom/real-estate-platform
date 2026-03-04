@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "greens-farms",
+  "townSlug": "westport",
+  "overview": "Greens Farms is Westport's estate district, stretching south from the Post Road to the Long Island Sound between Hillspoint Road and Sasco Creek. Sherwood Island State Park occupies 235 acres along its western boundary. Greens Farms Academy, a PreK-through-12 independent school housed in a former Vanderbilt estate on Beachside Avenue, has educated Fairfield County students since 1925.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "The name predates the town. Early settlers called this area the Beautiful Land, and the farms that followed gave Greens Farms its identity before Westport was even incorporated. That agricultural scale never fully disappeared. Much of the neighborhood is zoned for two-acre minimum lots, and the southern sections along Beachside Avenue preserve an openness that most of coastal Fairfield County lost to subdivision decades ago."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Beachside Avenue is the neighborhood's marquee address. Properties here range from 3,000-square-foot colonials on one-and-a-half-acre lots to waterfront estates exceeding 11,000 square feet on six or more acres, some with private beaches, docks, and direct Long Island Sound frontage. Greens Farms Academy sits at 35 Beachside Avenue on a 44-acre campus that borders salt marsh, Audubon woodland, and the Sound. The school's presence contributes to the road's character: a mix of institutional gravitas and residential grandeur that has no equivalent elsewhere in Westport."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Sherwood Island State Park forms the western edge. Connecticut's first state park, opened in 1914, spreads across 235 acres with sandy beaches, a nature center, a picnic grove, and tidal wetlands. Unlike Compo Beach, Sherwood Island is open to the general public, but residents of Greens Farms live closest and use it most. The park's salt marshes and bird habitat contribute to the sense of undeveloped space that makes this neighborhood distinct from denser parts of Westport to the north and east."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The Greens Farms Metro-North station on the New Haven Line gives the neighborhood its own rail connection, separate from the busier Westport station to the east. Children attend Greens Farms Elementary School, a public K-through-5 school that consistently ranks among Westport's best, before moving to Bedford Middle School and Staples High School. Families who want both the public school system and the option of Greens Farms Academy's independent program have both within the same neighborhood, a dual-track advantage that is rare in Fairfield County."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Two-acre minimum zoning across much of the neighborhood preserves estate-scale lots and open sightlines to Long Island Sound",
+    "Adjacent Sherwood Island preserves 235 acres of public beaches, nature trails, and salt marsh habitat along the western boundary",
+    "Greens Farms Metro-North station offers dedicated New Haven Line rail service separate from the main Westport station",
+    "Beachside Avenue properties range from 3,000 sq ft colonials to 11,000+ sq ft waterfront estates with private docks",
+    "Both Greens Farms Elementary (public) and Greens Farms Academy (independent, PreK-12) operate within the neighborhood"
+  ],
+  "housingCharacteristics": "Greens Farms presents the widest architectural range in Westport. Antique saltbox and Victorian homes from the 1800s sit alongside mid-century colonials, Nantucket shingle-style houses, and newly constructed contemporary residences. Colonial architecture dominates overall, but the neighborhood's age and lot sizes have allowed significant stylistic diversity. Ranch homes appear on smaller parcels near the Post Road in the northern section, where half-acre and single-acre zoning applies.\n\nThe southern two-thirds of Greens Farms is predominantly two-acre residential zoning, producing the estate-scale properties that define the neighborhood's reputation. Homes on Beachside Avenue, Hillspoint Road, and the streets closest to the Sound command the highest prices, with waterfront estates regularly trading above $5 million and exceptional properties reaching significantly higher. The median sale price across all of Greens Farms is approximately $2.2 million, reflecting the mix of scaled-down homes near the Post Road and the larger estates closer to the water. New construction tends toward transitional and modern farmhouse designs in the $3 million to $5 million range.",
+  "marketNotes": "Greens Farms operates as Westport's trophy market. Properties here appeal to buyers seeking acreage, water proximity, and architectural distinction in a single purchase. Turnover is low. Many families own their Greens Farms homes for twenty or thirty years, and estate sales account for a meaningful share of inventory. When properties do appear, the combination of two-acre zoning, coastal access, and the Westport school district ensures strong demand.\n\nThe northern section near the Post Road offers a more accessible price tier, with smaller colonials and ranch homes on half-acre to single-acre lots trading between $1.5 million and $2.5 million. These properties provide a foothold in the Greens Farms Elementary School district at a fraction of the waterfront premium. Buyers should be aware that the median price in Greens Farms has risen roughly 39% over the past twelve months, reflecting both the scarcity of inventory and the migration of high-net-worth buyers into the Westport market.",
+  "locationAccess": "Greens Farms has its own Metro-North station on the New Haven Line, providing rail service to Grand Central Terminal in approximately 65 to 75 minutes depending on the train. The station offers an alternative to the busier Westport station for residents in the western half of town. I-95 is accessible via Exit 18 and the Sherwood Island Connector, placing the neighborhood roughly two minutes from the highway.\n\nDowntown Westport's Main Street is a seven-minute drive east along the Post Road. Norwalk is ten minutes west on I-95, and Stamford is twenty minutes east. Sherwood Island State Park is immediately adjacent, reachable by foot or bike from most homes in the southern section. The Post Road (Route 1) runs along the neighborhood's northern edge, providing surface-street access to commercial services, grocery stores, and the broader Westport retail district without requiring highway driving.",
+  "seoTitle": "Greens Farms, Westport CT | Estate Homes & Waterfront",
+  "seoDescription": "Explore Greens Farms estate homes in Westport, CT with two-acre lots and Sound access near Sherwood Island. Contact Matt Caiola to arrange a private tour.",
+  "faqs": [
+    {
+      "question": "What is the zoning in Greens Farms, Westport?",
+      "answer": "Much of Greens Farms is zoned for two-acre minimum residential lots, which preserves the estate-scale character of the neighborhood's southern sections near the Long Island Sound. The northern portion closer to the Post Road includes some single-acre and half-acre zones, allowing for smaller homes and more modest lot sizes. This zoning structure is a primary reason that Greens Farms has maintained its open, spacious landscape while other coastal neighborhoods in Fairfield County have been subdivided more densely.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Does Greens Farms have its own train station?",
+      "answer": "Yes, the Greens Farms Metro-North station on the New Haven Line provides direct rail service to Grand Central Terminal. Travel times range from approximately 65 to 75 minutes depending on whether the train is express or local. The station is smaller and less congested than the main Westport station on Riverside Avenue, which some commuters prefer. It is located off the Post Road near the I-95 Exit 18 interchange.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Greens Farms Academy and is it part of the public school system?",
+      "answer": "Greens Farms Academy is a private independent school serving students in PreK through grade 12, located at 35 Beachside Avenue on a 44-acre campus overlooking Long Island Sound. It is not part of the Westport public school system. Founded in 1925, the school has approximately 750 students from over 30 towns in Fairfield and Westchester Counties, with annual tuition of approximately $56,000. The neighborhood also has Greens Farms Elementary School, which is the public K-through-5 option in the Westport school district.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How do Greens Farms home prices compare to the rest of Westport?",
+      "answer": "Greens Farms carries the highest median sale price among Westport's major neighborhoods, at approximately $2.2 million over the past twelve months. Waterfront estates on Beachside Avenue and Hillspoint Road regularly trade above $5 million, with the largest properties reaching significantly higher. The northern section near the Post Road offers a more accessible tier between $1.5 million and $2.5 million. By comparison, the overall Westport median is approximately $1.6 million, placing Greens Farms at a roughly 35 to 40 percent premium.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

@@ -1,0 +1,97 @@
+{
+  "type": "neighborhood",
+  "slug": "center",
+  "townSlug": "fairfield",
+  "overview": "Colony Grill has been pulling pints on Post Road since 1935, Firehouse Deli has operated on Reef Road since 1969, and the Fairfield train station sits at the bottom of Unquowa Road — all within a ten-minute walk of each other. Fairfield Center is the town's commercial and civic core, a walkable stretch of independent shops, restaurants, and professional offices running along the Post Road between Unquowa Road and South Benson Road.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "c1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "c1s1",
+          "text": "Downtown Fairfield does not sprawl. The commercial district occupies a compact segment of the Post Road, roughly a mile long, with the Fairfield train station anchoring its southern edge on Unquowa Road. The concentration is deliberate — the Town Plan and Zoning Commission has maintained this corridor's mixed-use character for decades, and the result is a walkable downtown that has attracted independent retailers, specialty restaurants, and professional services without ceding ground to strip-mall development."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "c2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "c2s1",
+          "text": "The restaurant density along Post Road separates Fairfield Center from other Fairfield neighborhoods. Colony Grill, a post-Prohibition tavern opened in 1935 and now a regional institution, anchors the eastern end at 1520 Post Road. Shearwater Coffee Bar draws the morning crowd. Molto and Sophie's Pizza Bar handle the casual end; 55 Wine Bar and Malibu cover evening dining. This is not a food desert with a few chains — it is a genuine dining corridor that generates foot traffic seven nights a week."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "c3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "c3s1",
+          "text": "Residential streets branch off the Post Road in both directions. North of Route 1, homes climb gently toward the Merritt Parkway on tree-lined blocks. South of the Post Road, the terrain flattens as it approaches the railroad tracks and the beach area beyond. The housing is mixed: antique colonials from the late 1700s share blocks with mid-century ranches and recent infill construction. Historic homes along the Old Post Road and Beach Road predate the town's incorporation and carry preservation interest."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "c4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "c4s1",
+          "text": "Living in Fairfield Center means absorbing the energy of a functioning downtown. The Fairfield Theatre Company hosts performances year-round. Saturday mornings bring a farmers market in season. The library, town hall, and courthouse cluster within a few blocks. This is the part of Fairfield where you can leave the car in the driveway and handle errands, dinner, and a train commute on foot."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Walkable Post Road corridor with independent restaurants, boutiques, and specialty shops — Colony Grill, Shearwater Coffee, 55 Wine Bar among them",
+    "Fairfield train station on Unquowa Road offers Metro-North express service to Grand Central in approximately 65 to 70 minutes",
+    "Historic homes dating to the late 18th century line Old Post Road and adjacent streets south of the commercial district",
+    "Fairfield Theatre Company, seasonal farmers market, and town civic buildings cluster within the downtown core"
+  ],
+  "housingCharacteristics": "Fairfield Center's housing stock spans three centuries. The oldest homes — late-1700s colonials and Federals along the Old Post Road — carry historic significance and occasionally preservation easements. The mid-twentieth-century building wave added ranches, split-levels, and Cape Cods on the blocks north and south of Route 1. Recent decades have brought targeted teardown-rebuild activity, with new colonials and transitional-style homes replacing dated ranch stock on desirable lots.\n\nPricing in the center reflects walkability premiums. Updated four-bedroom colonials within a half-mile of the train station and Post Road shops typically trade between $900,000 and $1.8 million. Condominiums and townhouse-style units near the commercial corridor offer entry points between $350,000 and $650,000. Antique homes with documented provenance and period details command variable premiums depending on condition and lot size. Compact lots are the norm — most parcels are a quarter-acre or less — and buyers here are trading yard space for pedestrian access to the town's commercial and transit infrastructure.",
+  "marketNotes": "Demand in Fairfield Center is anchored by the train station. Commuter families relocating from New York consistently prioritize walk-to-station convenience, and the supply of homes within that radius is inherently limited. Properties listed within a half-mile of the Fairfield station attract strong initial interest and tend to spend fewer days on market than the town average.\n\nThe commercial corridor creates a secondary demand driver. Buyers in their 30s and 40s — often dual-income households — value the ability to walk to restaurants, coffee shops, and weekend activities without a car. This preference has intensified post-pandemic as hybrid work schedules reduce commuting frequency but increase demand for neighborhood-level amenities. Condominiums near the center appeal to downsizers from larger Fairfield properties and to first-time buyers entering the market.",
+  "locationAccess": "The Fairfield train station at 154 Unquowa Road sits at the southern edge of the Center neighborhood and serves the Metro-North New Haven Line. Express trains reach Grand Central Terminal in approximately 65 to 70 minutes; local service takes 75 to 80 minutes. Trains run roughly every 30 minutes during peak hours. Fairfield Metro station on lower Black Rock Turnpike and Southport station to the east provide alternative boarding points.\n\nThe Post Road (Route 1) is the neighborhood's spine, connecting westward to Bridgeport and eastward to Westport. I-95 interchanges at exits 21 and 22 are within a mile. The Merritt Parkway is accessible three miles north via Route 58 or Congress Street. Downtown Westport is a 10-minute drive east; Bridgeport's downtown is five minutes west. The beach area is reachable via Reef Road or South Benson Road in under five minutes by car.",
+  "seoTitle": "Fairfield Center CT | Downtown Homes & Train Station",
+  "seoDescription": "Explore Fairfield Center CT with walkable Post Road dining, boutique shops, and a Metro-North station. Browse downtown home listings and pricing today.",
+  "faqs": [
+    {
+      "question": "Can you walk to the train station from Fairfield Center?",
+      "answer": "Yes. The Fairfield train station on Unquowa Road is located at the southern edge of the Center neighborhood, within walking distance of much of the residential area and the Post Road commercial corridor. Many homes north and south of the Post Road are a 5- to 15-minute walk from the platform. Express Metro-North trains from Fairfield reach Grand Central Terminal in approximately 65 to 70 minutes, with service roughly every 30 minutes during peak commuting hours.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What restaurants and shops are in downtown Fairfield?",
+      "answer": "The Post Road corridor in Fairfield Center contains a mix of independent restaurants, cafes, and retail shops. Notable dining includes Colony Grill, a regional institution since 1935; Firehouse Deli on Reef Road, operating since 1969; Shearwater Coffee Bar; 55 Wine Bar and Restaurant; Molto; Sophie's Pizza Bar; and Malibu. Retail runs toward independent boutiques, specialty gift shops, and wellness stores rather than national chains. The Fairfield Theatre Company adds a performing arts venue to the downtown mix.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in Fairfield Center?",
+      "answer": "Home prices in Fairfield Center reflect the walkability premium. Updated four-bedroom colonials within a half-mile of the train station and Post Road typically trade between $900,000 and $1.8 million. Condominiums and townhouses near the commercial corridor range from $350,000 to $650,000. Antique homes with period details and historic provenance vary widely based on condition and lot size. Compact lots are standard in the center — most parcels are a quarter-acre or less.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Which high school serves Fairfield Center?",
+      "answer": "Fairfield Center falls within the Fairfield Ludlowe High School district. Ludlowe is located at 785 Unquowa Road, within the Center neighborhood itself, making it walkable for many students. The school enrolls approximately 1,489 students with a 12-to-1 student-teacher ratio. Fairfield operates two public high schools — Ludlowe and Fairfield Warde — with attendance zones based on residential address. Both schools are well-regarded within the FCIAC athletic conference and Connecticut's public school rankings.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

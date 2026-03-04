@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:48Z",
+  "_id": "b32ba572-8b5b-4b4d-873c-1996a2b95048",
+  "_rev": "n1R3vnrXP7D7ze4juacF43",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:28Z",
+  "description": [
+    {
+      "_key": "d51ccff893ad",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "8338b9184c73",
+          "_type": "span",
+          "marks": [],
+          "text": "Cos Cob has a village identity within Greenwich, with a feel that’s more relaxed and residential than downtown. It’s one of those neighborhoods where the setting—water, inlets, and older streets—creates character that’s hard to replicate in newer subdivisions."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "ec74065410b8",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "0b00d528d5e5",
+          "_type": "span",
+          "marks": [],
+          "text": "Housing in Cos Cob is varied, ranging from traditional single-family homes to smaller-scale options in and around the village. That mix tends to appeal to a wide range of buyers, especially those who want Greenwich access and amenities without requiring a downtown address."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "3e33ed82ec21",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "3ba368086d3d",
+          "_type": "span",
+          "marks": [],
+          "text": "For commuting, Cos Cob station is on the Metro-North New Haven Line. The MTA notes two ticket machines on the westbound platform and no ticket office, with ramps but no accessible path between platforms (Greenwich and Stamford are listed as the nearest fully accessible stations). For outdoor time, the Town describes Mianus River & Natural Park as a 109.7-acre park between Westover Road and Valley Road with trails and passive recreation like walking and hiking. Cos Cob is best for clients who want a village feel, rail convenience, and easy access to nature within Greenwich."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Cos Cob Metro-North station (New Haven Line) for commuter rail access",
+    "Mianus River Park with 100+ acres of trails and natural beauty",
+    "A village-centered Greenwich lifestyle with a relaxed, residential cadence",
+    "Easy access to downtown Greenwich, Old Greenwich, and the rest of Fairfield County",
+    "Family-friendly community with local shops and neighborhood character"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Cos Cob",
+  "overview": "Cos Cob is a waterfront village within Greenwich where harbor views, a neighborhood feel, and commuter practicality all intersect. Homes range from classic single-family streets to more compact options closer to the village core. The Cos Cob station keeps Metro-North access close, and Mianus River & Natural Park provides a major nature outlet nearby. For buyers who want Greenwich with a slightly more relaxed, village-centered rhythm, Cos Cob is a strong fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "cos-cob"
+  },
+  "town": {
+    "_ref": "20c7cb6d-4b2c-4fe5-9bbb-0dd8785f31dd",
+    "_type": "reference"
+  }
+}

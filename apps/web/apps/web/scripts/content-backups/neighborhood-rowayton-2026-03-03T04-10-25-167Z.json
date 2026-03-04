@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:08Z",
+  "_id": "ad94334c-68c6-4804-8552-e77d21a9dcd3",
+  "_rev": "n1R3vnrXP7D7ze4juacETR",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:26Z",
+  "description": [
+    {
+      "_key": "0e1608c45cda",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "a19f896e694d",
+          "_type": "span",
+          "marks": [],
+          "text": "Rowayton feels like its own village within Norwalk. The pace is coastal and community-oriented, and many buyers are drawn to the “small-town by the water” character while still staying connected to the broader Fairfield County corridor."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "34080c320c13",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "87f7ab3347e7",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate is predominantly single-family, and the lifestyle tends to emphasize outdoor time and a quieter routine. In my experience, Rowayton often fits clients who want a coastal address with an understated, village feel rather than a downtown scene."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "18698280bad5",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "b970b5f19df5",
+          "_type": "span",
+          "marks": [],
+          "text": "For commuting, Rowayton station is on the Metro-North New Haven Line. The MTA notes two ticket machines in front of the station building and no ticket office, with ramps but no accessible path between platforms (Darien and South Norwalk listed as the nearest fully accessible stations). For beach time, Norwalk’s Calf Pasture and Shady Beach provide a major public shoreline option, with the City listing extensive recreation amenities and beach hours of 7:30 a.m.–9 p.m. Rowayton is best for buyers who want a coastal village lifestyle with practical access to the train and Norwalk’s shoreline amenities."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A true coastal village feel with a quiet, community-centered atmosphere",
+    "Rowayton Metro-North station (New Haven Line) for commuter rail access",
+    "Beautiful shoreline access for boating, kayaking, and beach activities",
+    "Charming village character with local shops and community events",
+    "Strong fit for buyers prioritizing a coastal lifestyle and tight-knit community"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Rowayton",
+  "overview": "Rowayton is a true waterfront village within Norwalk—quiet, coastal, and community-centered with a distinctly local feel. Homes are primarily single-family, and the lifestyle often revolves around the water and the village cadence. The Rowayton Metro-North stop adds commuter convenience on the New Haven Line, and beach access in Norwalk is close when you want it. For buyers who want a coastal village atmosphere with practical rail access, Rowayton stands out.",
+  "slug": {
+    "_type": "slug",
+    "current": "rowayton"
+  },
+  "town": {
+    "_ref": "14fa41e8-2921-4a0a-884b-afdaafdb4f64",
+    "_type": "reference"
+  }
+}

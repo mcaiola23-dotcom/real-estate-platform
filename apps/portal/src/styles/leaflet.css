@@ -1,0 +1,90 @@
+/* Leaflet Map Styles */
+@import 'leaflet/dist/leaflet.css';
+
+/* Ensure map container takes full size */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Fix for tile loading issues */
+.leaflet-tile-container {
+  pointer-events: none;
+}
+
+.leaflet-tile {
+  pointer-events: none;
+}
+
+/* Ensure controls are above tiles */
+.leaflet-control-container {
+  position: relative;
+  z-index: 800;
+}
+
+/* Fix marker icon paths */
+.leaflet-default-icon-path {
+  background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png');
+}
+
+/* Price marker styles */
+.price-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.price-marker-container {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.15s ease-out, filter 0.15s ease-out;
+}
+
+.price-marker-container:hover {
+  filter: brightness(1.1);
+}
+
+/* Dot marker styles */
+.dot-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Ensure price markers are above parcel polygons */
+.leaflet-marker-pane {
+  z-index: 600;
+}
+
+/* Enhanced popup styles */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px;
+  line-height: 1.4;
+}
+
+.leaflet-popup-tip {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

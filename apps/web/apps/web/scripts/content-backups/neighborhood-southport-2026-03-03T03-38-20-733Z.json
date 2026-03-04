@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:40Z",
+  "_id": "f1422240-489e-4d8e-80ff-e049e7bb5d4c",
+  "_rev": "n1R3vnrXP7D7ze4juacX15",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:48Z",
+  "description": [
+    {
+      "_key": "5ad193e31667",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "c9f938f13b8f",
+          "_type": "span",
+          "marks": [],
+          "text": "Southport is a historic harbor village within Fairfield, and it has a distinct identity—more “coastal village” than “suburb.” The atmosphere is quietly elevated: charming streets, classic architecture, and a community feel that’s built around the village itself."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "bf2117aa1442",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "7b5052b498a1",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate in Southport includes a wide mix, from carefully preserved historic homes to larger coastal properties, with many streets that feel intentionally curated by time. For buyers who care about character—details, landscaping, and a true sense of place—Southport tends to resonate immediately."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "29a77892b22e",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "2018a1764d2a",
+          "_type": "span",
+          "marks": [],
+          "text": "Named local anchors include the Pequot Library, a long-standing cultural institution in the village, and Southport’s Metro-North station on the New Haven Line. The MTA notes a ticket machine on the westbound platform and no ticket office, and also notes the ramp-only platform access (with no accessible path between platforms). For beach time, Fairfield Recreation lists Southport Beach at 1505 Pequot Avenue as a small, quiet town beach with bathroom facilities and summer lifeguards. Southport is best for buyers who want a coastal lifestyle with village charm—and an easy path back to the city when needed."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Southport Metro-North station (New Haven Line) for commuter rail access",
+    "A true harbor-village feel with historic character and a refined coastal atmosphere",
+    "Pequot Library as a beloved cultural anchor and community institution",
+    "Quiet beach and waterfront setting with a relaxed vibe",
+    "Classic New England charm with boutique shops and local dining"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Southport",
+  "overview": "Southport is Fairfield’s storybook coastal village—historic streets, a harbor setting, and a refined small-town feel that’s hard to replicate. Homes range from restored historic colonials to larger coastal properties, often framed by mature landscaping and a distinctly New England streetscape. The lifestyle is village-centered: coffee, boutiques, and waterfront walks, with rail access nearby when you need it. For buyers who want charm and coastal identity in equal measure, Southport is one of Fairfield County’s standouts.",
+  "slug": {
+    "_type": "slug",
+    "current": "southport"
+  },
+  "town": {
+    "_ref": "26acc116-bdab-4b0d-9fba-12b96c6993a5",
+    "_type": "reference"
+  }
+}

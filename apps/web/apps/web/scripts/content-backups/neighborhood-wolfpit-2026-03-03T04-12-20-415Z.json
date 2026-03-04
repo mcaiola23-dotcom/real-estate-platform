@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:08Z",
+  "_id": "2c446150-a11d-43bc-8226-10c9b42e86a3",
+  "_rev": "cptc0PvA8gpHazoy2liFmw",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T17:59:55Z",
+  "description": [
+    {
+      "_key": "8618ca460600",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "5977e695c17d",
+          "_type": "span",
+          "marks": [],
+          "text": "Wolfpit is one of Norwalk’s established residential neighborhoods, known for a steady, practical day-to-day rhythm. It doesn’t try to be a destination district—its appeal is that it feels like a neighborhood first, with easy access to the rest of Norwalk when you want dining, the shoreline, or the train."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "e21010930897",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "73a0a5f6a707",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate is predominantly single-family, and the overall character feels consistent and community-oriented. In my experience, Wolfpit often fits buyers who want a comfortable residential setting while staying connected to Norwalk’s broader amenities."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "421f913d4eba",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "90ef784b528c",
+          "_type": "span",
+          "marks": [],
+          "text": "For outdoor space, Cranbury Park is a major local resource. The City of Norwalk describes Cranbury Park as 227 acres with wooded trails, a playground, picnic areas, and an 18-hole disc golf course. And regionally, the Norwalk River Valley Trail organization describes the NRVT as a planned 30-mile trail from Calf Pasture Beach in Norwalk to Rogers Park in Danbury, with nearly 13 miles completed. Wolfpit is best for buyers who want residential Norwalk living with meaningful park and trail access close by."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "An established residential neighborhood with a steady, community-oriented feel",
+    "Primarily single-family housing with practical access around the city",
+    "Cranbury Park nearby - 227 acres with wooded trails and recreation",
+    "Norwalk River Valley Trail for hiking and outdoor activities",
+    "A strong fit for buyers who prioritize a classic neighborhood feel"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Wolfpit",
+  "overview": "Wolfpit is an established residential neighborhood in Norwalk that offers a practical, day-to-day lifestyle and a calmer pace than the coastal districts. Homes are primarily single-family, and many streets feel steady and neighborhood-oriented. The area benefits from access to large green spaces like Cranbury Park and the broader Norwalk River Valley Trail network as it continues to expand. For buyers who want Norwalk with a classic residential cadence and good access around the city, Wolfpit fits well.",
+  "slug": {
+    "_type": "slug",
+    "current": "wolfpit"
+  },
+  "town": {
+    "_ref": "14fa41e8-2921-4a0a-884b-afdaafdb4f64",
+    "_type": "reference"
+  }
+}

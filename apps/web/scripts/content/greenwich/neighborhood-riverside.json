@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "riverside",
+  "townSlug": "greenwich",
+  "overview": "Riverside stretches across roughly two square miles between Cos Cob to the west and Old Greenwich to the east, with waterfront along both the Mianus River and Long Island Sound. Riverside School ranks among the top five elementary schools in Connecticut. The neighborhood's own Metro-North station and the East Putnam Avenue commercial strip give its 8,400 residents a degree of self-sufficiency within the larger Greenwich framework.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Until 1870, the land that is now Riverside was known as Mianus Neck — a narrow peninsula defined by the Mianus River on its western flank and Long Island Sound to the south. The renaming coincided with the arrival of the railroad, and from that point forward, Riverside developed as a commuter community with a character distinct from its neighbors. That character persists. Riverside has its own train station, its own school, its own commercial corridor, and its own relationship with the water."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The geography here creates a natural sorting. South of Interstate 95, large estate properties occupy wooded lots between the highway and the Sound. Driveways disappear behind hedgerows and stone pillars. Some of these parcels are gated. A handful command direct waterfront with private docks. North of 95, the lots tighten, the homes grow more varied in era and style, and the streetscape becomes more village-like as you approach the Post Road. Both sides share the same school district, the same train station, and the same zip code, but they represent very different price tiers."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Riverside School is an academic standout. Consistently ranked in the top five among Connecticut elementary schools, it draws families who build their home search entirely around its catchment boundaries. The school sits on Hendrie Avenue, within walking distance of the train station and the neighborhood's small cluster of shops and restaurants. That concentration — school, station, retail, all within a few blocks — gives central Riverside a walkable nucleus that belies its suburban setting."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The waterfront is Riverside's defining asset and its most exclusive tier. Properties south of 95 with direct Sound frontage or deeded water access start around $5 million and can exceed $10 million for gated estates with deep-water docks. The Mianus River's western shore offers a different, more sheltered form of water access — kayaking, fishing, and tidal marshes rather than open-water views. Between the two waterfronts, Riverside delivers more variety within two square miles than most Fairfield County towns manage across their entire footprint."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Riverside School consistently ranks in Connecticut's top five elementary schools, shaping demand across the neighborhood's catchment zone",
+    "Waterfront estates south of I-95 occupy gated, wooded parcels with Long Island Sound frontage and private docks",
+    "The Riverside Metro-North station provides direct New Haven Line service to Grand Central in approximately 50 minutes",
+    "Two distinct waterfronts — the Mianus River and Long Island Sound — create layered access to boating, kayaking, and tidal marshland",
+    "Central Riverside clusters the school, train station, and retail within walking distance on Hendrie Avenue and East Putnam Avenue"
+  ],
+  "housingCharacteristics": "Riverside's housing divides along the I-95 corridor. South of the highway, estates built between the 1920s and the present day sit on one-to-three-acre wooded lots with mature specimen plantings and, in many cases, direct water access. Architectural styles lean toward shingle, Georgian colonial, and contemporary designs commissioned by successive generations of owners. North of 95, the stock is denser: mid-century colonials, Capes, and raised ranches on quarter-acre to half-acre lots, many of which have been expanded or fully rebuilt over the past two decades.\n\nThe price gap between the two zones is substantial. Starter homes north of 95 begin around $1.5 million for smaller lots requiring updates. South of 95, entry points climb past $2 million quickly, and waterfront or gated properties routinely trade between $5 million and $10 million or higher. Despite this range, both tiers share the Riverside School assignment, which provides a common floor of demand across the neighborhood.",
+  "marketNotes": "Riverside's market operates on two tracks. North of I-95, inventory turns over more frequently and attracts young families drawn by the school district and the walk-to-station convenience. Competition for updated homes in the $1.5 million to $3 million band is consistent, especially in spring. South of 95, the estate market moves at a different pace. Listings are fewer, marketing often begins through private broker networks, and sales cycles stretch longer because the buyer pool at $5 million and above is inherently smaller.\n\nAcross both tiers, the Riverside School assignment acts as a price floor that insulates the neighborhood during broader market softening. Properties confirmed within the school boundary command a measurable premium over comparable homes just outside it. Sellers who understand this dynamic and price accordingly tend to execute clean transactions with minimal time on market.",
+  "locationAccess": "Riverside's Metro-North station sits on the New Haven Line, delivering riders to Grand Central Terminal in approximately 50 minutes. The station is centrally located near Hendrie Avenue, walkable from many homes north of I-95. For highway commuters, Exit 5 on I-95 provides direct access, placing Stamford eight minutes east and the Connecticut Turnpike interchange five minutes south.\n\nEast Putnam Avenue (Route 1) runs through the northern edge of the neighborhood with grocery stores, dry cleaners, cafes, and service businesses. Old Greenwich's Sound Beach Avenue is a short drive east for additional dining and shopping. Greenwich Avenue is roughly ten minutes west. The neighborhood's position between Cos Cob and Old Greenwich means residents have three village centers within a five-to-ten-minute radius, each with its own character and offerings.",
+  "seoTitle": "Riverside, Greenwich CT Real Estate & Homes for Sale",
+  "seoDescription": "Discover Riverside in Greenwich, CT — top-ranked schools, waterfront estates, and Metro-North access. Browse listings and reach Matt Caiola to tour homes.",
+  "faqs": [
+    {
+      "question": "What is the price range for homes in Riverside, Greenwich CT?",
+      "answer": "Riverside spans a wide price range. North of I-95, homes on smaller lots start around $1.5 million and climb to $3 million for updated colonials on half-acre parcels. South of I-95, estate properties begin near $2 million, with waterfront and gated homes trading between $5 million and $10 million or higher depending on acreage, water access, and architectural distinction.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How does Riverside School affect real estate values?",
+      "answer": "Riverside School ranks among the top five elementary schools in Connecticut, and Greenwich assigns school placement by home address. Properties confirmed within the Riverside School catchment zone carry a measurable premium over comparable homes just outside the boundary. Many families relocating to Greenwich build their entire search around this school assignment, which creates consistent demand throughout the neighborhood.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Does Riverside have its own train station?",
+      "answer": "Yes. The Riverside Metro-North station is on the New Haven Line and provides service to Grand Central Terminal in approximately 50 minutes. The station is centrally located near Hendrie Avenue, within walking distance of many homes north of Interstate 95. Parking permits are available through the town of Greenwich for residents who drive to the station.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the difference between north and south Riverside?",
+      "answer": "Interstate 95 divides Riverside into two distinct zones. South of 95 features large estate properties on one-to-three-acre wooded lots, many with direct Long Island Sound waterfront or gated entries, typically priced from $2 million to over $10 million. North of 95, the neighborhood is denser with colonials and Capes on quarter-acre to half-acre lots, generally ranging from $1.5 million to $3 million. Both zones share the same Riverside School assignment.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

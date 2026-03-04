@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:29Z",
+  "_id": "e357e73e-a709-49f2-8a37-deccdbe9b259",
+  "_rev": "cptc0PvA8gpHazoy2lidD6",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:41Z",
+  "description": [
+    {
+      "_key": "e86942e512a1",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "43e76b3bffe4",
+          "_type": "span",
+          "marks": [],
+          "text": "Davenport Point is a compact waterfront neighborhood in Stamford that feels tucked away. The peninsula setting creates a strong sense of separation from busier parts of the city, and day-to-day life here tends to be quieter and more residential."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "fa202fa2b1c2",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "669a7e8b5f41",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate in Davenport Point is primarily single-family, and the character leans coastal: mature landscaping, a water-oriented layout, and a neighborhood rhythm that’s more “weekend by the Sound” than “in the middle of it.” Depending on the property, buyers may find water views, outdoor entertaining space, and a sense of privacy that’s hard to replicate in more central neighborhoods."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "63bf402a4981",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "6e11dd05ffcd",
+          "_type": "span",
+          "marks": [],
+          "text": "For outdoor time close to home, John J. Boccuzzi Park is nearby at 200 Southfield Avenue—a 12-acre coastal park with a beach and recreation facilities. And when you want restaurants, events, and Metro-North access, downtown Stamford remains a straightforward drive away. Davenport Point is best suited for clients who want a distinctly coastal setting without giving up Stamford convenience."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A quiet peninsula-style waterfront setting with a removed, peaceful atmosphere",
+    "Primarily single-family coastal properties with Long Island Sound views",
+    "Nearby parks with beaches, marina, and recreation facilities",
+    "Close to Cove Island Park for walking, beaches, and outdoor time",
+    "Easy drive to downtown Stamford dining, arts, and Metro-North service"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Davenport Point",
+  "overview": "Davenport Point is a small, peninsula-style waterfront enclave in Stamford, defined by a quiet residential setting and a strong connection to Long Island Sound. Homes here are predominantly single-family, with architecture ranging from classic coastal styles to newer, updated properties—some with direct water views. The neighborhood appeals to buyers who prioritize privacy and a maritime feel, but still want practical access to downtown Stamford and nearby amenities. It’s one of those Stamford pockets where the setting does much of the talking.",
+  "slug": {
+    "_type": "slug",
+    "current": "davenport-point"
+  },
+  "town": {
+    "_ref": "a3ffac5e-f792-4a45-8572-35c108bbaaf0",
+    "_type": "reference"
+  }
+}

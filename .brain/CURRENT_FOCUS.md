@@ -1,7 +1,7 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Communications Hub Implementation — **Phase 1 (UI Redesign), Phase 4 (Custom Templates CRUD), and Phase 5 (AI Draft Enhancement) implemented** (Session 20, 2026-02-27). Phase 2 (Google OAuth activation) and Phase 3 (Twilio integration) remain pending — both need external provider credentials. All route tests pass, 0 type errors, build verified. Needs git commit + migration deploy for MessageTemplate table.
+Portal technical hardening follow-through (Session 31, 2026-03-02) — keep this lane focused on backend stability/security hardening while UI work proceeds in a separate lane, with priority on sustained CI gate reliability and remaining security hardening closeout items.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -68,16 +68,86 @@ Communications Hub Implementation — **Phase 1 (UI Redesign), Phase 4 (Custom T
 59. Lead Profile Modal Overview Tab Production Upgrade (Sessions 17-19, 2026-02-24) — 4-sprint plan + 3 rounds of visual polish. Key changes: Sprint 1 — Lead Type + Status side-by-side, Address full-width, Notes rows=3, Contact layout restructured, price field $ adornments, inputMode attributes, helper text, responsive grid. Sprint 2 — Dead Link Contact button feedback, SmartReminderForm hideHeader+CollapsibleSection, SVG checkmark, calendar hint, Timeframe dropdown with TIMEFRAME_OPTIONS. Sprint 3 — Full-stack houseStyle field (schema→types→DB→route→formatter→workspace→UI→tests), PriceRangeSlider component with custom pointer-event thumbs and piecewise log scale ($0-$5M linear, $5M-$10M+ compressed). Sprint 4 — SourceAttributionChain with SVG icon markers, ResizeObserver auto-fit (most-recent events in single row), connecting line + equal spacing, hover tooltips, click expansion panel. Polish rounds: source/status pills in CollapsibleSection header via headerExtra prop, urgency badges restyled (subtle tinted backgrounds), scale markers positioned by actual value percentage. 15 files changed, 3 new files, 1 migration, +1,082 lines, 89/89 route tests, 0 type errors.
 
 60. Communications Hub Implementation (Session 20, 2026-02-27) — 3 of 5 phases completed. Phase 1 (UI Redesign): New `CommunicationsHub.tsx` replacing toggle-card layout in LeadProfileModal Communication tab with unified timeline, channel filters, compose bar, and integration status. Phase 4 (Templates CRUD): Prisma `MessageTemplate` model + migration `202602270001_add_message_template`, 6 DB CRUD helpers, 2 API route files (list/create + get/patch/delete), `TemplateLibrary` rewrite with create form, favorites, delete, merge field picker. Phase 5 (AI Enhancement): Multi-draft generation (`draftMultipleMessages`), template-to-draft pipeline (`draftFromTemplate`), communication history context extraction, SMS-specific prompts, `AiDraftComposer` rewrite with multi-draft tabs and enhanced SMS counter. ~30 files changed, 6 new files, ~600 lines new CSS.
+61. Portal technical hardening slice is now implemented in `apps/portal` via a server-side proxy boundary (`/api/portal/[...path]`) with endpoint-specific rate limiting and auth requirements for lead/favorites/saved-search/alerts flows, plus favorites payload normalization to handle `address` vs `address_full` drift.
+62. Portal auth/runtime hardening is now in place with non-local weak-secret fail-fast validation (`NEXTAUTH_SECRET`), credentials-login throttling in NextAuth authorize, and non-dev debug-route lock-down for `/test-map` and `/test-leaflet`.
+63. Portal client call-sites for AI search, auth registration, lead submission, favorites, saved searches, and alerts now route through the new gateway boundary; operator lead dashboard (`/agents`) now requires auth and no longer falls back to sample lead data when backend calls fail.
+64. Portal CI command surface is now expanded with `typecheck`, `test:routes`, and root `ci:portal`, plus smoke coverage for proxy policy/normalization logic (`proxy-utils.test.ts`).
+65. Standalone backend follow-through in `services/portal-api` is now in place: `GET /leads*` requires authenticated `admin`/`agent` scope, non-local startup fails on weak `AUTH_SECRET_KEY`, alerts use canonical `SearchAlert` model with `user.full_name`, scheduler loop moved to dedicated worker entrypoint (`python -m app.workers.scheduler_worker`), requirements include missing auth/dotenv/alembic dependencies, and Alembic baseline scaffold/revision is added for migration discipline.
+66. Portal UI/UX makeover (Session 24) is now complete: Playfair Display→Cormorant Garamond, blue/teal→stone warm-neutral palette across all 60+ portal source files, SiteHeader/homepage/PropertyCard rewritten, PropertyDetailModal/ParcelDetailModal restyled (multi-tab structure preserved), globals.css fully rewritten with stone CSS variables + component classes. Lint passes, 3/3 route tests pass, zero old color references remain.
+67. Portal CI/typecheck baseline is now fixed: `apps/portal/tsconfig.json` explicitly resolves React modules/types from portal-local React 18 declarations, preventing root React 19 type leakage; Windows-authoritative `npm run ci:portal` now passes end-to-end.
+68. Repo secret-handling baseline is now hardened via pre-commit scanning and hook automation (`scripts/security/scan-secrets.sh`, `.githooks/pre-commit`, `security:hooks:install`) plus nested `.env*` ignore coverage updates in root `.gitignore`.
+69. Alembic discipline has moved beyond scaffold-only: first post-baseline revision `20260302_000002_search_alerts_constraints` is added and aligned with `SearchAlert.updated_at` model change.
+70. Portal map/search regression follow-through is now in place: parcel-overlay fetches in `apps/portal/src/app/properties/page.tsx` now build gateway URLs without invalid `new URL(..., '/api/portal')` usage, and `apps/portal/src/components/UnifiedSearchBar.tsx` now restores backend autocomplete (`/api/autocomplete/search`) alongside Google Places so off-market parcel/address suggestions are available again.
+71. Portal Street View + commute follow-through is now in place: active-listing `Location & Commute` tab in `apps/portal/src/components/PropertyDetailModal.tsx` now renders `CommuteSection` (replacing placeholder copy), commute route in `services/portal-api/app/api/routes/commute.py` now accepts slash-containing parcel IDs via `{property_id:path}` with URL-decoded identifier handling, and Street View path handling in `services/portal-api/app/api/routes/properties.py` plus pano-id URL support in `services/portal-api/app/services/street_view.py` now avoid identifier/pano mismatches that caused fallback stock images for off-market parcels.
+72. Google Maps diagnostics hardening is now in place for portal migration troubleshooting: commute route now returns explicit `GOOGLE_MAPS_API_KEY` configuration errors in `services/portal-api/app/api/routes/commute.py`; Street View route now fails explicitly when Google Maps config is unavailable and avoids caching transient/API/config failures as parcel-level permanent unavailability in `services/portal-api/app/api/routes/properties.py` + `services/portal-api/app/services/street_view.py`; portal UI now surfaces these backend details in `apps/portal/src/components/CommuteSection.tsx` and `apps/portal/src/components/StreetViewWidget.tsx`.
+73. Street View negative-cache recovery is now in place in `services/portal-api/app/api/routes/properties.py`: cached `street_view_available=0` parcels are periodically revalidated (15-minute window) so records created during transient/configuration outages can recover automatically after environment fixes, without requiring full manual cache resets.
+74. Portal-api settings now load `.env.local` (in addition to `.env`) via `services/portal-api/app/core/config.py`, aligning backend runtime config with the migration-era env convention and enabling Google Maps keys placed in `.env.local` to be picked up at startup.
+75. Backend hardening smoke coverage is now in place in `services/portal-api/tests/test_hardening_smoke.py` for `/health/`, `/test-sentry` non-local gating, and `/leads/` authn/authz behavior; the suite passes (`5 passed`) in Windows virtualenv validation.
+76. Backend CI gate defaults are now aligned to current hardening realities in `services/portal-api/scripts/ci-gate.sh` via configurable `PORTAL_API_TEST_TARGETS` (default `tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py`) while preserving Alembic `current -> upgrade head -> current` checks and strict PostgreSQL/PostGIS requirement.
+77. Alembic runtime validation is now confirmed in both SQLite and Postgres-backed contexts (`postgresql://postgres:user@localhost:5432/smartmls_db`), with `current -> upgrade head -> current` landing at `20260302_000002 (head)`.
+78. Legacy backend suites are now modernized in-place: `services/portal-api/app/tests/test_api.py` and `services/portal-api/tests/test_phase0.py` no longer rely on SQLite schema setup and instead use deterministic dependency-override/fake-session route-contract tests aligned to current API behavior.
+79. Backend hardening smoke coverage is now expanded in `services/portal-api/tests/test_hardening_smoke.py` to include lead write-path success, invalid payload (422) error path, and lead-detail authz/not-found checks.
+80. Authoritative runtime-path tooling is now codified via `services/portal-api/scripts/ci-gate-windows.cmd` and README runbook updates; both backend gate scripts now default `PORTAL_API_TEST_TARGETS` to `tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py`.
+81. Backend hardening smoke coverage now also includes authenticated `/api` write-path guard checks for `favorites`, `saved-searches`, and `alerts` (auth-required + validation/limit enforcement behavior) in `services/portal-api/tests/test_hardening_smoke.py`.
+82. Backend hardening smoke coverage now includes an authenticated `/api` write-path success path (`POST /api/saved-searches` create) with deterministic fake-session ID/timestamp refresh handling in `services/portal-api/tests/test_hardening_smoke.py`.
+83. Authoritative host-runtime backend gate now passes from the updated baseline via `services/portal-api/scripts/ci-gate-windows.cmd` (Windows venv + Postgres): `29 passed`, Alembic `current -> upgrade head -> current` remains at `20260302_000002 (head)`.
+84. Backend hardening smoke coverage now includes authenticated `/api` write success paths for both `saved-searches` and `favorites`, using model-aware fake-session query fixtures in `services/portal-api/tests/test_hardening_smoke.py`.
+
+85. Property Detail Modal Fix & Polish Sprint (Session 33) completed 7 initial issues: sticky header layout restructure (price-left, address+stats-right), section reorder (Additional Details above Assessment), print preview fix (scoped overflow rules, `data-print-photo-mosaic` hide, static print hero), market stats two-column table (neighborhood + town columns), comps error handling (404→empty 200 + expanded 3-mile radius), neighborhood display throughout modal (section heading, map heading, market stats column), photo "View all" vertical gallery (full-screen overlay with lazy loading).
+86. Property Detail Modal follow-up fixes (Session 33): print preview further fixed (Next.js Image `fill` position:absolute containment), comps search radius expanded from 1.25 to 3 miles, Transaction History now accepts `listingId` prop and tries listing_id lookup first before parcel_id fallback, Transaction History UI rewritten (removed redundant sub-header, reversed to most-recent-first, soft error styling).
+87. Neighborhood data pipeline (Session 33): `PublicListing` Pydantic schema now includes `subdivision` field, `get_parcel_detail()` now joins Neighborhood table to resolve `neighborhood_id` → name, frontend normalization fallback chain `listing.subdivision` → `parcelApiData.neighborhood_name`. Ran `populate_cache.py` (42/42 boundaries cached, was 23) and `fix_parcel_assignments.py` with new nearest-neighbor fallback pass (70,628 intersection + 33,128 nearest-neighbor = 103,756 parcels assigned). All Stamford parcels now have specific neighborhoods (0 in generic bucket).
+88. Street View heading fix (Session 33): Added `_calculate_bearing()` geodesic method to `StreetViewService` that computes compass bearing from panorama position to property coordinates. Replaced non-functional metadata heading (always defaulted to 0/north). Updated `get_image_url()` to use `pano_id` + heading when both available, otherwise fall back to address-based lookup (Google auto-orients). No cache clear needed — cached results automatically use address-based auto-orient.
+89. Off-market property status pill (Session 33): Removed standalone "not currently listed" card from modal overview. Added "Currently Off-Market" pill overlay on top-right of Street View image (gray bg, backdrop-blur, white text).
+90. Neighborhood map scroll fix (Session 33): Disabled `scrollWheelZoom` on Leaflet MapContainer in `NeighborhoodMapInner.tsx` to prevent scroll hijacking. Users can still zoom via +/- buttons.
 
 ## Immediate Next Steps
-- All changes need git commit (~30 modified files, ~10 untracked).
-- Apply Prisma migration `202602270001_add_message_template` when targeting production DB.
-- **Communications Hub Phase 2 (Google OAuth activation)**: Needs user to configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `INTEGRATION_ENCRYPTION_KEY` env vars. Backend code is fully built — only needs env vars + "Connect Google" prompt in CommunicationsHub + route AI drafts through GmailComposer.
-- **Communications Hub Phase 3 (Twilio integration)**: Needs user to set up Twilio account + env vars (`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`). Requires building: twilio package code, SMS/voice API routes, SmsComposer/CallLogger components.
-- AI content generation pipeline for website onboarding is the next non-CRM candidate.
-- Continue periodic Windows-authoritative Prisma reliability sampling (`db:generate:sample -- 10+`) after restarts/environment changes.
-- Remaining CRM Listing Modal items: agent notes/annotations, listing engagement data display, "Copy/Email Listing" share actions, tenant-scoped listing data.
-- Generate and apply Prisma migrations for Elite Overhaul's 8 new models when targeting production DB.
+- Add an authenticated `/api` write-path success smoke for `alerts` to round out success-path coverage across all three guarded write surfaces (`favorites`, `saved-searches`, `alerts`).
+- Keep backend CI execution reproducible in one authoritative runtime path (Postgres-backed gate + Windows venv), and capture outputs in `.brain` after each gate change.
+- Enforce secret-manager policy + key rotation checklist before launch (pre-commit scanner is now in place; key rotation still intentionally deferred until pre-launch).
+- **Westover boundary adjustment**: Zillow GeoJSON boundary for Westover doesn't extend east to Long Ridge Road. User identified this as incorrect but deferred manual correction for now.
+- **Communications Hub Phase 2 (Google OAuth activation)**: Needs user to configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `INTEGRATION_ENCRYPTION_KEY` env vars.
+- **Communications Hub Phase 3 (Twilio integration)**: Needs user to set up Twilio account + env vars (`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`).
+
+## Session Validation (2026-03-01, Session 24 — Portal UI/UX Makeover)
+- `npm run lint:portal` passes with non-blocking warnings only (pre-existing hook dependency + `<img>` optimization warnings).
+- `npm run test:routes --workspace @real-estate/portal` passes (3/3 route tests).
+- Zero remaining old color references (gray/blue/primary) in portal source files (verified via grep).
+- Portal Tailwind config migrated to stone palette with teal accent.
+- Portal globals.css rewritten with stone CSS variables, rounded-full buttons, rounded-2xl cards.
+- All 60+ portal source files bulk-updated to stone palette.
+
+## Session Validation (2026-03-02)
+- `npm run lint:portal` passes with non-blocking warnings (existing hook dependency + `<img>` optimization warnings in untouched files).
+- `npm run test:routes:portal` passes (`apps/portal/src/app/api/portal/proxy-utils.test.ts`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\portal\tsconfig.json"` passes after portal React type resolution fix in `apps/portal/tsconfig.json`.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run ci:portal"` passes end-to-end (lint warnings only, typecheck pass, route tests pass 3/3).
+- `npm run security:hooks:install` passes and sets local `core.hooksPath` to `.githooks`.
+- `scripts/security/scan-secrets.sh` canary validation blocks staged fake key (`OPENAI_API_KEY=sk-...`) as expected.
+- `python3 -m compileall app/models/search_alert.py alembic/versions/20260302_000002_search_alerts_constraints.py` passes in `services/portal-api`.
+- `alembic upgrade head` could not be executed in this WSL sandbox because Alembic CLI/runtime is not installed in the active Python environment (later validated in Windows virtualenv; see Session 27 validation).
+
+## Session Validation (2026-03-02, Session 27 — Portal backend hardening follow-through)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform\services\portal-api && set \"PYTHONPATH=.\" && C:\Users\19143\Projects\smartmls-ai-app\backend\.venv\Scripts\python.exe -m alembic -c alembic.ini upgrade head"` passes against Postgres runtime (`postgresql://postgres:user@localhost:5432/smartmls_db`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform\services\portal-api && set \"PYTHONPATH=.\" && C:\Users\19143\Projects\smartmls-ai-app\backend\.venv\Scripts\python.exe -m alembic -c alembic.ini current"` reports `20260302_000002 (head)` after upgrade.
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform\services\portal-api && set \"PYTHONPATH=.\" && C:\Users\19143\Projects\smartmls-ai-app\backend\.venv\Scripts\python.exe -m pytest tests/test_hardening_smoke.py -q"` passes (`5 passed`).
+- Historical note from Session 27: `app/tests/test_api.py` + `tests/test_phase0.py` were non-passing due legacy SQLite coupling/route drift at that time; this is now superseded by Session 28 suite modernization and CI-target reintegration.
+
+## Session Validation (2026-03-02, Session 28 — Backend test-suite modernization + CI reproducibility)
+- `python3 -m py_compile tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py` passes in `services/portal-api`.
+- `bash -n scripts/ci-gate.sh` passes in `services/portal-api`.
+- Full pytest execution in this WSL sandbox remains non-authoritative because `pytest` is unavailable (`pytest: command not found` / `python3 -m pytest: No module named pytest`), so authoritative pass should be captured via the new Windows gate script.
+
+## Session Validation (2026-03-02, Session 29 — `/api` write-path smoke expansion)
+- `python3 -m py_compile tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py` passes after adding `favorites`/`saved-searches`/`alerts` write-path smoke coverage in `tests/test_hardening_smoke.py`.
+- Full pytest execution remains pending authoritative host runtime (`services/portal-api/scripts/ci-gate-windows.cmd`) because `pytest` is unavailable in this WSL Python environment.
+
+## Session Validation (2026-03-02, Session 30 — authoritative gate closure + success-path smoke)
+- `python3 -m py_compile tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py` passes after adding authenticated saved-search create success-path coverage.
+- `cmd.exe /v:on /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=postgresql://postgres:user@localhost:5432/smartmls_db&& services\portal-api\scripts\ci-gate-windows.cmd"` passes authoritatively: backend tests `28 passed`, Alembic `current -> upgrade head -> current` at `20260302_000002 (head)`.
+
+## Session Validation (2026-03-02, Session 31 — favorites success-path smoke + authoritative re-run)
+- `python3 -m py_compile tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py` passes after adding authenticated favorites create success-path coverage.
+- `cmd.exe /v:on /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=postgresql://postgres:user@localhost:5432/smartmls_db&& services\portal-api\scripts\ci-gate-windows.cmd"` passes authoritatively: backend tests `29 passed`, Alembic `current -> upgrade head -> current` at `20260302_000002 (head)`.
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -1158,3 +1228,127 @@ Communications Hub Implementation — **Phase 1 (UI Redesign), Phase 4 (Custom T
 - `node --import tsx --test apps/admin/app/lib/admin-usage-telemetry.test.ts` passes.
 - `timeout 180s ./node_modules/.bin/tsc --noEmit --project apps/admin/tsconfig.json --pretty false` passes after telemetry helper/UI threshold + policy updates.
 - `node --import tsx --eval "... prisma.adminAuditEvent.findMany(... action='tenant.observability.telemetry.publish' ...)"` returns `0` published telemetry snapshots in local `packages/db/prisma/dev.db` (used as evidence for the deferred bulk-endpoint decision).
+
+## 61. Portal Frontend Migration into Monorepo (2026-03-01)
+
+### What Was Done
+- Copied `smartmls-ai-app/frontend` into `apps/portal/` (excluding `node_modules`, `.next`, `tsconfig.tsbuildinfo`, `package-lock.json`).
+- Renamed package from `smartmls-frontend` to `@real-estate/portal` for npm workspace registration.
+- Created `packages/design-tokens/` scaffold with shared color/typography/spacing tokens.
+- Added workspace scripts to root `package.json`: `dev:portal`, `build:portal`, `lint:portal`.
+- Updated aggregate `build` and `lint` scripts to include portal.
+- Updated `.gitignore` with portal-specific entries (`.env.local`, `tsconfig.tsbuildinfo`).
+- Created `apps/portal/.env.example` documenting required environment variables.
+- Updated all `.brain` documentation files and `CLAUDE.md` to reflect the portal integration.
+- Added D-202 to `DECISIONS_LOG.md` documenting the hybrid merge decision.
+- Created backup copies of both `real-estate-platform` and `smartmls-ai-app`.
+
+### Architecture Decision
+Hybrid merge: portal frontend lives in monorepo (`apps/portal`), Python/FastAPI backend remains standalone (`portal-api`). This gives the portal frontend access to shared packages (design tokens, types, UI components) while keeping the Python backend independent.
+
+## Session Update (2026-03-02 Portal Hardening Follow-Through: CI Gate + API Base Unification + Log Noise Suppression)
+
+### Completed This Session
+1. Standardized portal API-base usage:
+- client components now consistently call `/api/portal` (removed mixed `NEXT_PUBLIC_BACKEND_URL` usage),
+- server-side portal pages/sitemap now use shared `joinPortalApiPath(...)`,
+- shared backend URL resolver in `apps/portal/src/lib/server/portal-api.ts` now uses canonical `PORTAL_API_URL` / `NEXT_PUBLIC_API_URL`.
+2. Reduced production debug-log noise in search/map-heavy surfaces by converting verbose traces to development-only wrappers:
+- `apps/portal/src/app/properties/page.tsx`,
+- `apps/portal/src/components/LeafletParcelMap.tsx`,
+- `apps/portal/src/components/OverlayLayer.tsx`,
+- `apps/portal/src/components/UnifiedSearchBar.tsx`,
+- `apps/portal/src/components/StreetViewWidget.tsx`.
+3. Added backend CI-gate command surface for `services/portal-api`:
+- new script `services/portal-api/scripts/ci-gate.sh` (tests + Alembic current/upgrade/current + optional ruff/mypy),
+- root script `npm run ci:portal-api`,
+- backend README CI instructions updated.
+4. Installed `alembic==1.14.0` into the existing Windows backend virtualenv (`C:\\Users\\19143\\Projects\\smartmls-ai-app\\backend\\.venv`) to execute runtime Alembic validation (`current -> upgrade head -> current`), then captured backend test portability gaps when run against SQLite.
+
+### Session Validation (2026-03-02 Portal Hardening Follow-Through)
+- `python -m alembic -c alembic.ini current` (Windows virtualenv, `DATABASE_URL=sqlite:///./test.db`) passes.
+- `python -m alembic -c alembic.ini upgrade head` (same env) passes and applies `20260302_000001` then `20260302_000002`.
+- `python -m alembic -c alembic.ini current` (post-upgrade) reports `20260302_000002 (head)`.
+- `pytest app/tests/test_api.py tests/test_phase0.py -q` (Windows virtualenv + SQLite) fails with expected portability issues (`JSONB`/spatial functions not supported in SQLite + AVM route assertion drift), confirming backend CI should run against Postgres/PostGIS.
+- `npm run typecheck --workspace @real-estate/portal` passes.
+- `npm run test:routes --workspace @real-estate/portal` passes.
+- `npm run lint --workspace @real-estate/portal` passes with pre-existing warnings only.
+
+## Session Update (2026-03-03 Portal Google Config Hardening + Smoke Checklist)
+
+### Completed This Session
+1. Split Google key usage in portal-api settings with backward compatibility:
+- added `GOOGLE_MAPS_SERVER_API_KEY` (Street View + commute server calls),
+- added `GOOGLE_PLACES_API_KEY` (Places proxy calls),
+- retained `GOOGLE_MAPS_API_KEY` as legacy fallback for both.
+2. Added startup fail-fast Google config checks in `services/portal-api/app/core/config.py`:
+- missing key checks for enabled Google surfaces with actionable error text,
+- placeholder/format validation (`AIza...`) with opt-out flags for strictness.
+3. Updated Google-consuming backend surfaces to use resolved split keys:
+- `street_view.py`, `commute.py`, `places.py`, `favorites.py`, `commute_service.py`, and Street View error detail in `properties.py`.
+4. Updated deployment/docs guidance:
+- `services/portal-api/render.yaml` now declares split Google env vars,
+- `services/portal-api/README.md` updated for `.env.local`, split-key model, startup validation toggles, and smoke checklist link,
+- `apps/portal/.env.example` includes optional browser key guidance (kept unset by default because current flow is backend-proxied).
+5. Added reusable smoke checklist doc:
+- `services/portal-api/docs/portal-smoke-test-checklist.md` for map parcels, autocomplete, Street View, and commute validation across active + off-market properties.
+
+### Session Validation (2026-03-03 Portal Google Config Hardening + Smoke Checklist)
+- `python3 -m py_compile services/portal-api/app/core/config.py services/portal-api/app/services/street_view.py services/portal-api/app/api/routes/places.py services/portal-api/app/api/routes/commute.py services/portal-api/app/api/routes/favorites.py services/portal-api/app/services/commute_service.py services/portal-api/app/api/routes/properties.py` passes.
+- `python3 - <<'PY' ... from app.core.config import settings ... PY` could not run in this WSL environment because `pydantic_settings` is not installed (`ModuleNotFoundError`), so runtime import/startup validation remains to be confirmed in the authoritative Windows virtualenv path.
+
+## Session Update (2026-03-03 Portal Properties Map Performance Pass)
+
+### Completed This Session
+1. Reduced viewport request churn in `apps/portal/src/app/properties/page.tsx` by adding buffered-bounds fetch logic (`expandBounds`) and viewport-shift gating (`hasViewportShiftedEnough`) so small pans do not trigger full map fetches.
+2. Reworked context listing marker handling to avoid cross-viewport growth: capped context marker retention at `MAX_CONTEXT_LISTING_MARKERS=500` and replaced marker accumulation with latest-viewport deduped listing sets.
+3. Reduced duplicate map object rendering by deduplicating `combinedMapParcels` by `parcel_id` before passing data to `LeafletParcelMap`.
+4. Hardened `apps/portal/src/components/LeafletParcelMap.tsx` render path with lower feature caps, memoized `parcel_id` lookup map, memoized icon caches for price/dot markers, and `React.memo` export to avoid rerenders from unrelated parent state changes.
+
+### Session Validation (2026-03-03 Portal Properties Map Performance Pass)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\portal\tsconfig.json"` passes.
+- `npm run lint --workspace @real-estate/portal` could not be completed in this WSL path due environment transport/runtime limitations, so lint remains to be re-run in the user’s normal terminal path.
+
+## Session Update (2026-03-03 Portal Map Container Reuse Hotfix)
+
+### Completed This Session
+1. Removed manual `map.remove()` cleanup from `apps/portal/src/components/LeafletParcelMap.tsx` (`MapPreserver`) and `apps/portal/src/components/NeighborhoodMapInner.tsx` (`MapEventHandler`) so React-Leaflet remains the sole owner of map teardown lifecycle.
+2. Preserved ref cleanup (`externalMapRef` + `mapInstanceRef`) while eliminating duplicate teardown calls that can conflict with React-Leaflet unmount behavior in dev remount cycles.
+
+### Session Validation (2026-03-03 Portal Map Container Reuse Hotfix)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\portal\tsconfig.json"` passes.
+
+## Session Update (2026-03-03 Property Detail Modal Performance Phase)
+
+### Completed This Session
+1. Converted heavy modal subsections in `apps/portal/src/components/PropertyDetailModal.tsx` to dynamic chunk loading (`next/dynamic`): Street View, Neighborhood map, Market/valuation modules, and Neighborhood/commute/schools modules.
+2. Added shared `SectionLoadingState` fallback component to reduce repeated loading markup and keep section-loading behavior consistent.
+3. Added delayed post-open chunk preloading (`component.preload?.()`) so deeper sections are ready sooner when users scroll, reducing mount-time jank during long modal sessions.
+
+### Session Validation (2026-03-03 Property Detail Modal Performance Phase)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\portal\tsconfig.json"` passes.
+
+## Session Update (2026-03-03 Modal First-Open + Map Zoom Loader Tuning)
+
+### Completed This Session
+1. Updated parcel-first modal fetch flow in `apps/portal/src/components/PropertyDetailModal.tsx` to set normalized parcel data immediately after parcel fetch, then run active-listing enrichment asynchronously in the background instead of blocking initial render.
+2. Kept AVM fetch kickoff on the immediate parcel render path so off-market first-open now reaches usable modal state sooner while enrichment continues.
+3. Updated map fetch loading behavior in `apps/portal/src/app/properties/page.tsx`:
+- added delayed loader activation (220ms threshold) to avoid spinner flicker on fast viewport requests,
+- disabled loader for zoom 10-14 listing-only viewport fetches,
+- replaced full-screen blocking map overlay with compact non-blocking top-right “Updating map” indicator.
+
+### Session Validation (2026-03-03 Modal First-Open + Map Zoom Loader Tuning)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\portal\tsconfig.json"` passes.
+
+## Session Update (2026-03-03 Properties/Modal Refactor Phase 1)
+
+### Completed This Session
+1. Extracted property modal data/loading logic into dedicated hook `apps/portal/src/components/property-modal/usePropertyModalData.ts` and moved modal data contracts to `apps/portal/src/components/property-modal/types.ts`.
+2. Added short-lived in-memory cache (2-minute TTL) in modal data hook for listing/parcel payloads plus AVM payloads, keyed by `listing:{id}` / `parcel:{id}`.
+3. Updated `apps/portal/src/components/PropertyDetailModal.tsx` to consume `usePropertyModalData` and removed embedded normalization/fetch code, reducing component complexity and isolating fetch behavior from rendering.
+4. Extracted map viewport + map fetch behavior from `apps/portal/src/app/properties/page.tsx` into `apps/portal/src/app/properties/hooks/useMapViewportFetch.ts` (request dedupe, abort handling, viewport gating, loader timing, map-context clear helper).
+5. Updated `properties/page.tsx` to use the new map hook (`mapParcels`, `listingMarkers`, `mapLoading`, `fetchMapFeatures`, `handleViewportChange`, `clearMapContext`) while preserving behavior.
+
+### Session Validation (2026-03-03 Properties/Modal Refactor Phase 1)
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\portal\tsconfig.json"` passes.

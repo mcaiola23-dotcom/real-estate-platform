@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "ridgefield-center",
+  "townSlug": "ridgefield",
+  "overview": "Ridgefield Center is the cultural and commercial heart of Ridgefield, organized along a broad Main Street that stretches nearly a mile through the downtown core. The Aldrich Contemporary Art Museum — one of the few independent non-collecting contemporary art museums in the United States — anchors the northern end at 258 Main Street, while Ballard Park's five acres of Revolutionary War-era grounds occupy the southern stretch near Gilbert Street. Between them: independent shops, a nationally recognized farm-to-table restaurant scene, the Prospector Theater, and the Ridgefield Library.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "rc1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "rc1s1",
+          "text": "Main Street in Ridgefield Center is not a quaint two-block afterthought. It runs long and wide, lined with mature trees, brick sidewalks, and a mix of storefronts that have resisted the strip-mall gravity pulling at other Fairfield County towns. Luc's Cafe occupies one of the oldest buildings in town, serving French bistro fare nonstop from 11 a.m. through close. Bailey's Backyard, a 50-seat farm-to-table restaurant on Bailey Avenue, sources its meat and produce from farms in Ridgefield, Wilton, and North Salem, New York. Southwest Cafe has operated on Danbury Road since 1987, built around 500 pounds of hand-selected New Mexican green chiles shipped east every September."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "rc2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "rc2s1",
+          "text": "The cultural infrastructure here is unusually dense for a town of 25,000. The Aldrich Contemporary Art Museum rotates exhibitions year-round across its galleries and outdoor sculpture garden, with a permanent Main Street Sculpture installation visible from the sidewalk. Two blocks south, the Ridgefield Playhouse on East Ridge Road stages more than 200 live performances annually — comedy, music, film, dance — drawing over 100,000 patrons each year. The Prospector Theater on Prospect Street operates as a 501(c)(3) nonprofit first-run cinema that has employed over 335 individuals with disabilities since opening in 2014 and sold more than one million tickets."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "rc3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "rc3s1",
+          "text": "Housing in the center trades walkability for lot size. In-town colonials on quarter-acre and half-acre parcels sit within a few minutes' walk of the library, the park, and the restaurant row. Victorians with original millwork share blocks with newer townhome developments that have added inventory over the past two decades. Single-family homes typically price between $900,000 and $2.5 million, depending on condition, age, and proximity to Main Street. Condominium options serve buyers seeking a downtown Ridgefield address without exterior maintenance obligations."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "rc4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "rc4s1",
+          "text": "Ballard Park, donated from the Elizabeth Ballard estate in 1964, sits on the grounds of Colonel Philip Burr Bradley's 18th-century homestead — Bradley commanded the 5th Connecticut Regiment during the Revolutionary War and was a cousin of Aaron Burr. The park's gazebo hosts CHIRP summer concerts on Tuesday and Thursday evenings. The Ridgefield Library at 472 Main Street runs programming that ranges from children's storytimes to America 250 community conversations organized with the Keeler Tavern Museum. That layering of history, performance, dining, and public space makes the center function less like a suburb and more like a small city's most walkable district."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "At 258 Main Street, the Aldrich Contemporary Art Museum — Connecticut's only museum devoted exclusively to contemporary art — presents rotating exhibitions and a sculpture garden",
+    "Ballard Park preserves five acres of Revolutionary War-era grounds and hosts free CHIRP summer concerts on Tuesday and Thursday evenings",
+    "Ridgefield Playhouse stages over 200 live performances annually, drawing more than 100,000 patrons each year from across Fairfield County",
+    "On Prospect Street, the nonprofit Prospector Theater has employed over 335 individuals with disabilities since opening in 2014 as a first-run cinema",
+    "Walkable dining corridor includes Luc's Cafe, Bailey's Backyard, and Southwest Cafe — all independently owned and operating for decades"
+  ],
+  "housingCharacteristics": "Ridgefield Center's housing stock reflects its long history as a New England town center. In-town colonials on compact lots — typically a quarter-acre to half-acre — line the side streets off Main Street, many dating to the early and mid-20th century. Victorian-era homes with original architectural detail appear throughout the core, particularly along the blocks closest to the library and Ballard Park. Newer townhome developments have added condominium and attached-home inventory over the past two decades, broadening the range of entry points for center-town living.\n\nSingle-family homes in Ridgefield Center generally trade between $900,000 and $2.5 million. Price depends heavily on condition, lot size, and proximity to Main Street — renovated colonials within walking distance of the commercial district command the upper end of that range. Condominium units provide an alternative for buyers seeking a downtown address with lower maintenance, typically starting below the single-family threshold.",
+  "marketNotes": "Ridgefield Center draws consistent buyer interest from households prioritizing walkability and cultural access over acreage. The concentration of restaurants, the Aldrich, the Playhouse, and the Prospector Theater creates a lifestyle proposition that is difficult to replicate in surrounding Fairfield County towns. Properties that combine updated interiors with genuine walking proximity to Main Street generate strong competition when listed.\n\nInventory in the center turns over at a moderate pace. The limited land available for new construction constrains supply, while demand from both downsizers leaving larger Ridgefield properties and families relocating from urban areas remains steady. Townhome and condominium units tend to trade faster than single-family listings due to their relative scarcity and lower price points.",
+  "locationAccess": "Ridgefield Center is the geographic and civic hub of the town, with Main Street (Route 35) serving as the primary axis. Route 35 connects west to the New York state line at South Salem and east toward Danbury Road and Route 7. The Branchville Metro-North station on the Danbury Branch of the New Haven Line is approximately a five-minute drive south, providing rail service to South Norwalk and Grand Central Terminal with a total travel time of roughly 100 minutes.\n\nRoute 7 runs through the town's eastern and southern sections, linking Ridgefield to Wilton, Norwalk, and I-95 to the south. The Merritt Parkway (Route 15) is accessible via Route 7 in approximately 15 minutes. Danbury and its commercial infrastructure lie 12 miles north along Route 7. Westchester County Airport in White Plains is about 35 minutes west for regional air travel.",
+  "seoTitle": "Ridgefield Center CT | Downtown Homes & Culture",
+  "seoDescription": "Discover Ridgefield Center CT — walkable Main Street living near the Aldrich Museum and Ridgefield Playhouse. Contact Matt Caiola for available homes.",
+  "faqs": [
+    {
+      "question": "What cultural attractions are in Ridgefield Center?",
+      "answer": "Ridgefield Center is home to the Aldrich Contemporary Art Museum at 258 Main Street, Connecticut's only museum devoted exclusively to contemporary art, with rotating exhibitions and an outdoor sculpture garden. The Ridgefield Playhouse on East Ridge Road presents more than 200 live performances annually. The Prospector Theater on Prospect Street is a nonprofit first-run cinema that has sold over one million tickets since opening in 2014. The Ridgefield Library at 472 Main Street hosts year-round programming including author events and community lectures.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What types of homes are available in Ridgefield Center?",
+      "answer": "Ridgefield Center offers a mix of in-town colonials, Victorian-era homes, and newer townhome developments. Single-family homes on compact lots — typically a quarter-acre to half-acre — range from approximately $900,000 to $2.5 million depending on condition and proximity to Main Street. Condominium and attached-home options are also available for buyers seeking walkable downtown living with lower maintenance requirements. The housing stock varies in age from pre-war antiques to recently constructed townhomes.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Ridgefield Center from the train station?",
+      "answer": "The Branchville Metro-North station, located on the Danbury Branch of the New Haven Line, is approximately a five-minute drive from Ridgefield Center via Route 102 (Branchville Road). The station provides rail service to Grand Central Terminal with a transfer at South Norwalk and a total journey time of roughly 100 minutes. Commuter parking is managed by the Town of Ridgefield at the station lot.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

@@ -33,6 +33,9 @@ export type Town = {
   center?: GeoPoint;
   curatedPois?: CuratedPoi[];
   heroImageUrl?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  lastReviewedAt?: string;
 };
 
 export async function getTownsForHomepage(limit: number = 9): Promise<Town[]> {
@@ -67,6 +70,13 @@ export type Neighborhood = {
   overview?: string;
   description?: unknown; // Portable text block array
   highlights?: string[];
+  housingCharacteristics?: string;
+  marketNotes?: string;
+  locationAccess?: string;
+  faqs?: FAQ[];
+  seoTitle?: string;
+  seoDescription?: string;
+  lastReviewedAt?: string;
   center?: GeoPoint;
   curatedPois?: CuratedPoi[];
   town?: {
@@ -89,6 +99,9 @@ export async function getTownBySlug(slug: string): Promise<Town | null> {
       lifestyle,
       marketNotes,
       highlights,
+      seoTitle,
+      seoDescription,
+      lastReviewedAt,
       "center": center { "lat": lat, "lng": lng },
       curatedPois[] {
         category,
@@ -116,12 +129,24 @@ export async function getNeighborhoodBySlug(townSlug: string, neighborhoodSlug: 
       overview,
       description,
       highlights,
+      housingCharacteristics,
+      marketNotes,
+      locationAccess,
+      seoTitle,
+      seoDescription,
+      lastReviewedAt,
       "center": center { "lat": lat, "lng": lng },
       curatedPois[] {
         category,
         name,
         note,
         url
+      },
+      faqs[]->{
+        _id,
+        question,
+        answer,
+        schemaEnabled
       },
       town->{
         _id,

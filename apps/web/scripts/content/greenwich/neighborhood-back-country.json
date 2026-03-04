@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "back-country",
+  "townSlug": "greenwich",
+  "overview": "North of the Merritt Parkway, Greenwich's Back Country stretches across thousands of wooded acres where stone walls line roads with no sidewalks or streetlights. The Greenwich Audubon Center anchors 686 acres of protected habitat along Riversville Road. Stanwich Road, North Street, and Round Hill Road form the primary corridors through this estate district, connecting residents to five nearby golf courses including Stanwich Club and Burning Tree Country Club.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "bc1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bc1s1",
+          "text": "Back Country is not a village. It has no commercial strip, no train station, no sidewalks. What it has is land — four-acre zoning minimums across most parcels, with many properties spanning eight, ten, or fifteen acres of hardwood forest, meadow, and rocky Connecticut terrain. The roads are narrow and winding. Deer cross at dusk. Stone walls built in the 1700s still mark property boundaries along Stanwich Road and North Street."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "bc2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bc2s1",
+          "text": "Architecture here ranges widely. Center-hall colonials on five acres sit a half-mile from European-inspired stone manors with slate roofs and courtyard garages. Modern custom builds have appeared in recent years — clean lines, walls of glass, geothermal systems — but they remain the exception. Most homes were built between the 1920s and 1990s, and many have been substantially renovated. Equestrian properties with paddocks, riding rings, and multi-stall barns are concentrated along Round Hill Road and the parcels north of Lake Avenue."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "bc3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bc3s1",
+          "text": "The Greenwich Audubon Center on Riversville Road is the neighborhood's most significant public resource: 686 acres of trails, wetlands, and education programs managed by the National Audubon Society. Beyond that, daily life is private by design. Residents drive to the village centers of Cos Cob, Old Greenwich, or downtown Greenwich for groceries, dining, and Metro-North access. School assignments vary by specific address — North Street School, Glenville School, and Parkway School all serve portions of the Back Country."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "bc4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bc4s1",
+          "text": "Pricing reflects the land as much as the structures. A dated colonial on four acres might list at $2.5 million. A fully renovated estate on ten acres with pool, guest house, and protected views can reach $12 million to $15 million or more. The land itself — particularly parcels with southern exposure and usable topography — carries substantial standalone value in a market where four-acre zoned lots north of the Merritt are finite."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Four-to-ten-acre zoning preserves the rural estate character north of the Merritt Parkway",
+    "Greenwich Audubon Center provides 686 acres of protected trails and wildlife habitat on Riversville Road",
+    "Equestrian properties with paddocks and barns line Round Hill Road and parcels north of Lake Avenue",
+    "Stanwich Club, Burning Tree Country Club, and three additional golf courses are within a short drive",
+    "Colonial estates, European-inspired manors, and modern custom builds represent the architectural range"
+  ],
+  "housingCharacteristics": "The housing stock in Back Country is defined by scale. Lots begin at four acres under current zoning, and many older parcels are significantly larger. Colonials from the mid-twentieth century predominate, though substantial renovations have modernized interiors while preserving traditional facades. Shingle-style homes, Georgian revivals, and European-inspired stone estates with slate roofs appear throughout the Stanwich Road and North Street corridors. A smaller number of contemporary builds — characterized by open floor plans, floor-to-ceiling glass, and sustainable systems — have been constructed on subdivided parcels since 2010. Equestrian facilities, tennis courts, pools, and detached guest houses are common on properties above six acres.\n\nPrices typically range from $2 million for a dated colonial on a minimum-zoned lot to $15 million or more for a fully improved estate with acreage, outbuildings, and high-end finishes. Land value alone can account for $1 million to $3 million depending on parcel size, road frontage, and topography.",
+  "marketNotes": "Back Country trades on scarcity. The four-acre zoning minimum means new inventory is limited to existing homes, occasional tear-down-and-rebuild scenarios, and the rare subdivision of a larger parcel. Turnover is low — many families hold properties for decades — so active listings at any given time may number fewer than twenty across the entire district. Well-maintained estates on Stanwich Road and upper North Street attract the strongest buyer interest, particularly those with modern kitchens, updated mechanicals, and usable flat land.\n\nOverpriced listings linger here more than anywhere in Greenwich. Buyers at the $5 million-plus level are deliberate, often comparing against Westchester and Litchfield County alternatives. Accurate pricing and presentation are critical. The most successful sales in the past two years have been properties that combined privacy with updated living spaces — the market has moved away from dated trophy homes that require seven-figure renovation budgets.",
+  "locationAccess": "Back Country sits north of the Merritt Parkway (Route 15), which provides the primary east-west highway connection. The Merritt links to I-95 via several local routes, and the drive to downtown Greenwich takes 10 to 20 minutes depending on the specific road and traffic conditions. Metro-North stations at Greenwich, Cos Cob, and Riverside are all within that same driving radius, putting Grand Central Terminal roughly 50 to 55 minutes away by express train after the station drive.\n\nWestchester County is immediately accessible via North Street and King Street into Armonk and Purchase, New York. Westchester County Airport sits approximately 20 minutes north. The tradeoff for Back Country's seclusion is straightforward: every errand requires a car, and winter road conditions on the narrow, tree-canopied lanes demand attention.",
+  "seoTitle": "Back Country Greenwich CT | Estate Homes & Land",
+  "seoDescription": "Explore Back Country Greenwich estate homes on 4-10+ acre lots. Browse listings, pricing, and schools info. Contact Matt Caiola for a private showing.",
+  "faqs": [
+    {
+      "question": "What is the Back Country area of Greenwich, CT?",
+      "answer": "Back Country refers to the rural estate district north of the Merritt Parkway in Greenwich. The area is characterized by four-to-ten-acre zoning minimums, wooded parcels, stone walls, and roads without sidewalks or streetlights. Major corridors include Stanwich Road, North Street, Riversville Road, and Round Hill Road. Homes range from renovated colonials to European-inspired estates and modern custom builds.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in Back Country Greenwich?",
+      "answer": "Back Country home prices typically range from approximately $2 million for a dated colonial on a four-acre lot to $15 million or more for a fully renovated estate on ten-plus acres with outbuildings, equestrian facilities, and high-end finishes. Land value alone can reach $1 million to $3 million depending on parcel size and topography. The price spread is wide and heavily influenced by the condition of improvements and usable acreage.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Back Country Greenwich from Manhattan?",
+      "answer": "Back Country residents typically drive 10 to 20 minutes south to reach a Metro-North station at Greenwich, Cos Cob, or Riverside. From there, express trains reach Grand Central Terminal in approximately 47 minutes, making the total door-to-platform commute roughly 55 to 70 minutes. By car, Manhattan is accessible via the Merritt Parkway to I-95 or via Route 684 through Westchester County.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Which schools serve Back Country Greenwich?",
+      "answer": "School assignments in Back Country depend on the specific address within the district. Portions of the Back Country feed into North Street School, Glenville School, and Parkway School at the elementary level. All students attend Western Middle School or Central Middle School before converging at Greenwich High School. Private options in the area include Brunswick School, Greenwich Academy, and Whitby Montessori School.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

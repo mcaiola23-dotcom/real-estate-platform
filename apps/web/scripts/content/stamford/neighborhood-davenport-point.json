@@ -1,0 +1,92 @@
+{
+  "type": "neighborhood",
+  "slug": "davenport-point",
+  "townSlug": "stamford",
+  "overview": "Davenport Point is a private waterfront association of approximately fifty homes on the Shippan peninsula, where Davenport Drive meets Long Island Sound. The association grants residents boat launch, dock, and mooring rights, and a handful of properties sit directly on the water with private docks. Architectural styles range from contemporary colonials to Cape Cods and modern builds, with homes spanning 1,500 to nearly 6,000 square feet on generous lots framed by mature trees and landscaped gardens.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "dp1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dp1s1",
+          "text": "Davenport Point occupies one of the most protected positions on Stamford's coastline. The association sits on a finger of the Shippan peninsula that curves toward Old Greenwich, and the homes along the outer edge face directly across Long Island Sound. On a clear evening, the Manhattan skyline is visible to the southwest. This is not a subdivision that was platted from farmland and marketed to volume buyers. It is a legacy enclave that has built its identity over generations, where property transfers are infrequent and closely watched."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dp2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dp2s1",
+          "text": "Association membership includes access to a shared boat launch and dock facilities, with mooring rights in the protected waters off the point. Several waterfront lots carry the additional privilege of private docks, a distinction that significantly increases property value. Kayaking, paddleboarding, and seasonal gatherings — beach parties, clambakes, and boat raft-ups — are part of the community rhythm. The Stamford Yacht Club operates nearby along the Shippan shoreline, adding a broader sailing and social network for residents who want it."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dp3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dp3s1",
+          "text": "The housing stock at Davenport Point is architecturally varied. Contemporary colonials with four and five bedrooms form the majority, but modern waterfront builds with walls of glass, Cape Cod cottages expanded over decades, and the occasional Victorian-influenced restoration all share Davenport Drive. Lots are generous by Stamford coastal standards — lush grassy lawns, mature shade trees, and established perennial gardens give the streetscape a settled, private character. Interior finishes at the upper end reflect the price point: chef-grade kitchens, primary suites with Sound views, and outdoor living areas oriented toward the water."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "dp4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "dp4s1",
+          "text": "Downtown Stamford is roughly five minutes by car, and the Old Greenwich village center sits just over the town line. The Stamford Metro-North station is reachable in under ten minutes, and the Old Greenwich station is even closer for express service to Grand Central Terminal. That proximity to urban infrastructure — restaurants on Bedford Street, offices at Harbor Point, the Palace Theatre's performance calendar — coexists with a residential experience that revolves around the tide schedule and the view from the seawall. Davenport Point listings are rare. When they appear, they represent some of the most significant residential transactions in the Stamford market."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Private association of approximately fifty homes with shared boat launch, dock, and mooring rights on Long Island Sound",
+    "Waterfront properties with direct Sound frontage and private docks represent Stamford's trophy-level residential real estate",
+    "Located on the Shippan peninsula with Manhattan skyline views to the southwest on clear evenings",
+    "Under ten minutes to Stamford Metro-North and even closer to Old Greenwich station for express Grand Central service"
+  ],
+  "housingCharacteristics": "Davenport Point's roughly fifty homes range from approximately 1,500 square feet to nearly 6,000 square feet. Contemporary colonials dominate the streetscape, complemented by Cape Cods, modern waterfront constructions, and period restorations. Lots are generous relative to Stamford's coastal inventory, with mature trees, landscaped gardens, and in many cases direct or near-direct water access.\n\nPricing typically falls between $2 million and $5 million or above, with the highest values reserved for direct waterfront lots carrying private dock privileges. Interior renovations at this price point include high-end kitchen builds, integrated smart-home systems, and primary bedroom suites oriented toward the Sound. The association's small size and infrequent turnover mean that comparable sales data is limited; each transaction is effectively a bespoke negotiation shaped by lot position, water access, and the condition of the individual property.",
+  "marketNotes": "Davenport Point is one of Stamford's thinnest markets by volume. In a typical year, zero to two properties change hands within the association. When a listing does appear, it draws attention from a narrow pool of buyers who have already identified private waterfront in Stamford as their target and have the financial capacity to close above $2 million.\n\nThe scarcity is the defining market dynamic. There is no inventory pipeline — no adjacent land to develop, no teardown-and-rebuild cycle to generate fresh supply. Sellers hold leverage by default, though pricing still requires discipline. Buyers at this level compare Davenport Point against waterfront options in Belle Haven, Dolphin Cove, and the Old Greenwich shoreline. Accurate positioning relative to those alternatives, combined with transparent disclosure of association rights and dock privileges, is what converts interest into closed transactions.",
+  "locationAccess": "Davenport Point sits on the Shippan peninsula in southeastern Stamford, minutes from both the Stamford and Old Greenwich Metro-North stations. Express trains from either station reach Grand Central Terminal in 45 to 50 minutes. Downtown Stamford is approximately five minutes by car, with Bedford Street's restaurants and the Harbor Point waterfront development both reachable without highway driving.\n\nOld Greenwich's village center — its shops on Sound Beach Avenue and the beach at Greenwich Point — lies just across the town line to the west. I-95 is accessible via the Elm Street or Atlantic Street interchanges in roughly ten minutes. The Merritt Parkway connects through northern Stamford for those commuting to offices along the Route 7 or Route 15 corridors.",
+  "seoTitle": "Davenport Point Stamford CT | Waterfront Estates",
+  "seoDescription": "Explore Davenport Point in Stamford CT — exclusive waterfront homes from $2M to $5M+ with private docks on Long Island Sound. Call Matt Caiola to learn more.",
+  "faqs": [
+    {
+      "question": "What is Davenport Point in Stamford, CT?",
+      "answer": "Davenport Point is a private waterfront association of approximately fifty homes on the Shippan peninsula in southeastern Stamford. The association provides members with shared boat launch, dock, and mooring rights on Long Island Sound. Several properties along the outer edge have direct waterfront access and private docks. The enclave is known for its generous lots, mature landscaping, and architectural variety ranging from contemporary colonials to modern waterfront builds.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How much do homes cost at Davenport Point?",
+      "answer": "Properties at Davenport Point typically trade between $2 million and $5 million or above, with the highest prices reserved for lots with direct Long Island Sound frontage and private dock privileges. Inventory is extremely limited — the association contains only about fifty homes, and in a typical year, zero to two come to market. Each transaction is shaped by lot position, water access rights, home size, and condition, making comparable sales data sparse.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How close is Davenport Point to train service?",
+      "answer": "Davenport Point is under ten minutes by car from the Stamford Metro-North station and even closer to the Old Greenwich station, which is just across the town line. Express trains from both stations reach Grand Central Terminal in 45 to 50 minutes. Downtown Stamford's offices and restaurants are approximately five minutes away by car, and the Old Greenwich village center is similarly close for shopping and dining.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

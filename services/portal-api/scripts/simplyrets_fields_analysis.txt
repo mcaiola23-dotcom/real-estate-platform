@@ -1,0 +1,28 @@
+================================================================================
+Traceback (most recent call last):
+SIMPLYRETS API RESPONSE EXAMINATION
+================================================================================
+
+Fetching sample properties from SimplyRETS sandbox...
+
+Attempting API call...
+  File "C:\Users\19143\Projects\smartmls-ai-app\backend\scripts\examine_simplyrets.py", line 42, in examine_simplyrets_response
+    print(f"\u2705 Successfully fetched {len(raw_response)} properties\n")
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2705' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\19143\Projects\smartmls-ai-app\backend\scripts\examine_simplyrets.py", line 185, in <module>
+    asyncio.run(examine_simplyrets_response())
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "C:\Users\19143\Projects\smartmls-ai-app\backend\scripts\examine_simplyrets.py", line 180, in examine_simplyrets_response
+    print(f"\n\u274c Error examining SimplyRETS response: {e}")
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 2: character maps to <undefined>

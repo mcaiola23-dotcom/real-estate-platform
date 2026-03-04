@@ -1,0 +1,90 @@
+{
+  "_createdAt": "2026-01-06T17:40:42Z",
+  "_id": "a0fbdff5-3a52-49cd-8394-d543f03af635",
+  "_rev": "n1R3vnrXP7D7ze4juabobn",
+  "_type": "town",
+  "_updatedAt": "2026-02-11T17:59:45Z",
+  "center": {
+    "_type": "geopoint",
+    "lat": 41.1415,
+    "lng": -73.3579
+  },
+  "faqs": [
+    {
+      "_key": "ade0c37f2602",
+      "_ref": "11c88547-a2c8-4597-95fd-44618b9de127",
+      "_type": "reference"
+    },
+    {
+      "_key": "199e96e8b487",
+      "_ref": "df3197de-ade6-457e-a592-b643c1918e14",
+      "_type": "reference"
+    },
+    {
+      "_key": "075bd22377a6",
+      "_ref": "11d5b77e-778d-4e5c-93eb-e58f20144519",
+      "_type": "reference"
+    }
+  ],
+  "highlights": [
+    "Walkable village core with Main Street dining, shopping, and a strong community atmosphere",
+    "Beautiful shoreline including Compo Beach for year-round outdoor lifestyle",
+    "Metro-North commuter rail access on the New Haven Line for NYC commuting",
+    "Distinct neighborhood options - commuter-friendly, downtown-adjacent, and coastal sections",
+    "Shoreline lifestyle without sacrificing day-to-day practicality for commuters",
+    "A town where weekends feel local - beach time, walks, and community events close to home"
+  ],
+  "lastReviewedAt": "2026-01-06T17:40:00.000Z",
+  "lifestyle": "Westport’s lifestyle is built around a village center, shoreline access, and a strong “weekend-at-home” culture. Downtown Westport is active and walkable in pockets, and the Saugatuck River adds a distinct sense of place.\n\nCommuter access is a major practical advantage. Westport station is on the Metro-North New Haven Line; the MTA notes ticket machines on both platforms and no ticket office, plus a waiting area and restrooms (daily 4 a.m.–12 noon).\n\nFor the shoreline, Compo Beach is a major anchor. The Town of Westport lists Compo Beach as a 29-acre park at 60 Compo Beach Road with an extensive sand beach, boardwalk, pavilion, and other recreation amenities. Westport is best for buyers who want a town that feels active, coastal, and connected—without losing the calm that makes Connecticut living work.",
+  "marketNotes": "Westport’s market is primarily single-family and very neighborhood-sensitive. Proximity to downtown, train access, and shoreline lifestyle can each shape demand differently depending on the pocket.\n\nWhen I advise buyers here, I take a structured approach: understand the neighborhood dynamics first, then price the decision rationally. My finance background helps me keep the math honest, and my investment experience helps me evaluate homes beyond the photos—layout, lot utility, and long-term livability.\n\nFor sellers, Westport often rewards clarity and presentation. The goal is to highlight what’s true about the lifestyle—whether that’s walkability, a beach routine, or a quieter residential setting—then price with discipline so the market responds quickly and confidently.",
+  "name": "Westport",
+  "overviewLong": [
+    {
+      "_key": "99001859a117",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "f94c7810be64",
+          "_type": "span",
+          "marks": [],
+          "text": "Westport is one of those towns where the lifestyle is the headline. You have a true village center, shoreline amenities that are part of real daily life, and a cultural scene that keeps the town active year-round."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "8295a8a01d0e",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "f9c70978d4df",
+          "_type": "span",
+          "marks": [],
+          "text": "I find Westport attracts buyers who want a high-quality routine without feeling flashy about it—good restaurants, community energy, and an easy path to New York. The town feels engaged, not sleepy, and there’s a lot of pride in maintaining what makes Westport feel like Westport."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "15899fc3f3c7",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "ad482880e03d",
+          "_type": "span",
+          "marks": [],
+          "text": "From a real estate standpoint, Westport is also neighborhood-driven. Downtown-adjacent living, commuter convenience near the station, and coastal pockets all offer different versions of the town. The key is matching the home to the routine you actually want."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "overviewShort": "Westport is a coastal town with a strong village core, a serious cultural scene, and a lifestyle that feels both polished and relaxed. Many residents commute via Metro-North while keeping their day-to-day anchored in town—beaches, Main Street, and community events. If you want Fairfield County living with real character and momentum, Westport stands out.",
+  "slug": {
+    "_type": "slug",
+    "current": "westport"
+  }
+}

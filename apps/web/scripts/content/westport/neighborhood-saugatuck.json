@@ -1,0 +1,97 @@
+{
+  "type": "neighborhood",
+  "slug": "saugatuck",
+  "townSlug": "westport",
+  "overview": "Saugatuck is where Westport meets the water and the rail line. The neighborhood wraps around the Saugatuck River and the Westport Metro-North station, with Riverside Avenue running north past The Whelk, Black Duck Cafe, and Tarantino into a residential district of colonials, capes, and newer waterfront construction. The name itself is a Native American word meaning mouth of the river — and the river still defines everything here, from the yacht clubs to the dining to the commute.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Saugatuck was Westport's original commercial engine. In the nineteenth century, the river and the railroad made this the town's connection point to New York, Boston, and the wider world. Goods moved through here. People moved through here. That transit-oriented identity never left. The Westport Metro-North station still sits at the neighborhood's southern edge, and the walkable grid of shops, restaurants, and services around Bridge Street and Riverside Avenue still operates as a self-contained village center."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The dining scene is a draw in its own right. The Whelk, housed in a converted boathouse, serves some of Connecticut's best sustainable seafood. Black Duck Cafe sits on a river barge — you eat with the water directly beneath you. Tarantino offers high-end Italian fare a block from the station. Donut Crazy and a cluster of smaller cafes round out the morning and lunch options. This is not a restaurant row imported from somewhere else; these places grew out of the waterfront setting, and they pull customers from across Fairfield County."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "North of the commercial core, Saugatuck transitions into tree-lined residential streets. Cape Cod and colonial-style homes from the early to mid-twentieth century predominate on the north side, many on modest lots with well-established landscaping. Closer to the water, newer construction and renovated properties command river or harbor views. The Saugatuck Rowing Club, Saugatuck Harbor Yacht Club, and Cedar Point Yacht Club — a three-time U.S. Sailing One Design Club of the Year — anchor the waterfront recreational life. Compo Beach, Westport's resident-access shoreline, is a short drive south."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "For commuters, the numbers are straightforward. The station is walkable from most homes in the neighborhood — seven minutes on foot from the residential streets north of Bridge Street. Trains run frequently on the New Haven Line. That walk-to-train convenience, combined with the waterfront dining, the yacht clubs, and the proximity to both I-95 and downtown Westport, makes Saugatuck one of the most complete neighborhoods in town. It is not the largest or the most private. It is the most connected."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Westport Metro-North station is walkable from most homes, with trains reaching Grand Central Terminal in approximately 60 to 75 minutes",
+    "The Whelk, Black Duck Cafe, and Tarantino anchor a waterfront dining district along Riverside Avenue and Bridge Street",
+    "Cedar Point Yacht Club, a three-time U.S. Sailing One Design Club of the Year, and the Saugatuck Rowing Club provide direct river access",
+    "Housing ranges from early-twentieth-century capes and colonials to modern waterfront construction and riverfront condominiums"
+  ],
+  "housingCharacteristics": "Saugatuck's housing stock reflects the neighborhood's layered history. North of Bridge Street, the residential streets are lined with Cape Cod and colonial-style homes built between 1900 and the 1960s, typically on lots of a quarter-acre to a half-acre. These are the neighborhood's bread-and-butter properties — well-maintained, moderately sized, and priced for the walk-to-train convenience they offer. Closer to the river and harbor, newer construction and substantial renovations introduce contemporary architecture, open floor plans, and water-view siting.\n\nCondominium and townhouse options exist along Saugatuck Avenue and Riverside Avenue, ranging from approximately $600,000 for older units to $2 million for newly renovated riverfront residences. Single-family homes generally trade between $1.2 million and $3.5 million, with the most exclusive waterfront properties reaching above $4 million. The diversity of housing types — from starter condos to custom-built riverfront homes — gives Saugatuck a broader price band than most Westport neighborhoods.",
+  "marketNotes": "Saugatuck appeals to a wide buyer base. Young professionals and commuters target the condos and smaller colonials near the station for walk-to-train convenience. Families value the school district — Saugatuck Elementary on Riverside Avenue feeds into Coleytown Middle School and Staples High School — and the ability to reach downtown Westport without driving. Empty nesters and second-home buyers gravitate toward the waterfront properties and the dining-and-recreation lifestyle.\n\nThat breadth of demand means Saugatuck rarely lacks for interested buyers, but inventory turns over more frequently than in neighborhoods like Old Hill, where homeowners stay for decades. Condos and smaller single-family homes move quickly, particularly when priced under $2 million. Waterfront listings attract regional attention and often sell within the first two weeks of exposure. Spring and early summer remain the strongest selling seasons, though the walk-to-train appeal generates year-round activity.",
+  "locationAccess": "The Westport Metro-North station sits at Saugatuck's southern boundary, making this one of the few true walk-to-train neighborhoods in Fairfield County. Most homes are within a seven-minute walk of the platform. Express service on the New Haven Line reaches Grand Central Terminal in approximately 60 minutes; local trains take roughly 70 to 75 minutes. Green's Farms station, about two miles west, provides additional scheduling options.\n\nI-95 is accessible within three minutes via the Saugatuck Avenue interchange, connecting Stamford in twelve minutes southbound and Bridgeport in fifteen minutes northbound. Downtown Westport's Main Street is less than a mile north, reachable on foot along the river or by a two-minute drive. Compo Beach and Longshore Club Park — with its golf course, tennis courts, pool, marina, and sailing school — are a five-minute drive south on Compo Road South. The neighborhood's central position between the train, the highway, the river, and the town center is its defining advantage.",
+  "seoTitle": "Saugatuck, Westport CT | Waterfront & Train Access",
+  "seoDescription": "Browse Saugatuck homes in Westport, CT — walk-to-train commuting, riverfront dining, and yacht clubs. Connect with Matt Caiola for available listings.",
+  "faqs": [
+    {
+      "question": "How far is the Saugatuck neighborhood from the Westport train station?",
+      "answer": "The Westport Metro-North station is located at the southern edge of the Saugatuck neighborhood, within a seven-minute walk of most residential streets north of Bridge Street. This walk-to-train proximity is one of Saugatuck's defining features and a primary driver of buyer demand. Express trains on the New Haven Line reach Grand Central Terminal in approximately 60 minutes, with local service running 70 to 75 minutes.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What restaurants are in the Saugatuck area of Westport?",
+      "answer": "Saugatuck's dining district along Riverside Avenue and Bridge Street includes The Whelk, a converted boathouse serving sustainable seafood; Black Duck Cafe, a restaurant located on a river barge on the Saugatuck River; and Tarantino, which offers high-end Italian fare near the station. Additional options include Donut Crazy for morning pastries and coffee, along with several smaller cafes and bistros that draw diners from across Fairfield County.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What schools serve the Saugatuck neighborhood in Westport?",
+      "answer": "Students in the Saugatuck neighborhood attend Saugatuck Elementary School on Riverside Avenue for grades K through 5, followed by Coleytown Middle School for grades 6 through 8, and Staples High School for grades 9 through 12. Westport Public Schools is consistently rated the top school district in Connecticut by Niche, with all schools in the district earning an A-plus rating. Staples High School is ranked among the top public high schools in the state.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Are there condos available in Saugatuck, Westport CT?",
+      "answer": "Yes, Saugatuck is one of the few Westport neighborhoods with a meaningful supply of condominiums and townhouses. Units along Saugatuck Avenue and Riverside Avenue range from approximately $600,000 for older buildings to around $2 million for newly renovated riverfront residences. These properties are particularly popular with commuters seeking walk-to-train convenience and buyers looking for a lower-maintenance entry point into the Westport market.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

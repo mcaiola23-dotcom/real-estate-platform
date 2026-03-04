@@ -1,0 +1,97 @@
+{
+  "type": "neighborhood",
+  "slug": "fairfield-woods",
+  "townSlug": "fairfield",
+  "overview": "Trader Joe's at 2258 Black Rock Turnpike and the Fairfield Woods Branch Library on Fairfield Woods Road form the commercial and civic anchors of this interior neighborhood northwest of the town center. Jennings Elementary School and Fairfield Woods Middle School share a campus here — both earning A ratings from Niche — and the surrounding residential streets hold one of Fairfield's most consistent concentrations of mid-century single-family homes priced below the town median.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "w1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "w1s1",
+          "text": "Fairfield Woods does not announce itself. There is no grand entrance, no commercial district with a branded identity, no waterfront vista. What it offers instead is a neighborhood scaled for daily life: tree-lined residential streets, a branch library with active programming, a shared school campus, and a stretch of Black Rock Turnpike that handles grocery runs, takeout, and most routine errands without requiring a trip across town."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "w2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "w2s1",
+          "text": "The school campus is the neighborhood's gravitational center. Jennings Elementary and Fairfield Woods Middle School sit on adjacent parcels along Fairfield Woods Road, and the Fairfield Woods Branch Library occupies the same cluster. Parents walk children to school. The library runs story hours, craft programs, board game nights, and adult education events that draw residents from across the surrounding blocks. Park Kunsua, with its soccer fields and open space, sits nearby for after-school recreation. The density of family-oriented infrastructure within a small radius is unusually high for a Fairfield neighborhood that is not downtown."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "w3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "w3s1",
+          "text": "Black Rock Turnpike serves as the neighborhood's commercial spine. Trader Joe's anchors the grocery options; ShopRite is nearby on the same corridor. Locally owned restaurants, a mix of casual and takeout-oriented, line the turnpike alongside service-oriented businesses. The Black Rock Shopping Center consolidates additional retail. This is a practical corridor — not a destination shopping district — and its functionality is precisely what residents value."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "w4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "w4s1",
+          "text": "Fairfield Woods sits roughly five miles from the nearest public beach, and that distance from the shoreline is the primary reason pricing remains below the town median. Buyers who prioritize school quality, lot size, and functional neighborhood infrastructure over waterfront proximity find strong alignment here. The neighborhood feeds into Fairfield Warde High School, placing students in one of Connecticut's well-regarded public high school systems from kindergarten through graduation."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Jennings Elementary and Fairfield Woods Middle School share a walkable campus, both rated A by Niche with top-10-percent state test scores",
+    "Fairfield Woods Branch Library hosts year-round programming — story hours, craft clubs, board game nights, and adult education events",
+    "Black Rock Turnpike commercial corridor includes Trader Joe's, ShopRite, and the Black Rock Shopping Center for routine errands",
+    "Home prices sit below Fairfield's town-wide median, with mid-century colonials on landscaped lots starting in the mid-$400,000s"
+  ],
+  "housingCharacteristics": "Single-family homes dominate Fairfield Woods, with the majority built between the 1950s and 1980s. Colonials, raised ranches, and Cape Cods are the prevailing styles, set on lots typically ranging from a quarter-acre to a half-acre. Mature trees — oaks, maples, and the occasional evergreen screen — give the streets a settled, wooded character that distinguishes them from newer subdivisions. Many homes retain original footprints with updated interiors: renovated kitchens, finished basements, and expanded primary suites are common renovation patterns.\n\nPricing in Fairfield Woods reflects its inland position. Three- and four-bedroom homes in original or lightly updated condition trade between $465,000 and $700,000. Extensively renovated properties with expanded square footage reach $750,000 to $850,000. New construction is rare given the established lot grid, but occasional teardown-rebuild projects introduce contemporary colonials in the $900,000 to $1.1 million range. For buyers evaluating Fairfield's school system against their budget, Fairfield Woods represents the strongest value proposition in town.",
+  "marketNotes": "Fairfield Woods generates consistent transaction volume driven by first-time buyers and young families entering the Fairfield school system. The price floor is among the lowest in town for single-family homes, which creates natural demand from buyers priced out of shoreline, center, and Greenfield Hill addresses. Inventory moves steadily — homes in updated condition and priced accurately tend to attract offers within the first two weeks.\n\nThe neighborhood competes most directly with Stratfield Village to the east and the outer edges of Brooklawn to the southwest. Fairfield Woods' advantage is its school campus walkability and the Black Rock Turnpike commercial corridor, which together create a self-contained daily rhythm that reduces dependence on downtown or shoreline amenities. Appreciation has been steady, tracking the broader Fairfield market without the volatility associated with flood-zone properties near the shore.",
+  "locationAccess": "Black Rock Turnpike bisects the neighborhood and connects south to I-95 via exit 24 and north toward the Merritt Parkway. The Fairfield Metro station, the closest Metro-North stop, sits approximately two miles south on lower Black Rock Turnpike, with express service to Grand Central Terminal in 65 to 70 minutes. The downtown Fairfield station is roughly three miles southeast via the Post Road.\n\nFairfield's public beaches — Jennings and Penfield — are approximately five miles south, a 10- to 15-minute drive depending on seasonal traffic. Downtown Fairfield and its Post Road shops and restaurants are a 5- to 10-minute drive via Black Rock Turnpike or Route 58. The Merritt Parkway interchange is less than two miles north, providing an alternative commute route toward Stamford, New Haven, and the Hutchinson River Parkway into Westchester County.",
+  "seoTitle": "Fairfield Woods CT | Family Homes & Top-Rated Schools",
+  "seoDescription": "Explore Fairfield Woods in Fairfield CT with A-rated schools and homes below the town median. View family-friendly listings and pricing. Contact us today.",
+  "faqs": [
+    {
+      "question": "What schools serve the Fairfield Woods neighborhood?",
+      "answer": "Fairfield Woods students attend Jennings Elementary School and Fairfield Woods Middle School, which share a campus on Fairfield Woods Road along with the Fairfield Woods Branch Library. Both schools earn A ratings from Niche, and Jennings ranks in the top 10 percent of Connecticut schools for overall test scores, with 82 percent of students proficient in math and 77 percent in reading. High school students attend Fairfield Warde High School, ranked among the state's top 30 public high schools.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in Fairfield Woods?",
+      "answer": "Fairfield Woods offers some of the most accessible single-family home pricing in Fairfield. Three- and four-bedroom homes in original or lightly updated condition typically trade between $465,000 and $700,000, while extensively renovated properties reach $750,000 to $850,000. Occasional new construction on teardown lots lists in the $900,000 to $1.1 million range. Most homes were built between the 1950s and 1980s and sit on quarter-acre to half-acre lots with mature landscaping.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Fairfield Woods from the beach?",
+      "answer": "Fairfield Woods is an interior neighborhood located approximately five miles from the nearest public beaches — Jennings Beach and Penfield Beach on Long Island Sound. The drive takes 10 to 15 minutes depending on seasonal traffic. Resident beach stickers, available through the town, grant parking access at all Fairfield public beaches throughout the summer season. The inland position is the primary factor keeping home prices below the town-wide median.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Is there shopping near Fairfield Woods?",
+      "answer": "Black Rock Turnpike runs through the neighborhood and serves as its commercial corridor. Trader Joe's at 2258 Black Rock Turnpike and ShopRite handle grocery needs. The Black Rock Shopping Center provides additional retail options. Locally owned restaurants and service-oriented businesses line the turnpike. For broader shopping and dining, downtown Fairfield's Post Road corridor is a 5- to 10-minute drive southeast via Black Rock Turnpike or Route 58.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

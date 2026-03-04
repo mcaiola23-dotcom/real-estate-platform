@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "long-lots",
+  "townSlug": "westport",
+  "overview": "Named for the narrow colonial-era land parcels drawn for farmers in the 1600s, Long Lots stretches across Westport's residential interior. The 40-acre Fairfield County Hunt Club anchors the neighborhood, and Staples High School — ranked among the top public high schools in Connecticut — sits on North Avenue at its eastern edge. Between the Post Road and Cross Highway, the streets here are wide, the lots generous, and the pace distinctly unhurried.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "The name tells you what this neighborhood once was. In the 1600s, the town divided its agricultural land into long, narrow parcels running perpendicular to the road — the original long lots. Westport's oldest surviving house, built around 1690, still stands on Long Lots Road. That continuity between past and present defines the area: you can drive a half-mile stretch and pass a seventeenth-century saltbox, a 1960s colonial, and a newly built shingle-style home without any of them looking out of place."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "At the center of Long Lots sits the Fairfield County Hunt Club, founded nearly a century ago for equestrians and polo players. The club still hosts horse shows and polo matches on its 40 open acres, but it has grown into a full four-season family club with two swimming pools, tennis and paddle courts, a formal dining room, casual grill, summer camps, and even a skating rink. For families in the neighborhood, the Hunt Club is not a destination — it is the backyard social hub."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Schools drive much of the demand here. Long Lots Elementary on Hyde Lane feeds into Bedford Middle School on North Avenue, which in turn feeds Staples High School — consistently rated the number one public high school in Connecticut by Niche. All three are within the neighborhood or immediately adjacent, so most students never need a long bus ride. That school pipeline, combined with the residential privacy and mature tree cover, keeps Long Lots on the short list for families relocating from Manhattan and Brooklyn."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Despite its interior location, Long Lots is not isolated. The Post Road corridor along the southern boundary puts grocery stores, pharmacies, and local restaurants within a five-minute drive. The Merritt Parkway and I-95 are both accessible in under ten minutes, and the Westport Metro-North station is roughly a seven-minute drive east. Compo Beach, the town's resident-access waterfront, is a straight shot south on Compo Road. Long Lots trades beachfront proximity for space and value — and for many buyers, that math works."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Fairfield County Hunt Club offers 40 acres of polo fields, equestrian facilities, pools, tennis, paddle courts, and year-round family programming",
+    "All three schools — Long Lots Elementary, Bedford Middle, and Staples High — are located within or adjacent to the neighborhood",
+    "Home lots range from a third of an acre to over two acres, with cul-de-sac streets and mature tree canopy throughout",
+    "Merritt Parkway and I-95 are both reachable in under ten minutes, and the Westport Metro-North station is a seven-minute drive",
+    "Westport's oldest surviving house, circa 1690, still stands on Long Lots Road — a rare piece of colonial Connecticut history"
+  ],
+  "housingCharacteristics": "Long Lots features a broad mix of architectural periods and styles. Classic New England colonials from the 1950s and 1960s make up the majority of the housing stock, but the neighborhood also contains antique saltboxes, expanded capes, and newer construction — including substantial shingle-style homes built on subdivided parcels or teardown sites. Lot sizes vary considerably, from compact third-of-an-acre parcels near the Post Road to properties exceeding two acres on cul-de-sac streets closer to Cross Highway.\n\nPricing reflects that range. Entry-level homes on smaller lots typically start in the low $1 millions, while larger properties with updated finishes, pool-ready yards, and proximity to the Hunt Club or Staples High School trade between $2 million and $3.5 million. Top-of-market transactions — new construction or significant renovations on an acre or more — can reach $5 million. The neighborhood rarely sees the waterfront premiums that define Compo or Saugatuck Shores, which gives buyers more square footage and land per dollar than most other parts of Westport.",
+  "marketNotes": "Long Lots draws steady demand from families prioritizing the school district and residential scale over waterfront proximity. Inventory is limited but not as severely constrained as in Westport's coastal sections, which means buyers may have slightly more time to evaluate options before committing. Properties in the Long Lots Elementary catchment attract particular interest, especially homes within walking distance of the school on Hyde Lane.\n\nThe spring market — March through June — brings the highest volume of new listings and the most competitive bidding. Homes priced accurately in this window often receive multiple offers within ten days. Buyers relocating from New York City for the September school year typically begin their search in January and close by late spring. Off-cycle listings in fall and winter can present opportunities for prepared buyers willing to move quickly.",
+  "locationAccess": "Long Lots occupies the geographic center of Westport, bounded roughly by the Post Road to the south and Cross Highway to the north. The Merritt Parkway entrance at North Avenue provides a scenic commute corridor north toward Danbury or south toward Stamford and the Hutchinson River Parkway. I-95 is accessible via the Post Road in under ten minutes, connecting Stamford in fifteen minutes southbound and New Haven in forty-five minutes northbound.\n\nThe Westport Metro-North station on the New Haven Line is approximately a seven-minute drive east. Express trains reach Grand Central Terminal in roughly 60 minutes; local service runs approximately 70 to 75 minutes. Green's Farms station, slightly closer for residents on the western side of Long Lots, offers additional service options. Compo Beach is a ten-minute drive south via Compo Road. Downtown Westport's Main Street shops and restaurants are five to eight minutes east along the Post Road.",
+  "seoTitle": "Long Lots, Westport CT Homes | Schools & Hunt Club",
+  "seoDescription": "Explore Long Lots homes in Westport, CT — top-rated schools, the Fairfield County Hunt Club, and spacious lots. Browse listings with Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What schools serve the Long Lots neighborhood in Westport?",
+      "answer": "Children in Long Lots attend Long Lots Elementary School on Hyde Lane for grades K through 5, then Bedford Middle School on North Avenue for grades 6 through 8, and Staples High School for grades 9 through 12. Staples is consistently ranked as one of the top public high schools in Connecticut by both Niche and U.S. News & World Report. All three schools are located within or immediately adjacent to the neighborhood.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Fairfield County Hunt Club in Long Lots?",
+      "answer": "The Fairfield County Hunt Club is a private four-season family club situated on 40 acres at 174 Long Lots Road. Originally founded for equestrians and polo players nearly a century ago, it now offers horse shows, polo matches, two swimming pools, tennis and paddle courts, a formal dining room, casual grill, summer camps, and a skating rink. Membership is sought after and typically involves a waitlist.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Long Lots from the Westport train station?",
+      "answer": "The Westport Metro-North station is approximately a seven-minute drive east of Long Lots via the Post Road. Express trains on the New Haven Line reach Grand Central Terminal in roughly 60 minutes, while local service runs between 70 and 75 minutes. Green's Farms station, located to the southwest, offers an alternative stop for residents on the western side of the neighborhood.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What types of homes are available in Long Lots, Westport?",
+      "answer": "Long Lots offers a wide range of housing styles including classic New England colonials from the 1950s and 1960s, antique saltboxes, expanded capes, and newer shingle-style construction. Lot sizes range from a third of an acre near the Post Road to over two acres on interior cul-de-sac streets. Prices typically start in the low $1 millions for entry-level homes and can reach $5 million for new construction or major renovations on larger parcels.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

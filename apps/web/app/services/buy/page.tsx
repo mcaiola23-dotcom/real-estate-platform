@@ -7,7 +7,7 @@ import EmailSignupSection from "@/app/components/EmailSignupSection";
 export const metadata: Metadata = {
   title: "Buy in Fairfield County CT | Buyer Representation",
   description:
-    "Calm, data-driven buyer guidance across Fairfield County—relocation strategy, neighborhood insight, and contract-to-close support with Higgins Group Private Brokerage.",
+    "Buyer representation across Fairfield County—relocation strategy, neighborhood-level insight, and contract-to-close coordination. Licensed with Higgins Group Private Brokerage.",
 };
 
 export default function BuyPage() {
@@ -30,10 +30,9 @@ export default function BuyPage() {
             </h1>
             <div className="w-14 h-px bg-stone-500 my-7" />
             <p className="text-lg sm:text-xl text-stone-300 leading-relaxed max-w-3xl">
-              Whether you're relocating from NYC or moving town-to-town, you
-              deserve calm guidance—neighborhood context, pricing perspective,
-              and a process that feels organized from the first showing through
-              closing.
+              Whether you&apos;re relocating from New York or moving between towns, you
+              get neighborhood context, pricing perspective, and a structured
+              process from the first showing through closing.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Link
@@ -61,7 +60,7 @@ export default function BuyPage() {
         <Container>
           <div className="text-center mb-12">
             <h2 className="font-serif text-3xl md:text-4xl font-medium text-stone-900 mb-4">
-              A premium buying experience—without the pressure.
+              Representation built around how you actually make decisions.
             </h2>
             <p className="text-lg text-stone-600 max-w-2xl mx-auto">
               Fairfield County is a market of micro-neighborhoods. The right decision depends on your lifestyle, commute, and long-term plans.
@@ -149,7 +148,7 @@ export default function BuyPage() {
               </Link>
             </div>
             <p className="mt-8 text-sm text-stone-400">
-              Common starting points: Greenwich, New Canaan, Darien, Westport, Fairfield, Stamford, Norwalk, Ridgefield.
+              Serving Greenwich, New Canaan, Darien, Westport, Fairfield, Stamford, Norwalk, Ridgefield, and Wilton.
             </p>
           </div>
         </Container>
@@ -164,7 +163,7 @@ export default function BuyPage() {
                 How We Work Together
               </h2>
               <p className="text-lg text-stone-600">
-                A structured approach that keeps you informed and in control.
+                Four steps from initial consultation to closing day.
               </p>
             </div>
 
@@ -225,7 +224,7 @@ export default function BuyPage() {
                     Navigate Due Diligence
                   </h3>
                   <p className="text-stone-600 leading-relaxed">
-                    Inspection and appraisal are handled with a structured checklist and calm communication through closing.
+                    Inspection, appraisal, and title work managed on a clear timeline with direct communication through closing.
                   </p>
                 </div>
               </li>

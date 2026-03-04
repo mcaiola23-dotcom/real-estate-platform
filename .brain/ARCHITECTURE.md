@@ -9,9 +9,11 @@ real-estate-platform/
     crm/                 # Tenant CRM runtime (Next.js)
     studio/              # CMS authoring (Sanity Studio)
     admin/               # Internal SaaS operations portal
+    portal/              # Public listing portal (Next.js) — consumer property search + AI
     marketing/           # SaaS marketing site (optional)
   packages/
     ui/                  # Shared design system/components
+    design-tokens/       # Shared color/typography/spacing tokens
     config/              # Shared lint/ts/tailwind configs
     types/               # Shared domain/event types
     auth/                # Authz/authn helpers + role policies
@@ -22,6 +24,7 @@ real-estate-platform/
   services/
     automation-worker/   # Background jobs (follow-ups, reminders)
     ingestion-worker/    # IDX sync, enrichment, ETL
+    portal-api/          # Portal backend (Python/FastAPI) — listing search, AI, AVM
   infra/
     terraform/           # Infra as code
     docker/              # Images and local orchestration assets
@@ -44,6 +47,12 @@ real-estate-platform/
 ### 3) Control plane
 - Manages tenant provisioning, domains, billing, plans, feature flags.
 - Internal support tools and audit logs.
+
+### 4) Portal runtime
+- Consumer-facing listing search and property discovery (Next.js frontend in `apps/portal`).
+- Backed by a Python/FastAPI service in `services/portal-api/`.
+- Features: listing search, AI-powered natural language search, AVM, interactive map, property details, saved searches, alerts.
+- Communicates with portal-api via `NEXT_PUBLIC_API_URL`.
 
 ## Domain & Tenant Model
 Core entities:
@@ -88,9 +97,23 @@ Core entities:
 - Domain verification and status
 - Billing plans, invoices, account controls
 
+### `apps/portal`
+**Owner**: Portal Product Team
+- Consumer-facing listing search and property discovery
+- AI-powered natural language search
+- AVM (automated valuation model) display
+- Interactive map with property markers
+- Saved searches and alert subscriptions
+- Backend: Python/FastAPI in `services/portal-api/`
+
 ### `packages/ui`
 **Owner**: Design Systems
 - Shared components and brand token plumbing
+
+### `packages/design-tokens`
+**Owner**: Design Systems
+- Shared color palettes, typography scales, spacing values
+- Cross-app visual consistency between portal and SaaS apps
 
 ### `packages/types`
 **Owner**: Platform Architecture
@@ -112,6 +135,16 @@ Core entities:
 - IDX ingestion pipelines
 - Data quality checks and retries
 
+### `services/portal-api`
+**Owner**: Portal Product Team
+- Python/FastAPI backend for the listing portal
+- Listing search, AI-powered natural language search, AVM
+- PostGIS spatial queries, map tile support
+- User auth, saved searches, favorites, alerts
+- Background scheduler runs as a dedicated worker process (`python -m app.workers.scheduler_worker`), not inside web startup
+- Schema evolution baseline now uses Alembic (`alembic.ini`, `alembic/versions/*`) for versioned migrations
+- Requires: PostgreSQL + PostGIS, Redis
+
 ## Non-Negotiable Architecture Rules
 1. Every request/data operation must be tenant-scoped.
 2. Event contracts are versioned and backward compatible.
@@ -119,5 +152,5 @@ Core entities:
 4. No cross-app private imports; shared logic goes into `packages/*`.
 5. All domain onboarding state must be auditable.
 
-## Session Review (2026-02-17)
-- Reviewed during CRM checklist completion session; no scope/architecture/process changes required in this file beyond confirming continued tenant-isolation and shared-package boundaries.
+## Session Review (2026-03-02)
+- Updated to reflect portal-api runtime hardening: scheduler isolation to dedicated worker process and Alembic migration baseline adoption.

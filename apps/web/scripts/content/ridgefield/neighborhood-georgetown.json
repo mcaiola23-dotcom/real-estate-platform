@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "georgetown",
+  "townSlug": "ridgefield",
+  "overview": "Georgetown occupies Ridgefield's southwestern corner at the crossroads where Ridgefield, Redding, Weston, and Wilton converge. The neighborhood takes its identity from the historic Georgetown village — a settlement that formed around the Gilbert & Bennett Wire Mill in the 1840s — and retains a distinct character from the rest of Ridgefield, with antique homes, mid-century properties, and a shared community fabric that stretches across town lines.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Georgetown Road serves as the main corridor through Ridgefield's portion of the village, connecting to Route 107 and the broader network of roads linking Redding, Weston, and Wilton. The Gilbert & Bennett Wire Mill, which operated from 1848 until its closure in 1989, defined this crossroads for nearly 150 years. Worker housing, a general store, churches, and the small commercial district all grew around the mill's employment base. That industrial history left behind a built environment unlike anywhere else in Ridgefield — tighter lot patterns, institutional housing stock, and a village center that predates suburban planning."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Housing on the Ridgefield side of Georgetown mixes antique homes from the late 1800s with mid-century construction from the 1950s and 1960s. Several properties retain original architectural details — wide-plank floors, exposed beams, stone foundations — that reflect Georgetown's pre-suburban roots. Moving away from the village center, lots expand and the landscape turns more rural, with wooded parcels of one to two acres that mirror the surrounding Redding and Weston countryside. Pricing ranges from roughly $700,000 to $1.5 million, with antique restorations and larger-lot properties at the upper end."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Georgetown Village Restoration, Inc. has led preservation and revitalization efforts since taking shape as a community organization. The former mill site, now owned by the Town of Redding after a lengthy foreclosure process concluded in 2020, is undergoing master-plan development with $2.6 million in state and federal grants funding environmental assessment and redevelopment planning. The Georgetown Farmers' Market, operating since 1998, brings locally grown produce and baked goods to the village on summer Saturdays. Caraluzzi's Georgetown Market anchors the retail base with a full-service grocery that includes prepared foods, a sushi bar, and a cheese counter."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Living in Georgetown means straddling two identities. Mailing addresses and school enrollment belong to Ridgefield, with students attending Ridgefield's top-ranked public schools and property taxes flowing to Ridgefield's town budget. But the daily rhythm often pulls toward the village center shared with Redding residents — the market, the restaurants, the farmers' market — creating a cross-town community that operates independent of either town's downtown core. The result is a neighborhood more rural and self-contained than Ridgefield center, with a historic texture and price range that attract buyers priced out of shoreline Fairfield County towns."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Georgetown Historic District traces its origins to the 1848 Gilbert & Bennett Wire Mill, preserving a village fabric unlike any other section of Ridgefield",
+    "Caraluzzi's Georgetown Market provides full-service grocery with prepared foods, a sushi bar, and a cheese counter at the village crossroads",
+    "Antique restorations and wooded parcels from $700,000 to $1.5 million put Georgetown among Ridgefield's most accessible single-family neighborhoods",
+    "The Georgetown Farmers' Market has operated since 1998, delivering locally grown produce and artisan goods to the village on summer Saturdays",
+    "Multi-town revitalization of the former wire mill site is underway with $2.6 million in state and federal grants, positioning Georgetown for long-term growth"
+  ],
+  "housingCharacteristics": "Georgetown's Ridgefield-side housing stock divides into two categories. Near the village center, antique homes from the late 1800s and early 1900s sit on compact lots that reflect the original mill-worker housing patterns. Many have been thoughtfully restored, preserving wide-plank flooring, exposed post-and-beam framing, and stone foundations while adding modern kitchens and mechanical systems. These properties typically trade between $700,000 and $1 million.\n\nFarther from the crossroads, the landscape opens to one-and-two-acre wooded parcels with mid-century colonials, split-levels, and occasional contemporary designs. This outer ring of Georgetown offers more privacy and land at prices between $1 million and $1.5 million. New construction is rare because the existing lot fabric and mature vegetation discourage large-scale subdivision, which helps maintain the rural character that distinguishes Georgetown from Ridgefield's more developed center.",
+  "marketNotes": "Georgetown appeals to a specific buyer: someone drawn to Ridgefield's schools and community but willing to trade proximity to Main Street for more land and lower entry costs. The neighborhood's shared identity with Redding and Weston means it also competes for buyers shopping those adjacent towns, particularly in the $700,000 to $1 million band.\n\nThe wire mill redevelopment, still in its planning phase, represents a long-term catalyst. If the master plan delivers the mixed-use village concept that early studies have outlined, Georgetown could see meaningful commercial and residential investment over the coming decade. Current pricing does not fully reflect that potential, which creates an opportunity for buyers with a longer holding horizon. Properties near the village center tend to sell faster than those on the rural fringe, where the buyer pool narrows to those specifically seeking acreage and solitude.",
+  "locationAccess": "Georgetown sits approximately 10 minutes south of downtown Ridgefield via Route 102 and Georgetown Road. Branchville Metro-North station is roughly five minutes northeast on Branchville Road, providing Danbury Branch Line service with connections to Grand Central Terminal in about 90 minutes total. Route 7, accessible within a few minutes east, runs south to Norwalk in approximately 25 minutes and north to Danbury in about 15 minutes. The Redding town center and its library are minutes west. Georgetown's position at the convergence of four towns gives it a central role in the inland Fairfield County landscape despite its quiet village scale.",
+  "seoTitle": "Georgetown, Ridgefield CT Homes | Village & Schools",
+  "seoDescription": "Explore Georgetown homes in Ridgefield, CT with antique charm and wooded lots in a historic village setting. Contact Matt Caiola to schedule a showing.",
+  "faqs": [
+    {
+      "question": "Is Georgetown in Ridgefield or Redding, Connecticut?",
+      "answer": "Georgetown straddles the border of Ridgefield, Redding, Weston, and Wilton. The village center is shared, but properties on the Ridgefield side are part of Ridgefield for school enrollment, property taxes, and municipal services. Students attend Ridgefield's public school system, which is one of the primary draws for families choosing the Ridgefield portion. The shared Georgetown identity — Caraluzzi's Market, the farmers' market, village restaurants — operates across town lines and gives the neighborhood a cross-community character.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Georgetown, Ridgefield?",
+      "answer": "Homes in Georgetown's Ridgefield section range from approximately $700,000 to $1.5 million. Antique restorations and smaller-lot properties near the village center typically trade between $700,000 and $1 million. Larger wooded parcels of one to two acres with mid-century colonials or updated homes push into the $1 million to $1.5 million range. Georgetown offers a lower entry point than Ridgefield center while providing full access to the town's school district and municipal services.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is happening with the Georgetown wire mill redevelopment?",
+      "answer": "The former Gilbert & Bennett Wire Mill site, which operated from 1848 to 1989, is undergoing master-plan development led by the Town of Redding, which took ownership of 44 acres in 2020 after a foreclosure process. Over $2.6 million in competitive state and federal grants have funded environmental assessment and planning. In early 2025, Pirie Associates was selected to lead the Georgetown Revitalization Master Plan. The project envisions a mixed-use village combining residential and commercial development, though construction timelines remain in the planning phase.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

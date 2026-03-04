@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "noroton-heights",
+  "townSlug": "darien",
+  "overview": "Noroton Heights sits in the central-northern section of Darien, built around the Noroton Heights Metro-North station — one of two stations the town holds on the New Haven Line. Heights Crossing, a new mixed-use development completed adjacent to the station, has added Raphael's French Bakery, Garden Catering, and 65 luxury apartments to a neighborhood already anchored by Palmer's Market and Holmes Elementary School. At a median sale price around $1.6 million, this is Darien's most accessible entry point within the top school district.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "nh1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "nh1s1",
+          "text": "The Noroton Heights Metro-North station processes more than 300,000 passengers annually and sits within a five-minute walk of a substantial portion of the neighborhood's residential streets. That proximity is not incidental — it shaped the neighborhood's character for decades and continues to define its appeal. Express trains from Noroton Heights reach Grand Central Terminal in approximately 54 minutes, making this the faster of Darien's two station options and a direct draw for households with regular Manhattan commutes."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "nh2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "nh2s1",
+          "text": "The housing stock reflects the neighborhood's pre-war and postwar construction history. Colonials, Cape Cods, and ranches built between 1940 and 1969 make up the core inventory, with a meaningful number of homes predating 1940. The scale is more intimate than Tokeneke or Long Neck Point — three- and four-bedroom homes on modest lots are common — but the quality of construction and the upkeep across the neighborhood is consistently high. 83 percent of adults in Noroton Heights hold at least a bachelor's degree, a figure that ranks in the top 1.4 percent of U.S. neighborhoods and is reflected in how the residential fabric is maintained."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "nh3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "nh3s1",
+          "text": "Heights Crossing, completed by the V20 Group on the site of the former Noroton Heights Shopping Center, represents a significant reinvestment in the neighborhood's commercial core. The 65-unit mixed-use building pairs understated luxury apartments with street-level retail: Raphael's French Bakery, Garden Catering from Greenwich, Chipotle, Heights Wine and Liquors, and PVOLVE Gym. The Post 53 Emergency Services building and the Darien Depot Teen Center remain adjacent, preserving the neighborhood's civic layer alongside the new commercial activity. Eight replaced sidewalk segments connecting Heights Road and Noroton Avenue now make the pedestrian loop around the station genuinely walkable."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "nh4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "nh4s1",
+          "text": "Holmes Elementary School, one block from the neighborhood's residential center, serves Noroton Heights children through fifth grade with an 81-to-84 percent proficiency rate across reading and mathematics and a student-teacher ratio of 13 to 1. Middlesex Middle School and Darien High School follow — the same pipeline that serves Tokeneke and Long Neck Point. Woodland Park provides the neighborhood's main outdoor recreation corridor. The combination of walkable school access, a functioning commercial district, and one of the two faster train stations in town makes Noroton Heights the neighborhood that most clearly rewards buyers who place commute efficiency and neighborhood usability above maximum lot size."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Noroton Heights Metro-North station: express service to Grand Central Terminal in approximately 54 minutes",
+    "Heights Crossing brings Raphael's French Bakery, Garden Catering, and 65 luxury apartments steps from the platform",
+    "Holmes Elementary School within walking distance — 84% math proficiency, 13:1 student-teacher ratio",
+    "Median sale prices around $1.6 million — Darien's most accessible price point with full school district access",
+    "Woodland Park and newly rebuilt pedestrian infrastructure support a genuinely walkable residential core"
+  ],
+  "housingCharacteristics": "Noroton Heights is predominantly a neighborhood of established single-family homes, with the majority built between 1940 and 1969 and a notable share predating 1940. Colonial architecture dominates — center-halls and garrison Colonials on modest lots are the baseline housing type — but Cape Cods, split-levels, and the occasional ranch round out the inventory. Lot sizes typically run from a quarter acre to just under an acre. Many homes have been substantially updated over the past decade: renovated kitchens, added bathrooms, and expanded primary suites are common among properties that last traded in the $1 million to $1.5 million range.\n\nPricing in Noroton Heights sits at a meaningful discount to the waterfront sections of Darien while still operating well above state and national medians. Median sale prices have reached approximately $1.6 million, with price-per-square-foot around $759. Larger, fully renovated Colonials on the more desirable streets near Holmes Elementary or Woodland Park can reach $2 million or above. The neighborhood's current vacancy rate of under 3 percent reflects a structurally tight supply that supports pricing across economic cycles.",
+  "marketNotes": "Noroton Heights moves fast. Homes sell in an average of 15 days and the neighborhood's sub-3 percent vacancy rate means well-priced listings rarely accumulate days on market. The concentration of demand around Holmes Elementary School — where walkability from specific blocks commands a premium — creates micro-market variation within a relatively compact geography. Streets between the school and the train station attract the most competitive offer dynamics.\n\nThe neighborhood draws a consistent buyer profile: households with one or two regular Manhattan commuters who prioritize transit access and school quality over estate acreage. That profile is broad and deep, which is why Noroton Heights tends to be more liquid than the peninsula waterfront neighborhoods despite trading at lower absolute price points. Buyers should expect to act quickly on properties that present well, particularly in the spring and fall peak seasons.",
+  "locationAccess": "The Noroton Heights Metro-North station is the neighborhood's defining geographic anchor. Express trains reach Grand Central Terminal in approximately 54 minutes — the shorter of Darien's two station options. Monthly parking passes at the station run $80, with daily parking also available. Interstate 95 is accessible via Exits 10 and 11, both within five minutes by car, connecting the neighborhood to Westchester, New York City, and the rest of coastal Connecticut.\n\nThe Merritt Parkway is also reachable within ten minutes for those preferring the inland route. Palmer's Market at the station's edge, the cluster of restaurants and services along Heights Road, and the broader Post Road commercial corridor cover daily retail needs. Darien Commons, the town's larger shopping center, is a short drive south on the Post Road. The combination of two highway access points, a high-frequency rail station, and walkable retail makes Noroton Heights the most transit-connected residential neighborhood in Darien.",
+  "seoTitle": "Noroton Heights Darien CT | Homes Near Train Station",
+  "seoDescription": "Noroton Heights offers Darien's fastest NYC commute, top-ranked Holmes Elementary, and homes from $1.6M. Contact us to tour available properties today.",
+  "faqs": [
+    {
+      "question": "How long is the commute from Noroton Heights to Manhattan?",
+      "answer": "Express trains from Noroton Heights Metro-North station reach Grand Central Terminal in approximately 54 minutes, making it the faster of Darien's two New Haven Line stations. Local trains run slightly longer at around 60 to 65 minutes. Monthly parking passes at the station are available for $80, and daily parking is open to both residents and non-residents. The station processes more than 300,000 passengers annually, reflecting its status as one of Fairfield County's most active commuter hubs.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Noroton Heights, Darien, CT?",
+      "answer": "Median sale prices in Noroton Heights have reached approximately $1.6 million, with the median price-per-square-foot around $759. This represents Darien's most accessible entry-level price point within the top-ranked school district. Fully renovated Colonials on preferred streets near Holmes Elementary or Woodland Park often trade between $1.8 million and $2.2 million. The neighborhood's sub-3 percent vacancy rate supports consistent pricing across market cycles.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What school serves Noroton Heights for elementary-age children?",
+      "answer": "Holmes Elementary School serves the Noroton Heights neighborhood for grades K through 5. The school enrolls approximately 451 students with a student-teacher ratio of 13 to 1, and achieves 84 percent proficiency in math and 81 percent in reading — earning a Niche grade of A. Students advance to Middlesex Middle School and then Darien High School, which ranked second in Connecticut in the 2024 U.S. News & World Report rankings.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Heights Crossing in Noroton Heights?",
+      "answer": "Heights Crossing is a mixed-use development completed adjacent to the Noroton Heights Metro-North station on the site of the former Noroton Heights Shopping Center. Developed by V20 Group, the project delivers 65 luxury apartments and approximately 30,000 square feet of street-level retail, including Raphael's French Bakery, Garden Catering from Greenwich, Chipotle, Heights Wine and Liquors, and PVOLVE Gym. Palmer's Market, the Darien Depot Teen Center, and Post 53 Emergency Services remain neighboring anchors. The development includes rebuilt sidewalks creating a walkable pedestrian loop around the station.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

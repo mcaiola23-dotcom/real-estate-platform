@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "coleytown",
+  "townSlug": "westport",
+  "overview": "Coleytown occupies the northern reach of Westport, bordering the Weston town line along North Avenue and Newtown Turnpike. Named for the Coley family, who farmed this land for over two hundred years, the neighborhood retains a rural scale that the rest of Westport has largely outgrown. The 39-acre Newman-Poses Preserve and the trails of the Aspetuck Land Trust define its open spaces.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Coleytown is the part of Westport that surprises people. Drive north on Weston Road or Easton Road past the commercial core, past the subdivisions, and the landscape opens. Stone walls line the roads. Lots stretch to an acre, two acres, sometimes more. The canopy thickens. It does not look like a town with a median home price above $2 million, but it is."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The Coley family settled here in the 1700s and farmed the area for generations. That agricultural heritage left behind large parcels that were never subdivided to the density seen in southern Westport. Today the lots accommodate substantial homes set back from the road, screened by mature hardwoods and evergreens. Many of the original colonial structures survive, their post-and-beam bones still visible alongside modern additions. New construction tends toward contemporary colonials and transitional designs that respect the wooded setting rather than competing with it."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Newman-Poses Preserve is the neighborhood's signature green space. The 39-acre sanctuary, assembled from a donation by Paul Newman and adjacent parcels sold by the Kafka family, threads through meadows, upland woods, and a stretch of the Aspetuck River. The one-mile loop trail off Bayberry Lane draws hikers and birders year-round. Nearby, the Aspetuck Valley Country Club and the Patterson Club provide private recreational options. Coleytown is not isolated from amenities; it simply keeps them at a measured distance."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Coleytown Elementary School, an A-plus-rated K through 5 school with a 12-to-1 student-teacher ratio, anchors the neighborhood's identity. Students feed into Coleytown Middle School and then Staples High School. The school names are not coincidental; this is a community whose institutions carry the same family name as the land, a continuity that few Fairfield County neighborhoods can claim."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Newman-Poses Preserve offers 39 acres of meadow, woodland, and Aspetuck River frontage with a one-mile loop trail",
+    "Coleytown Elementary School holds an A-plus rating with a 12-to-1 student-teacher ratio and 83% reading proficiency",
+    "Lot sizes typically range from one to three acres, among the largest residential parcels in Westport proper",
+    "Stone-wall-lined roads and mature hardwood canopy create a rural landscape within a top-ranked suburban school district",
+    "Aspetuck Valley Country Club and Patterson Club provide private golf, tennis, and swimming nearby"
+  ],
+  "housingCharacteristics": "Coleytown's housing stock reflects its agricultural past and its present-day premium positioning. Original colonial farmhouses dating to the 1800s still stand on several properties, often expanded with sympathetic additions that preserve their historic character. Mid-century colonials and Cape Cods from the 1950s and 1960s fill many of the interior streets, while newer construction from the 2000s and 2010s introduces contemporary colonial and transitional designs on cleared lots.\n\nLot sizes are the defining feature. Most properties sit on one to two acres, with some exceeding three acres near the Weston border. This scale accommodates long driveways, detached garages, pools, and significant privacy screening. The average sale price in Coleytown hovers around $2.3 million, with newer or fully renovated homes on larger parcels pushing above $3 million. Split-level and ranch-style homes from the mid-century represent the neighborhood's lower price tier, typically trading between $1.3 million and $1.8 million.",
+  "marketNotes": "Coleytown appeals to buyers who want acreage and privacy without leaving Westport's school district. That combination is increasingly rare in lower Fairfield County, where most towns have been subdivided to half-acre or quarter-acre density. Inventory turns over slowly here because homeowners have the space to renovate and expand rather than sell.\n\nBuyers relocating from New York City or from denser Westport neighborhoods south of the Post Road often discover Coleytown late in their search and wish they had started here. The tradeoff is distance: downtown Westport's shops and the train station are a ten-to-twelve-minute drive. For families whose priority is land, trees, and a top elementary school, that tradeoff rarely matters.",
+  "locationAccess": "Coleytown is the farthest Westport neighborhood from the coastline and the train stations, positioned roughly four miles north of downtown. The Westport Metro-North station on Saugatuck Avenue is a ten-to-twelve-minute drive south, with express trains reaching Grand Central Terminal in approximately 60 minutes. I-95 is accessible via Exit 17, also about ten minutes south via Weston Road or Route 57.\n\nThe Merritt Parkway (Route 15) runs closer, with the Westport interchange roughly five minutes from Coleytown's center, providing a scenic alternative route toward Stamford or New Haven. Downtown Westport's Main Street restaurants and Bedford Square shops are a ten-minute drive. The Weston town center and its farm stands are equally close heading north. Coleytown rewards drivers but is not practical as a walk-to-town neighborhood.",
+  "seoTitle": "Coleytown, Westport CT Homes | Acreage & Top Schools",
+  "seoDescription": "Discover Coleytown homes in Westport, CT with acre-plus lots and A-rated schools. Browse listings and contact Matt Caiola to schedule a private showing.",
+  "faqs": [
+    {
+      "question": "How large are residential lots in Coleytown, Westport?",
+      "answer": "Most residential lots in Coleytown range from one to three acres, making them among the largest in Westport proper. The neighborhood's northern position near the Weston town line preserved its agricultural-era parcel sizes. This scale allows for significant setbacks from the road, mature tree screening, and amenities like pools and detached structures that tighter lots in southern Westport cannot accommodate.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Newman-Poses Preserve in Coleytown?",
+      "answer": "Newman-Poses Preserve is a 39-acre conservation area managed by the Aspetuck Land Trust, located off Bayberry Lane in Coleytown. The preserve was assembled from a 7.7-acre donation by Paul Newman and four adjacent parcels totaling 29.9 acres sold by Barbara Poses Kafka and Ernest Kafka. It features a one-mile loop trail through meadows, upland woods, white pine stands, and a corridor along the Aspetuck River. Parking is limited to three vehicles at the Bayberry Lane trailhead.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Which elementary school serves Coleytown in Westport?",
+      "answer": "Coleytown Elementary School serves students in grades K through 5 and carries an A-plus rating from Niche with a GreatSchools score of 9 out of 10. The school has approximately 486 students and a 12-to-1 student-teacher ratio. Students progress to Coleytown Middle School and then to Staples High School. The school's name reflects the neighborhood's historical roots with the Coley family, who farmed the area for over two hundred years.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Coleytown from downtown Westport and the train station?",
+      "answer": "Coleytown is approximately four miles north of downtown Westport, a drive of ten to twelve minutes via Weston Road or Route 57. The Westport Metro-North station on Saugatuck Avenue is roughly the same distance. The Merritt Parkway interchange is closer, about five minutes from the neighborhood's center. Coleytown is a car-dependent neighborhood, but its position provides direct access to both I-95 and the Merritt Parkway for commuters heading to Stamford or New York.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

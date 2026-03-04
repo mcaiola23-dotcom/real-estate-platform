@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:48Z",
+  "_id": "4d1756b9-a9e0-4f2d-bb9d-1ec50758bb21",
+  "_rev": "cptc0PvA8gpHazoy2liJFQ",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:07Z",
+  "description": [
+    {
+      "_key": "01fd82246037",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "f1357c6e52d1",
+          "_type": "span",
+          "marks": [],
+          "text": "Belle Haven is a coastal pocket of Greenwich where the peninsula geography creates a true enclave feel. The setting naturally limits through-traffic, and the overall atmosphere reads as private and intentionally residential—exactly what many waterfront buyers are looking for."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "9acd6f4139d8",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "909bab624bbc",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate in Belle Haven is predominantly single-family and typically higher-end, with many properties designed to take advantage of water proximity and outdoor living. Depending on the street, buyers may find mature landscaping, larger lots, and a sense of quiet that feels separate from downtown even though it’s close."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "dfaa704e7c64",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "9615e18bd179",
+          "_type": "span",
+          "marks": [],
+          "text": "One local institution is the Belle Haven Club, located at 100 Harbor Drive in Greenwich (per the club’s directions page). And when you want a broader shoreline experience, Greenwich Point Park (Tod’s Point) in nearby Old Greenwich is a 147.3-acre town-owned beach and recreation facility at 11 Tods Driftway. Belle Haven is best for clients who want a coastal Greenwich lifestyle with maximum privacy and a direct connection to the water."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A peninsula-style coastal enclave known for privacy and quiet residential atmosphere",
+    "Higher-end single-family housing with strong outdoor-living appeal",
+    "Close to downtown Greenwich for dining, retail, and Metro-North access",
+    "Greenwich Point Park (Tod's Point) nearby for beach and recreation",
+    "An exclusive setting with a strong sense of community"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Belle Haven",
+  "overview": "Belle Haven is one of Greenwich’s most exclusive coastal enclaves—defined by a peninsula setting and a strong sense of separation from the rest of town. Homes are primarily single-family and often oriented toward Long Island Sound, with privacy as a defining feature. The atmosphere is quiet and coastal, and proximity to downtown Greenwich makes the lifestyle feel both private and convenient. When clients ask for Greenwich’s most rarefied waterfront feel, Belle Haven is a name that comes up quickly.",
+  "slug": {
+    "_type": "slug",
+    "current": "belle-haven"
+  },
+  "town": {
+    "_ref": "20c7cb6d-4b2c-4fe5-9bbb-0dd8785f31dd",
+    "_type": "reference"
+  }
+}

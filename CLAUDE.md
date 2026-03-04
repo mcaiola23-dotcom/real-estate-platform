@@ -21,8 +21,10 @@ apps/
   crm/        — Tenant CRM runtime (Next.js)
   admin/      — Internal SaaS control-plane portal (Next.js)
   studio/     — CMS authoring (Sanity Studio)
+  portal/     — Public listing portal (Next.js) — consumer-facing property search + AI
 packages/
   ui/         — Shared design system/components
+  design-tokens/ — Shared color/typography/spacing tokens
   config/     — Shared lint/ts/tailwind configs
   types/      — Shared domain/event type contracts
   auth/       — Authz/authn helpers + role policies
@@ -33,6 +35,7 @@ packages/
 services/
   automation-worker/  — Background jobs (follow-ups, reminders)
   ingestion-worker/   — IDX sync, enrichment, ETL, queue processing
+  portal-api/         — Portal backend (Python/FastAPI) — listing search, AI, AVM
 ```
 
 ## Non-Negotiable Rules
@@ -62,16 +65,19 @@ services/
 npm run dev:web          # apps/web on port 3000
 npm run dev:crm          # apps/crm on port 3001
 npm run dev:admin        # apps/admin on port 3002
+npm run dev:portal       # apps/portal (Next.js, requires NEXT_PUBLIC_API_URL)
 
 # Build
 npm run build:web
 npm run build:crm
 npm run build:admin
+npm run build:portal
 
 # Lint
 npm run lint:web
 npm run lint:crm
 npm run lint:admin
+npm run lint:portal
 
 # Tests
 npm run test:routes --workspace @real-estate/crm     # CRM route tests
@@ -99,6 +105,20 @@ npm run worker:ingestion:dead-letter:requeue          # Requeue dead-letter jobs
 - WSL sandbox limitations: `tsx` IPC pipe permissions (`EPERM`), SWC binary mismatch (`@esbuild/win32-x64` vs linux), and dev server port binding may fail
 - Windows `cmd.exe` results are treated as authoritative when WSL results are non-authoritative
 - DATABASE_URL for local dev: `file:C:/Users/19143/Projects/real-estate-platform/packages/db/prisma/dev.db`
+
+## Portal (apps/portal)
+
+The portal is a consumer-facing listing search app (Next.js + TypeScript + Tailwind). Its backend API is a Python/FastAPI service located at `services/portal-api/`. The portal frontend communicates with the API via `NEXT_PUBLIC_API_URL`. See `apps/portal/.env.example` for required environment variables.
+
+### Running the portal backend
+```bash
+cd services/portal-api
+pip install -r requirements.txt    # Python 3.11+, one-time setup
+python run.py                      # Starts FastAPI on http://localhost:8000
+# OR: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+Requires: PostgreSQL with PostGIS (`smartmls_db`), Redis on `localhost:6379`.
+API docs: `http://localhost:8000/docs`
 
 ## Route Handler Pattern
 

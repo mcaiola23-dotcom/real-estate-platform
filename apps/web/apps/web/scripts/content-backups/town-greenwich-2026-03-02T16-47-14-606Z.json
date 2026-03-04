@@ -1,0 +1,90 @@
+{
+  "_createdAt": "2026-01-06T17:38:12Z",
+  "_id": "20c7cb6d-4b2c-4fe5-9bbb-0dd8785f31dd",
+  "_rev": "cptc0PvA8gpHazoy2liBXE",
+  "_type": "town",
+  "_updatedAt": "2026-02-11T17:59:39Z",
+  "center": {
+    "_type": "geopoint",
+    "lat": 41.0262,
+    "lng": -73.6282
+  },
+  "faqs": [
+    {
+      "_key": "c6e44fa3caed",
+      "_ref": "5b5dc147-d848-4e62-bc88-9830458d1036",
+      "_type": "reference"
+    },
+    {
+      "_key": "ad53fc6e6c67",
+      "_ref": "76f164e9-3ba0-406a-8e33-a227d05e884f",
+      "_type": "reference"
+    },
+    {
+      "_key": "e49f0d0533bb",
+      "_ref": "456f389b-5d3e-40e7-b661-476634a1551c",
+      "_type": "reference"
+    }
+  ],
+  "highlights": [
+    "Greenwich Avenue as the town's signature dining and shopping corridor",
+    "Neighborhood variety - downtown walkability, coastal villages, and backcountry privacy within one town",
+    "Beautiful parks and nature preserves including Bruce Park and Greenwich Point (Tod's Point)",
+    "Metro-North commuter rail access on the New Haven Line for NYC commuting",
+    "A 'choose your lifestyle' town - train convenience, shoreline access, or retreat-like privacy",
+    "World-class cultural institutions, galleries, and community events throughout the year"
+  ],
+  "lastReviewedAt": "2026-01-06T17:38:00.000Z",
+  "lifestyle": "Greenwich has a uniquely layered lifestyle. Some clients want the energy of Greenwich Avenue and the ability to walk to restaurants and errands; others want shoreline living; and many are looking for privacy and land in the mid-country/backcountry sections.\n\nTrain access is a big part of why Greenwich works for NYC commuters. Greenwich station is on the Metro-North New Haven Line; the MTA notes three ticket machines, no ticket office, and a waiting area and public restrooms (daily 5 a.m.–10 p.m.).\n\nFor outdoor time, Greenwich has major town parks that anchor the lifestyle. And because the neighborhoods vary so much, I treat Greenwich as a “choose your version” town: coastal village, downtown walkability, or a quieter retreat setting.",
+  "marketNotes": "Greenwich is not one market—it’s a set of markets. Downtown condos, coastal neighborhoods, mid-country, and backcountry properties each behave differently, and pricing is often driven by lifestyle fit as much as square footage.\n\nMy approach is to bring structure to that complexity. With a finance background and firsthand investment experience, I focus on identifying what drives value for the specific pocket you’re buying in, then calibrating the offer so it’s competitive without being emotional.\n\nFor sellers, Greenwich rewards a clear positioning strategy. The right presentation depends on the buyer you’re targeting: walkable downtown convenience, shoreline lifestyle, or privacy/land. The goal is to make the “why” of the property obvious in the first 30 seconds.",
+  "name": "Greenwich",
+  "overviewLong": [
+    {
+      "_key": "e08281fb49e8",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "2306d0e235c5",
+          "_type": "span",
+          "marks": [],
+          "text": "Greenwich is one of the rare towns where the “town” itself isn’t one thing. Downtown feels polished and walkable, the shoreline villages have a true coastal cadence, and the backcountry offers privacy and land that’s hard to replicate anywhere else this close to New York."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "811d630203b2",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "491e7d51bdf9",
+          "_type": "span",
+          "marks": [],
+          "text": "That variety is exactly why I encourage buyers to start with lifestyle priorities before they look at listings. In Greenwich, you can buy a condo and live a village routine, or you can buy a home on acreage and feel like you’re in a private retreat—both are still “Greenwich,” but the day-to-day is completely different."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "afb4f9873d04",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "11da72edc513",
+          "_type": "span",
+          "marks": [],
+          "text": "From my perspective, the best Greenwich decisions come from clarity: what you want your routine to feel like, what kind of privacy you need, and how important the train is. Once those are clear, the market becomes easier to navigate with confidence and discipline."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "overviewShort": "Greenwich offers multiple lifestyles in one town: a sophisticated downtown, true coastal villages, and expansive backcountry settings. It’s the first Connecticut stop on Metro-North’s New Haven Line, which keeps New York access practical. If you want a highly polished Fairfield County lifestyle with real variety by neighborhood, Greenwich delivers.",
+  "slug": {
+    "_type": "slug",
+    "current": "greenwich"
+  }
+}

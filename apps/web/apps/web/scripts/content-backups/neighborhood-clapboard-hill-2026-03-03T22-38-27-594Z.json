@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:01Z",
+  "_id": "82f9e133-32c8-4d9c-bf95-87376610cb53",
+  "_rev": "cptc0PvA8gpHazoy2liPUC",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:20Z",
+  "description": [
+    {
+      "_key": "8479e429bd89",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "389d4573e5bf",
+          "_type": "span",
+          "marks": [],
+          "text": "Clapboard Hill is one of New Canaan’s residential areas where the pace feels quieter than the town center. Streets tend to feel more tucked away, and the overall atmosphere reads as “neighborhood-first”—a calm home base rather than a destination."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "d393346cca49",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "2e573fde9b23",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate is predominantly single-family, and buyers often value the combination of space and convenience. You’re close enough to enjoy New Canaan’s village amenities, but removed enough that the day-to-day feels more private."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "8d512ffaa602",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "7e291d712b95",
+          "_type": "span",
+          "marks": [],
+          "text": "For recreation, Waveny Park is a major nearby asset—described by the Waveny Park Conservancy as 130 acres of open space with seasonal hours (sunrise–sunset May 1–Oct 30; 8 a.m.–5 p.m. Nov 1–Apr 30). For commuting, New Canaan station is on the Metro-North New Canaan Branch, with ticket machines on site (per MTA). Clapboard Hill is best for buyers who want a quieter New Canaan setting with practical access to both parks and the train."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A quiet residential setting with more privacy than the town center",
+    "Predominantly single-family housing with space and established streetscapes",
+    "Waveny Park nearby - 130 acres of open space with seasonal activities",
+    "New Canaan Metro-North station within reach for commuting",
+    "Easy access to New Canaan's village amenities for dining, shopping, and errands"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Clapboard Hill",
+  "overview": "Clapboard Hill is a residential New Canaan area known for a quieter setting and easy access back to town amenities. Homes are primarily single-family, often with more space and privacy than the town center blocks. The lifestyle here is about having a calm home base while keeping the village, schools, and Metro-North within reach. For buyers who want New Canaan’s character without being right in the center, Clapboard Hill fits well.",
+  "slug": {
+    "_type": "slug",
+    "current": "clapboard-hill"
+  },
+  "town": {
+    "_ref": "59cab0e1-9b0e-40b7-933f-dafbaa098b25",
+    "_type": "reference"
+  }
+}

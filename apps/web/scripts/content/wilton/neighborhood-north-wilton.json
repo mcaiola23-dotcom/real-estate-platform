@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "north-wilton",
+  "townSlug": "wilton",
+  "overview": "North Wilton is the town's most expansive residential section, where two-to-four-acre parcels, horse properties, and custom-built estates occupy the rolling terrain between Ridgefield Road and the New Canaan border. Nod Hill Road — one of Fairfield County's most recognized residential corridors — threads through the neighborhood past stone walls, preserved farmland, and the entrance to Weir Farm National Historical Park, the only National Park Service site in Connecticut. Properties here start near $900,000 and extend above $2.5 million for estate-scale parcels with barns, paddocks, and panoramic hilltop settings.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "North Wilton's geography sets it apart from the rest of the town. The land rises as you move north from Wilton Center, with elevations increasing toward the Ridgefield border and dense hardwood canopy replacing the more manicured landscapes of the southern neighborhoods. Nod Hill Road, which runs northeast from Route 7 toward Ridgefield, has been a prestige address for generations — the Samuel Olmstead II House, built in 1790, still stands along its length, and the road's stone walls date to the colonial era when the area was farmed for subsistence rather than scenery."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Weir Farm National Historical Park occupies 60 acres at the neighborhood's northern edge, straddling the Wilton-Ridgefield border. The park preserves the property where Julian Alden Weir — a founding member of the American Impressionist movement known as The Ten — painted from the 1880s until his death in 1919. Visitors tour the Weir House and Young Studio, walk trails to Weir Pond, and borrow art supplies from the Visitor Center porch to paint the same landscapes that shaped a generation of American art. For North Wilton residents, the park is a neighborhood amenity as much as a national landmark."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Equestrian properties give North Wilton a character distinct from any other Fairfield County neighborhood south of Ridgefield. Parcels of three to four acres with barns, fenced paddocks, and trail access to preserved open space attract buyers who keep horses or want the option. Woodcock Nature Center, located on Deer Run Road at the neighborhood's eastern edge, provides 150 acres of trails and wetland boardwalks that connect to the broader network of conservation land. The density here is genuinely low — driveways measured in tenths of miles, neighbors separated by tree lines rather than fences."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The trade-off for North Wilton's space is distance. Route 7 south to Wilton Center takes roughly 10 minutes; the Cannondale Metro-North station is a 15-minute drive. Shopping and dining require a car in every direction — north to Ridgefield's Main Street, south to Wilton Center, or east to New Canaan. Buyers who select North Wilton do so with clear intent: they want acreage, privacy, and proximity to protected open space, and they accept that this section of town operates at a different pace than the villages closer to Route 7."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Connecticut's only NPS site, Weir Farm National Historical Park preserves 60 acres of Impressionist landscape at the Wilton-Ridgefield border",
+    "Nod Hill Road features colonial-era stone walls, the 1790 Samuel Olmstead II House, and some of Fairfield County's most recognized residential parcels",
+    "Lot sizes of two to four-plus acres support equestrian properties with barns, paddocks, and trail connections to preserved open space",
+    "Located on Deer Run Road, Woodcock Nature Center spans 150 acres of trails and wetland boardwalks at the neighborhood's eastern edge",
+    "Properties range from $900,000 to above $2.5 million, with custom estates on hilltop parcels commanding the upper tier"
+  ],
+  "housingCharacteristics": "North Wilton's housing stock is the most varied in town. Center-hall colonials built from the 1960s through 1990s form the backbone of inventory, typically four to five bedrooms on two-to-three-acre lots with attached two-car garages and mature landscaping. Antique farmhouses and colonial-era homes — some with original wide-plank floors, hand-hewn beams, and center chimneys — appear along Nod Hill Road and Ridgefield Road, often on parcels that retain agricultural outbuildings.\n\nCustom builds from the 2000s and 2010s occupy the premium tier: stone-and-shingle construction on three-to-four-acre lots with open floor plans, chef's kitchens, and finished lower levels designed for modern family living. Horse properties feature dedicated barns — typically two to four stalls — with riding rings, fenced paddocks, and hay storage. The price range spans from approximately $900,000 for older colonials needing updates to above $2.5 million for turn-key estates with acreage and outbuildings.",
+  "marketNotes": "North Wilton's estate market operates with longer timelines than the town's southern neighborhoods. Properties above $1.5 million may sit for 60 to 90 days before receiving offers, reflecting a smaller buyer pool for this price tier and the self-selecting nature of buyers who specifically want acreage near Ridgefield. When a well-maintained colonial or custom build on three-plus acres comes to market priced between $1.2 million and $1.8 million, however, absorption can be swift — this range represents the sweet spot where acreage, school quality, and total cost align for families relocating from smaller-lot towns.\n\nEquestrian properties introduce a specialized buyer dynamic. Purchasers evaluating horse-ready parcels assess not just the home but barn condition, fencing, trail access, and proximity to veterinary services. These transactions often involve longer due diligence periods and sometimes straddle the residential and agricultural appraisal categories, which can complicate financing.",
+  "locationAccess": "North Wilton occupies the town's northernmost section, bordered by Ridgefield to the north and northwest, New Canaan to the east, and Wilton Center to the south. Route 7 provides the primary connection south to Wilton Center — approximately 10 minutes — and continues to Norwalk in 25 minutes. The Cannondale Metro-North station is a 15-minute drive south, offering Danbury Branch service to South Norwalk and Grand Central Terminal. Ridgefield's Main Street, with its independent shops and restaurants, is 10 minutes north. The Merritt Parkway is accessible via Route 33 in New Canaan, roughly 15 minutes east.",
+  "seoTitle": "North Wilton CT | Estate Properties & Weir Farm",
+  "seoDescription": "North Wilton CT homes: estate parcels of two to four-plus acres near Weir Farm National Historical Park and Nod Hill Road. Homes $900K+. Call Matt Caiola.",
+  "faqs": [
+    {
+      "question": "What is Weir Farm National Historical Park near North Wilton?",
+      "answer": "Weir Farm National Historical Park is the only National Park Service site in Connecticut, dedicated to American Impressionist painting. The 60-acre property straddles the Wilton-Ridgefield border and preserves the landscape where Julian Alden Weir — a founding member of the American Impressionist group known as The Ten — painted from the 1880s until 1919. Visitors can tour the Weir House and Young Studio, walk trails to Weir Pond, and borrow art supplies from the Visitor Center to paint on the grounds. The park is free to enter and open year-round.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Are there horse properties available in North Wilton CT?",
+      "answer": "North Wilton is the primary location for equestrian properties in the Wilton market. Parcels of three to four-plus acres with dedicated barns, fenced paddocks, riding rings, and trail connections to preserved open space are available, typically in the $1.5 million to $2.5 million-plus range depending on acreage and barn condition. The Nod Hill Road corridor and streets near the Ridgefield border offer the largest lots. Woodcock Nature Center's 150-acre trail network and the surrounding conservation land provide riding and trail access beyond the property boundaries.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Nod Hill Road in North Wilton known for?",
+      "answer": "Nod Hill Road is one of Fairfield County's most recognized residential corridors, running northeast from Route 7 through North Wilton toward Ridgefield. The road features colonial-era stone walls, the 1790 Samuel Olmstead II House, and leads to Weir Farm National Historical Park. Properties along Nod Hill Road sit on two-to-four-acre parcels and include both antique farmhouses with original period details and newer custom construction. The road's prestige is tied to its combination of historical significance, scenic landscape, and proximity to the national park.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

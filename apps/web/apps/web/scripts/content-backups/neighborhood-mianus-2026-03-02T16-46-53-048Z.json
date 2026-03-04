@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:48Z",
+  "_id": "8e5a836b-7ee9-4e17-96ea-77e2ccff3228",
+  "_rev": "mB2cUx9aVkdRk2GqAC50dL",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:21Z",
+  "description": [
+    {
+      "_key": "8bfe3515ba07",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "325275fc59be",
+          "_type": "span",
+          "marks": [],
+          "text": "Mianus is one of the parts of Greenwich where the landscape feels a bit more wooded and quiet, and the day-to-day pace is more residential than retail-driven. It’s often appealing for buyers who want Greenwich access and amenities, but who prefer a home setting that feels more tucked away."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "2bf1115864a4",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "3c8876441c3b",
+          "_type": "span",
+          "marks": [],
+          "text": "Housing is predominantly single-family, and the character tends to be more private than the village centers. Streets feel calmer, and lots often prioritize trees and landscaping, creating a neighborhood atmosphere that reads as “quiet Greenwich” rather than “downtown Greenwich.”"
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "1d497b9c92ba",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "ae897cd50adc",
+          "_type": "span",
+          "marks": [],
+          "text": "A major local anchor is Mianus River & Natural Park. The Town describes it as a 109.7-acre park in the Mianus/upper Cos Cob neighborhood between Westover Road and Valley Road, with trails and passive recreation like walking, hiking, fishing, and dog walking. That proximity to protected open space is a big part of the lifestyle here. Mianus is best for buyers who want a calmer Greenwich setting with nature close by and multiple commuting options within reach."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Mianus River Park with 100+ acres of trails and natural beauty",
+    "A quieter, wooded Greenwich feel with a tucked-away residential atmosphere",
+    "Primarily single-family housing with an emphasis on privacy and outdoor space",
+    "Easy access toward Cos Cob, Riverside, and downtown Greenwich amenities",
+    "A strong fit for buyers who want nature access built into daily life"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Mianus",
+  "overview": "Mianus is a quieter Greenwich area near the Mianus River, offering a more wooded, tucked-away feel than the downtown corridor. Homes are primarily single-family, and the atmosphere tends to be calm and nature-forward. Mianus River & Natural Park is a major nearby asset, making trails and outdoor time part of the routine. For buyers who want Greenwich with a little more privacy and a stronger connection to nature, Mianus is a great fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "mianus"
+  },
+  "town": {
+    "_ref": "20c7cb6d-4b2c-4fe5-9bbb-0dd8785f31dd",
+    "_type": "reference"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "type": "neighborhood",
+  "slug": "old-hill",
+  "townSlug": "westport",
+  "overview": "A 58-acre district on the west bank of the Saugatuck River, Old Hill preserves Westport's most historically significant residential enclave — where the c. 1730 Lt. John Taylor House still stands at the corner of Old Hill Road and Kings Highway North. The Kings Highway North Historic District, listed on the National Register of Historic Places since 1998, preserves an unbroken streetscape of wood-frame homes dating from the colonial era through the early twentieth century. Downtown Westport's Main Street shops and restaurants are a short walk across the river.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Before anyone called it Old Hill, this neighborhood was Taylortown. The Taylor family settled here in the early eighteenth century, and the house Lt. John Taylor built around 1730 — a two-story saltbox with a five-bay facade — remains standing at 1 Old Hill Road. It anchors the Kings Highway North Historic District, a 58-acre collection of wood-frame homes that the town designated as a local historic district in 1972 and that earned National Register recognition in 1998. The district covers roughly two-thirds of a mile along Kings Highway North, with secondary streets including Wright Street, Ludlow Road, Edge Hill Lane, and Nutmeg Lane branching off into the hillside."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Wright Street is the architectural highlight. Charles Wright laid out the road in the 1830s and built most of the Greek Revival houses between 1845 and 1856. Three neighboring homes on the south side — the Judson P. Wright House at 15 Wright Street, the Mary Wright House at 21, and the William B. Wright House at 25 — share a distinctive gable-to-street orientation. The 1849 William Wright House, with its full pediment and Palladian window, is the most refined example. Ship captains Peter Bulkley and Francis Bennett occupied homes on this street by the 1850s. The Historic District Commission oversees all exterior changes visible from the road, requiring a Certificate of Appropriateness before any modification proceeds."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "What separates Old Hill from other historic neighborhoods in Connecticut is proximity. Cross the Saugatuck River bridge and you are on Main Street — Westport's commercial spine, lined with galleries, boutiques, and locally owned restaurants. Winslow Park, the town's popular off-leash dog park, is less than a mile north. The neighborhood's elevation above the river valley provides partial water views from several properties and a sense of remove that belies the five-minute walk to downtown. Old Hill rewards buyers who value authenticity and stewardship over new construction and open floor plans."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "The 58-acre Historic District has been listed on the National Register of Historic Places since 1998",
+    "Wright Street preserves a cohesive row of Greek Revival homes built between 1845 and 1856 by the Wright family",
+    "Downtown Westport's Main Street galleries and restaurants are a five-minute walk across the Saugatuck River bridge",
+    "The c. 1730 Lt. John Taylor House at 1 Old Hill Road is one of the oldest surviving structures in Westport",
+    "Historic District Commission oversight protects the streetscape character through Certificate of Appropriateness review"
+  ],
+  "housingCharacteristics": "Old Hill's housing stock is overwhelmingly wood-frame construction, unified by similar scale and a consistent setback close to the road. The earliest homes are colonial saltboxes from the eighteenth century, followed by the Greek Revival cluster on Wright Street built in the 1840s and 1850s. Victorian-era additions and Colonial Revival renovations from the early twentieth century give much of the district a layered quality — original bones with period-appropriate updates accumulated over generations.\n\nLot sizes are modest compared to Westport's outlying neighborhoods. Many parcels fall between a quarter-acre and three-quarters of an acre, reflecting the district's village-density origins. Prices generally start around $1.3 million for smaller homes requiring renovation and climb above $5 million for restored properties on larger lots with river views. Buyers should expect that exterior modifications — roofing materials, window replacements, additions — require Historic District Commission approval, which adds both a layer of review and a long-term preservation guarantee that protects property values.",
+  "marketNotes": "Old Hill trades infrequently. Homeowners here tend to hold properties for decades, drawn by the walkability to downtown, the historic character, and the difficulty of replicating this location anywhere else in Fairfield County. When a listing does appear, it attracts a specific buyer profile: someone who appreciates the architectural integrity, understands the historic commission process, and values proximity to Main Street over modern amenities and open-concept layouts.\n\nBecause inventory is so scarce, comparable sales data can lag. I recommend that buyers work with an agent who tracks off-market activity in Westport's historic districts. Properties on Wright Street and upper Kings Highway North command the strongest premiums. Homes requiring significant restoration can offer relative value, but renovation budgets should account for the commission's design review requirements and the specialized materials that period-appropriate work demands.",
+  "locationAccess": "Old Hill sits on the west bank of the Saugatuck River, directly across from downtown Westport. Main Street is reachable on foot in roughly five minutes via the Post Road bridge — one of the few truly walkable connections between a residential neighborhood and a commercial center in Fairfield County. Winslow Park is less than a mile north along Kings Highway.\n\nThe Westport Metro-North station is approximately one mile southeast, a short drive or a fifteen-minute walk along Riverside Avenue. Express trains on the New Haven Line reach Grand Central Terminal in about 60 minutes; local service takes approximately 70 to 75 minutes. I-95 is accessible via the Post Road within five minutes. The Merritt Parkway entrance at Route 57 is a ten-minute drive north. Compo Beach and Longshore Club Park are both reachable in under ten minutes heading south on Compo Road.",
+  "seoTitle": "Old Hill, Westport CT | Historic District Homes",
+  "seoDescription": "Discover Old Hill in Westport, CT — a National Register historic district just steps from downtown. View available homes and contact Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What is the Kings Highway North Historic District in Old Hill?",
+      "answer": "The Kings Highway North Historic District is a 58-acre residential area on the west side of the Saugatuck River, designated as a local historic district by Westport in 1972 and listed on the National Register of Historic Places in 1998. It encompasses approximately two-thirds of a mile along Kings Highway North, with secondary streets including Wright Street, Ludlow Road, and Old Hill Road. A Historic District Commission reviews all exterior changes visible from the street.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Can you renovate a home in Old Hill, Westport?",
+      "answer": "Yes, but exterior modifications visible from the street require a Certificate of Appropriateness from the Kings Highway North Historic District Commission. The commission reviews proposed changes to ensure compatibility with the district's architectural character — including roofing materials, window styles, siding, and additions. Interior renovations are not subject to commission review. The process adds a layer of oversight but also preserves the streetscape integrity that supports long-term property values.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How close is Old Hill to downtown Westport?",
+      "answer": "Old Hill is directly adjacent to downtown Westport, separated by the Saugatuck River. Main Street's shops, galleries, and restaurants are roughly a five-minute walk across the Post Road bridge. This proximity to the commercial center — combined with the neighborhood's residential privacy and historic preservation — makes Old Hill one of the most uniquely positioned neighborhoods in Fairfield County — walkable access to the town center without sacrificing historic character.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Old Hill, Westport CT?",
+      "answer": "Home prices in Old Hill generally start around $1.3 million for smaller properties that may require renovation and can exceed $5 million for restored homes on larger lots with Saugatuck River views. The historic district designation and limited inventory contribute to price stability over time. Wright Street and upper Kings Highway North properties tend to command the highest premiums due to their architectural significance and streetscape preservation.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

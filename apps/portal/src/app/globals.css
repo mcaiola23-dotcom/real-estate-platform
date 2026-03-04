@@ -1,0 +1,344 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design System Variables ─── */
+:root {
+  --background: #FAFAF9;
+  --foreground: #1c1917;
+
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-400: #a8a29e;
+  --stone-500: #78716c;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #292524;
+  --stone-900: #1c1917;
+
+  --accent-500: #14b8a6;
+  --accent-600: #0d9488;
+  --accent-700: #0f766e;
+
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+}
+
+/* ─── Base ─── */
+@layer base {
+  html {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── Component Layer ─── */
+@layer components {
+  /* Buttons — stone-900 primary, rounded-full to match agent site */
+  .btn-primary {
+    @apply bg-stone-900 hover:bg-stone-800 text-white font-medium py-2.5 px-5 rounded-full transition-colors duration-200 shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-stone-50 text-stone-700 font-medium py-2.5 px-5 rounded-full border border-stone-300 transition-colors duration-200 shadow-sm hover:shadow-md;
+  }
+
+  .btn-outline {
+    @apply border border-stone-300 text-stone-700 hover:bg-stone-50 font-medium py-2.5 px-5 rounded-full transition-colors duration-200;
+  }
+
+  .btn-accent {
+    @apply bg-teal-700 hover:bg-teal-800 text-white font-medium py-2.5 px-5 rounded-full transition-colors duration-200 shadow-sm hover:shadow-md;
+  }
+
+  /* Cards — rounded-2xl with stone borders, matching agent site */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-stone-200 p-6 hover:shadow-md transition-shadow duration-200;
+  }
+
+  /* Form inputs — rounded-full with stone borders */
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-stone-300 rounded-full focus:ring-2 focus:ring-stone-400 focus:border-stone-400 transition-colors duration-200 text-sm bg-white;
+  }
+
+  /* Property card — luxury style */
+  .property-card {
+    @apply bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden hover:shadow-md transition-all duration-300;
+  }
+
+  /* AVM confidence badges */
+  .avm-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .avm-high {
+    @apply bg-emerald-50 text-emerald-700;
+  }
+
+  .avm-medium {
+    @apply bg-amber-50 text-amber-700;
+  }
+
+  .avm-low {
+    @apply bg-rose-50 text-rose-700;
+  }
+}
+
+/* ─── Status Badges ─── */
+.status-active {
+  @apply bg-emerald-100 text-emerald-700;
+}
+.status-pending {
+  @apply bg-amber-100 text-amber-700;
+}
+.status-contingent {
+  @apply bg-amber-100 text-amber-700;
+}
+.status-sold {
+  @apply bg-rose-100 text-rose-700;
+}
+.status-off-market {
+  @apply bg-stone-100 text-stone-600;
+}
+
+/* ─── Animations ─── */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.6s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalRise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-modal-rise {
+  animation: modalRise 260ms ease both;
+}
+
+/* ─── Responsive Typography ─── */
+.text-display {
+  @apply text-4xl md:text-5xl lg:text-6xl font-serif font-semibold tracking-tight;
+}
+
+.text-headline {
+  @apply text-2xl md:text-3xl lg:text-4xl font-serif font-semibold;
+}
+
+.text-title {
+  @apply text-xl md:text-2xl font-serif font-medium;
+}
+
+.text-body {
+  @apply text-base md:text-lg;
+}
+
+.text-caption {
+  @apply text-sm text-stone-500;
+}
+
+/* ─── Map Styles ─── */
+.map-container {
+  @apply rounded-2xl overflow-hidden shadow-lg;
+}
+
+.map-marker {
+  @apply w-8 h-8 bg-stone-900 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform duration-200;
+}
+
+.property-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.property-marker div {
+  transition: transform 0.2s ease;
+}
+
+.property-marker:hover div {
+  transform: scale(1.1);
+}
+
+/* ─── Loading States ─── */
+.skeleton {
+  @apply animate-pulse bg-stone-200 rounded;
+}
+
+.loading-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900;
+}
+
+/* ─── Focus States ─── */
+.focus-visible {
+  @apply focus:outline-none focus:ring-2 focus:ring-stone-400 focus:ring-offset-2;
+}
+
+/* ─── Leaflet Overrides ─── */
+.leaflet-container {
+  z-index: 0;
+}
+
+/* ─── Print ─── */
+@media print {
+  .no-print,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Reset modal to fill page */
+  body {
+    overflow: visible !important;
+  }
+
+  /* Property detail modal print layout */
+  .property-modal-print {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    background: white !important;
+  }
+
+  /* Only expand direct section children — NOT image containers */
+  .property-modal-print > [data-section] {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* Contain Next.js Image fill containers — they use position:absolute
+     which bleeds across pages without a containing block */
+  .property-modal-print img {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    max-height: 400px !important;
+  }
+
+  /* Hide the photo mosaic grid (complex layout breaks in print) */
+  .property-modal-print [data-print-photo-mosaic] {
+    display: none !important;
+  }
+
+  /* Show a single print-friendly hero image instead */
+  .property-modal-print [data-print-hero] {
+    display: block !important;
+  }
+
+  /* Hide Leaflet map containers in print (heavy tile rendering) */
+  .leaflet-container {
+    display: none !important;
+  }
+
+  /* Print header branding */
+  .print-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 2px solid #1c1917;
+    margin-bottom: 16px;
+  }
+
+  .print-footer {
+    display: block !important;
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid #e7e5e4;
+    margin-top: 24px;
+    font-size: 10px;
+    color: #78716c;
+  }
+
+  /* Hide interactive elements in print */
+  input[type="range"],
+  .sticky {
+    display: none !important;
+  }
+
+  /* Prevent awkward page breaks inside section cards */
+  .property-modal-print .bg-stone-50,
+  .property-modal-print .rounded-xl {
+    break-inside: avoid;
+  }
+
+  /* Expand all collapsed content */
+  .line-clamp-4 {
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+  }
+
+  /* Page breaks */
+  .print-break-before {
+    page-break-before: always;
+  }
+}

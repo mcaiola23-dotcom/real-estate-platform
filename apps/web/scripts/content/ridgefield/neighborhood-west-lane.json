@@ -1,0 +1,87 @@
+{
+  "type": "neighborhood",
+  "slug": "west-lane",
+  "townSlug": "ridgefield",
+  "overview": "West Lane occupies the western corridor of Ridgefield along West Lane Road, which historically served as Route 35's original alignment from Main Street to the New York state line at Lewisboro. The road passes through dense hardwood forest on lots that typically exceed one to two acres, with many properties carrying the setback, stone walls, and mature landscaping associated with estate-scale living. Silver Spring Country Club — a private club established in 1930 on 300 acres — and the George Fazio-designed Ridgefield Golf Course both sit within this western section of town.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "wl1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "wl1s1",
+          "text": "West Lane Road runs roughly east-west from Ridgefield's Main Street to the Connecticut-New York border, where it crosses into the town of Lewisboro in Westchester County. The road carried all of Route 35's traffic until the state relocated the highway to South Salem Road in the early 1930s, and that original alignment left West Lane with wide shoulders and gentle grades but without the through-traffic volume of a numbered state route. Properties along the corridor sit back from the road behind stone walls, hedgerows, and long gravel drives. The landscape is wooded and rolling, with enough elevation change to produce sight lines across neighboring ridges."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "wl2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "wl2s1",
+          "text": "The housing stock along West Lane reflects decades of custom construction rather than subdivision development. Georgian manors, center-chimney colonials, and architect-designed contemporary homes share the corridor, many on parcels exceeding two acres. One estate at 384 West Lane spans 13 acres and includes a stone cottage, a converted nine-stall barn, and a six-car heated garage — representative of the scale that defines the upper end of this market. Properties here typically trade between $1 million and $2.5 million, though estates with significant acreage and outbuildings have sold above that ceiling."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "wl3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "wl3s1",
+          "text": "Silver Spring Country Club on Silver Spring Road has operated as a private family club since 1930, offering golf on a Robert White-designed 18-hole course, along with tennis, paddle, swimming, and dining across its 300-acre property. The Ridgefield Golf Course at 545 Ridgebury Road — a public facility designed by George and Tom Fazio that opened in 1975 — occupies rolling terrain nearby, incorporating a 40-acre wetland preserve into its layout. Between the two courses, West Lane residents have both private membership and public walk-on golf options within minutes of home."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "wl4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "wl4s1",
+          "text": "The New York border is the defining geographic fact of this corridor. Lewisboro and North Salem in Westchester County lie directly west, and residents can reach I-684 in under 20 minutes for drives south toward White Plains or north toward Putnam County. That cross-border position also places West Lane within a short drive of the dining, shops, and Metro-North stations in the Route 35 towns of South Salem and Katonah. Ridgefield Center and its Main Street commercial district remain roughly a ten-minute drive east. The result is a neighborhood that carries the mailing address and school enrollment of a Connecticut town while drawing on the infrastructure of two states."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Silver Spring Country Club — a private 300-acre family club established in 1930 — offers Robert White-designed golf, tennis, paddle, swimming, and dining",
+    "West Lane Road follows the original 1930s Route 35 alignment from Main Street to the New York state line at Lewisboro",
+    "One- to two-plus-acre lots with custom colonials, Georgian estates, and architect-designed contemporaries priced from $1 million to $2.5 million and above",
+    "Ridgefield Golf Course at 545 Ridgebury Road — a public George and Tom Fazio design — features 18 holes with a 40-acre wetland preserve"
+  ],
+  "housingCharacteristics": "West Lane's housing is defined by custom construction on large, wooded lots. The corridor includes Georgian manor houses, center-chimney colonials, contemporary designs, and compound-style estates with guest cottages, barns, and outbuildings. Lots typically start at one to two acres and frequently exceed that, with some properties encompassing ten or more acres of private land. Stone walls, mature hardwood canopy, and long driveways create substantial separation between homes.\n\nSingle-family homes along West Lane generally trade between $1 million and $2.5 million. Properties at the higher end feature significant acreage, multiple structures, and custom architectural detail — heated garages, converted barns, pools, and formal gardens are common on estate-scale parcels. New construction is limited by the size of existing lots and the area's conservation character, which keeps inventory constrained and resale values stable.",
+  "marketNotes": "West Lane attracts buyers seeking privacy, acreage, and proximity to the New York state line without leaving Connecticut's school and tax structure. The corridor competes with estate-scale properties in North Salem and Lewisboro on the Westchester side, but offers Ridgefield's public school system and town services as a differentiator.\n\nTransaction pace along West Lane is measured — large-lot estate properties turn over less frequently than center-town colonials. When listings do appear, they draw interest from buyers relocating from Westchester who want equivalent land and privacy with a Ridgefield address. The presence of Silver Spring Country Club creates an additional draw for members who prefer to live within minutes of the club's entrance on Silver Spring Road.",
+  "locationAccess": "West Lane Road connects directly to Ridgefield Center and Main Street to the east, reaching the downtown commercial district in approximately ten minutes. To the west, the road crosses the New York state line into Lewisboro, with I-684 accessible in under 20 minutes for north-south travel through Westchester and Putnam counties.\n\nThe Metro-North stations at Katonah and Purdy's on the Harlem Line are reachable in 15 to 20 minutes, offering an alternative rail commute to Grand Central Terminal that avoids the Danbury Branch transfer at South Norwalk. Westchester County Airport in White Plains is approximately 35 minutes south via I-684. Route 7 and the Branchville Metro-North station lie to the east and south, providing a second commuter rail option within Ridgefield's own borders.",
+  "seoTitle": "West Lane Ridgefield CT | Estate Homes & Golf",
+  "seoDescription": "West Lane in Ridgefield CT features estate homes on wooded multi-acre lots near Silver Spring Country Club. Reach out to Matt Caiola for a private tour.",
+  "faqs": [
+    {
+      "question": "What is the character of West Lane in Ridgefield?",
+      "answer": "West Lane is a residential corridor in western Ridgefield defined by custom-built homes on one- to two-plus-acre wooded lots. The road follows the original 1930s Route 35 alignment from Main Street to the New York state line at Lewisboro. Properties along the corridor include Georgian estates, center-chimney colonials, and architect-designed contemporaries, many with stone walls, long driveways, and outbuildings. Silver Spring Country Club, a private 300-acre family club established in 1930, is located within this section of town.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost along West Lane in Ridgefield?",
+      "answer": "Homes along the West Lane corridor generally trade between $1 million and $2.5 million, with estate-scale properties featuring significant acreage and multiple structures occasionally exceeding that range. The market is predominantly single-family, with custom construction on large lots rather than subdivision development. Pricing reflects the land itself — parcels of two or more acres with mature hardwood cover, stone walls, and privacy command the higher end of the range.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

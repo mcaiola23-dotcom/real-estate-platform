@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "stratfield",
+  "townSlug": "fairfield",
+  "overview": "Stratfield straddles the Fairfield–Bridgeport border along Stratfield Road, a neighborhood whose identity was forged by a 19th-century trolley line and a century of deliberate independence. Brooklawn Country Club — one of the original twenty-five members of the USGA, established in 1895 — anchors the southern edge, while Sacred Heart University's 300-acre campus occupies the rolling terrain to the north. Lake Mohegan, a 17-acre freshwater lake with a public beach and hemlock-shaded hiking trails, sits just to the west.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "sf1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "sf1s1",
+          "text": "The name itself tells the story. \"Stratfield\" derives from the neighborhood's position between the colonial towns of Stratford and Fairfield, a parish designation from 1701 that stuck. For two centuries, this was farmland. Then the North Avenue trolley line extended up Stratfield Road in the late 1800s, and the area became the fastest-growing section of Fairfield for three consecutive decades. Residents commuted to Bridgeport's factories by trolley, shopped in Bridgeport, and nearly voted to annex into the city — until Fairfield improved its roads and infrastructure enough to keep them."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "sf2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "sf2s1",
+          "text": "That dual allegiance shaped a neighborhood that is practical, unpretentious, and architecturally varied. Colonials from the 1920s through 1940s sit alongside postwar Cape Cods and ranch homes built during the suburb's expansion after World War II. Mature maples line the residential streets. Sidewalks connect the older blocks, though the outer edges are car-dependent. The Stratfield Village Association maintains a sense of community cohesion that goes back generations — block parties, a holiday parade, organized advocacy on zoning and traffic issues."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "sf3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "sf3s1",
+          "text": "Sacred Heart University's campus presence is large but unobtrusive. The NCAA Division I athletic fields generate game-day energy at Pioneer Park, yet the residential blocks remain insulated by scale and setbacks. Black Rock Turnpike, two miles southwest, provides the commercial spine — Trader Joe's, ShopRite, Starbucks, and a corridor of chain and independent restaurants. Stratfield Elementary feeds into Tomlinson Middle School and Fairfield Warde High School, all consistently rated among the stronger public schools in Fairfield County."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "sf4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "sf4s1",
+          "text": "Commuters benefit from proximity to Fairfield Metro station, which added a second rail option when it opened on the New Haven Line. Express trains reach Grand Central in roughly 65 to 70 minutes. The Merritt Parkway is accessible within minutes from the northern parcels. Stratfield will never be the flashiest address in Fairfield, and that is precisely its appeal — solid housing stock, established infrastructure, and a community that has been choosing to stay for over a century."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Adjacent to the USGA-founding Brooklawn Country Club (est. 1895) along the neighborhood's southern edge",
+    "Sacred Heart University's 300-acre campus anchors the north without disrupting the residential character",
+    "Lake Mohegan offers a public beach, hemlock-shaded trails, and a $10 season swimming pass",
+    "Stratfield Elementary, Tomlinson Middle, and Fairfield Warde High School form a top-rated public school pipeline",
+    "Metro-North express service from nearby Fairfield Metro station reaches Grand Central in approximately 65 minutes"
+  ],
+  "housingCharacteristics": "Stratfield's housing stock spans most of the 20th century. The oldest homes date to the 1920s — modest colonials on compact lots along the neighborhood's core streets near Stratfield Road. Cape Cods and ranch homes from the 1940s through 1960s fill the postwar blocks, many updated with modern kitchens and open floor plans while retaining original footprints. Townhouse and condo complexes, primarily built in later decades, appear along the commercial edges and near Sacred Heart University.\n\nSingle-family homes in updated condition typically trade between $675,000 and $1.5 million, depending on lot size, vintage, and renovation scope. Condos and townhouses range from roughly $450,000 to $600,000. Compared to Fairfield's beach and Southport neighborhoods, Stratfield offers meaningfully more square footage per dollar — a pattern that consistently draws young families and buyers stepping up from Bridgeport or seeking Fairfield schools at a moderate price point.",
+  "marketNotes": "Transaction volume in Stratfield remains steady, driven by a reliable pipeline of families prioritizing the Stratfield Elementary district and buyers seeking Fairfield's tax base and school system without the premium attached to the town's southern shoreline neighborhoods. Updated colonials with four bedrooms generate the most competitive bidding, particularly when they fall below the $900,000 threshold.\n\nThe neighborhood's proximity to Sacred Heart University adds a minor rental demand component, but the overwhelming majority of transactions are owner-occupied purchases. Homes on the Bridgeport-border blocks trade at a slight discount to interior Stratfield addresses, a pricing gradient that has narrowed in recent years as buyers recognize the practical advantages of the location — walkability, commercial access, and commuter convenience — over the zip code line.",
+  "locationAccess": "Fairfield Metro station, on the Metro-North New Haven Line, is the closest rail option for Stratfield commuters. Express trains reach Grand Central Terminal in approximately 65 to 70 minutes; local service runs 75 to 80 minutes. The original Fairfield station downtown is also within a short drive. Black Rock Turnpike (Route 59) provides the primary north-south commercial corridor, connecting to the Merritt Parkway and I-95 interchanges.\n\nStratfield Road itself runs from the Bridgeport border south through the heart of the neighborhood. North Avenue connects east toward Trumbull and west into Bridgeport. The Post Road and Fairfield's downtown shopping district are roughly five miles south. For daily errands, the Trader Joe's and ShopRite on Black Rock Turnpike handle most grocery needs within a two-mile drive.",
+  "seoTitle": "Stratfield Fairfield CT | Homes Near Sacred Heart",
+  "seoDescription": "Explore Stratfield in Fairfield CT — colonial homes, top-rated schools, and Lake Mohegan access. View listings and pricing. Contact Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What schools serve the Stratfield neighborhood in Fairfield?",
+      "answer": "Stratfield is served by Stratfield Elementary School, Tomlinson Middle School, and Fairfield Warde High School. Stratfield Elementary consistently earns strong ratings, and the full K-12 pipeline is among the higher-performing public school tracks in Fairfield County. Sacred Heart University, a private institution with over 90 undergraduate programs, also has its campus within the neighborhood's northern section.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How much do homes cost in Stratfield, Fairfield?",
+      "answer": "Single-family homes in Stratfield typically trade between $675,000 and $1.5 million depending on size, condition, and lot. Condos and townhouses range from approximately $450,000 to $600,000. Stratfield generally offers more square footage per dollar than Fairfield's shoreline neighborhoods, making it a strong value within the town's residential market.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Is Stratfield close to a Metro-North train station?",
+      "answer": "Yes. Fairfield Metro station is the nearest Metro-North stop, offering express service to Grand Central Terminal in roughly 65 to 70 minutes and local service in 75 to 80 minutes. The original Fairfield station in the town center is also accessible by a short drive. Both stations sit on the New Haven Line, providing frequent weekday service for Manhattan-bound commuters.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Lake Mohegan near Stratfield?",
+      "answer": "Lake Mohegan is a 17-acre freshwater lake located just west of the Stratfield neighborhood. It features a public swimming beach staffed by lifeguards from Memorial Day through Labor Day, along with hemlock-shaded hiking trails that are free and open year-round. A seasonal swimming pass costs $10 for Fairfield residents, making it one of the most affordable recreational amenities in town.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

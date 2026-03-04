@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "brooklawn",
+  "townSlug": "fairfield",
+  "overview": "Brooklawn Country Club — founded in 1895 with an A.W. Tillinghast-designed course that has hosted the U.S. Women's Open and U.S. Senior Open — anchors this neighborhood on Fairfield's western border with Bridgeport. Cornell Road, Algonquin Road, and the streets surrounding the club hold a concentration of well-maintained colonials on generous lots, many with views across the fairways. The neighborhood occupies the 06825 zip code and feeds into Fairfield Warde High School.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "k1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "k1s1",
+          "text": "Brooklawn is organized around its country club. The course occupies the center of the neighborhood like a green anchor, and the residential streets — Cornell Road, Algonquin Road, Brooklawn Avenue — radiate outward from it. Homes backing onto the fairways command the highest premiums, but even properties a block or two removed benefit from the open sight lines and mature tree canopy that the course preserves. It is one of the few Fairfield neighborhoods where a private institution defines the physical character of the surrounding streets."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "k2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "k2s1",
+          "text": "The club itself carries weight. Brooklawn Country Club is the oldest in Fairfield, and the Tillinghast course redesign in 1930 placed it among the architect's notable works alongside Winged Foot and Baltusrol. Recent USGA championships — including three U.S. Senior Women's Opens, the most recent in 2021 — keep the club in national conversation. Beyond golf, members access a seven-court tennis center, three paddle courts, a swimming complex, and an eight-lane bowling alley. That breadth of programming draws families, not just golfers."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "k3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "k3s1",
+          "text": "Brooklawn's western edge borders Bridgeport, and that proximity is reflected in pricing. Homes here trade below the town-wide median on a per-square-foot basis, which makes the neighborhood attractive to anyone prioritizing Fairfield's school system and tax base without the premium attached to shoreline or center-of-town addresses. The trade-off is geographic: Brooklawn sits inland, roughly four miles from the nearest beach access and two miles from the Post Road commercial corridor."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "k4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "k4s1",
+          "text": "What the neighborhood lacks in walkable retail it compensates for in residential consistency. Streets are orderly, lots are maintained, and the presence of the club creates a landscape buffer that insulates the core blocks from the commercial activity along surrounding arterials. Buyers targeting Brooklawn are typically choosing space and value within Fairfield's boundaries, often with young families entering the school system at nearby elementary schools before advancing to Fairfield Warde High School."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Brooklawn Country Club, Fairfield's oldest, features an A.W. Tillinghast course and has hosted multiple USGA championships",
+    "Cornell Road and Algonquin Road properties offer golf-course views with mature landscaping on half-acre to full-acre lots",
+    "Pricing sits below Fairfield's town-wide median per square foot, offering strong relative value within the school district",
+    "Seven-court tennis center, paddle courts, swimming complex, and bowling alley complement the club's golf programming",
+    "Feeds into Fairfield Warde High School, ranked among Connecticut's top 30 public high schools by U.S. News"
+  ],
+  "housingCharacteristics": "Brooklawn's housing stock centers on mid-century and late-twentieth-century colonials, with four- and five-bedroom homes predominating on the streets closest to the country club. Lot sizes typically range from a third of an acre to a full acre, larger than the town average for neighborhoods south of the Merritt Parkway. Construction dates cluster in the 1950s through 1980s, with periodic teardown-and-rebuild activity introducing newer colonials with open floor plans and updated systems.\n\nPricing on the streets adjacent to the club — Cornell Road, Algonquin Road, upper Brooklawn Avenue — generally ranges from $900,000 to $1.4 million for updated four-bedroom colonials. Properties directly overlooking the golf course or sitting on oversized parcels have traded above $2 million. On the neighborhood's periphery closer to the Bridgeport border, smaller colonials and raised ranches trade between $550,000 and $850,000, representing some of the most accessible entry points in Fairfield for single-family homes.",
+  "marketNotes": "Brooklawn attracts a consistent buyer profile: families prioritizing the Fairfield school district who find shoreline and center-of-town pricing prohibitive. The country club provides a lifestyle amenity that distinguishes Brooklawn from similarly priced neighborhoods elsewhere in town. Properties on Cornell Road and Algonquin Road turn over less frequently than the peripheral streets, and golf-course-view homes generate competitive bidding when they appear.\n\nThe Bridgeport border is the persistent pricing headwind. Buyers unfamiliar with Fairfield's geography sometimes conflate Brooklawn with adjacent Bridgeport neighborhoods, which suppresses initial interest until they visit. Agents who work this area consistently note that the in-person experience — the club's green expanse, the scale of the homes, the maintained streetscape — converts skeptics. Transaction data supports steady appreciation, though at a slower rate than waterfront or downtown-adjacent neighborhoods.",
+  "locationAccess": "Brooklawn sits in western Fairfield, approximately two miles north of I-95 and three miles west of the Fairfield train station. The Fairfield Metro station on lower Black Rock Turnpike is the closest Metro-North stop, roughly two miles east, with express service to Grand Central Terminal in 65 to 70 minutes on the New Haven Line.\n\nBlack Rock Turnpike runs along the neighborhood's eastern edge, providing a commercial corridor with grocery stores, restaurants, and services. The Post Road is accessible via several north-south connectors. The Merritt Parkway lies approximately two miles north, reachable through residential streets or via North Benson Road. Fairfield's beaches are a 10- to 15-minute drive south through town.",
+  "seoTitle": "Brooklawn Fairfield CT | Homes Near Country Club",
+  "seoDescription": "Explore Brooklawn in Fairfield CT near the historic Brooklawn Country Club. View colonial homes with golf-course settings and pricing. Contact us today.",
+  "faqs": [
+    {
+      "question": "What is Brooklawn Country Club in Fairfield?",
+      "answer": "Brooklawn Country Club, founded in 1895, is the oldest private club in Fairfield. Its 18-hole golf course was redesigned by legendary architect A.W. Tillinghast in 1930 and has hosted the U.S. Women's Open, the U.S. Senior Open, and three U.S. Senior Women's Opens. Beyond golf, the club offers a seven-court tennis center, three paddle courts, a swimming and recreational complex, and an eight-lane bowling alley, making it a comprehensive family-oriented club.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in Brooklawn, Fairfield CT?",
+      "answer": "Home prices in Brooklawn vary by proximity to the country club and lot size. Updated four-bedroom colonials on streets like Cornell Road and Algonquin Road typically trade between $900,000 and $1.4 million, with golf-course-view properties occasionally exceeding $2 million. On the neighborhood's periphery, smaller colonials and raised ranches are available between $550,000 and $850,000, representing some of the most accessible single-family pricing within Fairfield's school district.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What schools serve the Brooklawn neighborhood?",
+      "answer": "Brooklawn students attend Fairfield Public Schools, feeding into Fairfield Warde High School on Melville Avenue. Warde is ranked among Connecticut's top 30 public high schools by U.S. News & World Report. Elementary and middle school assignments follow the district's geographic boundaries, with several well-rated options serving the western portion of town. The district enrolls approximately 9,350 students across 16 schools.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

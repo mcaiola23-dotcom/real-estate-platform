@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "cove",
+  "townSlug": "stamford",
+  "overview": "The Cove is a waterfront neighborhood in southeastern Stamford anchored by the 83-acre Cove Island Park and its beaches on Long Island Sound. Weed Avenue and Cove Road form the main residential corridors, lined with colonials, Victorians, and waterfront properties that range from updated family homes to shoreline estates above $2 million. Holly Pond, Czescik Marina, and the SoundWaters Coastal Education Center all sit within the neighborhood's boundaries.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "cv1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cv1s1",
+          "text": "Cove Island Park is the neighborhood's signature asset — 83 acres of public beach, ball fields, tennis courts, a wildlife sanctuary, and the Terry Conners Ice Rink, which has served skaters since 1973. SoundWaters operates its Coastal Education Center from the historic Holly House within the park, offering a free teaching aquarium and seasonal trips aboard an 80-foot, three-masted schooner that sails Long Island Sound as a floating classroom. Footbridges connect beachgoers from the neighborhood streets to the park's two sandy swimming beaches, and a paved one-mile loop around the perimeter draws runners and cyclists year-round."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "cv2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cv2s1",
+          "text": "The residential streets radiate outward from Cove Road and Weed Avenue. Colonials and Victorians from the late 1800s and early 1900s make up a substantial portion of the housing stock, many of them renovated with modern systems while retaining original detailing — wide-plank floors, wraparound porches, leaded glass transoms. Mid-century capes and ranches fill in the blocks farther from the water. Along the shoreline, larger properties with direct Long Island Sound frontage or Holly Pond views command the highest prices, often exceeding $2 million."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "cv3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cv3s1",
+          "text": "Holly Pond, a tidal inlet at the neighborhood's northern edge, gives the Cove a secondary waterfront presence distinct from the open Sound. Properties along Weed Avenue overlook the pond, and some of Stamford's oldest residential structures — homes dating to the early 1800s — stand along this corridor. Czescik Marina provides boat slips and mooring access for residents who want to keep a vessel within walking distance of home. The marina, the pond, and the park together create a density of water access that is unusual for a neighborhood two miles from a Metro-North station."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "cv4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cv4s1",
+          "text": "The Cove operates at a different pace than downtown Stamford, despite its proximity. Bedford Street's restaurants and nightlife are a five-minute drive west. The Stamford Metro-North station is roughly two miles away. Yet the neighborhood's identity is tied to the coastline, not the office towers. Saturday mornings mean the park loop, not the parking garage. That combination — waterfront living with urban amenities within immediate reach — is what has made the Cove one of Stamford's most sought-after residential addresses for decades."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "The 83-acre Cove Island Park features two swimming beaches, ball fields, and the Terry Conners Ice Rink",
+    "SoundWaters Coastal Education Center in the historic Holly House offers a free aquarium and schooner sailing programs",
+    "Holly Pond provides a tidal inlet setting with historic homes along Weed Avenue dating to the early 1800s",
+    "Czescik Marina gives residents boat slip and mooring access within walking distance of home",
+    "Two miles from Stamford Metro-North station with express service to Grand Central Terminal"
+  ],
+  "housingCharacteristics": "The Cove's housing stock reflects over 150 years of residential development. Late-19th-century colonials and Victorians, some originally built for the families who worked the Cove's oyster industry, have been extensively renovated and expanded. Mid-century capes, ranches, and split-levels fill the interior blocks. Condominiums and multi-family conversions appear along the busier road frontages. Along the shoreline and Holly Pond, larger properties with water views or direct frontage represent the top tier of inventory.\n\nPricing ranges from approximately $700,000 for updated three-bedroom homes on interior streets to well above $2 million for waterfront properties with direct Sound access or Holly Pond frontage. The wide spread means the Cove accommodates both families upgrading from downtown condos and established buyers seeking one of Stamford's premier coastal addresses. Lot sizes are generally compact — a quarter-acre is typical — and mature landscaping throughout the neighborhood gives even the smaller properties a settled, established appearance.",
+  "marketNotes": "The Cove is one of Stamford's most consistently active markets. Waterfront and water-view properties generate immediate interest when they list, and well-maintained colonials in the $800,000 to $1.2 million range typically sell within weeks. Competition is sharpest for updated four-bedroom homes near the park, where families with children prioritize beach proximity and the SoundWaters programming.\n\nInventory constraints define the challenge. The Cove is a built-out neighborhood with almost no developable land. New construction is rare, limited to teardowns on existing lots. That scarcity, combined with the park amenity and the two-mile distance to Metro-North, keeps prices firm even when broader Stamford market conditions soften. Buyers should expect to move decisively on listings that match their criteria — well-priced Cove homes do not sit.",
+  "locationAccess": "Stamford's Metro-North station is approximately two miles northwest of the Cove. Express trains reach Grand Central Terminal in about 50 minutes, with service running every 15 minutes during peak commuting hours. Cove Road connects north to Shippan Avenue and the broader Stamford street grid. I-95 is accessible via the Elm Street interchange, roughly ten minutes by car.\n\nDowntown Stamford's restaurants, offices, and shops along Bedford Street are a five-minute drive west. The Shippan peninsula extends to the south and east, with Davenport Point and other private waterfront enclaves reachable along the coast. Greenwich is roughly twenty minutes west via I-95 or the Post Road. Westchester County sits across the state line, thirty minutes by highway.",
+  "seoTitle": "Cove Stamford CT | Waterfront Homes & Beach Living",
+  "seoDescription": "Explore the Cove neighborhood in Stamford CT — Cove Island Park beaches, waterfront homes from $700K to $2M+, and marina access. Call Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What makes the Cove one of Stamford's most desirable neighborhoods?",
+      "answer": "The Cove combines direct Long Island Sound waterfront access, the 83-acre Cove Island Park with two swimming beaches, and a housing stock of historic colonials and Victorians — all within two miles of the Stamford Metro-North station. SoundWaters Coastal Education Center, Czescik Marina, Holly Pond, and the Terry Conners Ice Rink provide year-round recreational amenities that few other Stamford neighborhoods can match in density.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in the Cove, Stamford CT?",
+      "answer": "Cove home prices range from approximately $700,000 for updated three-bedroom homes on interior streets to above $2 million for waterfront properties with direct Long Island Sound access or Holly Pond frontage. The most active price band falls between $800,000 and $1.2 million, where renovated colonials and Victorians near Cove Island Park attract consistent buyer competition. Inventory is limited because the neighborhood is fully built out with almost no vacant land.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Cove Island Park?",
+      "answer": "Cove Island Park is an 83-acre municipal park on Long Island Sound featuring two sandy swimming beaches, ball fields, tennis courts, a wildlife sanctuary, and the Terry Conners Ice Rink. The SoundWaters Coastal Education Center operates from the historic Holly House within the park, offering a free teaching aquarium and sailing programs aboard an 80-foot schooner. A paved one-mile perimeter loop is used by runners and cyclists throughout the year.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

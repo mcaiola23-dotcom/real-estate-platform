@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "south-norwalk",
+  "townSlug": "norwalk",
+  "overview": "Washington Street hums on a Tuesday night. That single fact separates South Norwalk from every other neighborhood in the city. SoNo packs a walkable grid of chef-driven restaurants, converted warehouse lofts, a 700,000-square-foot retail destination in the SoNo Collection, and the Maritime Aquarium into a compact waterfront district served by its own Metro-North station. Condo prices start in the mid-$300,000s; express trains reach Grand Central in about an hour.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "The turnaround took twenty years and a lot of restaurant leases. South Norwalk's Washington Street was largely vacant by the early 1990s, its oyster-industry warehouses and manufacturing buildings emptied by decades of economic shift. Then Match opened in 1999 — Chef Matt Storch's seasonal, globally inflected menu in a raw industrial space — and the corridor began to rebuild around food. Today, Washington Street and the surrounding blocks support one of the densest dining rows in Fairfield County: The Spread, Washington Prime, Tablao Wine Bar, Knot Norm's on North Water Street, and Himalaya SoNo, which Connecticut Magazine named its top new restaurant for 2026. Norwalk placed 28 restaurants on the magazine's 2025 statewide list, and a significant share of those addresses cluster in this district."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The cultural infrastructure runs deeper than restaurants. The Maritime Aquarium at Norwalk occupies a renovated factory at 10 North Water Street, housing more than 2,700 animals across 177,000 gallons of exhibits devoted to Long Island Sound ecology. A short walk south, the Lockwood-Mathews Mansion Museum — a 62-room, 44,000-square-foot Second Empire estate built in 1864 for railroad magnate LeGrand Lockwood — holds National Historic Landmark status and anchors Mathews Park. The Wall Street neighborhood, just north of Washington Street, adds a small theater district. These are not amenities bolted onto a residential subdivision; they are institutions that preceded the housing boom and gave SoNo its gravitational pull."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Housing formats in SoNo look nothing like the rest of Norwalk. Former factory buildings along Water Street and South Main Street have been converted into loft condominiums — exposed brick, steel beams, double-height ceilings — trading between $350,000 and $550,000. Purpose-built mid-rise developments like SoNo Pearl and the units at 1 Bates Court have introduced modern amenities: rooftop terraces, fitness centers, harbor views. Premium new-construction condos push past $800,000. On the neighborhood's southern and western edges, renovated Victorians, townhouses, and a handful of single-family homes trade from roughly $500,000 to $800,000. The identity is vertical and urban, not cul-de-sac."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The South Norwalk Metro-North station on Monroe Street is walkable from nearly every address in the district. Express trains on the New Haven Line reach Grand Central Terminal in approximately 60 minutes, with service running roughly every 30 minutes during peak hours. The SoNo Collection — opened in 2019 with Nordstrom, Bloomingdale's, and Apple as anchors — added 700,000 square feet of retail to the waterfront. I-95 sits two minutes away via Exit 14. Buyers who have priced out of Stamford's Harbor Point development find a comparable walk-to-everything urban format here, often at a 20-to-30 percent discount per square foot."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Washington Street dining corridor — Match, The Spread, Washington Prime, Knot Norm's, Himalaya SoNo — anchors one of Fairfield County's densest restaurant rows",
+    "Maritime Aquarium at 10 North Water Street showcases 2,700+ animals in 177,000 gallons of Long Island Sound exhibits across a renovated industrial campus",
+    "Lockwood-Mathews Mansion Museum, a 62-room National Historic Landmark built in 1864, anchors Mathews Park at the neighborhood's western edge",
+    "Loft conversions in former factories and new mid-rise developments deliver urban housing formats starting in the mid-$300,000s — rare in suburban Fairfield County",
+    "South Norwalk Metro-North station provides walk-to-train commuting with express service to Grand Central Terminal in approximately 60 minutes"
+  ],
+  "housingCharacteristics": "SoNo's residential inventory divides into two distinct lineages: adaptive reuse of industrial buildings and ground-up new construction. The conversion stock — loft condominiums carved from former oyster-processing plants and manufacturing buildings along Water Street and South Main Street — offers exposed brick walls, steel structural beams, oversized windows, and open floor plans. These units typically trade between $350,000 and $550,000, depending on square footage, ceiling height, and renovation quality.\n\nNew development has pushed the upper boundary. SoNo Pearl, the residences at 1 Bates Court, and several boutique mid-rise projects introduced rooftop terraces with harbor panoramas, modern fitness facilities, and concierge services at price points ranging from the mid-$400,000s to above $800,000 for premium units. Single-family homes are the minority product in this market — a limited number of renovated Victorians and townhouses exist on the neighborhood's periphery, generally priced from $500,000 to $800,000. The overall median sale price in South Norwalk sits near $460,000, though new luxury inventory pulls the average upward.",
+  "marketNotes": "Demand in South Norwalk tracks a clear demographic pattern: young professionals commuting to Manhattan, empty nesters downsizing from larger Fairfield County homes, and investors building rental portfolios in a district with strong tenant demand. Several hundred residential units have entered the market since 2018 through new development, and absorption has kept pace with supply — a signal that SoNo's urban lifestyle proposition resonates beyond the typical suburban buyer.\n\nCondominiums dominate transaction volume. Well-priced loft units in move-in condition routinely go under contract within two to three weeks. The neighborhood draws direct comparison to Stamford's Harbor Point, and buyers who find that market overheated often redirect to SoNo for a similar walk-to-train, walk-to-dinner format at a lower entry price. Continued restaurant and retail investment along Washington Street — including the SoNo Collection's steady tenant roster — reinforces the commercial base that makes the residential product viable long-term.",
+  "locationAccess": "The South Norwalk Metro-North station on Monroe Street is the neighborhood's transit backbone. New Haven Line trains depart roughly every 30 minutes during peak hours, with express service reaching Grand Central Terminal in approximately 60 minutes. All trains from South Norwalk run express after Stamford. The station is walkable from virtually every block in the SoNo grid, eliminating the drive-to-train friction common in most Fairfield County commuter neighborhoods.\n\nI-95 access via Exit 14 places the highway on-ramp within a two-to-three-minute drive. Route 7 connects northbound to the Merritt Parkway and inland towns including Wilton and Ridgefield. The Norwalk Transit District operates local bus routes through South Norwalk, and the harbor provides seasonal ferry and water-taxi service. Stamford is roughly 12 minutes west on I-95; Westport is 10 minutes east. The SoNo Collection, the Maritime Aquarium, and the Washington Street restaurant district are all reachable on foot from most residential addresses — a walkability profile that few Fairfield County neighborhoods can match.",
+  "seoTitle": "South Norwalk CT (SoNo) | Urban Lofts & Walkable Living",
+  "seoDescription": "Explore South Norwalk (SoNo) CT — loft condos, dining on Washington Street, and Metro-North access. Contact Matt Caiola to tour available listings today.",
+  "faqs": [
+    {
+      "question": "How long is the Metro-North commute from South Norwalk to Manhattan?",
+      "answer": "Express trains on the Metro-North New Haven Line reach Grand Central Terminal from the South Norwalk station in approximately 60 minutes. Service runs roughly every 30 minutes during peak commuting hours, and all trains operate express after the Stamford stop. The station on Monroe Street is walkable from most SoNo addresses, meaning commuters can leave their front door and reach the platform without driving — an advantage that distinguishes South Norwalk from the majority of Fairfield County train stations.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Lockwood-Mathews Mansion Museum?",
+      "answer": "The Lockwood-Mathews Mansion Museum is a 62-room, 44,000-square-foot Second Empire country house built between 1864 and 1868 for railroad and banking magnate LeGrand Lockwood. Designed by architect Detlef Lienau, it was designated a National Historic Landmark in 1978 and is considered one of the finest surviving examples of its architectural style in the United States. The mansion anchors Mathews Park on the western edge of South Norwalk and operates as a museum with rotating exhibitions, educational programs, and special events.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What types of housing are available in South Norwalk?",
+      "answer": "South Norwalk offers three primary housing formats. Converted industrial loft condominiums — with exposed brick, high ceilings, and open plans — trade between $350,000 and $550,000. Purpose-built mid-rise developments like SoNo Pearl deliver modern amenities and harbor views at price points from the mid-$400,000s to above $800,000. A smaller inventory of renovated Victorian homes, townhouses, and new-construction single-family properties on the neighborhood's periphery generally ranges from $500,000 to $800,000.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

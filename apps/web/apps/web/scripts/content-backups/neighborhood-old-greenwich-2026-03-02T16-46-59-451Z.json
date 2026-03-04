@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:48Z",
+  "_id": "d3c6c7da-0a53-4837-a95d-fabd06a94082",
+  "_rev": "cptc0PvA8gpHazoy2liaXq",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:36Z",
+  "description": [
+    {
+      "_key": "0a399e3ebdad",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "c918cacf84ca",
+          "_type": "span",
+          "marks": [],
+          "text": "Old Greenwich has a distinct identity within Greenwich: a coastal village feel with a relaxed pace and a strong connection to the shoreline. Streets and homes feel classic and established, and day-to-day life tends to revolve around beaches, parks, and the village’s easy rhythm."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "324b6884c0a0",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "75bbc53a9e4f",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate here is primarily single-family, with a mix of traditional New England architecture and renovated coastal homes. What I see clients respond to most is the lifestyle fit—walks to the park, bike rides, and a neighborhood that feels like a community rather than a subdivision."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "152ba75064ec",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "eb5ca4446fec",
+          "_type": "span",
+          "marks": [],
+          "text": "Greenwich Point Park—also known as Tod’s Point—is the major anchor. The Town describes it as a 147.3-acre beach and recreation facility at 11 Tods Driftway with concessions, restrooms, picnic areas, walking trails, and a boat yard/launch. For commuting, the Old Greenwich Metro-North station is on the New Haven Line; the MTA notes two ticket machines and no ticket office, with ramps but no accessible path between platforms. Old Greenwich is best for buyers who want coastal living with a true village feel and easy rail access."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Greenwich Point Park (Tod's Point) - a premier 147-acre beach and recreation destination",
+    "Old Greenwich Metro-North station (New Haven Line) for commuter rail access",
+    "A true coastal village feel with a strong community cadence",
+    "Charming downtown area with local shops, cafes, and restaurants",
+    "Family-friendly neighborhood with excellent schools and waterfront access"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Old Greenwich",
+  "overview": "Old Greenwich is a true coastal village—classic streets, a strong community feel, and easy access to the shoreline. Homes range from traditional colonials to updated coastal properties, with the lifestyle centered around the beach and the village rhythm. Greenwich Point Park (Tod’s Point) is the signature destination, and the Old Greenwich station makes commuting practical without living in downtown. If you want the “shoreline Greenwich” experience, this is it.",
+  "slug": {
+    "_type": "slug",
+    "current": "old-greenwich"
+  },
+  "town": {
+    "_ref": "20c7cb6d-4b2c-4fe5-9bbb-0dd8785f31dd",
+    "_type": "reference"
+  }
+}

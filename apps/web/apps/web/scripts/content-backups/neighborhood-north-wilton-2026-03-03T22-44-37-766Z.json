@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:40Z",
+  "_id": "5089a098-40b2-4f78-8bb2-49e07b300ae2",
+  "_rev": "mB2cUx9aVkdRk2GqAC4tB0",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:09Z",
+  "description": [
+    {
+      "_key": "719f82cda0f0",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "86e261893e8f",
+          "_type": "span",
+          "marks": [],
+          "text": "North Wilton is defined by space and quiet. The setting becomes more wooded and residential, and the day-to-day cadence feels calmer than Wilton Center, with a stronger emphasis on privacy and outdoor living."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "e54daf7d0b51",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "c615f151cc6a",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate is predominantly single-family, and many properties emphasize land, trees, and a sense of separation. In my experience, North Wilton often fits buyers who want Wilton’s lifestyle and community, but prefer a more private home environment than the town center blocks."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "53e10fe692c9",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "f6418ad95473",
+          "_type": "span",
+          "marks": [],
+          "text": "A major local anchor is Weir Farm National Historical Park, which the National Park Service describes as a “National Park for Art.” The NPS lists the grounds as open daily sunrise to sunset, and provides a Wilton mailing address of 735 Nod Hill Road. For buyers who value trails, open space, and a quieter setting, North Wilton is best for creating a more retreat-like lifestyle while staying connected to the rest of Fairfield County."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A spacious, wooded setting with a quiet day-to-day rhythm",
+    "Predominantly single-family homes with an emphasis on privacy and outdoor space",
+    "Weir Farm National Historical Park nearby for trails and cultural enrichment",
+    "Strong fit for buyers who want a retreat-like home base",
+    "Beautiful natural surroundings with room to breathe"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "North Wilton",
+  "overview": "North Wilton is where Wilton feels most space-forward—wooded lots, quiet roads, and a more private day-to-day rhythm. Homes are primarily single-family, and the lifestyle leans toward outdoor time and a calmer pace than the center of town. Weir Farm National Historical Park is a notable nearby anchor for trails and “National Park for Art” experiences. For buyers prioritizing privacy and a more tucked-away Wilton setting, North Wilton is a great fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "north-wilton"
+  },
+  "town": {
+    "_ref": "534af9dd-594d-4e67-b6f2-06f887f24b50",
+    "_type": "reference"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "cannondale",
+  "townSlug": "wilton",
+  "overview": "Cannondale is southern Wilton's railroad village, organized around the Metro-North station that has shaped the neighborhood since the mid-19th century. The Cannondale Historic District, listed on the National Register of Historic Places, preserves a cluster of antique structures along Cannon Road — including the Cannondale Congregational Church, built in 1826 — that predates the rail connection by decades. The Norwalk River passes through the neighborhood, and Route 7 sits less than a mile west, placing Cannondale at the intersection of Wilton's transit, commercial, and natural corridors.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "The Cannon family gave the neighborhood its name — their general store opened in the 1790s and served as the commercial hub for this section of Wilton for over a century. When the Danbury Branch railroad arrived in the mid-1800s, the depot at Cannondale transformed a farming hamlet into a freight and passenger stop. The post office adopted the Cannondale name in 1915, and the village has retained that identity ever since, even as the surrounding town grew. Today, the Cannondale Metro-North station remains the only rail stop in Wilton, handling commuters bound for South Norwalk, Stamford, and Grand Central Terminal."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The Cannondale Historic District runs along Cannon Road, where Federal and Greek Revival homes stand alongside the 1826 Cannondale Congregational Church. These structures are among the oldest in Wilton, and the district's National Register listing provides a preservation framework that has prevented the kind of teardown pressure seen in more commercially active Fairfield County neighborhoods. The scale is intimate: this is a village measured in blocks, not miles, where walking between the station, the church, and the residential streets takes minutes rather than requiring a car."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "The Norwalk River runs directly through Cannondale, contributing both scenic value and occasional flood considerations that buyers should evaluate with care. Properties along the river corridor benefit from riparian setbacks that create a natural buffer of mature trees and open space. Route 7 lies just to the west, connecting residents to Orem's Diner — the 1921 Wilton landmark a short drive north — and to the commercial services clustered along the Danbury Road corridor. Norwalk's retail and dining options are roughly 15 minutes south on Route 7."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Housing in Cannondale ranges from antique village homes — some dating to the early 1800s with wide-plank floors, center chimneys, and hand-hewn beams — to more recent construction on standard Wilton lots of one to two acres. The price band spans approximately $700,000 to $1.3 million, making Cannondale one of Wilton's more accessible neighborhoods by price while retaining the town's zoning protections and school system advantages. Buyers drawn to walkable train access and historic architecture without a multi-million-dollar entry point find that Cannondale delivers both."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "The only rail stop in Wilton, Cannondale Metro-North station runs Danbury Branch trains connecting to Grand Central Terminal via South Norwalk",
+    "The Cannondale Historic District is listed on the National Register of Historic Places, preserving Federal and Greek Revival architecture along Cannon Road",
+    "Built in 1826, Cannondale Congregational Church anchors the village center and remains one of the oldest structures in Wilton",
+    "The Norwalk River corridor passes through the neighborhood, creating natural setbacks and preserved riparian open space",
+    "Pricing from approximately $700K to $1.3M positions Cannondale as one of Wilton's most accessible neighborhoods by entry point"
+  ],
+  "housingCharacteristics": "Cannondale's housing stock divides between the antique village core and the surrounding residential lots. Within the Historic District along Cannon Road, homes date from the late 18th and early 19th centuries — Federal-style capes, Greek Revival colonials, and converted outbuildings with period details like center chimneys, wide-plank floors, and original mantels. These properties sit on smaller lots by Wilton standards, often under an acre, reflecting the village's pre-zoning origins.\n\nBeyond the historic core, lots expand to the one-to-two-acre range typical of Wilton's residential zoning. Construction here spans mid-century ranches, 1970s colonials, and newer custom builds that have replaced aging stock. The overall price range — roughly $700,000 to $1.3 million — reflects the neighborhood's position as Wilton's entry-level market segment, though antique properties with significant restoration can push toward the higher end of that range.",
+  "marketNotes": "Cannondale properties move on a different timeline than Wilton's northern estate market. The train station generates sustained demand from buyers who prioritize transit access — a differentiator that supports consistent turnover even in tighter inventory environments. Entry-level colonials and updated capes in the $700,000 to $900,000 range attract first-time Wilton buyers and families relocating from Norwalk or Stamford who want the school system without the $1 million-plus commitment required in Wilton Center or Silvermine.\n\nThe antique homes within the Historic District trade less frequently, and when they do, they command premiums tied to the preservation status and period architecture. Buyers should anticipate that restoration costs for true antique properties can be substantial, and should factor those into their overall budget rather than relying solely on the purchase price.",
+  "locationAccess": "Cannondale sits in southern Wilton, straddling Cannon Road between Route 7 and the Norwalk River. The Metro-North station provides Danbury Branch service south to South Norwalk, where riders transfer to the New Haven Line for express trains to Grand Central Terminal — total trip time is approximately 90 minutes, with select peak-hour trains running through without a transfer. Route 7 connects north to Wilton Center in five minutes and south to Norwalk in 15. The Merritt Parkway interchange at Route 33 is roughly 10 minutes east, and I-95 is accessible via Route 7 south through Norwalk.",
+  "seoTitle": "Cannondale Wilton CT | Historic Village & Train Access",
+  "seoDescription": "Cannondale in Wilton CT: National Register historic village with Metro-North rail access and homes from $700K-$1.3M on the Norwalk River. Matt Caiola.",
+  "faqs": [
+    {
+      "question": "How far is Cannondale station from New York City?",
+      "answer": "Cannondale Metro-North station sits on the Danbury Branch, a diesel line that runs south to South Norwalk. At South Norwalk, riders transfer to the electrified New Haven Line for service to Grand Central Terminal. Total trip time averages roughly 90 minutes. During peak commute hours, select trains operate through-service directly to Grand Central without requiring a transfer. The station has town-managed parking, and its location on Cannon Road places it within walking distance of the Cannondale Historic District.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What makes the Cannondale Historic District notable?",
+      "answer": "The Cannondale Historic District is listed on the National Register of Historic Places and preserves a cluster of Federal and Greek Revival structures along Cannon Road in southern Wilton. The district includes the Cannondale Congregational Church, built in 1826, along with residential buildings dating to the late 18th century. The Cannon family's general store, which opened in the 1790s, anchored the village commercially for over a century. The district's preservation status protects these structures from demolition and maintains architectural standards that limit exterior alterations.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are typical home prices in Cannondale, Wilton CT?",
+      "answer": "Cannondale home prices range from approximately $700,000 to $1.3 million, making it one of Wilton's most accessible neighborhoods by entry point. Antique village homes within the Historic District — some with original Federal-era details — sit at the higher end of that range when fully restored. Standard colonials and updated capes on one-to-two-acre lots beyond the village core trade in the $700,000 to $900,000 band. All Cannondale properties benefit from Wilton's top-ranked school district and the proximity to the town's only Metro-North station.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

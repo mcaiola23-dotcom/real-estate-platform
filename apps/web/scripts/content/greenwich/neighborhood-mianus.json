@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "mianus",
+  "townSlug": "greenwich",
+  "overview": "Mianus occupies a residential stretch of Greenwich between Cos Cob, Riverside, and the Stamford border, threaded together by the Mianus River. North Mianus School anchors the neighborhood's identity and routinely ranks among the top elementary schools in Connecticut. Residents here live on wooded cul-de-sacs and generous lots that are increasingly rare this close to the water.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Mianus is the kind of neighborhood that rewards patience. It does not announce itself with a commercial strip or a village green. Instead, you turn off Palmer Hill Road or Westover Road and the density thins. Streets narrow. Yards widen. The Mianus River appears through the trees, and the noise of Route 1 drops away entirely. This is residential Greenwich at its most understated, a pocket where households earning in the top 15% nationally chose to settle not for prestige, but for land and privacy."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The housing stock here spans six decades. Split-levels and ranch homes from the 1950s sit alongside expanded colonials from the 1980s and ground-up builds from the late 1990s. Lot sizes are substantial by southern Greenwich standards, often a half-acre or more, with mature oak and maple canopy throughout. Many homes back up to conservation land along the river corridor, which gives rear yards a sense of depth that smaller-lot neighborhoods cannot replicate."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "North Mianus School is the gravitational center. It consistently appears in statewide top-ten elementary rankings and has earned the number-one slot in several years. That distinction drives real estate demand in a direct, measurable way: families relocating to Greenwich frequently begin their search by drawing a circle around this school's catchment area. The combination of a nationally ranked school district, half-acre-plus lots, and prices below the premium Greenwich waterfront neighborhoods makes Mianus a neighborhood that serious buyers study closely."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The Mianus River itself is more than scenery. Kayakers launch from informal put-ins along the riverbank and paddle south toward Long Island Sound. The Mianus River Park, managed jointly by Greenwich and Stamford, preserves over 200 acres of trails on the neighborhood's eastern edge. Living here means proximity to nature without sacrificing a 55-minute train ride to Midtown Manhattan from either the Cos Cob or Riverside Metro-North stations."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "North Mianus School has ranked as Connecticut's top elementary school, making it a primary driver of home purchases in this catchment zone",
+    "Mianus River Park preserves over 200 acres of hiking trails and wildlife habitat along the neighborhood's eastern boundary",
+    "Lot sizes typically exceed a half-acre with mature hardwood canopy, offering privacy uncommon in southern Greenwich",
+    "Household incomes rank in the top 15% nationally, reflecting the neighborhood's understated concentration of affluence",
+    "Kayak access on the Mianus River connects residents to Long Island Sound without leaving the neighborhood"
+  ],
+  "housingCharacteristics": "Architecture in Mianus reflects a building timeline that stretches from the late 1940s through the turn of the century. Earlier homes tend toward ranch and split-level designs on generous half-acre lots, while properties built in the 1980s and 1990s lean colonial, often with additions that expanded original footprints to 3,500 square feet or more. Recent renovations have modernized many interiors while preserving the wooded, setback character of the streetscape.\n\nLot sizes are a defining feature. Most parcels run between half an acre and a full acre, and several back directly onto conservation land along the river corridor. Compared to the premium waterfront enclaves of Belle Haven or the gated compounds south of I-95, Mianus offers meaningfully more land per dollar. Prices sit below the Greenwich median for single-family homes, but well above national averages, reflecting the school district's draw and the neighborhood's proximity to two train stations.",
+  "marketNotes": "Mianus occupies an unusual position in the Greenwich market. It does not carry the name recognition of Old Greenwich or Belle Haven, which keeps pricing more grounded, yet the North Mianus School assignment drives consistent demand from relocating families with school-age children. Turnover is modest because residents tend to stay. When homes do list, those within confirmed North Mianus School boundaries attract immediate attention and often trade within weeks.\n\nBuyers should expect competition in the spring selling season, particularly for updated colonials on larger lots. Properties requiring renovation trade at a discount but still benefit from the school-district premium. Sellers who price accurately and time their listing for late February through May tend to see the strongest results in this micro-market.",
+  "locationAccess": "Mianus sits roughly equidistant from the Cos Cob and Riverside Metro-North stations, both within a five-to-seven-minute drive. Express trains from either station reach Grand Central Terminal in approximately 50 minutes. Interstate 95 is accessible via Exit 4 (Indian Field Road) or Exit 5 (East Putnam Avenue), placing Stamford's corporate district ten minutes east and White Plains twenty minutes north via the Merritt Parkway.\n\nDaily errands run through the East Putnam Avenue commercial corridor in Cos Cob, where grocery stores, pharmacies, and restaurants line the Post Road. Greenwich Avenue is a ten-minute drive west. The Stamford Town Center and Harbor Point retail district are equally close heading east, giving Mianus residents two commercial hubs within a short radius.",
+  "seoTitle": "Mianus, Greenwich CT Real Estate & Homes for Sale",
+  "seoDescription": "Explore Mianus in Greenwich, CT — top-ranked schools, riverfront lots, and wooded cul-de-sacs. Browse homes and contact Matt Caiola to schedule a tour.",
+  "faqs": [
+    {
+      "question": "Why is Mianus such a popular neighborhood for families in Greenwich?",
+      "answer": "North Mianus School is the primary draw. It has ranked as the number-one elementary school in Connecticut in multiple years, and school assignment in Greenwich is determined by home address. Families relocating to the area frequently target the North Mianus catchment zone specifically, which creates sustained demand for homes in this neighborhood regardless of broader market conditions.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are typical home prices in Mianus, Greenwich CT?",
+      "answer": "Mianus homes generally trade below the Greenwich single-family median but well above national averages. Prices vary based on lot size, condition, and confirmed school assignment, with updated colonials on half-acre-plus lots commanding premiums. The neighborhood offers more land per dollar than waterfront Greenwich while maintaining access to two nearby Metro-North stations.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Mianus from the Metro-North train station?",
+      "answer": "Mianus is positioned between the Cos Cob and Riverside Metro-North stations, each roughly five to seven minutes by car. Both stations are on the New Haven Line, with express trains reaching Grand Central Terminal in approximately 50 minutes. Residents typically choose whichever station offers more convenient parking availability on a given morning.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Is there outdoor recreation near Mianus?",
+      "answer": "The Mianus River runs through the neighborhood and supports kayaking south toward Long Island Sound. Mianus River Park, jointly managed by Greenwich and Stamford, preserves over 200 acres of trails for hiking and nature observation along the eastern edge. Greenwich Point Park (Tod's Point), the town's premier 147-acre beach and trail complex, is a short drive south and open exclusively to Greenwich residents.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

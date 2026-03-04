@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:40Z",
+  "_id": "e89c7020-5d70-4b1d-8ded-748fba4dfd2b",
+  "_rev": "mB2cUx9aVkdRk2GqAC59A4",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:43Z",
+  "description": [
+    {
+      "_key": "fc5bfbf0aa17",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "a55385d0ff03",
+          "_type": "span",
+          "marks": [],
+          "text": "Wilton Center is where the town feels most connected day-to-day. It has a relaxed, local rhythm—shops, dining, and community life—without trying to be a high-energy downtown. For many buyers, that balance is exactly the appeal: you feel part of a town, not just a zip code."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "9ee625ff506c",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "df742c7e5608",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate around the center is predominantly single-family, with a residential feel that still keeps town amenities close. In my experience, Wilton Center tends to work well for clients who want a practical routine—easy errands, local spots, and an anchor point for the week."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "c0f302a5bb70",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "bbd0fef3d259",
+          "_type": "span",
+          "marks": [],
+          "text": "For commuting, Wilton station is on the Metro-North Danbury Branch. The MTA notes one ticket machine (in the shelter on the right of the station building) and no ticket office. For outdoor time, the Norwalk River Valley Trail organization describes the NRVT as a planned 30-mile trail from Calf Pasture Beach in Norwalk to Rogers Park in Danbury, with nearly 13 completed miles. Wilton Center is best for buyers who want a town-centered routine with practical rail and trail access."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Wilton's town hub with a relaxed village cadence - shops, dining, and community life",
+    "Wilton Metro-North station (Danbury Branch) for commuter rail access",
+    "Norwalk River Valley Trail nearby for hiking and outdoor activities",
+    "A strong fit for buyers who want 'close to town' convenience without a big-city feel",
+    "Charming small-town atmosphere with local events and community spirit"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Wilton Center",
+  "overview": "Wilton Center is the town’s community hub—local shops, dining, and a relaxed village cadence that feels distinctly Fairfield County without being flashy. Homes nearby are primarily single-family, and the lifestyle balances small-town ease with practical commuting options. Wilton station on the Metro-North Danbury Branch keeps rail access available, and Wilton’s trail culture (including the NRVT) adds a real outdoors component. If you want Wilton with the most “walk to town” convenience, Wilton Center is the fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "wilton-center"
+  },
+  "town": {
+    "_ref": "534af9dd-594d-4e67-b6f2-06f887f24b50",
+    "_type": "reference"
+  }
+}

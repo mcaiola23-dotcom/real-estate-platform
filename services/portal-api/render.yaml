@@ -1,0 +1,103 @@
+# ==============================================================================
+# SmartMLS AI Platform - Render Blueprint
+# ==============================================================================
+# Deploy with: render blueprint apply
+# Documentation: https://render.com/docs/blueprint-spec
+
+services:
+  # Backend API Service
+  - type: web
+    name: smartmls-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: ohio  # us-east, close to CT users
+    plan: starter  # Change to 'standard' for production
+    branch: main
+    healthCheckPath: /health/mls
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartmls-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: smartmls-redis
+          type: redis
+          property: connectionString
+      - key: ENVIRONMENT
+        value: staging
+      - key: SENTRY_ENVIRONMENT
+        value: staging
+      - key: LOG_FORMAT
+        value: json
+      # Secrets - set these in Render dashboard
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SIMPLYRETS_USERNAME
+        sync: false
+      - key: SIMPLYRETS_PASSWORD
+        sync: false
+      - key: GOOGLE_MAPS_SERVER_API_KEY
+        sync: false
+      - key: GOOGLE_PLACES_API_KEY
+        sync: false
+      # Legacy fallback, still supported for backwards compatibility
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: AUTH_SECRET_KEY
+        sync: false
+
+  # Dedicated MLS scheduler worker
+  - type: worker
+    name: smartmls-scheduler
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: python -m app.workers.scheduler_worker
+    region: ohio
+    plan: starter
+    branch: main
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartmls-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: smartmls-redis
+          type: redis
+          property: connectionString
+      - key: ENVIRONMENT
+        value: staging
+      - key: SENTRY_ENVIRONMENT
+        value: staging
+      - key: LOG_FORMAT
+        value: json
+      - key: SENTRY_DSN
+        sync: false
+      - key: AUTH_SECRET_KEY
+        sync: false
+      - key: SIMPLYRETS_USERNAME
+        sync: false
+      - key: SIMPLYRETS_PASSWORD
+        sync: false
+
+databases:
+  # PostgreSQL with PostGIS
+  - name: smartmls-db
+    databaseName: smartmls
+    plan: starter  # Change to 'standard' for production
+    region: ohio
+    postgresMajorVersion: 15
+    # Note: PostGIS extension needs to be enabled manually:
+    # Connect to the database and run: CREATE EXTENSION postgis;
+
+# Redis Cache
+  - name: smartmls-redis
+    type: redis
+    plan: starter
+    region: ohio
+    maxmemoryPolicy: allkeys-lru

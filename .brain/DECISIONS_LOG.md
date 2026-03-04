@@ -862,3 +862,203 @@
 ### D-201: CommunicationsHub smart routing pattern for AI drafts to GmailComposer
 **Decision**: When AI drafts or templates produce content for email, the hub sets `draftForEmail` state then switches `activeComposer` to 'email', pre-filling GmailComposer's `initialBody` and `initialSubject` props.
 **Reason**: Creates a seamless workflow where AI-generated content flows directly into the real email composer, avoiding the previous mailto: fallback or clipboard-copy pattern when Gmail is connected.
+
+## 2026-03-01
+
+### D-202: Hybrid merge — portal frontend into monorepo, Python backend stays standalone
+**Decision**: Adopt a hybrid merge strategy for the portal (formerly `smartmls-ai-app`):
+- Portal Next.js frontend → `apps/portal` in the monorepo (package: `@real-estate/portal`).
+- Portal Python/FastAPI backend (`portal-api`) remains a standalone service, not in this monorepo.
+- Original repos preserved as backup copies (`real-estate-platform-backup`, `smartmls-ai-app-backup`).
+- Shared design tokens created in `packages/design-tokens` for cross-app consistency.
+**Reason**: The portal frontend benefits from shared packages (design tokens, types, UI components) and unified build/lint/dev tooling. The Python backend has no code-sharing benefit from living in a TypeScript monorepo and is better managed independently. This approach avoids the complexity of a polyglot monorepo while capturing the main integration value (shared frontend assets and coordinated releases).
+
+## 2026-03-02
+
+### D-203: Enforce portal security/reliability controls at a local Next.js gateway boundary
+**Decision**: Introduce `apps/portal` proxy boundary `/api/portal/[...path]` and route critical frontend calls (AI search, auth register, lead submission/read, favorites, saved searches, alerts) through that boundary with endpoint policy mapping for rate limits and auth requirements.
+**Reason**: The portal backend is external (`services/portal-api`) and cannot be changed from this monorepo session. A gateway boundary allows immediate, enforceable protection for high-risk endpoints from the frontend runtime without waiting on backend repository changes.
+
+### D-204: Fail fast on weak non-local auth secrets while deferring key rotation by user request
+**Decision**: Keep local-development flexibility but enforce startup failure in non-local environments when `NEXTAUTH_SECRET` is missing/weak/placeholder via `assertPortalAuthSecretIsSafe()`. Do not rotate local keys in this session per explicit user direction.
+**Reason**: This preserves development velocity while still preventing insecure production-like deployments and aligns with the user’s instruction to defer key rotation until pre-launch.
+
+### D-205: Normalize favorites payload shape at gateway to absorb backend schema drift
+**Decision**: Add favorites response normalization (`address_full`/`address`, listing/parcel fallbacks, `favorite_id` fallback) in portal proxy utils before returning payloads to UI consumers.
+**Reason**: The known runtime mismatch (`favorite.parcel.address` vs `address_full`) can be mitigated immediately at the integration boundary, reducing frontend break risk while backend model cleanup proceeds in `services/portal-api`.
+
+### D-206: Enforce backend lead-read authorization to agent/admin scope
+**Decision**: Update `services/portal-api` lead retrieval routes (`GET /leads`, `GET /leads/{lead_id}`) to require authenticated users with `user_type` in `{agent, admin}` while keeping lead creation public.
+**Reason**: Lead retrieval returns sensitive PII and cannot remain publicly readable. Scope-based enforcement at backend routes closes the remaining data-exposure gap beyond frontend gateway protections.
+
+### D-207: Remove scheduler loop from web app startup and run in a dedicated worker
+**Decision**: Stop starting scheduler tasks from `app.main` startup events and introduce `python -m app.workers.scheduler_worker` as the dedicated scheduler process entrypoint.
+**Reason**: Running long-lived loops inside web workers risks duplicate execution and deployment instability in multi-worker environments. A separate worker process is the reliable deployment pattern.
+
+### D-208: Establish backend security/migration baseline in portal-api
+**Decision**: Add non-local `AUTH_SECRET_KEY` fail-fast startup validation, move `SearchAlert` ORM into canonical models (`app/models/search_alert.py`) with alert job `user.full_name` alignment, and introduce Alembic scaffold + baseline revision (`20260302_000001`) for future schema changes.
+**Reason**: These changes close immediate backend hardening gaps and create a reproducible migration workflow without requiring disruptive schema rewrites in the same session.
+
+### D-212: Resolve portal React typing drift by forcing portal-local React module/type resolution
+**Decision**: Update `apps/portal/tsconfig.json` `paths` mappings for `react`, `react/jsx-runtime`, `react/jsx-dev-runtime`, and `react-dom` to portal-local type declaration paths, preventing root React 19 type declarations from leaking into portal React 18 compilation.
+**Reason**: The monorepo contains mixed React major versions (`apps/portal` on React 18; other apps on React 19). TypeScript resolved conflicting React node types, causing widespread `TS2786` JSX component failures. Explicit portal-local resolution restores deterministic typecheck behavior.
+
+### D-213: Standardize repo-local pre-commit secret scanning with hook-path enforcement
+**Decision**: Add `scripts/security/scan-secrets.sh` staged-file scanner and wire `.githooks/pre-commit` via `security:hooks:install` (`git config core.hooksPath .githooks`), plus nested `.env*` ignore coverage in root `.gitignore`.
+**Reason**: Secret-handling hardening required an enforceable local commit guard without external SaaS dependencies. A repo-managed hook/scanner provides immediate protection and consistent behavior across contributors.
+
+### D-214: Make Alembic discipline concrete with first post-baseline revision
+**Decision**: Add Alembic revision `20260302_000002_search_alerts_constraints` (adds `search_alerts.updated_at` and enforces unique `(user_id, saved_search_id)` index) and align ORM model in `app/models/search_alert.py`.
+**Reason**: A baseline-only migration setup does not prove ongoing discipline. Introducing the first real revision establishes the intended schema-change workflow path for future backend changes.
+
+## 2026-03-01
+### D-209: Align portal visual identity to agent website warm-neutral luxury aesthetic
+**Decision**: Replace the portal's blue/teal SaaS palette with the agent website's warm stone palette (stone-50 `#fafaf9` through stone-900 `#1c1917`), swap Playfair Display for Cormorant Garamond serif headings, and adopt rounded-full buttons + rounded-2xl cards to match `apps/web` design language. Retain teal as a secondary accent color. Keep portal on Tailwind v3 for now (agent site uses v4) but align color token values.
+**Reason**: The portal's generic blue SaaS aesthetic was inconsistent with the premium real estate brand established in the agent website. Visual unification creates brand coherence across the platform and directly addresses Section 2 of the portal integration plan. Typography and palette changes are the highest-impact, lowest-risk path to visual parity.
+
+### D-210: Preserve portal property detail modal multi-tab structure during UI makeover
+**Decision**: Keep the existing tabbed navigation structure (Overview/Details/AVM/Market/Agent) in both PropertyDetailModal and ParcelDetailModal while updating all colors, typography, borders, and status badges to the stone palette.
+**Reason**: The multi-tab detail modal structure provides good UX for dense property information. Restructuring tabs during a color/theme pass would create unnecessary scope risk. The tab structure can be independently improved in a future pass.
+
+### D-211: Use Node.js fs for bulk color replacement across portal files instead of sed -i on WSL
+**Decision**: When performing bulk find-and-replace across many portal files, use a Node.js script with `fs.readFileSync`/`fs.writeFileSync` instead of `sed -i` on WSL-mounted Windows filesystem.
+**Reason**: WSL's `sed -i` uses atomic rename operations that fail with `EPERM` on Windows-mounted filesystems due to file lock semantics. Node.js `writeFileSync` writes directly without rename, avoiding the Windows file-lock issue entirely.
+
+## 2026-03-02
+
+### D-215: Standardize portal API calls around gateway-first client usage and shared server URL resolution
+**Decision**: Use `/api/portal` as the single client-side API base across portal pages/components, and use `joinPortalApiPath(...)` from `apps/portal/src/lib/server/portal-api.ts` for server-side fetches (town/neighborhood pages + sitemap).
+**Reason**: Mixed `NEXT_PUBLIC_API_URL`/`NEXT_PUBLIC_BACKEND_URL` usage created environment-specific drift and bypassed centralized gateway controls. This decision makes call paths deterministic and aligns all client traffic with proxy-layer hardening.
+
+### D-216: Gate verbose portal search/map diagnostics to development-only wrappers
+**Decision**: Replace high-volume runtime `console.log`/`console.warn` traces in search/map-heavy portal surfaces with local `debugLog`/`debugWarn` wrappers that emit only when `NODE_ENV=development`.
+**Reason**: Production logs were noisy and obscured actionable errors in operational telemetry. Dev-only gating preserves debugging utility without polluting production runtime output.
+
+### D-217: Add a backend CI gate script that treats tests + Alembic checks as minimum requirements
+**Decision**: Introduce `services/portal-api/scripts/ci-gate.sh` and root `npm run ci:portal-api`, enforcing backend tests and Alembic `current -> upgrade head -> current` checks, with optional `ruff`/`mypy` execution when installed.
+**Reason**: `services/portal-api` lacked a standardized pre-merge quality gate command. This establishes a repeatable backend reliability gate and surfaces missing runtime prerequisites early and explicitly.
+
+### D-218: Require Postgres/PostGIS for portal-api CI gate execution
+**Decision**: Update `ci:portal-api` to require `DATABASE_URL` and reject SQLite runs, because backend tests depend on Postgres JSONB and spatial-function behavior.
+**Reason**: SQLite runs produced non-actionable failures (`JSONB` compilation and missing spatial functions) that do not represent production behavior. Explicit Postgres/PostGIS requirement keeps CI results meaningful.
+
+### D-218: Keep portal map fetch URLs gateway-relative and restore hybrid autocomplete sources
+**Decision**: In `apps/portal/src/app/properties/page.tsx`, build map parcel fetch URLs by concatenating `/api/portal` + endpoint + query string instead of `new URL(endpoint, '/api/portal')`; in `apps/portal/src/components/UnifiedSearchBar.tsx`, fetch suggestions from both `/api/autocomplete/search` (parcel/city/neighborhood corpus) and `/api/places/autocomplete` (Google Places), then merge/dedupe before rendering.
+**Reason**: The migration to gateway-relative client calls broke parcel overlays because `new URL` requires an absolute base URL. Separately, switching autocomplete to Google-only removed parcel/off-market suggestion coverage. This dual fix restores map overlay rendering and off-market discovery behavior without bypassing the portal gateway boundary.
+
+### D-219: Treat parcel identifiers as slash-safe path values across commute and Street View flows
+**Decision**: Update commute route binding to `/{property_id:path}/calculate-commute` and normalize identifiers with URL-decoding in `services/portal-api/app/api/routes/commute.py`; normalize Street View parcel identifiers similarly in `services/portal-api/app/api/routes/properties.py`; and extend `services/portal-api/app/services/street_view.py` URL generation to explicitly support `pano_id` arguments used by cached Street View responses.
+**Reason**: Off-market parcel IDs can contain slashes and were not reliably handled by the previous commute path pattern, causing silent 404s and “Loading…” stalls in the UI. In parallel, Street View cached-pano code passed a `pano_id` argument that the service signature did not accept, creating runtime failures that surfaced as stock-image fallback behavior.
+
+### D-220: Fail loudly for Google Maps configuration/runtime gaps instead of silently degrading Street View/commute UX
+**Decision**: Add explicit backend errors when Google Maps config is unavailable (`services/portal-api/app/api/routes/commute.py`, `services/portal-api/app/api/routes/properties.py`), enrich Street View availability metadata with status classification (`services/portal-api/app/services/street_view.py`), avoid caching transient/API/config failures as permanent parcel-level Street View unavailability, and surface backend error details in portal commute/street-view UI (`apps/portal/src/components/CommuteSection.tsx`, `apps/portal/src/components/StreetViewWidget.tsx`).
+**Reason**: Post-migration users were seeing generic commute failures and stock-image fallback with no actionable signal. Explicit diagnostics make environment issues (for example missing `GOOGLE_MAPS_API_KEY`) immediately visible and prevent bad cache states caused by transient upstream failures.
+
+### D-221: Periodically revalidate negative Street View cache entries to recover after environment fixes
+**Decision**: In `services/portal-api/app/api/routes/properties.py`, keep fast cache hits for `street_view_available=1`, but for `street_view_available=0` re-check Google Street View metadata when the cached negative result is older than 15 minutes.
+**Reason**: During migration/config outages, parcels can be cached as unavailable even though imagery may be available once `GOOGLE_MAPS_API_KEY`/service settings are corrected. Time-bounded negative revalidation provides automatic recovery without requiring bulk manual cache resets.
+
+### D-222: Load portal-api settings from `.env.local` first to match migration env conventions
+**Decision**: Update `services/portal-api/app/core/config.py` to load env files in order `(".env.local", ".env")` rather than only `.env`.
+**Reason**: Post-migration local/deployment workflows in this repository are using `.env.local` as the primary editable secret/config surface. Without explicit support, backend-only keys (for example `GOOGLE_MAPS_API_KEY`) are silently ignored even when operators set them in the intended file.
+
+### D-223: Make backend CI default to hardening smoke tests while legacy suites are modernized
+**Decision**: Update `services/portal-api/scripts/ci-gate.sh` to run configurable `PORTAL_API_TEST_TARGETS` (default `tests/test_hardening_smoke.py`) instead of the drifted legacy suite set, while keeping Alembic checks and Postgres requirements intact.
+**Reason**: Legacy backend tests are SQLite-coupled and no longer representative of current route/model behavior, causing noisy non-actionable failures. A focused hardening-smoke baseline keeps CI meaningful while a dedicated modernization pass is completed.
+
+### D-224: Treat Postgres-backed Alembic validation as authoritative migration readiness signal
+**Decision**: Validate Alembic `current -> upgrade head -> current` against Postgres runtime (`postgresql://postgres:user@localhost:5432/smartmls_db`) in addition to SQLite checks, and record head revision `20260302_000002` as current migration baseline.
+**Reason**: Production-like migration confidence requires Postgres-backed verification, not SQLite-only validation. Running both confirms revision chain integrity and deployment-path readiness.
+
+### D-225: Modernize legacy backend suites to dependency-overridden route-contract tests
+**Decision**: Replace SQLite schema-dependent tests in `services/portal-api/app/tests/test_api.py` and `services/portal-api/tests/test_phase0.py` with deterministic route-contract tests that use dependency-overridden fake DB sessions and route-aligned payload assertions.
+**Reason**: The prior suites were tightly coupled to stale models/routes and SQLite behavior, creating non-actionable failures. Dependency-overridden tests keep coverage meaningful, fast, and CI-stable while remaining aligned with current API contracts.
+
+### D-226: Reintroduce modernized compatibility suites into default backend CI targets
+**Decision**: Update `services/portal-api/scripts/ci-gate.sh` default `PORTAL_API_TEST_TARGETS` from smoke-only to `tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py`.
+**Reason**: After modernization, these suites provide useful baseline compatibility coverage and should run by default instead of requiring manual opt-in.
+
+### D-227: Add a Windows-native authoritative backend gate script for runtime consistency
+**Decision**: Add `services/portal-api/scripts/ci-gate-windows.cmd` with explicit Python runtime/env checks and Postgres-only enforcement, mirroring CI-gate test/Alembic steps.
+**Reason**: This repo is frequently operated from mixed WSL/Windows environments where local Python tooling drifts. A host-native script provides a repeatable authoritative execution path for backend hardening validation.
+
+### D-228: Extend hardening smoke scope to authenticated `/api` write-path guardrails
+**Decision**: Expand `services/portal-api/tests/test_hardening_smoke.py` with focused smoke checks for `POST /api/favorites`, `POST /api/saved-searches`, and `POST /api/alerts`, covering auth-required behavior plus key validation/limit guard paths.
+**Reason**: Lead/read-path hardening checks alone were insufficient for regression protection on authenticated write surfaces. These additions improve security/stability signal without introducing DB-heavy integration dependencies.
+
+### D-229: Treat Windows `cmd /v:on` gate execution as authoritative CI runtime path in this mixed-shell repo setup
+**Decision**: Run backend gate validation with `cmd.exe /v:on /c "... && set DATABASE_URL=...&& services\\portal-api\\scripts\\ci-gate-windows.cmd"` and record those outputs as authoritative when WSL `cmd.exe` invocation/variable propagation diverges.
+**Reason**: The mixed WSL/Windows environment can fail to propagate inline environment assignments reliably without delayed-expansion command semantics. The `cmd /v:on` pattern produced stable gate execution and removed false negatives from backend validation.
+
+### D-230: Add authenticated saved-search create success-path smoke coverage
+**Decision**: Extend `services/portal-api/tests/test_hardening_smoke.py` with a passing-path test for authenticated `POST /api/saved-searches`, and update fake-session refresh behavior to assign deterministic IDs/timestamps required by response model validation.
+**Reason**: Write-path hardening had authz/validation guard coverage but lacked a deterministic authenticated success-path assertion, leaving a gap in regression signal for create flows.
+
+### D-231: Make smoke-test fake DB session model-aware for route-contract success paths
+**Decision**: Extend `FakeSession` in `services/portal-api/tests/test_hardening_smoke.py` to accept per-model query fixtures, then add authenticated `POST /api/favorites` success-path smoke coverage that relies on separate `UserFavorite` and `Listing` query results.
+**Reason**: Generic one-list fake query fixtures were sufficient for guard/validation tests but could not simultaneously represent “not already favorited” and “listing exists” checks. Model-aware fixtures preserve deterministic route-contract smoke behavior without introducing a real DB dependency.
+
+## 2026-03-03
+
+### D-232: Split portal-api Google keys by backend function with legacy fallback preservation
+**Decision**: Introduce dedicated env variables `GOOGLE_MAPS_SERVER_API_KEY` (Street View/Distance Matrix/server-side image URLs) and `GOOGLE_PLACES_API_KEY` (Places proxy), while retaining `GOOGLE_MAPS_API_KEY` as backward-compatible fallback in `services/portal-api/app/core/config.py`.
+**Reason**: Key scoping reduces blast radius and allows tighter API restriction policies per key without breaking existing deployments that still use the legacy single key variable.
+
+### D-233: Enforce startup fail-fast checks for Google key presence/placeholder/shape by default
+**Decision**: Extend `Settings.validate_runtime_settings()` to run Google configuration validation at startup (enabled by default) with clear error messages for missing keys when Google features are enabled, placeholder values, and malformed key shape; include opt-out toggles (`GOOGLE_REQUIRE_KEYS_ON_STARTUP`, `GOOGLE_VALIDATE_KEY_FORMAT`) for exceptional cases.
+**Reason**: Recent migration regressions showed that silent key/config drift creates runtime UI failures that are harder to diagnose than startup validation errors.
+
+### D-234: Standardize post-change portal smoke validation as a documented runbook
+**Decision**: Add `services/portal-api/docs/portal-smoke-test-checklist.md` and link it from backend README as the canonical quick validation for map parcels, autocomplete, Street View, and commute across active/off-market flows.
+**Reason**: A lightweight repeatable smoke checklist reduces regression escape risk across multi-agent parallel workstreams and speeds root-cause triage when issues recur.
+
+## 2026-03-03
+### D-235: Competitor-informed portal property detail modal sprint plan
+**Decision**: Based on competitive analysis of Zillow, Redfin, and Realtor.com property detail pages, adopt a 7-phase sprint plan (`.brain/PORTAL_DETAIL_MODAL_SPRINT.md`) covering: (P0) accurate property tax via CT mill rates + payment breakdown visualization, (P1) photo mosaic grid + performance optimization, sticky header, share button, (P2) price change indicator, activity badges with backend analytics, property comparison tool, (P3) Walk Score/Climate Coming Soon placeholders, print/PDF export. Tier 3 items (AI chatbot, insight chips, offer calculator, expected proceeds) added to long-term roadmap pending vector DB infrastructure.
+**Reason**: The portal's property detail modal is the primary conversion surface. Matching/exceeding Zillow-level feature depth and UX polish is critical to compete for consumer mindshare in the Fairfield County market. Tax accuracy was flagged as the single most critical gap making the existing mortgage calculator "effectively useless."
+
+### D-236: Calculate off-market property tax from CT town mill rates
+**Decision**: For off-market properties (parcels without listing data), calculate estimated annual property tax using `assessment_total × mill_rate / 1000` with a static CT mill rate lookup table (`ct_mill_rates.json`). Display with "(Estimated)" label to distinguish from MLS-reported tax amounts.
+**Reason**: Listings have `tax_annual_amount` from MLS data, but the 272K+ parcels (most of which are off-market) have no tax amount — only assessment values. Without tax data, the mortgage calculator is unusable for off-market properties. CT mill rates are publicly available and updated annually.
+
+### D-237: Prioritize map interaction smoothness by trading broad viewport persistence for bounded, deduped render sets
+**Decision**: In `apps/portal` properties-map flow, gate viewport-triggered fetches to meaningful pan/zoom shifts using buffered bounds, replace cross-viewport context-listing accumulation with latest-viewport deduped capped listings, dedupe combined map parcel inputs by `parcel_id`, and memoize `LeafletParcelMap` + marker icon construction to reduce rerender cost.
+**Reason**: After initial optimizations, the remaining user-visible lag was dominated by frequent map request churn and progressively larger marker/render payloads during navigation. Bounded deduped datasets plus memoized render primitives provide a predictable performance ceiling with lower interaction latency.
+
+### D-238: Avoid manual Leaflet teardown when using React-Leaflet map containers
+**Decision**: Remove custom `map.remove()` calls from portal map helper components (`MapPreserver` in `LeafletParcelMap.tsx` and `MapEventHandler` in `NeighborhoodMapInner.tsx`) and let React-Leaflet own map lifecycle teardown exclusively.
+**Reason**: Manual teardown created duplicate/unordered unmount behavior that surfaced as `Map container is being reused by another instance` runtime crashes in dev remount/refresh paths.
+
+### D-239: Shift property modal performance strategy to chunked section loading with post-open prefetch
+**Decision**: In `apps/portal/src/components/PropertyDetailModal.tsx`, load heavy section modules via `next/dynamic` (market valuation stack, neighborhood stack, Street View, neighborhood map), reuse a shared section loader UI, and trigger delayed `component.preload?.()` after modal open to warm deeper-section chunks before users scroll there.
+**Reason**: The consolidated modal is functionally complete but still experiences first-load and deep-scroll jank due large synchronous component/module work. Section-level chunking + delayed prefetch lowers initial blocking work while preserving current UI behavior.
+
+### D-240: Prioritize immediate parcel render for off-market modal opens and de-emphasize map loader for frequent zoom refreshes
+**Decision**: In `PropertyDetailModal`, for parcel-first opens, render normalized parcel data as soon as parcel payload resolves and run listing enrichment asynchronously; in properties map fetch flow, apply delayed loader activation and non-blocking indicator UI, and skip loader display for zoom 10-14 listing-only refreshes.
+**Reason**: User feedback indicated off-market first-open latency and zoom-time loading-wheel friction remained after prior optimizations. Immediate base render reduces perceived modal latency, and less intrusive loader behavior improves map interaction smoothness without removing background fetch updates.
+
+### D-241: Isolate modal data lifecycle and map viewport fetch lifecycle into dedicated hooks before deeper UI decomposition
+**Decision**: Extract modal data/normalization/AVM behavior into `usePropertyModalData` + shared modal types (`components/property-modal/*`) with short-lived client cache, and extract properties map viewport fetch logic into `useMapViewportFetch` (`app/properties/hooks/*`) while keeping current UI behavior unchanged.
+**Reason**: The modal and properties page had become difficult to evolve safely due tightly coupled fetch/state/render code. Hook extraction establishes clear boundaries for future section-component decomposition and search/AI hook extraction while preserving performance improvements.
+
+## 2026-03-03 (Session 33 — Property Detail Modal Fix & Polish + Neighborhood Data Pipeline)
+
+### D-242: Calculate Street View heading via bearing from panorama position to property coordinates
+**Decision**: Replace the non-functional `pano_location.get("heading", 0)` (Google metadata API does not return heading) with a geodesic bearing calculation from panorama lat/lng to property lat/lng. When heading is unavailable (cached results), fall back to address-based location lookup which lets Google auto-orient toward the property.
+**Reason**: Street View images were pointing down the street instead of at the property. The metadata API's `location` object only contains `lat`/`lng`, not `heading`, so the code always defaulted to 0 (north) or used Google's default panorama direction.
+
+### D-243: Use nearest-neighbor fallback for parcel neighborhood assignment beyond Zillow boundary polygons
+**Decision**: After the primary `ST_Intersects` spatial assignment pass in `fix_parcel_assignments.py`, run a second pass that assigns parcels still on city-level generic neighborhoods to the nearest specific neighborhood within 2km using `ST_DWithin` + `ST_Distance` ordering.
+**Reason**: Zillow boundary polygons are approximate and don't cover all parcels that residents consider part of their neighborhood. The nearest-neighbor fallback reduced "generic city" assignments by 33,128 parcels (e.g., Stamford went from 6,942 unassigned to 0).
+
+### D-244: Resolve neighborhood names via Neighborhood table join in parcel detail API
+**Decision**: Join the `neighborhoods` table in `get_parcel_detail()` in `services/portal-api/app/api/routes/map.py` to resolve `parcel.neighborhood_id` → neighborhood name, and add `subdivision` field to the `PublicListing` Pydantic schema. Frontend normalization falls back through `listing.subdivision` → `parcelApiData.neighborhood_name`.
+**Reason**: Neighborhood name was never being resolved for off-market properties because the parcel detail API only stored the FK `neighborhood_id` without joining the neighborhoods table. The Pydantic schema also silently stripped the `subdivision` field from listing responses.
+
+### D-245: Disable scroll-wheel zoom on neighborhood map embed to prevent scroll hijacking
+**Decision**: Set `scrollWheelZoom={false}` on the Leaflet `MapContainer` in `NeighborhoodMapInner.tsx`. Zoom is still available via the +/- buttons.
+**Reason**: Users scrolling down the modal would inadvertently zoom the map instead of continuing to scroll past it.
+
+### D-246: Replace off-market info card with status pill overlay on Street View image
+**Decision**: Remove the "This property is not currently listed for sale" card from the modal overview section and replace it with a small "Currently Off-Market" pill overlaying the top-right corner of the Street View image.
+**Reason**: The standalone card was taking up valuable vertical space. The pill overlay communicates the same information more efficiently while matching the visual language of existing status pills in the modal header.

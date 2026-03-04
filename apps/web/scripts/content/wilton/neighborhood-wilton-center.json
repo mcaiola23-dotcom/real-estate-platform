@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "wilton-center",
+  "townSlug": "wilton",
+  "overview": "Wilton Center is the town's civic and commercial hub, organized around the intersection of Route 7 and Old Ridgefield Road where the Wilton Town Green, Wilton Library, and Wilton Congregational Church establish the institutional core. The architecturally awarded Wilton Library — expanded by TSKP Studio in a modernist design recognized by both the Connecticut Library Association and the Chicago Athenaeum — anchors the cultural life of the neighborhood. Village shops along Old Ridgefield Road, the Wilton Historical Society campus, and walkable connections between Town Hall, the library, and the Green create the closest approximation to a traditional downtown that Wilton offers.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Wilton Center formed at the crossroads where Route 7 — originally a colonial-era road connecting the coast to interior Connecticut — met the local roads serving the town's agricultural core. The Wilton Town Green occupies this intersection, serving as the venue for the seasonal farmer's market, summer concert series, and holiday gatherings that draw residents from every neighborhood. Wilton Congregational Church, one of the town's oldest institutions, stands at the Green's edge. Town Hall and the police department sit within a few hundred yards, concentrating Wilton's civic infrastructure in a walkable radius."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The Wilton Library is the neighborhood's defining cultural institution. The original 1974 building, designed by Eliot Noyes — the architect behind IBM's corporate campus designs — was expanded by TSKP Studio with 33,000 square feet of new construction and 17,000 square feet of renovation. The expansion added a computer training center, local history collection, gallery space, an acoustically tuned multi-purpose room, and dedicated children's and teen areas. The design won the Connecticut Library Association's Excellence in Public Library Architecture Award and the Chicago Athenaeum American Architecture Award, making it one of the most recognized library buildings in the state."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Old Ridgefield Road carries the neighborhood's retail activity — a mix of independent shops, service businesses, and restaurants that serve the surrounding residential streets. Little Pub, a neighborhood restaurant with a loyal local following, operates on this stretch. The Wilton Historical Society campus, located on Danbury Road just south of the center, preserves collections in a cluster of historic buildings and offers programming that connects residents to the town's 18th-century origins. Orem's Diner, the 1921 landmark that has served as a community gathering point for over a century, sits along Route 7 within the broader Wilton Center orbit."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Housing in Wilton Center ranges from in-town colonials on half-acre to one-acre lots — many within walking distance of the library and Green — to a limited inventory of condominiums and townhomes that provide maintenance-free alternatives to single-family ownership. Pricing spans $750,000 to above $2 million, with the premium concentrated in larger colonials on the quieter residential streets set back from Route 7's traffic. Buyers who prioritize walkability to the town's institutional and commercial core, without sacrificing the Wilton school district and the established residential character, concentrate their searches here."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Wilton Library, expanded by TSKP Studio over the original Eliot Noyes design, won the Connecticut Library Association and Chicago Athenaeum architecture awards",
+    "The Wilton Town Green hosts the seasonal farmer's market, summer concert series, and holiday events at the intersection of Route 7 and Old Ridgefield Road",
+    "Little Pub on Old Ridgefield Road and Orem's Diner on Danbury Road anchor the neighborhood's dining scene with decades of local tenure",
+    "Wilton Historical Society preserves collections in a campus of historic buildings and offers programming on the town's 18th-century agricultural origins",
+    "Walkable connections between Town Hall, the library, Wilton Congregational Church, and village shops create Wilton's most pedestrian-accessible neighborhood"
+  ],
+  "housingCharacteristics": "Wilton Center's housing stock reflects its position as the town's most in-town neighborhood. Center-hall colonials from the 1950s through 1980s on half-acre to one-acre lots make up the majority of inventory, with many properties benefiting from updates during the past two decades — renovated kitchens, expanded primary suites, and finished lower levels are common. The residential streets immediately south and east of the Town Green are the most walkable in Wilton, with sidewalk connections to the library, shops, and civic buildings.\n\nA limited number of condominiums and townhomes exist within the broader Wilton Center area, providing an alternative for those seeking the location and school district without single-family maintenance obligations. These units typically trade in the $400,000 to $700,000 range. Single-family homes span from approximately $750,000 for smaller colonials needing updates to above $2 million for larger properties on the residential streets where lot sizes reach one to one-and-a-half acres and construction quality reflects recent full renovations.",
+  "marketNotes": "Wilton Center is the most consistently active residential market in town. The walkability premium — proximity to the library, Town Green, shops, and restaurants without dependence on Route 7 driving — generates sustained demand from both families and downsizers who want to remain in Wilton without managing larger properties in the northern neighborhoods. Colonials in the $900,000 to $1.4 million range, particularly those with updated kitchens and direct walkability to Old Ridgefield Road, represent the most competitive price band.\n\nThe condominium and townhome segment draws a distinct buyer: empty-nesters from elsewhere in Wilton who want to maintain the school-district address for property value purposes while reducing maintenance. This sub-market has limited inventory, and units in good condition trade quickly when priced in the $500,000 to $700,000 range. Above $1.5 million, Wilton Center competes directly with Silvermine and the southern edge of North Wilton, where buyers weigh walkability against acreage.",
+  "locationAccess": "Wilton Center sits at the intersection of Route 7 (Danbury Road) and Old Ridgefield Road, placing it at the geographic and commercial heart of the town. Route 7 connects south to Norwalk in approximately 15 minutes and north through the town toward Ridgefield. The Cannondale Metro-North station is a five-minute drive south on Route 7, providing Danbury Branch service to South Norwalk and Grand Central Terminal. The Merritt Parkway is accessible via Route 33 in roughly 10 minutes east. New Canaan's downtown and its Metro-North Branch station are approximately 15 minutes east on Belden Hill Road.",
+  "seoTitle": "Wilton Center CT | In-Town Living & Award-Winning Library",
+  "seoDescription": "Wilton Center CT: walkable downtown with the award-winning Wilton Library and in-town colonial homes from $750K to $2M+. Connect with Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What makes Wilton Library architecturally significant?",
+      "answer": "Wilton Library's original 1974 building was designed by Eliot Noyes, the architect known for IBM's corporate campus designs. TSKP Studio later expanded it with 33,000 square feet of new construction and 17,000 square feet of renovation, adding gallery space, a local history collection, an acoustically tuned multi-purpose room, and dedicated children's and teen areas. The expansion won both the Connecticut Library Association's Excellence in Public Library Architecture Award and the Chicago Athenaeum American Architecture Award, placing it among the most recognized library buildings in Connecticut.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What shops and restaurants are in Wilton Center?",
+      "answer": "Wilton Center's commercial activity runs along Old Ridgefield Road and Route 7. Little Pub serves a loyal local following with pub fare and craft beer on Old Ridgefield Road. Orem's Diner, operating since 1921 under the Papanikolaou family, is a Wilton landmark on Danbury Road known for breakfast and lunch. Additional independent shops and service businesses line the Old Ridgefield Road corridor. The Wilton Town Green hosts a seasonal farmer's market and summer concert series. For broader dining options, South Norwalk and Ridgefield each offer expanded restaurant scenes within a 15-to-20-minute drive.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Are there condos or townhomes available in Wilton Center?",
+      "answer": "Wilton Center offers a limited inventory of condominiums and townhomes, typically trading in the $400,000 to $700,000 range. These units attract empty-nesters from other Wilton neighborhoods who want to reduce maintenance while retaining the Wilton address and school-district property value benefits. Inventory is constrained, and units in good condition sell quickly. Single-family alternatives in Wilton Center range from $750,000 for smaller colonials to above $2 million for larger properties on the residential streets closest to the Town Green and library.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

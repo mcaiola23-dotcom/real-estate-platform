@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:26Z",
+  "_id": "3877b751-afe7-47b6-8570-227c999ea6ad",
+  "_rev": "cptc0PvA8gpHazoy2liGT8",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:01Z",
+  "description": [
+    {
+      "_key": "ad4d19c68461",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "035bfca83d57",
+          "_type": "span",
+          "marks": [],
+          "text": "Tokeneke is one of Darien’s most recognizable coastal neighborhoods, valued for its privacy and an “enclave” feel. The streetscape is calm and residential, and the setting tends to feel removed from busier routes—an important part of the lifestyle for many buyers."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "7361e1a0692d",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "ce8e00bc7869",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate in Tokeneke is primarily single-family and often leans toward larger homes and more generous parcels. Many properties prioritize outdoor living—lawns, landscaping, and entertaining space—reflecting the fact that the neighborhood’s appeal is as much lifestyle-driven as it is location-driven."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "97d15bdfbab5",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "878ca747609f",
+          "_type": "span",
+          "marks": [],
+          "text": "A major local institution is the Tokeneke Club, which describes its sandy beachfront and active summer atmosphere—swimming in the Sound, docks, volleyball, sea kayaks and paddle boards—and a 6-lane 25-meter pool with youth aquatics programs. Whether your priority is a quieter coastal routine or an active, family-oriented beach culture, Tokeneke offers a highly sought-after Darien shoreline lifestyle with practical access back to downtown and Metro-North."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A private, quiet coastal neighborhood with larger single-family properties",
+    "Strong shoreline lifestyle with beaches and waterfront recreation nearby",
+    "Community-oriented atmosphere with local clubs and neighborhood traditions",
+    "Close to Darien's parks and shoreline amenities",
+    "Practical access to downtown Darien and Metro-North service"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Tokeneke",
+  "overview": "Tokeneke is a Darien coastal enclave known for its quiet streets, larger properties, and a strong sense of privacy. Homes are primarily single-family, often on more generous lots, with an overall atmosphere that feels tucked away and residential. The shoreline lifestyle is a key part of the appeal—many buyers are drawn to the coastal setting and the ease of getting onto the water. For clients who want a refined, waterfront-oriented Darien neighborhood with a distinctly private feel, Tokeneke is one of the top choices.",
+  "slug": {
+    "_type": "slug",
+    "current": "tokeneke"
+  },
+  "town": {
+    "_ref": "4f8ea013-0779-499d-ba9f-39c820ef3d56",
+    "_type": "reference"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:48Z",
+  "_id": "a6be4ff4-cfaa-4e14-b4e9-acaee5710818",
+  "_rev": "mB2cUx9aVkdRk2GqAC51Ol",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:25Z",
+  "description": [
+    {
+      "_key": "bb90d9b08a3a",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "097286a5d948",
+          "_type": "span",
+          "marks": [],
+          "text": "Byram sits on the western side of Greenwich, and it has a distinct neighborhood identity—more local and residential than the town’s larger estate areas. Many clients like Byram because it feels community-oriented and practical, while still being firmly within Greenwich and close to the shoreline."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "7335e9250740",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "634d2b71214a",
+          "_type": "span",
+          "marks": [],
+          "text": "Housing in Byram spans a range of styles and price points depending on the street. That variety can make it appealing for buyers looking for Greenwich location and amenities with different options for lot size and home type."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "5b7625fa54cf",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "3054971a1024",
+          "_type": "span",
+          "marks": [],
+          "text": "Byram Park is a centerpiece. The Town describes it as a 30+ acre park at 4 Ritch Avenue West with a beach, pool, playground, marina, boat launch, sports fields, and walking trails (park passes required). That mix of water access and recreation is a big part of the lifestyle here. Byram is best for buyers who want coastal Greenwich living with a convenient, day-to-day rhythm and quick access toward both downtown Greenwich and the New York border."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Byram Park with beach, pool, playground, marina and walking trails",
+    "A close-knit, residential neighborhood with a practical day-to-day feel",
+    "Waterfront-oriented lifestyle with recreation amenities close to home",
+    "Quick access to downtown Greenwich and surrounding communities",
+    "A welcoming Greenwich neighborhood with strong community bonds"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Byram",
+  "overview": "Byram is Greenwich’s western waterfront neighborhood—close-knit, practical, and well-positioned near the New York line. Housing is varied, from single-family streets to more compact options, and the overall feel is residential and community-forward. Byram Park is a major lifestyle anchor with beach and recreation facilities, and downtown Greenwich is still a straightforward drive. For buyers who want Greenwich access with a slightly more “everyday” coastal rhythm, Byram is a strong fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "byram"
+  },
+  "town": {
+    "_ref": "20c7cb6d-4b2c-4fe5-9bbb-0dd8785f31dd",
+    "_type": "reference"
+  }
+}

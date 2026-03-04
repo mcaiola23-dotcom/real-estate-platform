@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:29Z",
+  "_id": "62817191-cff2-423b-9463-0a5217320917",
+  "_rev": "cptc0PvA8gpHazoy2liK6A",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:14Z",
+  "description": [
+    {
+      "_key": "fc7fb01f5ab5",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "42e9768a83a3",
+          "_type": "span",
+          "marks": [],
+          "text": "Turn of River sits in North Stamford and is known for its comfortable, residential atmosphere. It’s quieter and more space-forward than the downtown corridor, but it still feels connected to the rest of the city—especially because High Ridge Road services are close by."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "7e4846c98797",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "eb575e61140e",
+          "_type": "span",
+          "marks": [],
+          "text": "Housing here is predominantly single-family, with a range of classic New England styles and plenty of properties that emphasize yard space and day-to-day livability. The neighborhood tends to attract buyers who want a calmer setting and a straightforward routine—commuting, schools, errands, and outdoor time—without needing to drive “far” for basics."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "6426cfbfe07f",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "758855f64492",
+          "_type": "span",
+          "marks": [],
+          "text": "Dorothy Heroy Park and Pool is a strong local amenity at 51 Riding Stable Trail. The City describes it as a North Stamford recreational area with an outdoor pool, courts, picnic pavilions, and wooded areas with hiking trails. That mix of everyday convenience and nearby recreation is the core of Turn of River’s appeal."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Parks and recreation facilities with outdoor pools, courts, and hiking trails",
+    "North Stamford residential feel with quieter streets and more yard space",
+    "Convenient access for daily errands, dining, and services",
+    "Predominantly single-family housing with a classic neighborhood cadence",
+    "Easy drive to downtown Stamford for restaurants, events, and Metro-North"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Turn of River",
+  "overview": "Turn of River is a classic, residential North Stamford neighborhood—quiet streets, a more suburban feel, and easy access to daily essentials along High Ridge Road. Homes are primarily single-family, with a mix of traditional styles and larger lots depending on the pocket. The lifestyle tends to be practical and outdoors-friendly, with local parks and recreation close by. For buyers who want North Stamford living without feeling remote, Turn of River is often the sweet spot.",
+  "slug": {
+    "_type": "slug",
+    "current": "turn-of-river"
+  },
+  "town": {
+    "_ref": "a3ffac5e-f792-4a45-8572-35c108bbaaf0",
+    "_type": "reference"
+  }
+}

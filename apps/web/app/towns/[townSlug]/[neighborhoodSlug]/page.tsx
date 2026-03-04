@@ -3,13 +3,15 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { getNeighborhoodBySlug } from "../../../lib/sanity.queries";
-import { PortableText } from "@portabletext/react";
+import { PortableText, PortableTextComponents } from "@portabletext/react";
 import TownHero from "../../../components/TownHero";
 import Container from "../../../components/Container";
+import TownFAQs from "../../../components/TownFAQs";
 
 // Data Modules
 import { DataModuleGrid } from "../../../components/data/DataModule";
 import { formatContentText } from "../../../lib/formatters";
+import { getLifestyleHeading, getHighlightsHeading } from "../../../lib/heading-variants";
 import AgentCTASection from "../../../components/AgentCTASection";
 import EmailSignupSection from "../../../components/EmailSignupSection";
 import { AtAGlanceModule } from "../../../components/data/AtAGlanceModule";
@@ -42,8 +44,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const townName = neighborhood.town?.name || "Fairfield County";
-    const title = `${neighborhood.name}, ${townName} CT | Neighborhood Guide`;
+    const title = neighborhood.seoTitle || `${neighborhood.name}, ${townName} CT | Neighborhood Guide`;
     const description =
+        neighborhood.seoDescription ||
         neighborhood.overview ||
         `Explore ${neighborhood.name} in ${townName}, Connecticut. Discover homes, market trends, and neighborhood highlights.`;
 
@@ -74,6 +77,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
     };
 }
+
+// Custom PortableText components with consistent paragraph spacing
+const sanitizedComponents: PortableTextComponents = {
+    block: {
+        normal: ({ children }) => {
+            return <p className="mb-6 last:mb-0">{children}</p>;
+        },
+    },
+};
 
 // Recursively sanitize Portable Text blocks to remove em/en dashes
 function sanitizePortableText(value: any): any {
@@ -128,13 +140,63 @@ export default async function NeighborhoodPage({
         });
     }
 
+    // Place structured data for the neighborhood
+    const placeJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Place",
+        name: `${neighborhood.name}, ${townName}, Connecticut`,
+        description:
+            neighborhood.overview ||
+            `${neighborhood.name} is a neighborhood in ${townName}, Fairfield County, Connecticut.`,
+        address: {
+            "@type": "PostalAddress",
+            addressLocality: townName,
+            addressRegion: "CT",
+            addressCountry: "US",
+        },
+        containedInPlace: {
+            "@type": "Place",
+            name: `${townName}, Connecticut`,
+            url: `https://example.com/towns/${townSlug}`,
+        },
+        url: `https://example.com/towns/${townSlug}/${neighborhoodSlug}`,
+    };
+
+    // FAQ structured data (only for schema-enabled FAQs)
+    const schemaFaqs = neighborhood.faqs?.filter((f) => f.schemaEnabled !== false) || [];
+    const faqJsonLd = schemaFaqs.length > 0
+        ? {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: schemaFaqs.map((faq) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: faq.answer,
+                },
+            })),
+        }
+        : null;
+
     return (
+        <>
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(placeJsonLd) }}
+        />
+        {faqJsonLd && (
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+        )}
         <div className="bg-white min-h-screen">
             {/* N4: Hero uses TownHero with updated gradient overlay */}
             {/* N2: Photos - uses townSlug as fallback for neighborhood images */}
             <TownHero
                 title={neighborhood.name}
-                subtitle={`A neighborhood in ${townName}`}
+                subtitle={neighborhood.overview ? neighborhood.overview.split(/\.\s+/)[0] + '.' : `A neighborhood in ${townName}`}
                 imageSlug={townSlug} // Use town image as fallback (neighborhoods share town images)
                 parentLink={{ href: `/towns/${townSlug}`, label: townName }}
             />
@@ -143,7 +205,7 @@ export default async function NeighborhoodPage({
                 {/* Overview - Centered like Town pages */}
                 <section className="max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-6">
-                        Overview
+                        About {neighborhood.name}
                     </h2>
                     {neighborhood.overview ? (
                         <p className="text-lg text-stone-600 leading-relaxed">
@@ -157,11 +219,11 @@ export default async function NeighborhoodPage({
                 {/* Description */}
                 <section className="max-w-3xl mx-auto mb-16">
                     <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-6">
-                        Living in {neighborhood.name}
+                        {getLifestyleHeading(neighborhood.name, neighborhood.overview, neighborhood.highlights)}
                     </h2>
                     {hasDescription ? (
-                        <div className="prose prose-stone max-w-none text-stone-600 leading-relaxed">
-                            <PortableText value={sanitizePortableText(neighborhood.description)} />
+                        <div className="max-w-none text-stone-600 leading-relaxed">
+                            <PortableText value={sanitizePortableText(neighborhood.description)} components={sanitizedComponents} />
                         </div>
                     ) : (
                         <p className="text-stone-500 italic">Description coming soon.</p>
@@ -172,7 +234,7 @@ export default async function NeighborhoodPage({
                 {hasHighlights && (
                     <section className="max-w-3xl mx-auto mb-16">
                         <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-6">
-                            What Makes {neighborhood.name} Special
+                            {getHighlightsHeading(neighborhood.name, neighborhood.overview, neighborhood.highlights)}
                         </h2>
                         <ul className="space-y-3">
                             {neighborhood.highlights!.map((highlight, index) => (
@@ -182,6 +244,52 @@ export default async function NeighborhoodPage({
                                 </li>
                             ))}
                         </ul>
+                    </section>
+                )}
+
+                {/* Housing Characteristics Section */}
+                {neighborhood.housingCharacteristics && (
+                    <section className="max-w-3xl mx-auto mb-16">
+                        <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-6">
+                            Housing in {neighborhood.name}
+                        </h2>
+                        <div className="prose prose-stone max-w-none text-stone-600 leading-relaxed">
+                            <p className="whitespace-pre-line">{formatContentText(neighborhood.housingCharacteristics)}</p>
+                        </div>
+                    </section>
+                )}
+
+                {/* Market Notes Section */}
+                {neighborhood.marketNotes && (
+                    <section className="max-w-3xl mx-auto mb-16">
+                        <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-6">
+                            Real Estate in {neighborhood.name}
+                        </h2>
+                        <div className="prose prose-stone max-w-none text-stone-600 leading-relaxed">
+                            <p className="whitespace-pre-line">{formatContentText(neighborhood.marketNotes)}</p>
+                        </div>
+                    </section>
+                )}
+
+                {/* Location & Access Section */}
+                {neighborhood.locationAccess && (
+                    <section className="max-w-3xl mx-auto mb-16">
+                        <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-6">
+                            Getting Around {neighborhood.name}
+                        </h2>
+                        <div className="prose prose-stone max-w-none text-stone-600 leading-relaxed">
+                            <p className="whitespace-pre-line">{formatContentText(neighborhood.locationAccess)}</p>
+                        </div>
+                    </section>
+                )}
+
+                {/* FAQs Section */}
+                {neighborhood.faqs && neighborhood.faqs.length > 0 && (
+                    <section className="max-w-3xl mx-auto mb-16">
+                        <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-8">
+                            Frequently Asked Questions About {neighborhood.name}
+                        </h2>
+                        <TownFAQs faqs={neighborhood.faqs} townName={neighborhood.name} />
                     </section>
                 )}
 
@@ -216,5 +324,6 @@ export default async function NeighborhoodPage({
             <AgentCTASection />
             <EmailSignupSection />
         </div>
+        </>
     );
 }

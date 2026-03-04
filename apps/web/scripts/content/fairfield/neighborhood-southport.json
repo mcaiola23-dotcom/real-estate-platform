@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "southport",
+  "townSlug": "fairfield",
+  "overview": "Southport is a historic coastal village with its own harbor, train station, and post office — one of the most coveted addresses in Fairfield County. The Pequot Library, designed by architect Robert H. Robertson and opened in 1894, serves as the village's cultural anchor, hosting concerts, lectures, and one of New England's largest summer book sales. Southport Harbor and the Pequot Yacht Club complete a waterfront identity that has attracted merchant captains, financiers, and privacy-minded buyers for nearly two centuries.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Southport operates less like a neighborhood and more like a self-governing village that happens to sit within Fairfield's borders. It has its own 06890 zip code, its own Metro-North station, its own harbor, and a local historic district designated in 1967 and listed on the National Register of Historic Places in 1971. That institutional completeness — the sense of a place with its own center of gravity — is what distinguishes Southport from the surrounding town."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The architecture tells a layered story. British troops burned most of Fairfield during the Revolutionary War in 1779, so the oldest surviving homes in Southport date to the rebuilding that followed. Federal-style houses from the early 1800s gave way to Greek Revival sea captains' residences built during the village's commercial peak in the 1830s and 1840s, when Southport Harbor was a busy shipping port moving onions, grain, and manufactured goods to New York. Victorian-era homes arrived next, and the historic district commission has ensured that even contemporary renovations respect the village's architectural vocabulary."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "The Pequot Library is the village's living room. Founded in 1889 and housed in a granite Romanesque building designed by Robert H. Robertson, it functions as a privately funded public library and community center. Its summer book sale, spread across the grounds each July, is one of the largest in New England. The Pequot Yacht Club, founded in 1920 at the mouth of the Mill River, adds a sailing and social dimension to the harbor. Southport Beach, at the end of Sasco Hill Road, offers Long Island Sound frontage for residents."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Privacy is the unspoken currency here. Southport draws buyers who could live anywhere in Fairfield County but choose this village specifically because it offers prestige without spectacle. The streets are tree-lined and residential. There is no commercial strip competing for attention. The harbor, the library, the train station, and the historic homes compose a village that has remained fundamentally unchanged for over a century — and that continuity, in a region defined by constant reinvention, is precisely the point."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Southport's own Metro-North station provides direct New Haven Line service to Grand Central Terminal in roughly 70 minutes",
+    "Pequot Library, a privately funded Romanesque landmark from 1894, hosts concerts, lectures, and one of New England's largest summer book sales",
+    "National Register historic district with Federal, Greek Revival, and Victorian architecture spanning the late 1700s to the present",
+    "Pequot Yacht Club and Southport Harbor offer sailing, mooring, and waterfront social life at the mouth of the Mill River",
+    "Village median exceeding $1.3 million reflects Southport's scarcity, historic protections, and institutional self-sufficiency"
+  ],
+  "housingCharacteristics": "Southport's housing stock is among the most architecturally significant in Fairfield County. The historic district contains Federal-style homes from the post-Revolutionary rebuilding period, Greek Revival residences built by sea captains and merchants during the 1830s and 1840s, and Victorian-era houses from the second half of the 19th century. Many of these homes retain original detailing — wide-plank floors, center chimneys, paneled doorways — alongside modern systems and kitchens.\n\nOutside the historic core, properties transition to mid-century colonials and expanded ranches on larger lots, particularly along Sasco Hill Road and in the streets west of the harbor. Waterfront and water-view homes command the highest premiums. The median sale price exceeds $1.3 million, with harbor-adjacent properties and restored antique homes frequently trading above $2 million. New construction is extremely limited within the historic district due to the local commission's design review process, which reinforces the architectural coherence that defines the village.",
+  "marketNotes": "Southport is a low-volume, high-value market. The village's historic district designation, limited buildable land, and strong emotional attachment among long-term owners combine to keep inventory persistently thin. In a typical year, fewer than two dozen single-family homes change hands in the Southport zip code.\n\nWhen listings appear, restored antique homes within the historic district and waterfront properties near the harbor generate the most competitive interest. Buyers targeting Southport often monitor the market for months before a suitable property surfaces. The demand profile is distinct from Fairfield's other neighborhoods: purchasers here are drawn by the village identity, the architecture, and the privacy rather than by proximity to commercial amenities or beach access alone. That specificity of demand means pricing remains stable even when surrounding markets soften.",
+  "locationAccess": "Southport has its own Metro-North station on the New Haven Line, with trains reaching Grand Central Terminal in approximately 65 to 75 minutes depending on the service. The station is walkable from the village center and many residential streets, making it one of Fairfield's strongest walk-to-train neighborhoods.\n\nInterstate 95 is accessible via Exit 19 (Center Street/Southport), connecting Stamford in roughly 15 minutes westbound and New Haven in 35 minutes eastbound. Downtown Fairfield's Post Road corridor is a five-minute drive north. Westport's restaurants and retail are equally close heading east along the Post Road. The village's position at Fairfield's eastern edge gives residents efficient access to both the Fairfield and Westport commercial centers without the traffic burden of living directly on either town's main arteries.",
+  "seoTitle": "Southport CT Real Estate | Historic Village Homes",
+  "seoDescription": "Search Southport, CT homes in Fairfield's historic harbor village near Pequot Library. View listings and reach out to Matt Caiola to book a private tour.",
+  "faqs": [
+    {
+      "question": "Does Southport have its own train station?",
+      "answer": "Yes. Southport has a dedicated Metro-North station on the New Haven Line, separate from Fairfield's other two stations. Trains reach Grand Central Terminal in approximately 65 to 75 minutes. The station is within walking distance of the village center and many residential streets, making Southport one of the most commuter-friendly historic villages on the Connecticut coast. Station parking is managed by the Town of Fairfield and is frequently waitlisted.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Southport Historic District?",
+      "answer": "Southport's local historic district was designated in 1967 and listed on the National Register of Historic Places in 1971. It encompasses the village center and harbor area, protecting architecture that spans from the post-Revolutionary Federal period through Greek Revival, Victorian, and early 20th-century styles. A local historic district commission reviews exterior alterations and new construction within the district to maintain architectural compatibility.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Southport, Fairfield CT?",
+      "answer": "The median sale price in Southport exceeds $1.3 million, with restored antique homes and harbor-adjacent properties frequently trading above $2 million. Waterfront estates can reach significantly higher. Pricing reflects the village's historic district protections, its own train station and zip code, the architectural quality of the housing stock, and a chronically limited supply — fewer than two dozen single-family homes typically sell per year in the Southport zip code.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Pequot Library in Southport?",
+      "answer": "The Pequot Library is a privately funded public library founded in 1889 and housed in a Romanesque granite building designed by architect Robert H. Robertson. It opened in 1894 and serves as Southport's cultural center, hosting year-round concerts, lectures, author talks, and community events. Its annual summer book sale, held on the library grounds each July, is one of the largest in New England and a major regional draw.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

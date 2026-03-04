@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "belle-haven",
+  "townSlug": "greenwich",
+  "overview": "Belle Haven occupies a gated peninsula on Long Island Sound, less than two miles from Greenwich Avenue. The Belle Haven Club — a private waterfront institution with tennis courts, a pool, and a beach — serves as the social center of the community. Private security patrols the gatehouse entrance on Field Point Road, making this one of the most controlled residential enclaves on the Connecticut coast.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "bh1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bh1s1",
+          "text": "Two Belle Havens exist, and the distinction matters. The Belle Haven Land Trust controls the gated portion — the peninsula proper, where private security screens visitors at the Field Point Road gatehouse around the clock. Outside the gate but still within the Belle Haven neighborhood, homes sit along Field Point Road and adjacent streets without gate restrictions. Both share the Belle Haven Club membership opportunity, but only the gated section carries the full enclave character that has defined this address since the 1880s."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "bh2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bh2s1",
+          "text": "The architecture is some of the most significant residential work in Fairfield County. Queen Anne mansions from the Gilded Age stand alongside Colonial Revival homes built in the 1920s and 1930s. Shingle-style waterfront estates with deep porches face the Sound. Several properties have been substantially expanded or rebuilt in the past two decades, but the neighborhood's architectural review process ensures that new construction respects the historic scale and materiality. Lot sizes are modest by Back Country standards — typically one to three acres — but the waterfront exposure and gate access make Belle Haven land among the most valuable per acre in Connecticut."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "bh3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bh3s1",
+          "text": "The Belle Haven Club is the neighborhood's center of gravity. Members access a private beach on the Sound, a waterfront pool, tennis courts, and a dining room. It is not a golf club. Social life in Belle Haven revolves around the Club, the water, and a tight network of families who have owned here for generations. Newer residents — hedge fund principals, tech founders, media figures — have joined that fabric gradually, drawn by the same combination of privacy, proximity to Manhattan, and direct water access."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "bh4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "bh4s1",
+          "text": "Downtown Greenwich is minutes away. The drive from the gatehouse to Greenwich Avenue takes roughly three minutes without traffic. Greenwich station and express Metro-North service to Grand Central are a five-minute drive. That compression — total seclusion inside the gate, total access outside it — is what separates Belle Haven from waterfront communities farther up the Connecticut coast."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Gated peninsula with 24-hour private security on Long Island Sound's western shore",
+    "Belle Haven Club offers a private beach, waterfront pool, tennis courts, and dining",
+    "Queen Anne, Colonial Revival, and shingle-style architecture spanning the 1880s to the present",
+    "Three-minute drive to Greenwich Avenue and five minutes to Greenwich Metro-North station",
+    "Median sale prices between $5.7 million and $7.45 million with listings reaching $30 million"
+  ],
+  "housingCharacteristics": "Belle Haven's housing stock reflects over a century of high-end residential construction. The oldest homes date to the 1880s and 1890s — Queen Anne mansions with turrets, wraparound porches, and ornamental woodwork. Colonial Revival and Georgian-style homes from the early twentieth century make up the middle layer. Shingle-style waterfront estates, some with direct Long Island Sound frontage and private docks, are among the most coveted properties in all of Greenwich. Recent construction and major renovations adhere to an architectural review process that preserves the neighborhood's historic character.\n\nLots typically range from one to three acres. The waterfront parcels command the highest premiums. Interior lots within the gate still trade at significant values due to gate access and Club proximity. Median sale prices have ranged from $5.7 million to $7.45 million in recent cycles, with trophy waterfront listings reaching $25 million to $30 million.",
+  "marketNotes": "Belle Haven is the thinnest market in Greenwich by volume. Only a handful of properties trade in any given year — sometimes fewer than five. When a waterfront estate inside the gate becomes available, it draws interest from a national and international buyer pool accustomed to comparable enclaves in Palm Beach, Southampton, and the Hamptons. Properties outside the gate but within the broader Belle Haven neighborhood trade more frequently and at lower price points, though still well above Greenwich medians.\n\nThe scarcity creates a dynamic where pricing is set by comparable sales that may be two or three years old. Sellers must balance aspiration against a small buyer pool. Buyers must move decisively when a property matching their criteria appears, because the next comparable listing may not surface for a year or more.",
+  "locationAccess": "Belle Haven sits at the southern tip of a peninsula extending into Long Island Sound, accessed via Field Point Road from the Post Road (Route 1). Downtown Greenwich and Greenwich Avenue are less than two miles north. Greenwich Metro-North station, with express service to Grand Central Terminal in approximately 47 minutes, is a five-minute drive from the gatehouse.\n\nI-95 is accessible within minutes via the Arch Street or Indian Field Road on-ramps. Westchester County Airport is approximately 25 minutes northeast. The peninsula's position means residents are insulated from through traffic entirely — the only road in is the only road out, which reinforces the privacy that defines the address.",
+  "seoTitle": "Belle Haven Greenwich CT | Gated Waterfront Estates",
+  "seoDescription": "Discover Belle Haven, Greenwich's gated waterfront peninsula on Long Island Sound. View estate listings and pricing. Contact Matt Caiola to schedule a tour.",
+  "faqs": [
+    {
+      "question": "Is Belle Haven in Greenwich a gated community?",
+      "answer": "Yes. The Belle Haven Land Trust maintains a gatehouse with private security on Field Point Road that screens all visitors entering the peninsula portion of the neighborhood. The gated section sits on a peninsula extending into Long Island Sound. Some homes in the broader Belle Haven area sit outside the gate along Field Point Road but still carry the Belle Haven address and may access the Belle Haven Club.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are Belle Haven home prices in Greenwich, CT?",
+      "answer": "Belle Haven is among the most expensive neighborhoods in Greenwich and in Connecticut. Median sale prices have ranged from approximately $5.7 million to $7.45 million in recent market cycles. Waterfront estates inside the gated portion of the peninsula have listed at $25 million to $30 million. Properties outside the gate but within the broader Belle Haven neighborhood trade at lower but still substantial price points, typically above $3 million.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Belle Haven Club?",
+      "answer": "The Belle Haven Club is a private social and recreation club located on the waterfront within the Belle Haven neighborhood. It offers members a private beach on Long Island Sound, a waterfront swimming pool, tennis courts, and dining facilities. The Club is not a golf club. Membership is available to Belle Haven residents and is a central part of the neighborhood's social life, hosting events and activities throughout the year.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

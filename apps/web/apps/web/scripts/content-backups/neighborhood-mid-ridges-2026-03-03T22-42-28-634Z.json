@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:29Z",
+  "_id": "a0669569-a2d1-424e-a191-d0a0e5da87cc",
+  "_rev": "mB2cUx9aVkdRk2GqAC50tw",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:23Z",
+  "description": [
+    {
+      "_key": "6cd20eca5d64",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "8c7da9360bb4",
+          "_type": "span",
+          "marks": [],
+          "text": "Mid-Ridges sits in a central part of Stamford, and it’s often chosen for its “close to everything” positioning. The neighborhood’s feel shifts between quieter residential streets and busier corridors where shopping and services are concentrated, giving residents a practical day-to-day routine."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "93358e4dc24d",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "6fd54ee7639b",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate here is diverse—depending on the exact location you may see traditional single-family homes, townhomes, and multifamily or condominium options. That mix tends to attract a wide range of buyers, including commuters who want easy access to major roads and people who value being near retail without sacrificing a neighborhood setting."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "7ca2d2148187",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "ea3da1d25185",
+          "_type": "span",
+          "marks": [],
+          "text": "Ridgeway Shopping Center is a major local anchor at 2135–2715 Summer Street, and it places everyday essentials and shopping close to home. The center’s listed key retailers include Stop & Shop, Old Navy, Marshalls, Michaels, Staples, Ulta, Burlington Coat Factory, and LA Fitness, among others. With downtown Stamford a short drive away, Mid-Ridges offers a streamlined lifestyle that’s easy to maintain."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Shopping centers nearby for convenient daily errands",
+    "Central Stamford positioning with easy access to downtown dining, arts, and Metro-North",
+    "Varied housing options including single-family homes and townhome/condo inventory",
+    "Convenient access to major corridors for commuting",
+    "A practical, well-connected neighborhood for daily living"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Mid-Ridges",
+  "overview": "Mid-Ridges is a centrally located Stamford neighborhood where convenience is the defining feature. The area blends residential streets with quick access to major retail, dining, and day-to-day essentials. Housing is varied, with a mix of single-family options and multifamily/condo inventory depending on the pocket. If you want to be close to downtown Stamford without living in the downtown core, Mid-Ridges offers an easy, practical lifestyle.",
+  "slug": {
+    "_type": "slug",
+    "current": "mid-ridges"
+  },
+  "town": {
+    "_ref": "a3ffac5e-f792-4a45-8572-35c108bbaaf0",
+    "_type": "reference"
+  }
+}

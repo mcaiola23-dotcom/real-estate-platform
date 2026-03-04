@@ -1,0 +1,7 @@
+{
+  "name": "@real-estate/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "description": "Shared design tokens (colors, typography, spacing) for cross-app consistency between portal and SaaS apps"
+}

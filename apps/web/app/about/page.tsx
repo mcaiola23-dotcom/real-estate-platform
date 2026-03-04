@@ -7,7 +7,7 @@ import EmailSignupSection from "@/app/components/EmailSignupSection";
 export const metadata: Metadata = {
   title: "About Matt Caiola | Fairfield County Real Estate",
   description:
-    "Meet Matt Caiola, your Fairfield County luxury real estate expert. With a background in corporate finance and hands-on real estate investment experience, Matt brings analytical rigor and white-glove service to every transaction. Licensed with Higgins Group Private Brokerage.",
+    "Matt Caiola brings corporate finance experience and a 25-unit investment portfolio to luxury real estate in Fairfield County. Licensed with Higgins Group Private Brokerage.",
 };
 
 export default function AboutPage() {
@@ -72,18 +72,19 @@ export default function AboutPage() {
                 </p>
 
                 <p className="text-lg text-stone-600 leading-relaxed">
-                  Real estate has always been more than a profession for me—it&apos;s a personal passion.
-                  I own and manage a portfolio of 25 rental units, giving me hands-on experience with
-                  property valuation, tenant relations, and long-term investment strategy. I&apos;ve also
-                  been involved in the acquisition and disposition of significant commercial properties,
-                  so I understand the nuances of larger transactions.
+                  I own and manage a portfolio of 25 rental units, which means I evaluate
+                  properties with the same scrutiny I apply to my own investments. That hands-on
+                  experience with valuation, tenant relations, and long-term strategy carries
+                  directly into my work with clients. I&apos;ve also been involved in the acquisition
+                  and disposition of significant commercial properties, so I understand the nuances
+                  of larger transactions.
                 </p>
 
                 <p className="text-lg text-stone-600 leading-relaxed">
-                  This combination—corporate discipline, investment experience, and deep local
-                  knowledge—shapes how I approach every client relationship. Whether you&apos;re a
-                  first-time buyer, relocating from out of state, or a seasoned investor, I bring
-                  the same analytical rigor and personal attention to your goals.
+                  Corporate discipline, investment experience, and fifteen years in Fairfield
+                  County inform how I work. Whether you&apos;re a first-time buyer, relocating from
+                  out of state, or a seasoned investor, you get the same level of analytical
+                  rigor and personal attention.
                 </p>
               </div>
 
@@ -93,9 +94,9 @@ export default function AboutPage() {
                   White-Glove Service, Absolute Discretion
                 </h2>
                 <p className="text-lg text-stone-600 leading-relaxed mb-8">
-                  Fairfield County&apos;s luxury market demands a different approach. High-net-worth buyers
-                  and sellers require confidentiality, market intelligence, and seamless execution. That&apos;s
-                  precisely what I deliver.
+                  Fairfield County&apos;s luxury market operates on reputation, discretion, and execution.
+                  High-net-worth buyers and sellers expect confidentiality and market intelligence
+                  as baseline standards.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -129,7 +130,7 @@ export default function AboutPage() {
                     </div>
                     <h3 className="font-semibold text-stone-900 mb-2">Premium Service</h3>
                     <p className="text-sm text-stone-600">
-                      Every detail managed. Every timeline honored. A transaction experience that matches the property.
+                      Every detail managed, every timeline honored, and a transaction experience that matches the property.
                     </p>
                   </div>
                 </div>

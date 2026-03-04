@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "oenoke-ridge",
+  "townSlug": "new-canaan",
+  "overview": "Oenoke Ridge is New Canaan's most prestigious residential address — a north-south ridgeline where historic estates on five to ten-plus acres sit behind stone walls and long private drives. Oenoke Ridge Road borders Waveny Park's 300 acres to the west, and the corridor holds properties designed by architects including William B. Tubby, Joeb Moore, and Gardiner & Larson. Homes here trade primarily between $2 million and $5 million, with legacy estates listed well above that range.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "or1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "or1s1",
+          "text": "Oenoke Ridge Road runs north from near New Canaan's town center, climbing one of the highest points in the municipality. From certain parcels along the upper ridge, seasonal views extend south toward the Manhattan skyline. The road itself is narrow and winding, bordered on both sides by mature stone walls that mark property lines established a century or more ago. These are not suburban lots. They are estates — five, seven, ten acres or more — set back from the road behind hedgerows and tree lines that make many of them invisible from the street."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "or2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "or2s1",
+          "text": "The architectural inventory is exceptional. The Orchard's End Estate at 544 Oenoke Ridge, a 1929 brick-and-limestone country house designed by William B. Tubby (the same architect behind Waveny House), represents the grand-estates era. At 945 Oenoke Ridge, architects Joeb Moore and Louise Brooks reimagined an 1890s cow barn into a contemporary residence on more than five private acres. Gardiner & Larson's custom-built 12,000-square-foot home at 785 Oenoke Ridge sits on four acres. Grand colonials, Georgian manors, and a handful of bold contemporary designs coexist along the corridor, unified by scale rather than by a single style."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "or3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "or3s1",
+          "text": "Waveny Park's western boundary runs directly alongside portions of Oenoke Ridge Road. Residents on the park-adjacent stretch can walk to the estate's 3.5 miles of trails, the Carriage Barn Art Center, Spencer's Run dog park, and the playing fields without using a car. The 1912 Tudor mansion at the park's center, originally built for Lewis Lapham with landscape design by Frederick Law Olmsted Jr., anchors the property. This proximity to a 300-acre public park — essentially a private amenity accessed on foot — is a significant component of Oenoke Ridge's value proposition."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "or4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "or4s1",
+          "text": "Downtown New Canaan is five to eight minutes south by car. Elm Street's restaurants — Elm, the Roger Sherman Inn, Farmer & The Fish — and the Metro-North station are close enough for regular use. New Canaan High School and Saxe Middle School sit between the ridge and the town center. The neighborhood's combination of acreage, architectural pedigree, and proximity to Waveny Park is not replicated elsewhere in New Canaan. Buyers seeking this specific profile — legacy-scale land within minutes of a walkable village — typically find that Oenoke Ridge is the only address that delivers it."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Oenoke Ridge Road borders Waveny Park's 300-acre former Lapham estate, with trailhead access on foot from adjacent properties",
+    "Historic estates span five to ten-plus acres behind stone walls — including the 1929 Orchard's End designed by William B. Tubby",
+    "Architectural range includes grand colonials, Georgian manors, and contemporary homes by Joeb Moore and Gardiner & Larson",
+    "Seasonal Manhattan skyline views from the upper ridge, one of New Canaan's highest elevations",
+    "Five- to eight-minute drive to Elm Street's dining, the Metro-North station, and New Canaan High School"
+  ],
+  "housingCharacteristics": "Oenoke Ridge represents the apex of New Canaan's residential inventory. Estates here typically occupy five to ten-plus acres, with some of the corridor's legacy properties exceeding 15 acres. The housing stock includes pre-war country houses in brick, limestone, and stucco; mid-century colonials and Georgians with formal floor plans; and a smaller number of contemporary residences built or reimagined in the last two decades.\n\nCommon features include long private drives (often a quarter-mile or more), detached guest or caretaker cottages, swimming pools, tennis courts, and extensive landscaping by professional firms. Interior square footage ranges from 6,000 to 12,000 or more on the larger parcels. The architectural quality is generally high — this corridor attracts custom-build clients and buyers who commission substantial renovations — and the result is a neighborhood where every home reflects a significant investment in design and materials.",
+  "marketNotes": "Oenoke Ridge transactions typically fall between $2 million and $5 million, with legacy estates and fully rebuilt properties listing above $5 million. The Orchard's End Estate at 544 Oenoke Ridge was described as a property that would command over $50 million to recreate in current construction costs — a reference point for the scale of what exists along this corridor.\n\nTurnover is infrequent. Many families hold Oenoke Ridge properties for 15 to 25 years or longer, which means listings appear sporadically and generate immediate interest when priced appropriately. Off-market transactions account for a meaningful share of activity at this price level. Buyers should expect to compete for well-maintained estates near the Waveny Park border, where the combination of acreage and park proximity is most concentrated.",
+  "locationAccess": "Oenoke Ridge Road connects to South Avenue and Route 106, placing downtown New Canaan's Elm Street and the Metro-North station five to eight minutes south by car. The Merritt Parkway is accessible in approximately 12 minutes via Route 124. Stamford's I-95 interchange and the Stamford Transportation Center — with express Metro-North service to Grand Central Terminal in under 50 minutes — are reachable in 15 to 20 minutes.\n\nWaveny Park's trailheads are accessible on foot from properties along the western stretch of Oenoke Ridge Road. New Canaan High School and Saxe Middle School sit between the ridge and the town center, within a five-minute drive. The neighborhood's elevated, interior position keeps it removed from through-traffic corridors while maintaining genuine proximity to the town's commercial and civic core.",
+  "seoTitle": "Oenoke Ridge, New Canaan CT | Estate Homes & Guide",
+  "seoDescription": "Oenoke Ridge: New Canaan's most prestigious address with historic estates on 5-10+ acres bordering Waveny Park. Contact Matt Caiola for private showings.",
+  "faqs": [
+    {
+      "question": "Why is Oenoke Ridge considered New Canaan's most prestigious neighborhood?",
+      "answer": "Oenoke Ridge combines the town's largest residential parcels — five to ten-plus acres — with architectural pedigree, elevated terrain offering seasonal Manhattan skyline views, and direct adjacency to Waveny Park's 300 acres. The corridor holds estates designed by William B. Tubby, Joeb Moore, and Gardiner & Larson, among others. Properties change hands infrequently, and the combination of scale, privacy, and proximity to downtown New Canaan is not replicated elsewhere in town.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the price range for homes on Oenoke Ridge?",
+      "answer": "Most transactions on Oenoke Ridge fall between $2 million and $5 million. Fully rebuilt estates and properties with the largest acreage have listed above $5 million. The 1929 Orchard's End Estate at 544 Oenoke Ridge, a brick-and-limestone country house on the corridor, was described as requiring over $50 million to recreate at current construction costs — an indicator of the architectural quality and scale present along this road.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How close is Oenoke Ridge to downtown New Canaan and the train?",
+      "answer": "Oenoke Ridge Road connects to downtown New Canaan in five to eight minutes by car. Elm Street's restaurants and shops, the New Canaan Metro-North station, and both Saxe Middle School and New Canaan High School all sit between the ridge and the town center. The Metro-North Branch Line connects to the main New Haven Line at Stamford, with total travel time to Grand Central Terminal averaging about 75 minutes.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

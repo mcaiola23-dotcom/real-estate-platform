@@ -12,6 +12,42 @@
 - [x] Replace seed-backed tenant persistence with durable data store + migrations.
 
 ## Next
+- [x] Implement portal-side gateway boundary in `apps/portal` (`/api/portal/[...path]`) to proxy backend calls with centralized controls instead of direct client-to-backend calls. (Completed 2026-03-02 via new catch-all route + shared proxy utilities.)
+- [x] Add endpoint-specific rate limiting for portal AI search, auth registration/credentials login, lead submission/read, favorites, saved-search, and alerts flows. (Completed 2026-03-02 via `apps/portal/src/lib/server/rate-limit.ts`, NextAuth authorize throttling, and proxy endpoint policy mapping.)
+- [x] Enforce portal runtime security baseline in this monorepo: fail-fast weak non-local auth secret checks and non-dev debug-route lock down. (Completed 2026-03-02 via `apps/portal/src/lib/server/env-security.ts` + `apps/portal/src/middleware.ts`.)
+- [x] Protect portal lead retrieval surface behind authenticated access and remove insecure sample-data fallback from agent dashboard. (Completed 2026-03-02 via `/api/portal/leads` policy + auth-required `/agents` flow updates.)
+- [x] Fix portal favorites runtime field drift (`address` vs `address_full`) through response normalization at the gateway boundary. (Completed 2026-03-02 in `apps/portal/src/app/api/portal/proxy-utils.ts`.)
+- [x] Add portal CI quality-gate command surface and route smoke coverage for new proxy policy/normalization behavior. (Completed 2026-03-02 via `typecheck/test:routes/check` scripts in `apps/portal/package.json`, root `ci:portal`, and `proxy-utils.test.ts`.)
+- [x] Apply backend-only technical-suggestion follow-through in standalone `services/portal-api` (alert model/field drift incl. `user.full_name`, dependency manifest completeness, scheduler worker split, Alembic migration discipline baseline, backend startup secret guards). (Completed 2026-03-02: lead read authz guard, backend secret fail-fast, canonical `SearchAlert`, dedicated scheduler worker, explicit dependency manifest, Alembic scaffold + baseline revision.)
+- [~] Roll out pre-commit secret scanning for portal/backend repositories and enforce secret-handling policy prior to launch. (Completed 2026-03-02 for scanner + hook rollout via `scripts/security/scan-secrets.sh`, `.githooks/pre-commit`, and `security:hooks:install`; remaining: secret-manager policy + pre-launch key-rotation checklist.)
+- [x] Resolve portal workspace React type mismatch baseline (`heroicons` JSX incompatibility from duplicate/incompatible React typings) so `npm run typecheck --workspace @real-estate/portal` can pass authoritatively. (Completed 2026-03-02 by pinning portal-local React type resolution in `apps/portal/tsconfig.json`; Windows-authoritative `npm run ci:portal` now passes.)
+- [x] Execute Alembic upgrade validation (`alembic upgrade head`) for `services/portal-api` in an environment with Alembic CLI/runtime installed and capture output in `.brain`. (Completed 2026-03-02 via Windows virtualenv against both `sqlite:///./test.db` and `postgresql://postgres:user@localhost:5432/smartmls_db`: post-upgrade revision is `20260302_000002 (head)`.)
+- [x] Re-run Alembic + backend test gate in a PostgreSQL/PostGIS-backed runtime (not SQLite) and capture authoritative CI pass/fail output for release readiness. (Completed 2026-03-02: Postgres-backed Alembic `upgrade head` + `current` passed; backend hardening smoke tests pass via `python -m pytest tests/test_hardening_smoke.py -q`.)
+- [x] Standardize portal API base usage to a single pattern (`/api/portal` for client fetches, `joinPortalApiPath(...)` for server fetches) and remove mixed `NEXT_PUBLIC_BACKEND_URL` usage. (Completed 2026-03-02 across portal pages/components + shared server helper.)
+- [x] Reduce production debug-log noise in portal search/map hot paths by gating verbose logs to development-only wrappers. (Completed 2026-03-02 in `properties/page.tsx`, `LeafletParcelMap.tsx`, `OverlayLayer.tsx`, `UnifiedSearchBar.tsx`, and `StreetViewWidget.tsx`.)
+- [x] Fix post-migration portal regressions where parcel overlays stopped rendering and search autocomplete no longer surfaced off-market parcel matches. (Completed 2026-03-02 in `apps/portal/src/app/properties/page.tsx` by fixing gateway URL construction for map parcel fetches, and in `apps/portal/src/components/UnifiedSearchBar.tsx` by restoring `/api/autocomplete/search` suggestions alongside Google Places.)
+- [x] Fix portal Street View + commute regressions after migration (`Location & Commute` active-listing placeholder, off-market commute loading stall, and off-market Street View fallback behavior). (Completed 2026-03-02 via `apps/portal/src/components/PropertyDetailModal.tsx` Location tab wiring to `CommuteSection`, `services/portal-api/app/api/routes/commute.py` path-parameter + decoded-ID handling for slash parcel IDs, and Street View identifier/pano handling updates in `services/portal-api/app/api/routes/properties.py` + `services/portal-api/app/services/street_view.py`.)
+- [x] Add explicit Google Maps configuration diagnostics for post-migration Street View/commute failures (instead of silent fallback/generic errors). (Completed 2026-03-02 in `services/portal-api/app/api/routes/commute.py`, `services/portal-api/app/api/routes/properties.py`, `services/portal-api/app/services/street_view.py`, `apps/portal/src/components/CommuteSection.tsx`, and `apps/portal/src/components/StreetViewWidget.tsx`.)
+- [x] Add Street View negative-cache auto-revalidation so parcels cached as unavailable during transient outages/config gaps can recover after env fixes. (Completed 2026-03-02 in `services/portal-api/app/api/routes/properties.py` with periodic revalidation of cached unavailable parcels.)
+- [x] Align portal-api settings with `.env.local` convention so backend Google Maps credentials placed in `.env.local` are loaded at runtime. (Completed 2026-03-02 in `services/portal-api/app/core/config.py` by loading `(".env.local", ".env")`.)
+- [x] Standardize backend CI gate for `services/portal-api` and wire root command surface. (Completed 2026-03-02 via `ci:portal-api` + `scripts/ci-gate.sh` with PostgreSQL/PostGIS requirement, default hardening smoke tests, and Alembic current/upgrade/current checks.)
+- [x] Modernize or retire legacy `app/tests/test_api.py` / `tests/test_phase0.py` suites that are SQLite-hardcoded and drifted from current routes/models (Completed 2026-03-02 by replacing both suites with dependency-override/fake-session route-contract tests aligned to current health/leads/listings/cities behavior; reintroduced into default backend CI targets.)
+- [x] Expand `services/portal-api/tests/test_hardening_smoke.py` to cover additional release-critical write-path authz/error-path behavior (Completed 2026-03-02 with lead-create success + invalid payload error path + lead-detail authz/not-found checks in addition to existing health/debug/lead-list coverage.)
+- [x] Add a reproducible backend CI execution note/script for the authoritative runtime path (Windows venv + Postgres-backed `ci:portal-api`) so local/Wsl environment drift does not block hardening validation. (Completed 2026-03-02 via `services/portal-api/scripts/ci-gate-windows.cmd` + README runbook updates.)
+- [x] Expand backend hardening smoke coverage for authenticated `/api` write-path protections (`favorites`, `saved-searches`, `alerts`) with deterministic auth/validation checks. (Completed 2026-03-02 in `services/portal-api/tests/test_hardening_smoke.py`, including auth-required + validation/limit paths and authenticated create success paths for `saved-searches` + `favorites`.)
+- [x] Execute the updated default backend CI target set (`tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py`) through the authoritative Windows/Postgres gate script and capture full pass/fail output in `.brain`. (Completed 2026-03-02 via `services/portal-api/scripts/ci-gate-windows.cmd`: `28 passed`, Alembic `current -> upgrade head -> current` at `20260302_000002 (head)`.)
+- [x] Split Google Maps credential usage by backend function with explicit envs (`GOOGLE_MAPS_SERVER_API_KEY` for Street View/commute and `GOOGLE_PLACES_API_KEY` for Places proxy) while keeping `GOOGLE_MAPS_API_KEY` as legacy fallback. (Completed 2026-03-03 in `services/portal-api/app/core/config.py` + Google route/service consumers + docs/deploy config updates.)
+- [x] Add fail-fast startup/config validation for missing/placeholder Google keys with actionable error messages. (Completed 2026-03-03 in `services/portal-api/app/core/config.py` via `validate_runtime_settings()` Google checks and key-format validation toggles.)
+- [x] Add a reusable portal smoke test checklist covering parcels, autocomplete, Street View, and commute (active + off-market). (Completed 2026-03-03 in `services/portal-api/docs/portal-smoke-test-checklist.md` and linked from backend README.)
+- [x] Property Detail Modal Fix & Polish Sprint — 7 issues: sticky header, section reorder, print preview, market stats table, comps error handling, neighborhood display, photo gallery. (Completed 2026-03-03 across PropertyDetailModal.tsx, globals.css, NeighborhoodMap.tsx, MarketStatsSection.tsx, CompsSection.tsx, comps.py.)
+- [x] Fix Street View heading to face property instead of pointing down street. (Completed 2026-03-03 via bearing calculation in `services/portal-api/app/services/street_view.py`.)
+- [x] Populate neighborhood boundary cache and assign parcels to specific neighborhoods via spatial intersection + nearest-neighbor fallback. (Completed 2026-03-03: 42/42 boundaries cached, 103,756 parcels assigned, 0 generic Stamford parcels.)
+- [x] Resolve neighborhood name in parcel detail API via Neighborhood table join + add subdivision to PublicListing schema. (Completed 2026-03-03 in map.py + listing_schemas.py.)
+- [x] Fix Transaction History to try listing_id lookup before parcel_id fallback, and rewrite UI (most-recent-first, soft errors). (Completed 2026-03-03 in TransactionHistory.tsx + transaction_history.py.)
+- [x] Expand comps search radius from 1.25mi to 3mi and return empty 200 instead of 404. (Completed 2026-03-03 in comps.py + CompsSection.tsx.)
+- [x] Disable scroll-wheel zoom on neighborhood map embed to prevent scroll hijacking. (Completed 2026-03-03 in NeighborhoodMapInner.tsx.)
+- [x] Replace off-market info card with "Currently Off-Market" pill overlay on Street View image. (Completed 2026-03-03 in PropertyDetailModal.tsx.)
+- [ ] Adjust Westover (Stamford) neighborhood boundary to extend east to Long Ridge Road. (Deferred — user identified Zillow boundary as too conservative.)
 - [x] Scaffold `apps/admin` control-plane app with protected auth boundary and internal operations dashboard shell.
 - [x] Implement shared control-plane db/contracts for tenant provisioning, domain lifecycle management, and plan/feature-flag settings.
 - [x] Add tenant provisioning/domain/status API routes in `apps/admin` and connect dashboard mutation flows.
@@ -268,6 +304,73 @@
 - [x] Define plan matrix (Starter/Growth/Pro/Team). (Completed 2026-02-20 in `.brain/PRODUCT_SPEC.md` section `5.1` with canonical control-plane plan mapping, pricing targets, and commercial constraints.)
 - [x] Define setup package scope and onboarding SLAs. (Completed 2026-02-20 in `.brain/PRODUCT_SPEC.md` section `5.2` with deliverable scope, 15-business-day onboarding timeline, and SLA pause/change-order rules.)
 - [x] Define managed services add-ons and operational model. (Completed 2026-02-20 in `.brain/PRODUCT_SPEC.md` section `5.3` with add-on catalog, pod staffing ratios, cadence, contract minimums, and fulfillment SLAs.)
+
+## Portal UI/UX Integration (Section 2 of Integration Plan)
+- [x] Port Cormorant Garamond typography from agent website to portal (replace Playfair Display). (Completed 2026-03-01 in `apps/portal/src/app/layout.tsx`.)
+- [x] Adopt stone warm-neutral palette across portal (replace blue/teal). (Completed 2026-03-01 in `apps/portal/tailwind.config.js` + `apps/portal/src/app/globals.css`.)
+- [x] Restyle SiteHeader to match agent website (stone colors, uppercase tracking nav, scroll-responsive). (Completed 2026-03-01 in `apps/portal/src/components/layout/SiteHeader.tsx`.)
+- [x] Redesign portal homepage (stone-900 hero, warm feature cards, new CTA + footer). (Completed 2026-03-01 in `apps/portal/src/app/page.tsx`.)
+- [x] Restyle PropertyCard (rounded-2xl, emerald/amber/rose status badges, stone palette). (Completed 2026-03-01 in `apps/portal/src/components/PropertyCard.tsx`.)
+- [x] Restyle PropertyDetailModal (stone palette, rounded-2xl, keep multi-tab structure). (Completed 2026-03-01 in `apps/portal/src/components/PropertyDetailModal.tsx`.)
+- [x] Restyle ParcelDetailModal (stone palette, rounded-2xl, keep multi-tab structure). (Completed 2026-03-01 in `apps/portal/src/components/ParcelDetailModal.tsx`.)
+- [x] Bulk-replace remaining old colors across all 60+ portal files (gray→stone, blue→stone, green→emerald). (Completed 2026-03-01 via Node.js bulk replacement script.)
+- [ ] **Deep redesign of portal properties page** (`apps/portal/src/app/properties/page.tsx`) — layout, interactions, and visual polish to match agent website home-search page quality. Session 24 applied colors but the page structure/UX is not yet competitive. **TOP PRIORITY for next session.**
+- [ ] Extract shared design tokens FROM agent website (`apps/web`) styles INTO `packages/design-tokens` for portal consumption. Design direction: agent website is the source of truth; portal adopts its patterns. Do NOT modify the agent website home-search page.
+- [ ] Upgrade portal from Tailwind CSS v3 to v4 to standardize with SAAS platform.
+- [ ] Build shared UI component library in `packages/ui` for portal/CRM visual parity (buttons, cards, modals).
+
+## Portal Property Detail Modal — Tier 1 & 2 Sprint (2026-03-03)
+> Full plan: `.brain/PORTAL_DETAIL_MODAL_SPRINT.md`
+
+- [ ] **[P0] Accurate Property Tax + Payment Breakdown Visualization** — CT mill rate lookup for off-market tax calculation, tax display in Property Details, SVG donut payment breakdown in MortgageCalculator. (Phase A)
+- [ ] **[P1] Photo Mosaic Grid + Performance Optimization** — Zillow-style 1+4 mosaic layout, `quality` props, image domain whitelist, lazy thumbnails, `onError` fallback. (Phase B)
+- [ ] **[P1] Sticky Header on Scroll** — Compact fixed header with address/price/stats/actions when price bar scrolls out of view. (Phase C)
+- [ ] **[P1] Share Button** — Copy link / email / SMS dropdown next to heart button. (Phase C)
+- [ ] **[P2] Price Change Indicator** — Badge showing price reduction/increase when `listPrice !== originalListPrice`. (Phase C)
+- [ ] **[P3] Walk Score Coming Soon** — Placeholder card in Neighborhood section. (Phase D)
+- [ ] **[P3] Climate Risk Coming Soon** — Placeholder card in Neighborhood section. (Phase D)
+- [ ] **[P2] Listing Activity / Interest Badge** — "New"/"Popular"/"Hot" badges with backend `property_views` analytics tracking. (Phase E)
+- [ ] **[P3] Print / PDF Export** — Print-optimized layout via `@media print` CSS with DoorTag branding and QR code. (Phase F)
+- [ ] **[P2] Property Comparison Tool** — 2-4 property side-by-side comparison with persistent footer bar and localStorage state. (Phase G)
+
+## Portal Long-Term Roadmap (Tier 3)
+- [ ] **AI Property Chatbot** — Conversational AI Q&A on individual properties. *Prerequisite: vector DB (pgvector) + multi-turn AI search infrastructure.*
+- [ ] **AI Property Insight Chips** — AI-generated contextual badges ("Great for families", "Below market value"). *Prerequisite: vector DB embeddings + property description analysis.*
+- [ ] **Market Temperature Badge** — Real-time market heat indicator per property (hot/warm/cold) based on DOM, inventory, and price trends.
+- [ ] **Offer Strength Calculator** — Estimate competitiveness of a given offer based on market conditions, comparable sales, and listing activity.
+- [ ] **Expected Proceeds Calculator (Off-Market)** — Zillow-style estimated net proceeds showing AVM value minus estimated closing costs, agent commissions, and estimated remaining loan balance.
+- [ ] **"Similar Homes" Retrieval** — Vector-nearest-neighbor property recommendations bounded by structured filters (town, price band, beds).
+- [ ] **AI "Why You'll Love This Home" Descriptions** — Personalized property descriptions based on user search history and preferences.
+- [ ] **Hybrid Ranking + "Why Matched" Transparency** — Expose semantic match reasons as chips on search result cards.
+
+## Portal Properties Page Performance Follow-Through (2026-03-03)
+- [x] Add viewport-shift gating + buffered bbox fetches on properties map pan/zoom to reduce redundant parcel/listing map requests.
+- [x] Stop cross-viewport context listing marker accumulation and cap deduped context listings to prevent progressive marker bloat.
+- [x] Deduplicate combined map parcel payload (`searchResults` + `listingMarkers` + `mapParcels`) by `parcel_id` before rendering.
+- [x] Memoize `LeafletParcelMap` render path (`React.memo`) and cache marker icon objects to reduce rerender CPU cost during map navigation.
+- [x] Remove manual Leaflet `map.remove()` calls in portal map components to fix "Map container is being reused by another instance" runtime crash.
+- [ ] Run authoritative browser-level smoke/perf check on host runtime after this pass (rapid pan/zoom, zoom 10-18 transitions, map + modal interactions) and capture any remaining hotspots.
+
+## Property Detail Modal Performance Follow-Through (2026-03-03)
+- [x] Convert heavy modal subsections to dynamic imports (`next/dynamic`) to reduce initial modal JS/mount pressure.
+- [x] Add shared modal section loading fallback component (`SectionLoadingState`) and reuse it across deferred section mounts.
+- [x] Add delayed post-open chunk preloading (`component.preload?.()`) for market/neighborhood subsections to smooth scroll-to-section transitions.
+- [x] Optimize parcel-first modal fetch path to render base parcel data immediately and run listing enrichment asynchronously (reduces off-market first-open blocking latency).
+- [x] Extract modal data-fetch + normalization logic into dedicated hook (`usePropertyModalData`) with shared `PropertyData`/`AvmData` types.
+- [x] Add short-lived modal client cache (listing/parcel/AVM, 2-minute TTL) to reduce repeat-open fetch latency.
+- [ ] Continue file decomposition of `PropertyDetailModal.tsx` (extract Overview/Details/Market/Neighborhood section renderers into separate files) while preserving current UX behavior.
+
+## Properties Map Interaction Tuning (2026-03-03)
+- [x] Replace blocking map loading overlay with non-blocking compact indicator.
+- [x] Delay loader activation for viewport fetches to avoid spinner flicker on fast requests.
+- [x] Suppress loader during zoom 10-14 listing-only context refreshes.
+- [x] Extract map viewport/fetch lifecycle into `useMapViewportFetch` hook to isolate fetch dedupe/abort/loader/viewport-gating behavior from page rendering code.
+- [ ] Re-run browser interaction validation (rapid zoom in/out + pan) and capture whether remaining lag is render-bound vs network-bound.
+
+## Properties Page Refactor Follow-Through (2026-03-03)
+- [ ] Extract standard property search fetch flow from `apps/portal/src/app/properties/page.tsx` into `usePropertySearch` hook.
+- [ ] Extract AI search/rerun filter flow into `useAiSearch` hook.
+- [ ] Keep behavior parity while reducing `properties/page.tsx` size and coupling.
 
 ## Later
 - [ ] Team and brokerage hierarchy model.

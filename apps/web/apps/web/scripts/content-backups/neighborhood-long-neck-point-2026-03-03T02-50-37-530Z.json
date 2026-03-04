@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:07:26Z",
+  "_id": "2464cc2e-6916-4faf-95b8-f353ad9668c3",
+  "_rev": "cptc0PvA8gpHazoy2liEN2",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T17:59:51Z",
+  "description": [
+    {
+      "_key": "d76640c3d179",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "bbfe9f85d338",
+          "_type": "span",
+          "marks": [],
+          "text": "Long Neck Point is a peninsula neighborhood in Darien that’s defined by privacy and a strong connection to the water. The layout naturally limits through-traffic, and the streetscape tends to feel quiet and intentionally residential—an important part of the appeal for waterfront buyers."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "606436b48af1",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "e07e46ef5eb3",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate here is primarily single-family, and many homes are positioned to take advantage of Long Island Sound views and outdoor living. Depending on the street and the specific property, buyers may find larger lots, mature landscaping, and the kind of setting where the home’s relationship to the water is central to the experience."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "9013751720e9",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "e1e7a45e7519",
+          "_type": "span",
+          "marks": [],
+          "text": "For time on the Sound, Pear Tree Point Beach is a major town resource nearby. The Town describes it as an approximately 8-acre beach area off Pear Tree Point Road with a bathing area, picnic tables and grills, a gazebo, a bathhouse, a boat launch ramp, and kayak racks (via resident lottery), plus two beaches. Long Neck Point is best suited for clients who want a coastal Darien lifestyle with a premium level of privacy—while keeping downtown Darien and Metro-North access within reach."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A private peninsula setting with a calm, coastal atmosphere and limited through-traffic",
+    "Single-family homes with an emphasis on privacy and outdoor living",
+    "Close to Darien's shoreline amenities, including Weed Beach and Pear Tree Point Beach",
+    "Pear Tree Point Beach nearby with swimming, picnic areas, and kayak access",
+    "Easy access to downtown Darien and Metro-North service"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Long Neck Point",
+  "overview": "Long Neck Point is one of Darien’s most private waterfront enclaves—a peninsula setting that feels distinctly removed, even though downtown Darien is close by. Homes here are typically single-family and often estate-scale, with many properties oriented to Long Island Sound and a strong emphasis on privacy. The atmosphere is quiet and coastal, with limited through-traffic and a true “arrive and exhale” feel. For buyers who want Darien’s shoreline lifestyle at the highest level, Long Neck Point is the benchmark.",
+  "slug": {
+    "_type": "slug",
+    "current": "long-neck-point"
+  },
+  "town": {
+    "_ref": "4f8ea013-0779-499d-ba9f-39c820ef3d56",
+    "_type": "reference"
+  }
+}

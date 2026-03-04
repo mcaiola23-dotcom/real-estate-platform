@@ -1,0 +1,92 @@
+{
+  "type": "neighborhood",
+  "slug": "cranbury",
+  "townSlug": "norwalk",
+  "overview": "Cranbury sits on 227 acres of former Gallaher Estate land, now the city's largest park, giving this inland neighborhood a green identity that no other part of Norwalk can match. The Tudor Revival Gallaher Mansion, built in 1931 by industrialist Edward Beach Gallaher, anchors the park's southern edge alongside wooded trails, disc golf, and a sculpture garden. Brien McMahon High School is the designated comprehensive high school for the neighborhood.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Cranbury is Norwalk's inland counterweight to the town's waterfront neighborhoods. Located roughly three miles north of downtown, it is defined less by shoreline access than by proximity to one of the most significant public parks in Fairfield County. Cranbury Park — 227 acres of wooded trails, open meadows, a dog park, and the Tudor Revival Gallaher Mansion — is the neighborhood's anchor. The park was acquired by the City of Norwalk in 1965 after the death of Inez Gallaher, and it has served as the community's recreational center ever since."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The housing stock is predominantly mid-century. Capes, ranches, and split-levels from the 1950s and 1960s line the streets east and west of Grumman Avenue, many on quarter-acre to half-acre lots with mature hardwoods. Renovated examples with updated kitchens and expanded footprints have pushed individual sales past $800,000, but unrenovated homes still trade in the mid-$500,000s — a rarity in coastal Fairfield County. That price spread makes Cranbury one of the few Norwalk neighborhoods where first-time buyers and downsizers compete on overlapping inventory."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Unlike Rowayton or East Norwalk, Cranbury does not have its own Metro-North station. The Merritt 7 station, roughly ten minutes by car, offers New Haven Line service and commuter parking. The Merritt Parkway's Exit 39 provides northbound access toward Danbury and the Berkshires, while Route 7 connects to Interstate 95 in under ten minutes southbound. The neighborhood's interior position means less traffic congestion than Norwalk's coastal corridors, and weekend access to Cranbury Park's 18-hole disc golf course and 125 acres of trails draws visitors from across the region."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "What Cranbury lacks in waterfront cachet it compensates for in livability. The streets are residential and low-traffic. The park provides the kind of open space that coastal neighborhoods, constrained by shoreline density, simply cannot offer. Buyers here are typically prioritizing land, value, and proximity to green space over harbor views — and in a market where waterfront premiums can double the cost of entry, that trade-off is increasingly deliberate."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Cranbury Park spans 227 acres with wooded trails, a sculpture garden, an 18-hole disc golf course, and the historic Gallaher Mansion available for events",
+    "Mid-century housing stock on quarter-acre to half-acre lots offers Norwalk's most accessible single-family price points, with unrenovated homes trading in the mid-$500,000s",
+    "Merritt Parkway Exit 39 and Route 7 provide direct highway access without navigating Norwalk's coastal traffic corridors",
+    "Brien McMahon High School, one of Norwalk's two comprehensive public high schools, serves the neighborhood with AP, IB, and career pathway programs"
+  ],
+  "housingCharacteristics": "Cranbury's housing is rooted in the postwar suburban expansion that reshaped inland Norwalk during the 1950s and 1960s. Capes, ranches, and split-levels predominate, typically on lots ranging from a quarter acre to a half acre. Original homes feature modest footprints — 1,200 to 1,800 square feet — with attached or detached one-car garages and mature landscaping. Over the past decade, a renovation wave has transformed many of these properties: expanded kitchens, added second-floor dormers, finished basements, and updated mechanical systems.\n\nThe median sale price in Cranbury hovers around $775,000, with renovated homes on larger lots pushing past $900,000. Unrenovated originals in good structural condition still trade in the $500,000 to $600,000 range, making Cranbury one of the more affordable entry points for single-family buyers in Fairfield County's coastal towns. Newer construction is limited — the neighborhood is substantially built out — but occasional teardown-and-rebuild projects introduce contemporary colonials and farmhouse-style homes that trade above $1 million.",
+  "marketNotes": "Cranbury operates as a value market within Norwalk's broader real estate landscape. Homes sell in an average of 17 days, significantly faster than the citywide average, reflecting strong demand from buyers priced out of Rowayton and East Norwalk's waterfront inventory. The buyer profile skews toward young families and professionals seeking single-family homes under $800,000 with reasonable lot sizes and proximity to green space.\n\nInventory remains tight. The neighborhood's built-out condition means new listings depend almost entirely on existing owners choosing to sell, and turnover has historically been low — many Cranbury homeowners stay for decades. When well-renovated properties appear, they generate competitive interest quickly. The price gap between unrenovated and fully updated homes can exceed $300,000, which continues to attract buyers willing to undertake renovation projects.",
+  "locationAccess": "Cranbury's inland position places it at the intersection of Norwalk's two primary north-south corridors. Route 7 runs along the neighborhood's western edge, connecting to Interstate 95 in approximately eight minutes and continuing north toward Wilton, Ridgefield, and Danbury. The Merritt Parkway is accessible via Exit 39, roughly five minutes east, providing an alternative route to Stamford, Bridgeport, and points beyond.\n\nThe nearest Metro-North station is Merritt 7, approximately ten minutes by car, with New Haven Line service to Grand Central Terminal in roughly 70 minutes. South Norwalk station, offering both local and express service, is about twelve minutes south. Downtown Norwalk's SoNo collection of restaurants, galleries, and the Maritime Aquarium is a ten-minute drive. The neighborhood's distance from the coast translates to less traffic congestion than waterfront areas, particularly during summer months when beach-bound vehicles congest East Avenue and Gregory Boulevard.",
+  "seoTitle": "Cranbury Norwalk CT Homes | Park-Side Living",
+  "seoDescription": "Explore Cranbury, Norwalk CT homes near 227-acre Cranbury Park with trails and the Gallaher Mansion. Contact Matt Caiola to schedule a private showing.",
+  "faqs": [
+    {
+      "question": "What is Cranbury Park and why does it matter for homebuyers?",
+      "answer": "Cranbury Park is a 227-acre public park on the former Gallaher Estate, featuring wooded trails, a dog park, a sculpture garden, an 18-hole disc golf course, and the Tudor Revival Gallaher Mansion built in 1931. The park is the largest in Norwalk and sits at the center of the Cranbury neighborhood. Homes adjacent to or near the park benefit from direct trail access and a green buffer that distinguishes this inland neighborhood from Norwalk's denser coastal areas.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Cranbury, Norwalk CT?",
+      "answer": "The median sale price in Cranbury is approximately $775,000, with renovated homes on larger lots reaching above $900,000. Unrenovated mid-century homes in sound condition still trade in the $500,000 to $600,000 range, making Cranbury one of the more affordable single-family neighborhoods in coastal Fairfield County. Occasional new construction and teardown-rebuild projects trade above $1 million.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How do Cranbury residents commute to New York City?",
+      "answer": "Cranbury residents typically drive to the Merritt 7 Metro-North station, roughly ten minutes north, or to the South Norwalk station, roughly twelve minutes south. Both stations are on the New Haven Line, with service to Grand Central Terminal in approximately 60 to 75 minutes depending on express or local scheduling. Interstate 95 is accessible via Route 7 in about eight minutes, and the Merritt Parkway via Exit 39 in about five minutes.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

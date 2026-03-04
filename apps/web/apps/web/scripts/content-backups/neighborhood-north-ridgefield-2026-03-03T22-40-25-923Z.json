@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-31T22:08:13Z",
+  "_id": "6bf4ef32-ef90-48e2-90a3-49efa6785168",
+  "_rev": "mB2cUx9aVkdRk2GqAC4uth",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:16Z",
+  "description": [
+    {
+      "_key": "3f9675b876f7",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "a54a02784a4e",
+          "_type": "span",
+          "marks": [],
+          "text": "North Ridgefield is defined by space and quiet. The setting becomes more wooded and rural as you move north, and the day-to-day pace feels slower than the more active center of town."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "0153daae36b3",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "f8c977c7f94f",
+          "_type": "span",
+          "marks": [],
+          "text": "Real estate is predominantly single-family, and many properties emphasize land, privacy, and outdoor living. In my experience, this area appeals to buyers who want Ridgefield’s community and culture but prefer a more private, country-style home setting."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "f5e4b1e45f11",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "ec895515b975",
+          "_type": "span",
+          "marks": [],
+          "text": "Even with the more rural cadence, Ridgefield Center’s cultural anchors are still part of the lifestyle when you want them—The Aldrich Contemporary Art Museum at 258 Main Street and Ridgefield Playhouse at 80 East Ridge Road (per the Playhouse for GPS). North Ridgefield is best for buyers who want the “retreat” version of Ridgefield while keeping Main Street and community events within reach."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "A more rural, spacious setting with a quiet day-to-day rhythm",
+    "Predominantly single-family homes with larger parcels and more privacy",
+    "Strong fit for buyers prioritizing land, trees, and a country atmosphere",
+    "Easy access to Ridgefield Center for dining, shopping, and community events",
+    "Rich cultural scene in town including The Aldrich and Ridgefield Playhouse"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "North Ridgefield",
+  "overview": "North Ridgefield is where the town feels most rural—more space, more quiet, and a landscape that leans wooded and open. Homes are primarily single-family, often on larger parcels, with a true “country Ridgefield” cadence. You’re farther from Main Street than Ridgefield Center, but still close enough to enjoy the town’s restaurants, events, and cultural anchors when you want them. For buyers prioritizing privacy and room to breathe, North Ridgefield is the fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "north-ridgefield"
+  },
+  "town": {
+    "_ref": "881cffd7-565b-403b-9769-2bb3c0d05522",
+    "_type": "reference"
+  }
+}

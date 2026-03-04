@@ -1,0 +1,87 @@
+{
+  "type": "neighborhood",
+  "slug": "georgetown",
+  "townSlug": "wilton",
+  "overview": "Georgetown occupies Wilton's southwestern corner, where Georgetown Road connects a former industrial village to the rural residential landscape that now defines it. The Gilbert & Bennett Wire Manufacturing Company operated here from 1818 until its closure in 2001, and the Georgetown Historic District preserves the architectural legacy of that 183-year industrial tenure. Today, Georgetown straddles the Wilton-Redding border with additional territory in Weston, giving it a shared identity that spans three towns while placing its Wilton-side residents firmly within the top-ranked Wilton school district.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Georgetown's character was shaped by wire manufacturing long before it became residential. Benjamin Gilbert started a tanning operation here in 1818, eventually partnering with Sturges Bennett to form Gilbert & Bennett — a company that invented the first machine-woven window screen during the Civil War and grew into one of Connecticut's most significant industrial enterprises. The factory complex along the Norwalk River drew workers and their families, generating the village infrastructure — churches, shops, a company schoolhouse — that still marks Georgetown's built environment. When the mill closed in 2001 after filing for bankruptcy in 1998, Georgetown transitioned from company town to residential neighborhood."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The Georgetown Historic District preserves structures from the company era, including workers' housing, commercial buildings, and the Gilbert & Bennett schoolhouse. Georgetown Village Restoration, Inc. has documented the district's history and advocated for its preservation. Beyond the historic core, the Wilton side of Georgetown transitions into large-lot residential terrain — colonials and mid-century homes on one-to-two-acre parcels, with some lots exceeding three acres as the landscape rises westward toward the Redding border."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Route 7 runs through the eastern edge of Georgetown, providing a direct connection south to Norwalk and north through Wilton Center toward Danbury. The cross-border geography means Georgetown residents shop and dine in multiple towns — Redding's Georgetown Market, a local grocer that serves the village core, sits just over the town line. For broader retail and dining, Route 7 reaches Wilton Center in approximately eight minutes and the South Norwalk restaurant corridor in 20. The Cannondale Metro-North station is a 10-minute drive northeast."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Georgetown's price range — roughly $750,000 to $1.5 million — reflects larger lots and more rural character than Cannondale or Wilton Center, without the estate-scale pricing of North Wilton. Mid-century ranches and split-levels represent the lower end of the market, while renovated colonials and newer construction on two-plus-acre lots command the upper range. Buyers who prioritize land, privacy, and a less manicured landscape over walkability or village proximity gravitate here. The Wilton school district assignment — the same top-ranked system available to every Wilton address — is the common denominator that unifies Georgetown with the rest of the town."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Georgetown Historic District preserves the architectural legacy of the Gilbert & Bennett Wire Manufacturing Company, which operated from 1818 to 2001",
+    "Lots on the Wilton side of Georgetown frequently exceed two acres, offering more rural acreage than most Fairfield County neighborhoods at this price point",
+    "All Georgetown properties within Wilton's borders are assigned to the Wilton school district, ranked top five in Connecticut",
+    "Route 7 connects Georgetown to Wilton Center in eight minutes and the South Norwalk commercial corridor in approximately 20 minutes"
+  ],
+  "housingCharacteristics": "Georgetown's housing stock on the Wilton side is predominantly single-family residential, split between mid-century construction and more recent builds. Ranch-style homes and split-levels from the 1950s through 1970s occupy the lower price tier, typically on one-to-one-and-a-half-acre lots with original or partially updated interiors. Colonials — both period-appropriate reproductions and true antiques — make up the larger share of inventory, with lot sizes ranging from one to three acres.\n\nNewer custom builds appear on the larger parcels closer to the Redding and Weston borders, where topography rises and the landscape takes on a more wooded, hilly character. These properties — often four-bedroom colonials with updated kitchens, finished lower levels, and detached garages — trade in the $1.1 million to $1.5 million range. The overall price band of $750,000 to $1.5 million reflects Georgetown's position as Wilton's value proposition — acreage and the school district without crossing into the $2 million-plus estate tier.",
+  "marketNotes": "Georgetown trades at a discount to Wilton's town-wide median, which makes it attractive to buyers entering the Wilton market for the school district. Inventory turns over more slowly here than in Wilton Center or Cannondale — the rural character and distance from the train station reduce the urgency that drives faster absorption in more transit-oriented neighborhoods. Properties priced between $750,000 and $1 million represent Georgetown's most active segment, with colonials in good condition typically selling within three to four weeks.\n\nThe upper tier — renovated homes on two-plus acres above $1.2 million — competes with similar inventory in Weston and Redding, where buyers weigh school district quality as the differentiating factor. Georgetown's Wilton school assignment provides measurable value against those neighboring towns' systems, and agents positioning listings here emphasize that advantage directly.",
+  "locationAccess": "Georgetown sits at Wilton's southwestern boundary, bordered by Redding to the west and Weston to the south. Georgetown Road serves as the primary internal corridor, connecting to Route 7 at the neighborhood's eastern edge. From Route 7, Wilton Center is eight minutes north and Norwalk is 20 minutes south. The Cannondale Metro-North station is approximately 10 minutes northeast by car, providing Danbury Branch service to South Norwalk and Grand Central Terminal. The Merritt Parkway is accessible via Route 33 or Route 57, each roughly 15 minutes from the neighborhood's center.",
+  "seoTitle": "Georgetown Wilton CT | Rural Homes & Historic Village",
+  "seoDescription": "Georgetown in Wilton CT: historic mill village with large rural lots from $750K to $1.5M and top-ranked Wilton schools. Contact Matt Caiola to explore.",
+  "faqs": [
+    {
+      "question": "What is the history of Georgetown in Wilton CT?",
+      "answer": "Georgetown grew around the Gilbert & Bennett Wire Manufacturing Company, founded by Benjamin Gilbert in 1818. The company invented machine-woven window screens during the Civil War and operated for 183 years before closing in 2001. The Georgetown Historic District preserves workers' housing, commercial buildings, and the company schoolhouse from that industrial era. Georgetown Village Restoration, Inc. continues to document and advocate for the district's preservation. The neighborhood spans the Wilton-Redding border, with a shared identity that predates modern town boundaries.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How does Georgetown compare to other Wilton neighborhoods?",
+      "answer": "Georgetown offers Wilton's most rural character at the lower end of the town's price spectrum, with homes ranging from approximately $750,000 to $1.5 million on lots that frequently exceed two acres. It is less walkable than Cannondale or Wilton Center and more distant from the Metro-North station, but provides significantly more acreage per dollar than those neighborhoods. All properties on the Wilton side of Georgetown are assigned to the same top-ranked Wilton school district, which is the primary advantage Georgetown holds over comparable properties in neighboring Redding or Weston.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

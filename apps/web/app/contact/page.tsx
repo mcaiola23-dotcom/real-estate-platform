@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export const metadata = {
     title: "Contact Matt | Fairfield County Real Estate",
-    description: "Get in touch with Matt for expert guidance on buying, selling, or investing in Fairfield County real estate.",
+    description: "Contact Matt Caiola for buying, selling, or investment representation in Fairfield County CT. Licensed with Higgins Group Private Brokerage.",
 };
 
 export default function ContactPage() {

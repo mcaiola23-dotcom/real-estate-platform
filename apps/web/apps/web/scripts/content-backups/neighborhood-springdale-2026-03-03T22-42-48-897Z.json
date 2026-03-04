@@ -1,0 +1,69 @@
+{
+  "_createdAt": "2026-01-06T17:43:27Z",
+  "_id": "ecb67f1a-4bfb-4f51-ac53-f700ed8a5f64",
+  "_rev": "cptc0PvA8gpHazoy2lilf0",
+  "_type": "neighborhood",
+  "_updatedAt": "2026-02-11T18:00:47Z",
+  "description": [
+    {
+      "_key": "a3314468d552",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "555bdb21897e",
+          "_type": "span",
+          "marks": [],
+          "text": "Springdale sits in the eastern part of Stamford and is anchored by its Metro-North stop on the New Canaan Branch. That transit connection shapes the neighborhood’s appeal: many buyers like being able to access rail service without needing to live in downtown’s high-rise core."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "d07c9cca5592",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "424a1cbe6500",
+          "_type": "span",
+          "marks": [],
+          "text": "Housing in Springdale is varied. You’ll find classic single-family homes—often with a traditional New England feel—alongside condos and smaller multifamily buildings closer to the center. The result is a neighborhood that works well for a range of lifestyles, from first-time buyers to commuters and downsizers."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "a3fc6974fef9",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "114b2ae81260",
+          "_type": "span",
+          "marks": [],
+          "text": "Day-to-day, Springdale’s center of gravity is the area around the station and the Hope Street corridor, where locals can handle many errands close to home. The station page notes there are no ticket machines on site, so riders typically purchase fares on board or via the TrainTime app. With practical access to the rest of Stamford—and quick routes to major roads—Springdale offers an approachable, well-connected place to live."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "highlights": [
+    "Springdale Metro-North station for commuter rail access",
+    "Mix of single-family streets plus condo options near the neighborhood center",
+    "Quick drive to downtown Stamford restaurants, arts, and entertainment",
+    "Family-friendly community with a neighborhood village feel",
+    "Convenient positioning for commuters and families"
+  ],
+  "lastReviewedAt": "2026-01-31T00:00:00.000Z",
+  "name": "Springdale",
+  "overview": "Springdale is a neighborhood that feels like its own small town within Stamford—residential streets, a local commercial corridor, and Metro-North access that makes commuting straightforward. Homes here range from classic early-to-mid-century single-family properties to condos and smaller multifamily options closer to the center. The vibe is community-oriented and walkable in parts, especially near Hope Street and the station. If you want Stamford convenience with a neighborhood cadence, Springdale is a strong fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "springdale"
+  },
+  "town": {
+    "_ref": "a3ffac5e-f792-4a45-8572-35c108bbaaf0",
+    "_type": "reference"
+  }
+}

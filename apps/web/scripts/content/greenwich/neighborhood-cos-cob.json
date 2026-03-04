@@ -1,0 +1,97 @@
+{
+  "type": "neighborhood",
+  "slug": "cos-cob",
+  "townSlug": "greenwich",
+  "overview": "Cos Cob is a village of roughly 7,000 residents anchored by its own Metro-North station on the New Haven Line. The Mianus River defines its eastern edge while Cos Cob Harbor opens to Long Island Sound at the south. The Bush-Holley House, a National Historic Landmark on Strickland Road, preserves the legacy of the Cos Cob Impressionist art colony that flourished here from the 1890s through the 1920s.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "cc1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cc1s1",
+          "text": "The train pulls into Cos Cob station and the platform sits right in the middle of the neighborhood. That proximity to rail — not a shuttle ride away, not a parking lot away, but genuinely embedded in the village — defines the Cos Cob experience for commuters. Express trains reach Grand Central in about 40 minutes. Step off the platform and you are on East Putnam Avenue, within walking distance of the small commercial cluster, the harbor, and dozens of homes."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "cc2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cc2s1",
+          "text": "Cos Cob's artistic history is not a footnote — it shaped the place. In the 1890s, painters including Childe Hassam, John Henry Twachtman, and Theodore Robinson established an Impressionist colony at the Holley House boarding house on Strickland Road. They painted the harbor, the Mianus River, the light on the clapboard buildings. That site is now the Bush-Holley House, maintained by the Greenwich Historical Society as a museum and National Historic Landmark. The creative heritage surfaces in the neighborhood's character: a visual looseness, homes of varying ages and styles sitting comfortably next to each other without the manicured uniformity of newer developments."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "cc3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cc3s1",
+          "text": "South of the Post Road, Cos Cob compresses into tight streets near the harbor. Small colonials, updated capes, and the occasional waterfront property line roads like Bible Street and River Road. North of the Post Road, the lots expand. Two-acre parcels appear as you climb toward the Merritt Parkway, with larger colonials, center-entrance homes, and properties backing onto wooded land. The split gives Cos Cob a dual personality: walkable village south of Route 1, spacious suburban north of it."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "cc4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "cc4s1",
+          "text": "Cos Cob Park, built on the remediated site of a former power plant along the harbor, gives the neighborhood a modern recreational amenity — playing fields, a playground, and open waterfront space that did not exist a generation ago. Combined with the station, the Bush-Holley House, and the harbor itself, Cos Cob packs more identity per square mile than most Greenwich neighborhoods. Families looking for village-scale living with a direct train connection and genuine character consistently put it on their short list."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Own Metro-North station with express trains to Grand Central Terminal in approximately 40 minutes",
+    "Bush-Holley House, a National Historic Landmark, preserves the 1890s Cos Cob Impressionist art colony legacy",
+    "Cos Cob Harbor and the Mianus River provide waterfront access at the neighborhood's southern edge",
+    "Village homes south of Route 1 transition to two-acre colonial parcels north toward the Merritt Parkway"
+  ],
+  "housingCharacteristics": "Cos Cob's housing stock splits along the Post Road. South of Route 1, the village core contains antique colonials, updated Cape Cod homes, and a scattering of waterfront properties along Bible Street, River Road, and the harbor-adjacent lanes. Lots are compact — quarter-acre to half-acre — and the streetscape has a density uncommon in Greenwich. North of the Post Road, lots expand progressively toward the Merritt Parkway. Two-acre parcels with center-hall colonials, raised ranches from the 1960s and 1970s, and newer construction on subdivided lots characterize the upper portion of the neighborhood.\n\nPricing reflects the split. South-side village homes in updated condition typically trade between $1 million and $2.5 million. Larger properties north of Route 1 on two-acre lots can reach $3 million to $5 million. Waterfront and harbor-view properties, when they appear, command premiums above those ranges. Cos Cob consistently offers more home per dollar than Riverside or Old Greenwich, making it a strong value within Greenwich's southern tier.",
+  "marketNotes": "Cos Cob sees steady transaction volume relative to its size, with the village homes south of the Post Road turning over more frequently than the larger properties to the north. The Metro-North station is the primary demand driver for commuter families, particularly those relocating from Manhattan who prioritize walk-to-train convenience. Properties within a half-mile of the station attract consistent buyer interest, especially updated colonials with four or more bedrooms.\n\nNorth Cos Cob competes with adjacent neighborhoods like Stanwich and the lower edges of Back Country, where lot sizes are larger. The distinction is access: no other Greenwich neighborhood north of Old Greenwich puts residents within walking distance of an express train platform. That advantage holds pricing firm even in slower markets.",
+  "locationAccess": "Cos Cob station sits on the Metro-North New Haven Line with express service to Grand Central Terminal in approximately 40 minutes and local service in 50 to 55 minutes. The station is walkable from much of the village core south of the Post Road, eliminating the drive-and-park step that defines commuting from most other Greenwich neighborhoods.\n\nThe Post Road (Route 1) runs through the center of Cos Cob, connecting to downtown Greenwich two miles west and to Riverside and Old Greenwich to the east. I-95 interchanges are accessible via Indian Field Road and the River Road connector. The Merritt Parkway is reachable in five minutes from the northern parcels. Cos Cob's central position within Greenwich means that no part of town — from the Back Country to the waterfront — is more than a 15-minute drive.",
+  "seoTitle": "Cos Cob Greenwich CT | Village Homes & Train Access",
+  "seoDescription": "Explore Cos Cob in Greenwich CT with its own Metro-North station and historic village character. View homes and pricing. Reach out to Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "Does Cos Cob have its own train station?",
+      "answer": "Yes. Cos Cob has a dedicated Metro-North station on the New Haven Line located along East Putnam Avenue in the center of the village. Express trains from Cos Cob reach Grand Central Terminal in approximately 40 minutes. The station is walkable from many of the homes south of the Post Road, making it one of the most commuter-convenient neighborhoods in Greenwich for Manhattan-bound professionals.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Cos Cob art colony?",
+      "answer": "The Cos Cob Impressionist art colony was an artist community that flourished from the 1890s through the 1920s, centered at the Holley House boarding house on Strickland Road. Painters including Childe Hassam, John Henry Twachtman, and Theodore Robinson worked in Cos Cob, drawn by the harbor light and rural scenery. The site is now the Bush-Holley House, a National Historic Landmark and museum operated by the Greenwich Historical Society.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in Cos Cob, Greenwich?",
+      "answer": "Cos Cob home prices vary by location within the neighborhood. Village homes south of the Post Road (Route 1) in updated condition typically trade between $1 million and $2.5 million. Larger properties on two-acre lots north of Route 1 can reach $3 million to $5 million. Waterfront and harbor-adjacent properties command additional premiums. Overall, Cos Cob generally offers more home per dollar than neighboring Riverside or Old Greenwich.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Cos Cob Park?",
+      "answer": "Cos Cob Park is a waterfront recreational facility built on the remediated site of a former power plant along Cos Cob Harbor. The park includes playing fields, a modern playground, and open green space with views of the harbor and Long Island Sound. It transformed an industrial site into one of the neighborhood's most used public spaces and serves as a gathering point for families, dog walkers, and recreational sports leagues.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

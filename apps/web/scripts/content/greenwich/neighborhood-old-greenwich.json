@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "old-greenwich",
+  "townSlug": "greenwich",
+  "overview": "Old Greenwich is a self-contained coastal village in southeastern Greenwich, anchored by Sound Beach Avenue's 30-plus shops and the 147-acre Greenwich Point Park that locals call Tod's Point. Binney Park, with its stone bridges and 1933 dedication plaque, sits at the heart of the neighborhood. The Old Greenwich Metro-North station provides its own direct rail connection to Grand Central Terminal.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Before it was Old Greenwich, this stretch of coastline was called Sound Beach. In the late 1800s it operated as a resort destination for New Yorkers who rode the train out to swim and escape the city heat. That history still echoes in the neighborhood's DNA: a walkable commercial avenue, a train station at its center, and a deep, abiding connection to the water. The resort visitors eventually became permanent residents, the cottages became year-round homes, and Sound Beach became Old Greenwich."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Sound Beach Avenue is the village's commercial spine. Back 40 Mercantile stocks curated home goods and gifts. The Village Ewe has been selling yarns and needlework supplies for over fifty years. Images of Old Greenwich gallery showcases local art. Between these independents sit cafes, a wine shop, a florist, and the kind of neighborhood restaurants where the staff knows your order. This is not a manufactured town center; it grew organically over a century, and the storefronts reflect that."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Greenwich Point Park defines the outdoor life here. The 147-acre peninsula extends into Long Island Sound with beaches, tidal pools, hiking trails, and picnic areas reserved exclusively for Greenwich residents. On summer weekends the parking lot fills early. Binney Park, closer to the village center, offers 33 acres of open lawns, a gazebo, and stone bridges over the Horseneck Brook. It was dedicated in 1933 and remains one of the most photographed spots in town. Between the beach, the park, and the network of sidewalks connecting residential streets to the Avenue, Old Greenwich is built for walking."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The housing here trades at a premium. Waterfront properties command prices well above $5 million, and even inland homes on modest lots compete in the $2.5 million to $4 million range. Buyers pay for the complete package: a village with its own identity, a resident-only beach, a dedicated train station, and a school district that ranks among Greenwich's strongest. Old Greenwich does not require a car for daily life, and that walkability is increasingly rare in Fairfield County at any price point."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Sound Beach Avenue hosts over 30 independent shops and restaurants, including Back 40 Mercantile and the 50-year-old Village Ewe",
+    "Binney Park spans 33 acres with stone bridges, a gazebo, and open lawns dedicated since 1933",
+    "Old Greenwich station offers direct Metro-North service to Grand Central Terminal in approximately 48 to 52 minutes",
+    "Tod's Point (Greenwich Point Park) provides 147 acres of resident-only beaches, trails, and tidal pools on a Long Island Sound peninsula",
+    "Walkable village layout connects residential streets to shops, the train station, and the waterfront without requiring a car"
+  ],
+  "housingCharacteristics": "Old Greenwich's housing stock blends coastal New England character with contemporary renovations. Antique capes and shingle-style cottages from the early 1900s sit alongside mid-century colonials and newer construction that fills the lots left by teardowns. Streets closest to the water — particularly along Shore Road, Lucas Point, and the blocks south of Sound Beach Avenue — feature the highest-value properties, where waterfront or water-view siting can push prices well above $5 million.\n\nInland, the grid of residential streets between the Avenue and the Post Road offers colonials, raised ranches, and split-levels on quarter-acre to half-acre lots. These homes typically trade between $2.5 million and $4 million depending on condition, proximity to Binney Park, and walk-to-station convenience. Lot sizes are compact by Greenwich standards, but buyers here prioritize the village lifestyle over acreage.",
+  "marketNotes": "Old Greenwich is one of the most competitive micro-markets in Fairfield County. Inventory is chronically tight because homeowners tend to stay for decades, drawn by the school district, the beach access, and the walkable village. When listings do appear, well-priced homes in the Old Greenwich School catchment attract multiple offers within the first week, particularly during the spring selling season from March through June.\n\nWaterfront and water-view properties operate in their own tier. These homes rarely trade below $5 million and often sell through private networks before reaching the public MLS. For buyers targeting this neighborhood, preparation matters: pre-approval, a clear sense of non-negotiables, and the ability to move quickly separate successful purchasers from those who watch listings come and go.",
+  "locationAccess": "Old Greenwich has its own Metro-North station on the New Haven Line, placing Grand Central Terminal approximately 48 to 52 minutes away depending on the service. The station sits at the foot of Sound Beach Avenue, making it a walk-to-train neighborhood for most residents. Interstate 95 is accessible via Exit 5, connecting Stamford in ten minutes eastbound and the Westchester border in five minutes westbound.\n\nGreenwich Avenue is a ten-minute drive west along the Post Road. Stamford's Harbor Point dining and retail district is equally close heading east. Greenwich Point Park is a five-minute drive south from the village center. The neighborhood's central position within Greenwich, combined with its own rail stop, gives Old Greenwich a self-sufficiency that most Fairfield County neighborhoods cannot match.",
+  "seoTitle": "Old Greenwich CT Real Estate & Homes for Sale",
+  "seoDescription": "Search Old Greenwich, CT homes near Tod's Point beach and Sound Beach Avenue's village shops. View listings and connect with Matt Caiola for a showing.",
+  "faqs": [
+    {
+      "question": "What makes Old Greenwich different from other Greenwich neighborhoods?",
+      "answer": "Old Greenwich operates as a self-contained coastal village with its own train station, a walkable commercial avenue with over 30 shops and restaurants, and exclusive access to Greenwich Point Park's 147-acre beach peninsula. Most residents can walk to the train, the shops, and the park without driving, which creates a lifestyle that is distinct from car-dependent neighborhoods elsewhere in town.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Old Greenwich, CT?",
+      "answer": "Inland single-family homes in Old Greenwich typically trade between $2.5 million and $4 million depending on size, condition, and proximity to the village center. Waterfront and water-view properties along Shore Road and Lucas Point frequently exceed $5 million. Pricing reflects the neighborhood's walkability, school district, resident-only beach access, and chronically low inventory.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How long is the train ride from Old Greenwich to New York City?",
+      "answer": "Old Greenwich has its own Metro-North station on the New Haven Line. Trains reach Grand Central Terminal in approximately 48 to 52 minutes depending on the service. The station is located at the base of Sound Beach Avenue, within walking distance of most homes in the neighborhood, which eliminates the need for station parking for many commuters.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Can anyone visit Greenwich Point Park (Tod's Point)?",
+      "answer": "Greenwich Point Park is restricted to Greenwich residents and their accompanied guests. Residents purchase seasonal beach passes through the town's Parks and Recreation Department. The park encompasses 147 acres with beaches, walking trails, tidal pools, and picnic areas on a peninsula extending into Long Island Sound. This resident-only policy is a significant draw for buyers choosing Old Greenwich.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

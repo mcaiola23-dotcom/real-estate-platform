@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "rowayton",
+  "townSlug": "norwalk",
+  "overview": "Rowayton is a 1.4-square-mile coastal village within Norwalk that functions with the autonomy of a separate town — its own Metro-North station, its own residents-only beach at Bayley Beach, and a commercial center along Rowayton Avenue anchored by Rowayton Seafood and the Rowayton Arts Center. The Five Mile River harbor, Pinkney Park on the waterfront, and a community calendar dense with events from the Rowayton Gardeners and Shakespeare on the Sound sustain a self-contained identity. Median home prices range from $1.2 million to well above $1.5 million.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Rowayton began as an oystering and fishing village. That origin still shapes the place. The Five Mile River — separating Rowayton from Darien — remains a working harbor with slips and moorings for hundreds of boats, and the village's narrow streets still trace the paths that led watermen to the docks. What has changed is the price of admission. Homes that once housed oystermen now trade above $1.5 million, and waterfront estates on the river or with Long Island Sound exposure regularly exceed $3 million. Rowayton is Norwalk's most exclusive neighborhood, and nothing else in the city comes close."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Rowayton Avenue is the village's commercial spine. It runs parallel to the Five Mile River from the Metro-North station at the northern end to Pinkney Park and the harbor at the southern tip. The stretch is deliberately small-scale: Rowayton Seafood at 89 Rowayton Avenue, a seasonal market, a handful of shops. No chain retail. No large-format stores. The Rowayton Arts Center at 145 Rowayton Avenue hosts rotating monthly exhibitions in its Main Gallery and offers classes for children and adults in its studio spaces. Pinkney Park, maintained in part by the Rowayton Gardeners, hosts the weekly Rowayton Farmers' Market on Fridays from May through November."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "The housing stock mirrors the village's evolution. Original cottages from the late 19th and early 20th centuries — remnants of the fishing-village era — have been expanded, gut-renovated, or replaced entirely. Shingle-style homes, updated colonials, and contemporary waterfront builds now dominate. Lot sizes are compact by Fairfield County standards, typically one-tenth to one-third of an acre, a consequence of the village's dense, walkable layout. Condominium options at Barclay's Landing, Five Mile Landing, and Oyster Wharf provide entry points between $500,000 and $900,000. Single-family homes carry a median well above $1.2 million."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The premium buyers pay here is for a specific package: a walkable village center, Bayley Beach reserved for residents of the Sixth Taxing District, a harbor with deep ties to Long Island Sound, a train station within walking distance, and cultural programming — Shakespeare on the Sound at Pinkney Park every June, gallery openings at the Arts Center, the Gardeners' seasonal markets — that rivals towns with ten times the population. Rowayton is bordered by water on three sides. That geography limits growth, constrains inventory, and reinforces the separateness that defines the place."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Rowayton's own Metro-North station places the village within 50 to 55 minutes of Grand Central Terminal by express, walkable from nearly every street in the neighborhood",
+    "Bayley Beach, a 10-acre residents-only shoreline on Long Island Sound, offers a pavilion, picnic grounds, a playground, and lifeguard service from Memorial Day through Labor Day",
+    "Five Mile River harbor supports hundreds of slips and moorings for sailboats, powerboats, kayaks, and paddleboards in a protected harbor with direct Sound access",
+    "Rowayton Arts Center at 145 Rowayton Avenue hosts monthly gallery exhibitions, studio workshops, and community events in a village setting with no chain retail presence",
+    "Pinkney Park anchors the waterfront with Friday farmers' markets, Shakespeare on the Sound summer performances, and sweeping views of the harbor and Long Island Sound"
+  ],
+  "housingCharacteristics": "Rowayton's residential architecture has layered over more than a century of development. Original fishing-village cottages from the late 1800s and early 1900s established the first residential footprint — small-scale structures on narrow lots near the harbor. Most have been substantially renovated or replaced. The current inventory is dominated by shingle-style homes, updated colonials, and contemporary waterfront builds, many designed to maximize views of the Five Mile River or Long Island Sound. Lot sizes are compact, typically one-tenth to one-third of an acre, consistent with the walkable village grid.\n\nCondominium and townhouse complexes — Barclay's Landing, Five Mile Landing, Oyster Wharf, Winthrop House, and Thomas Place — offer entry points between $500,000 and $900,000. The single-family median exceeds $1.2 million and has consistently risen over the past decade. Waterfront homes on the Five Mile River or with direct Sound frontage frequently trade above $3 million. Trophy properties with deep-water dockage and unobstructed water views have listed above $5 million. Buildable land has been substantially consumed for decades, which means new construction typically involves teardown-and-rebuild on existing lots.",
+  "marketNotes": "Rowayton is structurally a low-inventory, high-demand market. The village's 1.4-square-mile footprint is almost entirely developed, and in a typical year, only a few dozen single-family homes change hands. When desirable listings appear — particularly those with water access, harbor views, or walk-to-station proximity — they generate multiple competitive offers. Average days on market run around 25, faster than Norwalk's citywide figure.\n\nThe buyer profile is distinct. Families relocating from Manhattan and Brooklyn dominate, drawn by the combination of a genuine village identity, a private beach at Bayley Beach, and reliable rail service from the Rowayton station. That specificity insulates Rowayton's pricing even when broader Fairfield County markets soften. Over the past decade, Rowayton has consistently outperformed Norwalk's overall median appreciation rate. Condominiums at Barclay's Landing and Five Mile Landing attract downsizers and pied-a-terre buyers who want the village address without single-family maintenance obligations.",
+  "locationAccess": "The Rowayton Metro-North station on the New Haven Line places the village within 50 to 55 minutes of Grand Central Terminal on express service, with local trains arriving in approximately 65 minutes. The station is walkable from most of the neighborhood, making Rowayton one of the strongest walk-to-train communities on the Connecticut coast.\n\nInterstate 95 is accessible within ten minutes via Rowayton Avenue north to the Post Road and then to Exit 12. South Norwalk's SoNo district — the Maritime Aquarium, Washington Street restaurants, galleries — is a seven-minute drive west. Downtown Darien, across the Five Mile River, is roughly the same distance east. Rowayton's peninsular geography means traffic flows through a limited number of entry points, which reduces through traffic and reinforces the quiet residential character. Kayakers and boaters on the Five Mile River reach open Long Island Sound within minutes of leaving the harbor.",
+  "seoTitle": "Rowayton CT Real Estate | Coastal Village Homes",
+  "seoDescription": "Explore Rowayton, Norwalk CT — a coastal village with private beach, harbor, and its own train station. Contact Matt Caiola to preview current listings.",
+  "faqs": [
+    {
+      "question": "Does Rowayton have its own train station?",
+      "answer": "Yes. Rowayton has a dedicated Metro-North station on the New Haven Line, separate from Norwalk's other stations at South Norwalk, East Norwalk, and Merritt 7. Express trains reach Grand Central Terminal in approximately 50 to 55 minutes. The station is walkable from most of the village, and its presence is a significant factor in Rowayton's premium pricing and its appeal to commuters seeking a coastal village lifestyle with direct rail access to Manhattan.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Bayley Beach in Rowayton?",
+      "answer": "Bayley Beach is a 10-acre residents-only beach on Long Island Sound located at 11 Pine Point Road in Rowayton. It features a sandy shoreline, a pavilion with restrooms and seasonal concessions, picnic areas, and a playground. Access requires a beach pass and residency in the Sixth Taxing District, which encompasses Rowayton. The beach offers views of a red-and-white lighthouse roughly a mile offshore and is the village's primary summer gathering place.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Rowayton, Norwalk CT?",
+      "answer": "The median sale price for single-family homes in Rowayton exceeds $1.2 million and frequently surpasses $1.5 million. Condominiums at complexes like Barclay's Landing, Five Mile Landing, and Oyster Wharf provide entry points between $500,000 and $900,000. Waterfront homes on the Five Mile River or with Long Island Sound exposure regularly trade above $3 million. Rowayton's pricing reflects extreme scarcity — a 1.4-square-mile village with a private beach, a dedicated train station, and a walkable harbor district.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

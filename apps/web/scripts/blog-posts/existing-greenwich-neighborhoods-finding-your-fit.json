@@ -1,0 +1,181 @@
+{
+  "title": "Greenwich Neighborhoods: Finding Your Fit",
+  "slug": "greenwich-neighborhoods-finding-your-fit",
+  "category": "community",
+  "author": "Matt Caiola",
+  "publishedAt": "2026-01-28T09:00:00Z",
+  "featuredImage": "visual/stock/Greenwich Avenue.png",
+  "seoTitle": "Greenwich CT Neighborhoods Guide | Matt Caiola",
+  "seoDescription": "An insider's guide to Greenwich neighborhoods — from downtown walkability to Back Country estates. Compare Riverside, Old Greenwich, Cos Cob, and more.",
+  "body": [
+    {
+      "_type": "block",
+      "_key": "gn1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn1s1",
+          "text": "Greenwich is a single town with a $400 million municipal budget, 62,000 residents, and at least a dozen distinct neighborhoods — each with its own housing stock, price range, commute profile, and social character. Choosing the right one determines not just your property value trajectory but your daily reality for years to come. Here's how I break it down for buyers."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn2",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn2s1",
+          "text": "Downtown Greenwich and Mid-Country"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn3s1",
+          "text": "Downtown Greenwich — the area surrounding Greenwich Avenue — offers the closest thing to urban walkability in the town. Restaurants, boutiques, the Greenwich Library, and the Metro-North station are all within a 10-minute walk. Housing here ranges from condos in the $500K-$1.5M range to single-family homes on compact lots starting around $1.8M. Buyers who want to park the car on Friday evening and walk to dinner, the farmers' market, and Saturday morning coffee gravitate here."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn4s1",
+          "text": "Mid-Country sits between the Merritt Parkway and downtown, centered around the North Street and Lake Avenue corridors. This is where Greenwich transitions from village to estate. Lots expand to one, two, and four acres. Homes range from well-maintained 1960s colonials at $2M to fully renovated properties at $5M-$8M. You're a 10-minute drive to Greenwich Avenue and 15 minutes to the train. For families who want space without the isolation of Back Country, Mid-Country consistently delivers."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn5",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn5s1",
+          "text": "Old Greenwich and Riverside"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn6",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn6s1",
+          "text": "Old Greenwich has its own Metro-North station, its own village center along Sound Beach Avenue, and direct access to Greenwich Point (Tod's Point) — the town's premier beach and park. The neighborhood operates with a distinct identity within Greenwich. Housing is predominantly single-family on quarter-acre to half-acre lots, with prices ranging from $1.5M for homes requiring renovation to $4M-plus for waterfront or water-view properties. The Eastern Greenwich Civic Center, Binney Park, and the Perrot Memorial Library anchor community life."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn7",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn7s1",
+          "text": "Riverside, adjacent to Old Greenwich, shares a similar coastal character but with slightly larger lots and a quieter commercial presence. The Riverside train station provides its own Metro-North stop. Buyers here tend to prioritize the walk to the train, proximity to Eastern Middle School, and access to the town's southern beaches. Pricing tracks slightly below Old Greenwich on average, making it attractive for buyers who want the coastal Greenwich experience without the premium that waterfront proximity commands."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn8",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn8s1",
+          "text": "Cos Cob and Byram"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn9",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn9s1",
+          "text": "Cos Cob sits between downtown Greenwich and the Connecticut Turnpike, anchored by its own train station and a small commercial district along East Putnam Avenue. The housing stock is mixed — some waterfront properties along the Mianus River, established colonials on tree-lined streets, and more affordable options compared to the rest of Greenwich. Entry-level single-family homes in Cos Cob start around $900K, making it one of the most accessible entry points into the Greenwich school system."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn10",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn10s1",
+          "text": "Byram, at Greenwich's southwestern edge bordering Port Chester, New York, is the town's most affordable neighborhood. Housing includes a mix of multi-family properties, smaller single-family homes, and condos. It lacks the village charm of Old Greenwich or the estate scale of Back Country, but it provides Greenwich addresses — and Greenwich public schools — at price points starting in the $400K range. If school district access and budget efficiency are the primary criteria, Byram deserves serious consideration."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn11",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn11s1",
+          "text": "Back Country and the Northern Estates"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn12",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn12s1",
+          "text": "North of the Merritt Parkway, Greenwich transforms into a landscape of winding roads, stone walls, and multi-acre parcels. Four-acre zoning minimums define the Back Country, where properties regularly span eight to fifteen acres. Homes here range from $2.5M for older colonials on minimum-zoned lots to $15M-plus for renovated estates with equestrian facilities, guest houses, and preserved woodland views. There is no village center, no train station, no commercial district. Residents drive 15-25 minutes to reach Greenwich Avenue or the nearest Metro-North stop."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gn13",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gn13s1",
+          "text": "The trade-off is privacy and scale that simply doesn't exist elsewhere in the county. If your priority is land, quiet, and the kind of property where your nearest neighbor is a quarter-mile away, Back Country is one of the few neighborhoods in the New York metro area that can deliver that without sacrificing access to top-tier schools and a 50-minute express train to Grand Central. I work with buyers in this segment regularly, and the right match between buyer expectations and specific properties requires detailed local knowledge — not every eight-acre parcel is equal."
+        }
+      ],
+      "markDefs": []
+    }
+  ]
+}

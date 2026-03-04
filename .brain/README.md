@@ -19,5 +19,10 @@ Operational helper:
 Additional operator docs:
 - `LOCAL_RETRIEVAL_STEPS.md` for pulling from GitHub and bootstrapping locally on Windows.
 
+Portal-related docs:
+- `apps/portal/.env.example` — Portal frontend environment variables.
+- `apps/portal/README.md` (if present) — Portal-specific development guide.
+- `portal_crm_integration_suggestions.md` (root) — Portal ↔ CRM integration roadmap.
+
 ## Session Review (2026-02-17)
 - Reviewed during CRM checklist completion session; no scope/architecture/process changes required in this file beyond confirming continued tenant-isolation and shared-package boundaries.

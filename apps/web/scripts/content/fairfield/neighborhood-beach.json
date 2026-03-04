@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "beach",
+  "townSlug": "fairfield",
+  "overview": "Penfield Beach, Jennings Beach, and a network of streets radiating off Fairfield Beach Road define this shoreline neighborhood at the southern edge of town. Since Superstorm Sandy in 2012, more than 200 homes have been elevated to meet FEMA flood guidelines, transforming the streetscape into a distinctive mix of raised coastal construction and original mid-century cottages. South Benson Marina anchors the western end with 600 slips, a fishing pier, and direct access to Long Island Sound.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "b1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "b1s1",
+          "text": "Salt air is not a metaphor here. Fairfield Beach sits directly on Long Island Sound, separated from the rest of town by a flat stretch of marshland and the Metro-North rail corridor. Fairfield Beach Road runs the length of the neighborhood, connecting Jennings Beach on the west to Penfield Beach on the east, with Reef Road cutting north toward the Post Road and downtown. The geography is simple and linear — ocean to the south, town to the north, and a ribbon of residential streets in between."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "b2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "b2s1",
+          "text": "Superstorm Sandy reshaped this neighborhood physically and financially. Hundreds of homes sustained significant damage. The rebuilding wave that followed produced a new architectural layer: elevated structures on pilings, often three stories, designed to FEMA specifications with living space above the flood line. Walk down almost any block south of Reef Road and you will see this pattern — a raised contemporary next to a 1950s ranch still at grade, next to a vacant lot awaiting new construction. The transformation is ongoing. Insurance costs, elevation requirements, and zoning rules remain live considerations for every transaction."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "b3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "b3s1",
+          "text": "Penfield Beach anchors the east side with its pavilion — the Penfield Pavilion hosts weddings and private events with cathedral ceilings and waterfront views — while Jennings Beach, the larger of the two at 27 acres, draws crowds all summer with its broad sand, concession stands, and the adjacent South Benson Marina. The marina is substantial: 600 boat slips, a launch ramp, and a fishing pier that stays active from spring through fall. Firehouse Deli on Reef Road, operating since 1969, is the neighborhood's unofficial commissary."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "b4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "b4s1",
+          "text": "Buyers here are purchasing proximity to the water above all else. The trade-off is flood insurance, elevation compliance, and a housing stock in perpetual transition. For those who want to step outside and be on the sand in three minutes, no other Fairfield neighborhood delivers that literally."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Penfield Beach pavilion and Jennings Beach offer 30+ combined acres of sandy Long Island Sound shoreline",
+    "South Benson Marina provides 600 boat slips, a fishing pier, and a public launch ramp at the neighborhood's western edge",
+    "Over 200 homes elevated to FEMA standards since Superstorm Sandy, creating a distinct coastal architectural character",
+    "Fairfield Beach Road connects the full length of the neighborhood, with Reef Road linking north to downtown and the Fairfield train station",
+    "Resident beach sticker program grants access to Penfield, Jennings, and Southport beaches throughout the season"
+  ],
+  "housingCharacteristics": "The Beach neighborhood's housing stock is mid-transformation. Original construction from the 1940s through 1960s — ranches, Cape Cods, and small colonials on compact lots — sits alongside elevated new builds designed to current FEMA flood zone specifications. Raised homes typically stand on pilings or concrete foundations, with garage-level ground floors and primary living space beginning on the second story. Lot sizes are modest, generally a quarter-acre or less, and density is higher than most Fairfield neighborhoods.\n\nPricing reflects both waterfront proximity and flood exposure. Updated or newly built elevated homes south of Fairfield Beach Road commonly trade between $1.2 million and $2.5 million. Waterfront parcels with direct Sound access or unobstructed views can exceed $4 million. Older, unelevated homes at grade present entry points closer to $500,000 to $900,000, though buyers should factor in the cost of future elevation — typically $175,000 to $300,000 — and annual flood insurance premiums that vary significantly by zone and elevation certificate.",
+  "marketNotes": "Transaction volume in the Beach neighborhood is driven by two distinct buyer pools: those seeking turnkey elevated construction with modern coastal finishes, and investors or renovation-minded buyers acquiring older homes at grade with plans to rebuild. The post-Sandy rebuilding cycle continues to generate inventory as legacy homeowners sell to developers or relocate. New construction commands premiums, particularly homes completed to current FEMA standards with impact-resistant windows, generator hookups, and elevated mechanicals.\n\nFlood insurance remains the critical variable in every purchase analysis. Properties with current elevation certificates and compliant construction secure significantly lower premiums. Buyers should request the elevation certificate and insurance history early in due diligence. Despite the insurance complexity, demand for beach-adjacent homes in Fairfield has remained resilient, with median sale prices in the neighborhood rising approximately 9 percent year over year.",
+  "locationAccess": "Reef Road runs north from the beach area to the Post Road, placing downtown Fairfield and the Fairfield train station roughly one mile away. The Fairfield station on the Metro-North New Haven Line offers express service to Grand Central Terminal in approximately 65 to 70 minutes and local service in 75 to 80 minutes. Fairfield Metro station, located on lower Black Rock Turnpike, is an alternative for riders heading to Stamford or points south.\n\nI-95 is accessible via multiple interchanges along the Post Road corridor. The Merritt Parkway lies roughly three miles north. Jennings Beach and Penfield Beach are both reachable on foot or by bicycle from anywhere in the neighborhood. Downtown Fairfield's shops and restaurants along the Post Road are a short drive or a 15-minute walk from the northern edge of the beach area.",
+  "seoTitle": "Fairfield Beach CT | Coastal Homes & Waterfront Living",
+  "seoDescription": "Discover Fairfield Beach CT with homes along Long Island Sound near Penfield and Jennings beaches. View coastal listings and pricing. Contact us today.",
+  "faqs": [
+    {
+      "question": "What beaches are in the Fairfield Beach neighborhood?",
+      "answer": "The neighborhood sits between two major public beaches. Penfield Beach is a 3.5-acre waterfront property on the eastern end with a pavilion, sailboat racks, and seasonal lockers. Jennings Beach, at 27 acres on the western end, is the larger of the two and includes concession stands, a skate park, and the adjacent South Benson Marina with 600 boat slips. Both beaches require a resident sticker for parking during summer months.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How did Superstorm Sandy affect homes in Fairfield Beach?",
+      "answer": "Superstorm Sandy in October 2012 caused significant damage to hundreds of homes in the beach area. Since then, over 200 homes have been elevated to meet updated FEMA flood zone guidelines, which raised required elevations by one to four feet depending on the specific zone. Homes that sustained damage exceeding 50 percent of assessed value were required to elevate during rebuilding. The ongoing transformation has reshaped the neighborhood's appearance, with raised contemporary construction now standing alongside original mid-century homes.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in Fairfield Beach?",
+      "answer": "Home prices in the Beach neighborhood vary widely based on elevation compliance and proximity to the water. Elevated new construction and fully renovated homes typically trade between $1.2 million and $2.5 million, with waterfront properties exceeding $4 million. Older unelevated homes present entry points between $500,000 and $900,000, though buyers should budget $175,000 to $300,000 for future elevation work. The median sale price in the neighborhood is approximately $1.5 million as of recent data.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Fairfield Beach from the train station?",
+      "answer": "The Fairfield train station on the Metro-North New Haven Line is roughly one mile north of the beach area via Reef Road. Express trains reach Grand Central Terminal in approximately 65 to 70 minutes. The station is walkable from the northern edge of the neighborhood in about 15 minutes, or a short drive with commuter parking available at the station. Fairfield Metro station on lower Black Rock Turnpike is an additional option.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

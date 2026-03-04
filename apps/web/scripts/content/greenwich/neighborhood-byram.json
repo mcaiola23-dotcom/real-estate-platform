@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "byram",
+  "townSlug": "greenwich",
+  "overview": "Byram is Greenwich's southwestern corner, separated from Port Chester, New York, by the Byram River. First settled in 1660 by Thomas Lyon, it remains the most diverse and most affordable neighborhood in town. Byram Shore Park provides beach access, a community pool, and a splash pad on the Long Island Sound waterfront, while a new state-of-the-art elementary school opened in recent years to serve the neighborhood's families.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "by1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "by1s1",
+          "text": "Walk through Byram on a Saturday morning and the difference from the rest of Greenwich is immediate. Sidewalks. Corner delis. Kids on bikes. The streets are compact and connected in a grid pattern rare for this town, where most neighborhoods sprawl along cul-de-sacs and private lanes. Byram has a density and an energy that is distinctly its own — closer to a Westchester village than to the estate districts two miles north."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "by2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "by2s1",
+          "text": "The neighborhood traces its identity to 1660, when Thomas Lyon established one of the earliest settlements along the Byram River. That river still marks the border with Port Chester, and the cross-border relationship shapes daily life. Residents walk across the bridge to Port Chester's restaurant row on North Main Street for Mexican, Peruvian, and Italian restaurants at price points that Greenwich Avenue cannot match. The Byram Neighborhood Association organizes community events and advocates for infrastructure improvements, giving this corner of Greenwich an unusually strong civic voice."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "by3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "by3s1",
+          "text": "Byram Shore Park is the waterfront anchor. The park sits on Long Island Sound and includes a beach, a community swimming pool, a splash pad for younger children, and picnic areas with direct water views. It lacks the scale of Greenwich Point, but its accessibility — no car required for most Byram residents — makes it a genuine neighborhood gathering point from Memorial Day through September."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "by4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "by4s1",
+          "text": "Housing here is the entry point to the Greenwich school system, the Greenwich tax base, and the Greenwich beach pass. That combination drives demand. Capes and ranches from the 1940s and 1950s on quarter-acre lots form the core inventory. Multi-family homes and small apartment buildings are more common here than in any other Greenwich neighborhood. Prices start below $700,000 for a modest home needing work, a figure that would not buy a teardown lot in most of the town's other neighborhoods."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Most affordable entry point to Greenwich public schools, beaches, and resident services",
+    "Byram Shore Park offers a beach, community pool, and splash pad on Long Island Sound",
+    "Walkable grid streets with sidewalks — a rarity in Greenwich's predominantly suburban layout",
+    "Cross-bridge access to Port Chester's diverse dining scene on North Main Street",
+    "New elementary school built to serve the neighborhood's growing family population"
+  ],
+  "housingCharacteristics": "Byram's housing stock is compact and varied. Cape Cod homes and ranches from the post-war era sit on lots of a quarter-acre or less, many with modest square footage by Greenwich standards. Two-family and multi-family properties appear throughout the neighborhood, making Byram unusual within a town where single-family zoning dominates. Newer construction is limited, but renovation activity has increased as buyers discover the value proposition.\n\nPrices in Byram start below $700,000 for homes requiring significant updates — a fraction of the town median. Updated single-family homes on well-maintained lots typically trade between $800,000 and $1.3 million. The range is narrow compared to other Greenwich neighborhoods, which appeals to first-time Greenwich buyers, downsizers, and investors who recognize the long-term value of owning in this school district and tax jurisdiction.",
+  "marketNotes": "Byram operates as a distinct micro-market within Greenwich, driven more by value-oriented buyers than by the luxury dynamics that dominate the rest of town. Inventory turns over more frequently here than in neighborhoods like Belle Haven or Back Country, with a higher volume of transactions in any given quarter. Properties that are well-maintained and move-in ready attract multiple offers, particularly from families prioritizing the Greenwich school system over square footage or lot size.\n\nThe proximity to Port Chester and the Byram River creates a natural boundary that keeps prices below neighboring sections of Greenwich, even when the homes themselves are comparable. Investors purchasing two-family properties have found steady rental demand. The new elementary school and ongoing community investment by the Byram Neighborhood Association have strengthened the neighborhood's trajectory.",
+  "locationAccess": "Byram sits at Greenwich's southwestern edge, with the Byram River forming the border with Port Chester, New York. I-95 is immediately accessible via the West Putnam Avenue corridor, and the Port Chester Metro-North station on the New Haven Line is within walking distance for many Byram residents, providing an alternative to the Greenwich station two miles east. Express trains from Port Chester reach Grand Central Terminal in approximately 40 minutes.\n\nThe Westchester County border means that Byram residents can reach the Cross Westchester Expressway (I-287), the Hutchinson River Parkway, and Westchester County Airport within 15 to 20 minutes. Downtown Greenwich and Greenwich Avenue are a short drive east along the Post Road. The practical result is a location with highway and rail access that exceeds what many higher-priced Greenwich neighborhoods can offer.",
+  "seoTitle": "Byram Greenwich CT | Affordable Homes & Community",
+  "seoDescription": "Browse Byram, Greenwich's most affordable neighborhood with beach access and walkable streets. See homes for sale. Contact Matt Caiola to start your search.",
+  "faqs": [
+    {
+      "question": "Is Byram a good place to buy in Greenwich?",
+      "answer": "Byram offers the most affordable entry point into the Greenwich residential market. Buyers gain access to Greenwich public schools, the town beach pass system, and all municipal services at price points starting below $700,000. The neighborhood has walkable streets, a community beach and pool at Byram Shore Park, and a new elementary school. It is particularly attractive for first-time buyers who want to establish a Greenwich address without the multi-million-dollar commitment required in most other neighborhoods.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the history of Byram in Greenwich?",
+      "answer": "Byram was first settled in 1660 by Thomas Lyon, making it one of the oldest continuously inhabited areas in Greenwich. The neighborhood developed along the Byram River, which forms the border with Port Chester, New York. Its character has been shaped by that cross-border proximity, producing a denser, more walkable neighborhood than is typical in Greenwich. The Byram Neighborhood Association remains active in community advocacy and event programming.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Byram, Greenwich?",
+      "answer": "Byram home prices start below $700,000 for properties needing renovation, making it the most accessible neighborhood in Greenwich by price. Updated single-family homes typically trade between $800,000 and $1.3 million. Two-family and multi-family properties are also available, which is unusual for Greenwich. The price range is significantly below the town's overall median, which generally falls between $2 million and $3 million.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

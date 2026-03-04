@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "clapboard-hill",
+  "townSlug": "new-canaan",
+  "overview": "Clapboard Hill occupies southeast New Canaan along the Darien border, where Clapboard Hill Road winds through heavily wooded one- and two-acre lots lined with antique colonials, mid-century renovations, and newer construction. The neighborhood takes its name from the clapboard siding that defined the area's earliest homes. It sits roughly ten minutes from downtown Elm Street and the New Canaan train station, placing it at the intersection of residential privacy and village convenience.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "ch1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ch1s1",
+          "text": "Clapboard Hill Road is the corridor that organizes this neighborhood. It runs southeast from near the center of town toward the Darien line, curving through mature hardwood canopy and past stone walls that predate the town's suburban era. Side streets branch off into cul-de-sacs and dead-end lanes where the lots open up and the tree cover thickens. The result is a neighborhood that reads as deeply residential — no commercial intrusions, no cut-through traffic, no sidewalks. Homes sit well back from the road on landscaped parcels of one to two-plus acres."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ch2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ch2s1",
+          "text": "The housing stock reflects multiple building eras layered onto large lots. Original antique colonials — some dating to the 18th and early 19th centuries — stand alongside substantial renovations from the 1980s and 1990s and fully new construction from the last two decades. Newer builds tend toward 4,000 to 6,000 square feet with open floor plans, but they borrow the traditional clapboard and shingle vocabulary that gives the neighborhood its visual continuity. Stone walls, circular drives, and detached garages are common throughout."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ch3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ch3s1",
+          "text": "Proximity to Darien gives Clapboard Hill a geographic advantage that other New Canaan neighborhoods lack. The Darien line is minutes away, putting Noroton Heights' shops, the Goodwives Shopping Center, and Darien's Metro-North stations within a short drive. Families here send their children through New Canaan's public school system — typically South Elementary School, Saxe Middle School, and New Canaan High School — while maintaining quick access to the retail and dining options in two towns. Irwin Park, with its 36 acres of rolling lawns, apple orchard, and the Gores Pavilion, sits just north of the neighborhood."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ch4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ch4s1",
+          "text": "Clapboard Hill attracts buyers who want estate-scale land and older-growth tree cover without a 20-minute drive to town. The ten-minute connection to Elm Street means dinner at the Roger Sherman Inn or a weekend morning at Rosie is genuinely accessible. The New Canaan train station is similarly close. This combination — large wooded lots, strong school assignments, and real proximity to a walkable downtown — is the neighborhood's core proposition. It is not the most prestigious address in New Canaan. It is, for many families, the most practical one."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Clapboard Hill Road corridor runs through heavily wooded one- to two-acre lots with antique colonials and newer construction",
+    "South Elementary School, Saxe Middle School, and New Canaan High School — the town's No. 1-ranked district — serve the neighborhood",
+    "Irwin Park's 36 acres of orchards, specimen trees, and the Gores Pavilion by Harvard Five architect Landis Gores sits just north",
+    "Ten-minute drive to Elm Street's restaurants, shops, and the New Canaan Metro-North station",
+    "Darien border location provides additional access to Noroton Heights shopping and Darien's two train stations"
+  ],
+  "housingCharacteristics": "Clapboard Hill's inventory spans three distinct vintages. Antique colonials from the 18th and 19th centuries — many with original wide-plank floors, center chimneys, and low ceilings — occupy some of the neighborhood's most character-rich parcels. Mid-century and late-20th-century homes fill the middle layer, typically four- to five-bedroom colonials on one to 1.5 acres with more conventional layouts. The newest construction, built within the last 15 to 20 years, runs 4,000 to 6,000 square feet and incorporates open kitchens, home offices, and three-season porches while maintaining clapboard and shingle exteriors consistent with the neighborhood's aesthetic.\n\nLot sizes generally range from one to two-plus acres, with heavier tree cover on parcels set back from the main road. Stone walls, circular gravel drives, and detached garages or carriage houses are recurring elements. The overall impression is of a neighborhood that has been built gradually, lot by lot, across two centuries — not subdivided all at once.",
+  "marketNotes": "Clapboard Hill trades primarily between $1.5 million and $3 million, with price variation driven by lot size, construction vintage, and the extent of recent renovation. Fully updated homes on two-acre lots with newer kitchens and bathrooms have reached $2.5 million to $3 million in recent transactions. Unrenovated antique colonials on similar parcels may trade closer to $1.5 million, presenting upside for buyers willing to invest in restoration.\n\nInventory turnover is low — most homeowners stay for a decade or more — which means opportunities appear sporadically. When a well-positioned Clapboard Hill property lists at the right price, it moves within weeks. Buyers comparing this area to Darien's interior neighborhoods will find comparable lot sizes at somewhat lower price points, with the added benefit of New Canaan's school district.",
+  "locationAccess": "Clapboard Hill Road connects to Route 106 and central New Canaan in roughly ten minutes, providing direct access to Elm Street's commercial district and the Metro-North station at the foot of town. The Merritt Parkway is reachable within 15 minutes via Route 106 or Route 124. The Darien border sits at the neighborhood's southeastern edge, placing Noroton Heights' shops, the Goodwives Shopping Center, and Darien's two Metro-North stations on the New Haven Line within a short drive. For commuters who prefer the main-line express trains, Darien station offers 50-minute service to Grand Central Terminal.",
+  "seoTitle": "Clapboard Hill, New Canaan CT | Homes & Neighborhood",
+  "seoDescription": "Clapboard Hill in New Canaan CT: wooded colonial lots near the Darien border, top schools, 10 min to Elm Street. Contact Matt Caiola for available homes.",
+  "faqs": [
+    {
+      "question": "What types of homes are found in Clapboard Hill, New Canaan?",
+      "answer": "Clapboard Hill's housing stock spans antique colonials dating to the 18th century, mid-century four- and five-bedroom homes, and newer construction of 4,000 to 6,000 square feet built within the last two decades. Most homes sit on one to two-plus acres of heavily wooded land along Clapboard Hill Road and its side streets. Stone walls, circular gravel drives, and clapboard or shingle exteriors give the neighborhood its visual identity across all building eras.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Clapboard Hill from downtown New Canaan?",
+      "answer": "Clapboard Hill sits roughly ten minutes by car from Elm Street's restaurants, shops, and the New Canaan Metro-North station. The neighborhood also borders Darien, which puts Noroton Heights' commercial area and Darien's two train stations on the main New Haven Line within minutes. This dual-town proximity is one of the area's distinguishing practical advantages.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the price range for homes in Clapboard Hill?",
+      "answer": "Most Clapboard Hill transactions fall between $1.5 million and $3 million. Fully updated homes on two-acre lots command the upper end of that range, while unrenovated antique colonials on comparable parcels may trade closer to $1.5 million. The neighborhood's location within New Canaan's top-ranked school district and its proximity to downtown support consistent demand and strong price retention across market cycles.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

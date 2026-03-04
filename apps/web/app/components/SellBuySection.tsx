@@ -34,7 +34,7 @@ export default function SellBuySection() {
                         Selling?
                     </h2>
                     <p className="text-stone-200 text-lg mb-8 max-w-sm mx-auto">
-                        Get top dollar with strategic pricing and premium marketing.
+                        Strategic pricing, professional presentation, and skilled negotiation.
                     </p>
                     <span className="inline-block px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-none hover:bg-white/10 transition-colors text-lg">
                         Explore Selling Services
@@ -65,7 +65,7 @@ export default function SellBuySection() {
                         Buying?
                     </h2>
                     <p className="text-stone-200 text-lg mb-8 max-w-sm mx-auto">
-                        Find your dream home with personalized search and expert guidance.
+                        Neighborhood insight, pricing context, and contract-to-close support.
                     </p>
                     <span className="inline-block px-8 py-3 bg-transparent border-2 border-white text-white font-medium rounded-none hover:bg-white/10 transition-colors text-lg">
                         Explore Buying Services

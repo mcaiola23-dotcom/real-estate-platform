@@ -77,12 +77,26 @@ Exit: platform is sellable to teams and brokerages.
 
 ---
 
-## Phase 6 — Optional Growth Products
+## Phase 6 — Growth Products + Portal Integration
 1. Managed marketing service workflows.
 2. Ads/social attribution dashboard tied to CRM outcomes.
-3. Listing portal/network strategy validation and pilot.
+3. **Listing portal frontend integrated** into monorepo as `apps/portal` (completed — hybrid merge, Python backend stays standalone).
+4. Portal ↔ CRM lead handoff (inquiry forms route to CRM pipeline).
+5. Shared design tokens (`packages/design-tokens`) for cross-app visual consistency.
 
-Exit: additional revenue channels beyond core SaaS subscription.
+Exit: additional revenue channels beyond core SaaS subscription; portal frontend operational in monorepo.
+
+---
+
+## Phase 7 — Portal-Specific Milestones
+1. Vector database for AI-powered semantic listing search.
+2. Multi-turn conversational AI search refinement.
+3. Live IDX data sync (RESO Web API integration).
+4. Portal user accounts with saved searches and alert subscriptions.
+5. Agent inquiry routing — portal leads flow into CRM via shared event contracts.
+6. Neighborhood intelligence and school data enrichment.
+
+Exit: portal is a fully operational consumer product with live data and AI search.
 
 ---
 

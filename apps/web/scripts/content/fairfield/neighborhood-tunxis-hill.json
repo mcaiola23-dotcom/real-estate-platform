@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "tunxis-hill",
+  "townSlug": "fairfield",
+  "overview": "Tunxis Hill occupies the elevated southwestern corner of Fairfield, where the terrain rises toward the Trumbull border and the 28-acre Tunxis Hill Park serves as the neighborhood's recreational anchor. McKinley Elementary School draws families to these tree-lined blocks of Cape Cods and Colonial Revivals. The Drew Park Community Garden on Warde Terrace adds a distinctly communal texture uncommon in Fairfield's more manicured sections.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "th1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "th1s1",
+          "text": "Price is what gets buyers through the door. Tunxis Hill consistently offers the lowest entry point into Fairfield's public school system, with Cape Cods and bungalows from the early 1900s trading between $400,000 and $600,000. But affordability alone does not explain why people stay. The neighborhood has a texture — garden plots at Drew Park, Little League games at Tunxis Hill Park, block-by-block familiarity — that converts first-time buyers into long-term residents."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "th2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "th2s1",
+          "text": "The housing stock is classic New England suburban. Colonial Revivals line nearly every street, most dating from the early to mid-20th century, typically three or four bedrooms on quarter-acre lots. Condo complexes built in the 1970s provide additional density along the neighborhood's main corridors. Lots are smaller here than in Greenfield Hill or Southport, which is precisely why pricing stays accessible. The trade-off is scale, not quality — the bones are good, the schools are strong, and the infrastructure works."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "th3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "th3s1",
+          "text": "Tunxis Hill Park anchors the southwest corner along Melville Avenue. Twenty-eight acres of baseball diamonds, batting cages, soccer fields, tennis courts, and six pickleball courts make it one of Fairfield's most actively programmed parks. The playground draws young families on weekends. Little League and Babe Ruth seasons fill the diamond from April through July. There is nothing ornamental about it — this is a park built for use, and it shows."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "th4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "th4s1",
+          "text": "Kids attend McKinley Elementary, then Tomlinson Middle School, then Fairfield Warde High School — a pipeline that earns A-range ratings from Niche across all three levels. The neighborhood sits north of I-95, which means highway access is fast but the interstate noise stays at a distance. Fairfield Metro station and the original Fairfield station are both reachable within a short drive, putting Grand Central Terminal roughly 65 to 70 minutes away by express train. Anyone who needs Fairfield schools, a working park, and a price below $600,000 will find that Tunxis Hill is where the math works."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Tunxis Hill Park spans 28 acres with baseball fields, batting cages, soccer pitches, tennis, and six pickleball courts",
+    "Cape Cods and bungalows from the early 1900s start between $400,000 and $600,000 — Fairfield's most accessible entry point",
+    "McKinley Elementary earns an A-minus from Niche, feeding into the Warde High School track",
+    "Drew Park Community Garden provides 46 raised-bed plots for Fairfield residents at $10 to $25 per season",
+    "Elevated terrain near the Trumbull border offers higher ground and mature tree canopy throughout the neighborhood"
+  ],
+  "housingCharacteristics": "The dominant housing type in Tunxis Hill is the Colonial Revival — three to four bedrooms, built between the 1920s and 1960s, on lots that typically run a quarter-acre to a third of an acre. Cape Cods and modest bungalows from the early 1900s represent the oldest stock, many renovated with updated systems while retaining original hardwood floors and period details. Scattered condo complexes from the 1970s add rental and entry-level ownership inventory, with units pricing between $250,000 and $450,000.\n\nSingle-family Colonial Revivals in updated condition trade between $600,000 and $800,000. The smaller Capes and bungalows fall in the $400,000 to $600,000 range. Lot sizes are the key differentiator from other Fairfield neighborhoods — they are compact, which compresses prices but also means lower property taxes relative to the town's larger-lot sections. The median sale price over the past twelve months has hovered around $545,000.",
+  "marketNotes": "Tunxis Hill functions as Fairfield's value corridor. First-time buyers, young families relocating from Bridgeport or Stratford, and investors seeking Fairfield-district rental income all compete in this price band. Inventory turns over reliably, with homes under $600,000 generating the most activity and frequently attracting multiple offers when properly priced and presented.\n\nThe condo segment sees consistent demand from downsizers and single purchasers seeking Fairfield's tax base and school reputation at the lowest possible cost. Transaction volume tends to mirror the broader Fairfield market cycle, though the entry-level price point insulates Tunxis Hill from the sharper swings that affect the town's luxury tier. Properties on elevated lots near the Trumbull border sometimes carry a modest premium for their topography and tree cover.",
+  "locationAccess": "Tunxis Hill sits in Fairfield's southwestern quadrant, north of I-95 and west of Black Rock Turnpike. The I-95 interchange at Commerce Drive provides direct highway access for drivers heading toward Bridgeport, New Haven, or Stamford. The Merritt Parkway is reachable within five to ten minutes via Route 59 or local connector roads.\n\nFor rail commuters, both Fairfield Metro station and the downtown Fairfield station are a short drive from the neighborhood. Express trains on the Metro-North New Haven Line reach Grand Central Terminal in approximately 65 to 70 minutes. Tunxis Hill Road itself runs north toward the Trumbull border, connecting to Route 127 and Trumbull's commercial centers. The Post Road and Fairfield's downtown restaurants and shops are roughly three miles south.",
+  "seoTitle": "Tunxis Hill Fairfield CT | Affordable Homes & Parks",
+  "seoDescription": "Discover Tunxis Hill in Fairfield CT — affordable homes, a 28-acre park, and top-rated schools. Browse listings and pricing. Contact Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What makes Tunxis Hill more affordable than other Fairfield neighborhoods?",
+      "answer": "Tunxis Hill's smaller lot sizes — typically a quarter-acre to a third of an acre — are the primary factor. The homes themselves are well-built Colonial Revivals, Cape Cods, and bungalows, but compact lots mean lower land cost and correspondingly lower property taxes. Single-family homes start around $400,000 for smaller Capes, with most updated Colonials trading between $600,000 and $800,000, well below the medians in Southport, Greenfield Hill, or the beach neighborhoods.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is Tunxis Hill Park?",
+      "answer": "Tunxis Hill Park is a 28-acre municipal park located on Melville Avenue in the southwest corner of the neighborhood. It includes baseball diamonds, batting cages, a children's playground, soccer fields, tennis courts, and six pickleball courts. The park hosts Little League, Babe Ruth baseball, and recreational leagues throughout the spring and summer and is one of the most actively used parks in Fairfield's recreation system.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What schools serve children in Tunxis Hill?",
+      "answer": "Children in Tunxis Hill typically attend McKinley Elementary School for grades K through 5, then advance to Tomlinson Middle School and Fairfield Warde High School. All three schools earn A-range ratings from Niche. McKinley Elementary has approximately 470 students and a student-teacher ratio of 12 to 1. Fairfield Warde High School scores an A-plus, making the full K-12 track one of the stronger public school pipelines in Fairfield County.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

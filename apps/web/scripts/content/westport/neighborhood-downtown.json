@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "downtown",
+  "townSlug": "westport",
+  "overview": "Downtown Westport lines both banks of the Saugatuck River where Main Street meets the Post Road, concentrating the town's best restaurants, retail, and cultural institutions within a compact walkable grid. The Westport Country Playhouse has staged productions here since 1931. Bedford Square anchors the newer commercial core with Anthropologie, Spotted Horse Tavern, and a roster of independent boutiques. This is the civic and commercial heart of one of Connecticut's wealthiest towns.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Main Street runs south from the Post Road to the river, and nearly everything that defines Westport's public identity lines up along it. The Westport Country Playhouse, producing theater since 1931, sits on the east side. Levitt Pavilion, the open-air amphitheater renovated in 2014 with a modern stage and professional-grade sound, occupies the riverbank and hosts free summer performances that draw thousands. Between them: independent shops, galleries, restaurants that turn over tables three times on a Saturday night, and the kind of street life that most Connecticut towns have spent decades trying to manufacture."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Bedford Square reshaped the commercial landscape when it opened in the 2010s. The development blends historic architecture with new construction along Church Lane, housing retailers like Serena & Lily, J. Crew, and Theory alongside local restaurants including Emmy Squared and Pink Sumo. Spotted Horse Tavern operates from the relocated 1808 Sherwood House, a building physically moved a few feet during construction to preserve it. The result is a town center that balances national brands with independent operators, and old buildings with new ones, without losing its identity."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Living downtown means living above or adjacent to the action. Residential options range from condominiums in converted commercial buildings to colonials and Victorians on the tree-lined streets between Main Street and Kings Highway. The Saugatuck neighborhood, immediately east of the river, adds single-family homes with water views and direct access to the Westport Metro-North station on Riverside Avenue. The Mill, a luxury residential development on the river, introduced high-end condo inventory starting above $1.3 million. Bankside House pushed the ceiling higher, with units trading between $2.6 million and $4.75 million."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "The Kings Highway North Historic District, a few blocks from Main Street, preserves colonial and Victorian structures that trace Westport's architectural evolution from its earliest settlement through the early twentieth century. Children in the downtown area are typically zoned for Kings Highway or Saugatuck Elementary School, both feeding into Bedford Middle School and Staples High School. The density, the walkability, the cultural programming, and the train station all converge here. No other Westport neighborhood offers that combination."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Live theater at the Playhouse since 1931 and free outdoor concerts at Levitt Pavilion each summer on the Saugatuck River",
+    "Bedford Square blends the 1808 Sherwood House with modern retail including Serena & Lily, Theory, and Emmy Squared",
+    "Metro-North's Westport station on Riverside Avenue puts Grand Central Terminal roughly 60 minutes away by express train",
+    "Luxury condominiums at The Mill and Bankside House offer riverfront living from $1.3 million to above $4.7 million",
+    "Kings Highway North Historic District preserves colonial and Victorian architecture within walking distance of Main Street"
+  ],
+  "housingCharacteristics": "Downtown Westport's housing stock is the most varied in town. The streets radiating from Main Street and the Post Road hold colonials, Cape Cods, and Victorians dating from the late 1800s through the mid-twentieth century, many on quarter-acre lots with mature landscaping. Renovations are common; original facades frequently conceal modernized interiors. Single-family homes in the downtown core typically trade between $1.6 million and $4 million depending on proximity to Main Street, condition, and lot size.\n\nThe condominium market adds a dimension that other Westport neighborhoods lack. The Mill introduced luxury units along the Saugatuck River starting above $1.3 million for two-bedroom configurations. Bankside House pushed further upmarket with units between $2.6 million and $4.75 million. Smaller condo and townhouse developments fill the range below $1 million, offering a genuine entry point into the Westport market and the school system. The Gables of Westport, a collection of eight townhomes and five flats near the train station, represents newer attached-home inventory.",
+  "marketNotes": "Downtown Westport attracts two distinct buyer profiles. The first is the commuter who prioritizes walk-to-train convenience and wants to be within the cultural and dining orbit of Main Street. The second is the downsizer moving from a larger Westport property who wants to stay in town without maintaining acreage. Both profiles compete for a limited supply of condominiums and in-town single-family homes.\n\nCondos in particular have become a pressure point. Inventory is thin, and new construction has not kept pace with demand from buyers who want lock-and-leave convenience at Westport price points. Single-family homes in the Kings Highway and Saugatuck sections move quickly when priced accurately, especially those within a ten-minute walk of the station. Spring remains the most competitive season, but the downtown market sustains activity year-round because of its location advantages.",
+  "locationAccess": "The Westport Metro-North station sits on Riverside Avenue at the eastern edge of downtown, placing Grand Central Terminal approximately 60 minutes away by express and 70 minutes by local service. Trains run roughly every 30 minutes during peak hours. I-95 is accessible via Exit 17 at the Saugatuck Avenue interchange, a two-minute drive from Main Street, connecting Stamford in fifteen minutes and Norwalk in ten.\n\nCompo Beach and Longshore Club Park are a five-minute drive south on Compo Road. The Merritt Parkway interchange is accessible in seven minutes via Route 57 north. Westport's position midway between Stamford and Bridgeport on the I-95 corridor gives downtown residents direct highway access in both directions. The Post Road (Route 1) provides a surface-street alternative running the length of the Gold Coast. Walking and biking to shops, restaurants, and the station are practical for most downtown residents, a rarity in Fairfield County.",
+  "seoTitle": "Downtown Westport CT Homes & Condos for Sale",
+  "seoDescription": "Browse downtown Westport, CT homes and condos near Main Street and the Metro-North station. Contact Matt Caiola to tour listings in Westport's town center.",
+  "faqs": [
+    {
+      "question": "What is the train commute from downtown Westport to New York City?",
+      "answer": "The Westport Metro-North station on Riverside Avenue provides service on the New Haven Line with express trains reaching Grand Central Terminal in approximately 60 minutes and local trains in roughly 70 minutes. Trains run about every 30 minutes during peak commuting hours. The station has over 1,400 parking spaces, but many downtown residents walk or bike to the platform, eliminating the need for a station parking permit entirely.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Are there condominiums for sale in downtown Westport?",
+      "answer": "Yes, downtown Westport has a growing condominium market. The Mill offers luxury riverfront units starting above $1.3 million. Bankside House features higher-end units between $2.6 million and $4.75 million. Smaller condo and townhouse developments provide entry points below $1 million. The Gables of Westport adds eight townhomes and five flats near the train station. Condo inventory remains tight relative to demand, particularly from commuters and downsizers seeking walk-to-town convenience.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What shops and restaurants are on Main Street in Westport?",
+      "answer": "Main Street and the adjacent Bedford Square host a mix of national retailers and independent businesses. Bedford Square tenants include Anthropologie, Serena & Lily, J. Crew, and Theory alongside restaurants like Spotted Horse Tavern, Emmy Squared, and Pink Sumo. Along Main Street and the surrounding blocks, 190 Main Bar & Restaurant, Terrain Cafe, Sakura, and Little Kitchen serve a range of cuisines. The Westport Country Playhouse and Levitt Pavilion add performing arts within walking distance of the dining district.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

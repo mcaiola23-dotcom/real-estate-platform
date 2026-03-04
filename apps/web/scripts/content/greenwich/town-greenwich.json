@@ -1,0 +1,116 @@
+{
+  "type": "town",
+  "slug": "greenwich",
+  "overviewShort": "Greenwich spans nearly 50 square miles from the Long Island Sound waterfront to the wooded back country north of the Merritt Parkway. The town's 63,000 residents live across distinct neighborhoods - each with its own identity, price point, and proximity to the water. Whether you are looking at a waterfront estate in Belle Haven, a colonial on two acres in the back country, or a condo steps from Greenwich Avenue, the range here is wider than any other Fairfield County town.",
+  "overviewLong": [
+    {
+      "_type": "block",
+      "_key": "ol1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol1s1",
+          "text": "Greenwich sits at the southwestern tip of Connecticut, bordered by Stamford to the east, Westchester County to the west, and Long Island Sound to the south. That geographic position has shaped its character for over three centuries. It is close enough to Manhattan for a daily commute - express trains from Greenwich station reach Grand Central in roughly 47 minutes - yet large enough that parts of the back country are genuinely rural, with two-to-four-acre zoning, stone walls, and stretches of road with no sidewalks or streetlights."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol2s1",
+          "text": "Greenwich Avenue is the center of gravity for daily life in town. The Avenue runs north from the Post Road toward the Merritt Parkway and is lined with a mix of national brands, local boutiques, and restaurants ranging from Meli-Melo and Fjord Fish Market to newer arrivals on lower Greenwich Avenue. The Bruce Museum, a short walk south of the Avenue near Greenwich Harbor, anchors the cultural scene with its art and science exhibitions. Roger Sherman Baldwin Park and the Delamar Hotel along Steamboat Road give the waterfront district its own draw."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol3s1",
+          "text": "Architecturally, Greenwich covers an enormous range. Downtown and the waterfront neighborhoods offer condominiums and townhouses. Cos Cob, Old Greenwich, and Riverside have compact village centers with single-family homes on quarter-acre to half-acre lots. Move north into the back country and Stanwich, and the lots expand to two, four, even ten acres with center-hall colonials, shingle-style estates, and converted farmhouses set behind long driveways."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol4s1",
+          "text": "The school system is a primary draw. Greenwich High School consistently ranks among the top public high schools in Connecticut, and the town's eleven elementary schools each serve specific neighborhoods, which means school assignment often factors directly into the home search. Private school options include Brunswick, Greenwich Academy, and Whitby School."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol5",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol5s1",
+          "text": "Greenwich Point Park - locals call it Tod's Point - is the town's crown jewel for outdoor recreation: 147 acres of beach, walking trails, and picnic areas on a peninsula jutting into the Sound, open exclusively to residents and their guests. The Audubon Center in the back country offers 686 acres of trails and nature programming. Between those two bookends, the town maintains over 30 parks, a municipal golf course, and extensive youth sports infrastructure."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "lifestyle": "Greenwich runs on four Metro-North stations: Greenwich, Cos Cob, Riverside, and Old Greenwich, all on the New Haven Line. Express service from Greenwich station puts you at Grand Central in about 47 minutes; locals run 55 to 60. Most commuters drive to their nearest station, and parking permits are managed by the town.\n\nThe dining and shopping scene centers on Greenwich Avenue but extends into the village centers. Old Greenwich has Sound Beach Avenue with its own cluster of shops and restaurants. Cos Cob has a small commercial strip along East Putnam Avenue. Riverside offers cafes and boutiques along its stretch of the Post Road. You are never far from daily essentials in any of the southern neighborhoods.\n\nWeekends in Greenwich revolve around the water and the outdoors. Residents with beach passes spend summer days at Tod's Point. Sailing is accessible through multiple yacht clubs. The back country neighborhoods attract equestrians and trail riders. The Bruce Museum, Greenwich Library, and a steady calendar of community events - including the Greenwich Wine + Food Festival and the Holiday Stroll on the Avenue - keep the social calendar full year-round.",
+  "marketNotes": "Greenwich is the highest-profile residential market in Fairfield County. Active listings range from condominiums starting near $500,000 to waterfront and back country estates above $20 million. The median sale price typically runs between $2 million and $3 million, though that number masks a wide spread across neighborhoods. Belle Haven and waterfront Riverside regularly trade in the $5 million to $15 million range. Back country properties with four-plus acres command premiums based on land value alone. Downtown condos and Byram homes offer the most accessible entry points.\n\nThe market is seasonal, with inventory building from March through June and activity slowing after Labor Day. Well-priced homes in the most desirable school districts - particularly those feeding into North Street School, Old Greenwich School, and Riverside School - tend to move quickly. Overpriced listings sit, regardless of the neighborhood.\n\nFor sellers, presentation matters more here than in most Fairfield County markets. Greenwich buyers are sophisticated, often comparing against Manhattan and Westchester options simultaneously. Accurate pricing, professional staging, and strategic timing are the difference between a clean sale and months of price reductions.",
+  "highlights": [
+    "Four Metro-North stations on the New Haven Line with express service to Grand Central in roughly 47 minutes",
+    "Greenwich Point Park (Tod's Point) offers 147 acres of beach and trails, exclusively for residents",
+    "Greenwich Avenue provides over a mile of shops, restaurants, and cultural institutions including the Bruce Museum",
+    "Home styles range from downtown condominiums to multi-acre back country estates with four-plus acre zoning",
+    "Greenwich High School ranks among the top public high schools in Connecticut",
+    "The Audubon Center preserves 686 acres of trails and wildlife habitat in the back country",
+    "Neighborhood variety spans from the gated waterfront of Belle Haven to the village character of Old Greenwich and Cos Cob"
+  ],
+  "seoTitle": "Greenwich CT Real Estate | Homes & Neighborhood Guide",
+  "seoDescription": "Explore Greenwich, Connecticut neighborhoods from waterfront estates to back country acreage. Browse homes, schools, and commute info. Contact Matt Caiola.",
+  "faqs": [
+    {
+      "question": "How long is the commute from Greenwich to New York City?",
+      "answer": "Metro-North express trains from Greenwich station reach Grand Central Terminal in approximately 47 minutes. Local service takes 55 to 60 minutes. Greenwich has four stations on the New Haven Line - Greenwich, Cos Cob, Riverside, and Old Greenwich - so most residents are within a short drive of a platform.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are the main neighborhoods in Greenwich, CT?",
+      "answer": "Greenwich includes nine distinct neighborhoods: Back Country (large estate lots north of the Merritt), Belle Haven (gated waterfront community), Byram (more affordable, bordering Port Chester NY), Cos Cob (village center with its own train station), Downtown Greenwich (walkable Greenwich Avenue area), Mianus (residential pocket near the Mianus River), Old Greenwich (coastal village with Tod's Point beach), Riverside (waterfront homes with its own station), and Stanwich (northern estates near Stanwich Club).",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are Greenwich CT home prices?",
+      "answer": "Greenwich home prices span a wide range depending on the neighborhood. Downtown condominiums start near $500,000. Single-family homes in Cos Cob and Byram often begin in the $800,000 to $1.5 million range. Old Greenwich and Riverside homes typically trade between $1.5 million and $5 million. Waterfront estates in Belle Haven and large back country properties can exceed $10 million to $20 million.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Are Greenwich public schools highly ranked?",
+      "answer": "Yes. Greenwich Public Schools consistently rank among the best in Connecticut. The district includes eleven elementary schools, three middle schools, and Greenwich High School. School assignment is neighborhood-based, which means the specific address you purchase determines your child's school. Popular school districts like North Street, Old Greenwich, and Riverside often influence buying decisions.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Can non-residents access Greenwich beaches?",
+      "answer": "Greenwich Point Park (Tod's Point), the town's main beach and recreation area, is restricted to Greenwich residents and their guests. Residents purchase seasonal beach passes through the Parks and Recreation Department. Byram Shore and Island Beach are smaller public access points. This resident-only beach policy is one of the features that distinguishes Greenwich from neighboring towns.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

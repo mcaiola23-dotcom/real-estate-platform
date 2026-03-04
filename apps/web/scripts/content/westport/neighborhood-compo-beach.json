@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "compo-beach",
+  "townSlug": "westport",
+  "overview": "Compo Beach is Westport's coastal anchor, a neighborhood defined by the 29-acre town beach on Long Island Sound and the 169-acre Longshore Club Park just up Compo Road South. The Saugatuck River borders its eastern edge, and Sherwood Mill Pond sits to the west. Streets like Bluewater Hill and Minute Man Hill hold some of the highest land values in Fairfield County.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "A century ago the houses near Compo Beach were seasonal bungalows, small wood-frame structures built for families who wanted a summer by the Sound. Those bungalows are gone. In their place stand year-round residences on quarter-acre and tenth-acre lots, many of them rebuilt from the foundation up since the early 2000s. The proximity to the water has not changed, but the investment has. This is a neighborhood where a short walk to the surf commands a seven-figure premium."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "Longshore Club Park is the other gravitational center. Owned by the Town of Westport since the 1960s, the 169-acre property includes an 18-hole golf course, nine Har-Tru tennis courts, two swimming pools, a sailing school that has operated for decades, and a pavilion overlooking the Sound. Before it was a town park, Longshore was a private club frequented by F. Scott and Zelda Fitzgerald and their circle. That legacy of waterfront leisure persists, but now it belongs to every Westport resident with a membership."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "The neighborhood's geography includes several distinct pockets. Compo Mill Cove is a small enclave of roughly a dozen homes with direct waterfront on the cove. Old Mill Beach offers a quieter shoreline alternative to the main beach. Hall Island and the streets south of Compo Road include homes with private docks along the Saugatuck River. Each pocket has its own character, but all share the same defining trait: the water is never more than a few blocks away."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Children in the Compo Beach area attend Greens Farms Elementary School and Bedford Middle School before joining all of Westport at Staples High School. The Ned Dimes Marina, adjacent to the beach, serves boaters year-round. Compo Beach itself charges $45 for weekday parking and $70 on weekends from May through September, but residents who live within walking distance rarely need a parking pass at all."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "29-acre Compo Beach with boardwalk, sand volleyball courts, playground, and concession stand directly on Long Island Sound",
+    "The 169-acre Longshore Club Park includes an 18-hole golf course, Har-Tru tennis courts, two pools, and one of Connecticut's oldest sailing schools",
+    "Waterfront home sites along the Saugatuck River, Compo Cove, and Old Mill Beach include properties with private docks",
+    "Greens Farms Elementary School serves the neighborhood, feeding into Bedford Middle School and Staples High School",
+    "Located roughly two miles south of I-95 Exit 17 with direct access via Compo Road and Route 136"
+  ],
+  "housingCharacteristics": "The housing stock in Compo Beach divides along a clear axis: proximity to the water. Streets closest to the shoreline were once lined with seasonal bungalows and now hold year-round homes on compact lots, often a quarter-acre or less. These properties have been heavily renovated or rebuilt, with contemporary shingle-style construction, coastal colonials, and modern farmhouse designs replacing the original structures. Waterfront and water-view homes on Compo Beach Road, Bluewater Hill, and Minute Man Hill trade at significant premiums, with recent sales exceeding $5 million for direct-water siting.\n\nFarther inland along Compo Road South and the streets between Longshore Club Park and the Post Road, the lots widen to a third-acre and half-acre. Colonial Revivals and Cape Cods from the 1950s and 1960s dominate, though many have been expanded or modernized. These homes generally trade between $1.5 million and $3 million depending on condition and lot size. Ranch-style homes from the mid-century era also appear, typically representing the lower end of the price spectrum for the neighborhood.",
+  "marketNotes": "Compo Beach is one of Westport's most supply-constrained neighborhoods. Homeowners stay for decades, drawn by the beach access, the Longshore amenities, and the waterfront lifestyle that no other part of town replicates. When inventory does appear, well-located properties attract intense buyer interest. The median sale price in the Compo area has risen roughly 17% over the past twelve months, and waterfront listings frequently sell through off-market channels before reaching the public MLS.\n\nBuyers targeting this neighborhood should expect competition, particularly for anything south of Compo Road with water views. Pre-approval and the ability to close on an accelerated timeline are practical necessities. Properties north of the beach, closer to the Post Road, offer a more accessible entry point while keeping Longshore and the shoreline within a short walk or bike ride.",
+  "locationAccess": "Compo Beach sits roughly two miles south of I-95, accessible via Exit 17 and Compo Road (Route 136). The Westport Metro-North station on Saugatuck Avenue is approximately a seven-minute drive, with express trains reaching Grand Central Terminal in about 60 minutes and local service running approximately 70 minutes. The Greens Farms station, slightly farther west, offers an additional rail option.\n\nDowntown Westport's Main Street shopping and dining district is a five-minute drive north along Compo Road South. Sherwood Island State Park borders the neighborhood to the west, adding 235 acres of public beaches and trails. Norwalk is ten minutes east on I-95, and Stamford is roughly twenty minutes in the same direction. The neighborhood's position between the shoreline and the interstate makes it one of the better-connected coastal areas in lower Fairfield County.",
+  "seoTitle": "Compo Beach, Westport CT Homes | Waterfront Living",
+  "seoDescription": "Explore Compo Beach homes in Westport, CT near Longshore Club Park and Long Island Sound. Browse listings and schedule a showing with Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What is Longshore Club Park and who can use it?",
+      "answer": "Longshore Club Park is a 169-acre town-owned recreational facility on Compo Road South in Westport. It includes an 18-hole golf course, nine Har-Tru tennis courts, two swimming pools, a wading pool, a sailing school, and a pavilion with Sound views. Westport residents can purchase annual memberships through the Parks and Recreation Department. The park was once a private club before the town acquired it in the 1960s.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices near Compo Beach in Westport?",
+      "answer": "Home prices near Compo Beach vary significantly based on water proximity. Waterfront and water-view properties on streets like Bluewater Hill and Compo Beach Road can exceed $5 million, with recent direct-waterfront sales reaching above $6 million. Inland homes between Longshore Club Park and the Post Road typically trade between $1.5 million and $3 million depending on lot size and renovation status. The median sale price in the broader Compo area is approximately $1.9 million.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Which schools serve the Compo Beach neighborhood?",
+      "answer": "Children in the Compo Beach area are zoned for Greens Farms Elementary School for grades K through 5 and Bedford Middle School for grades 6 through 8. All Westport students attend Staples High School for grades 9 through 12. Westport's public school system is consistently ranked among the top districts in Connecticut, and the Greens Farms Elementary catchment is a significant draw for families purchasing in this part of town.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Is Compo Beach open to the public or restricted to residents?",
+      "answer": "Compo Beach is a town-owned facility open to Westport residents and available to non-residents through daily parking passes on a limited basis. From May through September, the town caps daily passes at 125 per day, with fees of $45 on weekdays and $70 on weekends and holidays. The beach spans 29 acres with a boardwalk, playground, sand volleyball courts, concession stand, and access to the adjacent Ned Dimes Marina.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

@@ -1,0 +1,73 @@
+{
+  "_createdAt": "2026-01-06T17:41:08Z",
+  "_id": "534af9dd-594d-4e67-b6f2-06f887f24b50",
+  "_rev": "mB2cUx9aVkdRk2GqAC4plz",
+  "_type": "town",
+  "_updatedAt": "2026-02-11T17:59:42Z",
+  "center": {
+    "_type": "geopoint",
+    "lat": 41.1954,
+    "lng": -73.4379
+  },
+  "highlights": [
+    "Weir Farm National Historical Park - a rare National Park dedicated to American art",
+    "A spacious, wooded setting with a calm and private day-to-day lifestyle",
+    "Metro-North commuter rail access on the Danbury Branch for NYC commuting",
+    "Primarily single-family living with an emphasis on privacy and outdoor space",
+    "Wilton Center as a friendly town hub for errands, dining, and community life",
+    "Strong fit for buyers who want breathing room while keeping Fairfield County access practical"
+  ],
+  "lastReviewedAt": "2026-01-06T17:41:00.000Z",
+  "lifestyle": "Wilton’s lifestyle is outdoors-forward and calm. Daily life tends to revolve around home, trails, and a quieter routine, with Wilton Center providing a simple town hub for errands and dining.\n\nFor commuting, Wilton has Metro-North access on the Danbury Branch. Wilton station is on the Danbury Branch; the MTA notes one ticket machine (in the shelter on the right of the station building) and no ticket office.\n\nWilton is also close to some of the region’s best open-space amenities. Weir Farm National Historical Park is a standout: the National Park Service describes it as a “National Park for Art,” and notes the park grounds are open daily sunrise to sunset year-round (with leashed dogs welcome). Wilton fits buyers who want a quieter Fairfield County lifestyle with meaningful outdoor time built in.",
+  "marketNotes": "Wilton is primarily a single-family market, and value drivers often center on land, privacy, and neighborhood feel. Buyers are usually trading immediate walkability for more space and a calmer home environment.\n\nMy approach is to help clients make that trade intentionally. With my finance background, I’m focused on pricing discipline and the true local comparables. With investor experience, I’m also looking at the practical side: lot usability, long-term maintenance considerations, and how the home will function for your routine.\n\nFor sellers, Wilton typically performs best when the lifestyle story is clear—privacy, outdoor access, and a quieter pace—and when the home is positioned and priced in a way that feels straightforward and trustworthy to buyers.",
+  "name": "Wilton",
+  "overviewLong": [
+    {
+      "_key": "4c4ee1e021cb",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "ec58213de58f",
+          "_type": "span",
+          "marks": [],
+          "text": "Wilton is one of the towns I recommend for buyers who want space, privacy, and a calmer day-to-day rhythm. It’s wooded, residential, and intentionally low-density in feel—more “home base” than destination."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "b1c37a1a1adf",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "793c00780bcf",
+          "_type": "span",
+          "marks": [],
+          "text": "What’s important to understand is that Wilton isn’t trying to compete with the coastal towns on shoreline lifestyle. Its strengths are different: trails, open space, and a quieter routine that still stays connected to the broader Fairfield County corridor."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "7471a3581a00",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "e5e90804d10f",
+          "_type": "span",
+          "marks": [],
+          "text": "From a real estate perspective, Wilton is often a smart choice for clients who want more land and a more private setting while keeping commuter options realistic. The right neighborhood choice determines whether you feel closer to town center convenience or more tucked-away quiet."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "overviewShort": "Wilton is a quieter, space-forward town where daily life feels calm, wooded, and intentionally residential. It’s commuter-accessible via the Danbury Branch, but the overall cadence is more about privacy, trails, and a town-centered routine. If you want Fairfield County living with more breathing room, Wilton fits well.",
+  "slug": {
+    "_type": "slug",
+    "current": "wilton"
+  }
+}

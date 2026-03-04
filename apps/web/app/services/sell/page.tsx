@@ -31,8 +31,8 @@ export default function SellPage() {
             <div className="w-14 h-px bg-stone-500 my-7" />
             <p className="text-lg sm:text-xl text-stone-300 leading-relaxed max-w-3xl">
               Every home sale is different. Whether you need to move quickly or
-              want to maximize value with careful timing, you deserve a plan
-              built around your goals—not a templated approach.
+              want to maximize value with careful timing, I build a plan
+              around your specific property, neighborhood, and goals.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Link
@@ -60,7 +60,7 @@ export default function SellPage() {
         <Container>
           <div className="text-center mb-12">
             <h2 className="font-serif text-3xl md:text-4xl font-medium text-stone-900 mb-4">
-              Pricing with perspective.
+              Pricing grounded in real comparables.
             </h2>
             <p className="text-lg text-stone-600 max-w-2xl mx-auto">
               Fairfield County pricing is hyper-local. A few streets can mean a meaningful difference in value.
@@ -106,7 +106,7 @@ export default function SellPage() {
                 Skilled Negotiation
               </h3>
               <p className="text-stone-600 leading-relaxed">
-                Calm, professional negotiation focused on terms, timing, and protecting your interests through closing.
+                Firm, professional negotiation focused on terms, timing, and protecting your position through closing.
               </p>
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function SellPage() {
                 How We Work Together
               </h2>
               <p className="text-lg text-stone-600">
-                A structured approach that keeps you informed and in control.
+                From consultation through closing, with clear expectations at every stage.
               </p>
             </div>
 

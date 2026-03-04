@@ -1,0 +1,98 @@
+{
+  "type": "neighborhood",
+  "slug": "greenfield-hill",
+  "townSlug": "fairfield",
+  "overview": "Two-acre zoning, stone walls, and 300 years of New England history define Greenfield Hill, the rural estate section of northern Fairfield. The Greenfield Hill Congregational Church — founded in 1725 and famous for the thousands of dogwood trees that bloom pink and white along its green each May — anchors the village center. Brett Woods Conservation Area preserves 186 acres of unbroken forest at the neighborhood's northwest edge, and Greenfield Hill Elementary School draws families who want a country-road childhood inside a top-tier suburban school district.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Greenfield Hill is the part of Fairfield that looks nothing like the rest of Fairfield. The roads narrow and lose their sidewalks. Stone walls replace curbing. Horses graze behind split-rail fences, and the lots stretch to two, three, sometimes five acres. The neighborhood occupies the elevated terrain north of the Merritt Parkway, where the density and commercial energy of coastal Fairfield give way to something closer to Litchfield County than Fairfield County."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The Greenfield Hill Congregational Church has been the center of gravity since 1725. Its Gothic-style sanctuary, built in 1855, presides over a classic New England green. Each spring, thousands of dogwood trees — originally planted by Isaac Bronson in the late 18th century and expanded with Japanese pink dogwoods imported in the 1890s — bloom along Bronson Road and across the green. The Dogwood Festival, running since 1936, draws visitors from across the region on Mother's Day weekend for handmade crafts, live music, and the spectacle of the trees in full flower."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Brett Woods Conservation Area, 186 acres of contiguous forest in the neighborhood's northwest corner, offers miles of hiking and riding trails through terrain that supports wildlife habitat found nowhere else in Fairfield. Equestrian properties with paddocks, barns, and direct trail access exist here — a rarity this close to the New York commuter corridor. The neighborhood's two-acre minimum zoning enforces the spaciousness, and the Greenfield Hill Improvement Society has worked for over a century to protect the area's rural character from subdivision pressure."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Commuting from Greenfield Hill requires a car to reach the train, but the trade-off is deliberate. Fairfield's Metro-North stations are a 10- to 15-minute drive south, and the Merritt Parkway provides a parallel route into Stamford and Westchester. Buyers here are not optimizing for platform proximity. They are choosing land, privacy, and a pace that the coastal neighborhoods cannot offer — and they are willing to drive for it."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Greenfield Hill Congregational Church, founded 1725, anchors a New England green lined with thousands of dogwood trees",
+    "Two-acre minimum zoning preserves estate-scale lots with stone walls, horse properties, and mature tree canopy",
+    "Brett Woods Conservation Area encompasses 186 acres of protected forest with hiking and equestrian trails",
+    "Annual Dogwood Festival, held since 1936, attracts regional visitors each Mother's Day weekend",
+    "Greenfield Hill Elementary School serves families in a K-5 neighborhood school ranked among Fairfield's strongest"
+  ],
+  "housingCharacteristics": "Greenfield Hill's housing stock reflects the neighborhood's two-acre minimum zoning and agrarian heritage. Antique colonials from the 18th and 19th centuries share the landscape with expanded Georgians, stone-and-shingle estates built in the mid-20th century, and newer custom construction on subdivided farmland parcels. Many properties feature outbuildings — detached garages, guest cottages, barns, and in some cases functional horse facilities with paddocks and riding rings.\n\nLot sizes typically range from two to five acres, with a handful of larger assemblages exceeding ten acres. The median sale price sits near $1.6 million, though pricing varies widely: a renovated colonial on two flat acres may trade near $1.2 million, while a stone estate with equestrian facilities and panoramic views can exceed $3 million. The architecture is less homogeneous than in Fairfield's beach neighborhoods — Federal-era clapboard houses stand around the corner from 1990s shingle-style builds — and that variety gives the neighborhood a layered, lived-in character.",
+  "marketNotes": "Greenfield Hill trades at a lower volume than Fairfield's coastal neighborhoods but at a higher average price per transaction. Inventory is limited because homeowners tend to hold properties for decades, particularly those with equestrian facilities or direct conservation-area frontage. When listings do appear, well-maintained estates on flat, usable acreage attract the most competitive bidding.\n\nThe buyer profile here skews toward established families and executives who have outgrown the typical four-bedroom colonial in beach-side Fairfield. Privacy, land, and the ability to keep horses or maintain a gentleman's farm are the primary motivators. New construction is constrained by both the two-acre zoning and the Greenfield Hill Improvement Society's informal influence over neighborhood character. That scarcity supports values even in softer markets.",
+  "locationAccess": "Greenfield Hill occupies the elevated inland terrain north of the Merritt Parkway in Fairfield's northwest quadrant. The Merritt Parkway (Route 15) is accessible via Bronson Road or Congress Street, providing a scenic limited-access route into Stamford, Westchester, and points south.\n\nFairfield's three Metro-North stations — Fairfield Center, Fairfield-Black Rock, and Southport — are each a 10- to 15-minute drive from the neighborhood. Express trains from these stations reach Grand Central Terminal in approximately 65 to 70 minutes. The neighborhood's northern position places it closer to the Merritt Parkway than to I-95, which can be an advantage during peak-hour congestion on the interstate. Downtown Fairfield's Post Road shops and restaurants are roughly a ten-minute drive south along Bronson Road.",
+  "seoTitle": "Greenfield Hill Fairfield CT | Estate Homes & Land",
+  "seoDescription": "Discover Greenfield Hill in Fairfield, CT — estate homes on 2+ acre lots near Brett Woods trails. Browse listings and call Matt Caiola to arrange a tour.",
+  "faqs": [
+    {
+      "question": "What is the lot size minimum in Greenfield Hill, Fairfield CT?",
+      "answer": "Greenfield Hill is zoned for a two-acre minimum residential lot size, the largest minimum in Fairfield. This zoning requirement preserves the neighborhood's rural, estate-scale character and limits density. Most properties sit on two to five acres, with some larger parcels exceeding ten acres. The zoning also supports horse properties and hobby farms that would not be viable under tighter suburban lot configurations.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Dogwood Festival in Greenfield Hill?",
+      "answer": "The Dogwood Festival has been held at the Greenfield Hill Congregational Church since 1936. It takes place on Mother's Day weekend each May, when thousands of dogwood trees bloom along Bronson Road and across the village green. The festival features handmade crafts, local artisan vendors, live music, and food. The dogwood trees were originally planted by Isaac Bronson in the late 18th century and later expanded with Japanese pink dogwoods imported in the 1890s.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices in Greenfield Hill, Fairfield CT?",
+      "answer": "The median sale price in Greenfield Hill is approximately $1.6 million, though pricing ranges widely based on acreage, condition, and outbuildings. Renovated colonials on two-acre lots may trade near $1.2 million, while stone estates with equestrian facilities and conservation-area frontage can exceed $3 million. Inventory is limited and homes tend to stay in the same families for extended periods, which supports pricing stability.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "Can you keep horses in Greenfield Hill?",
+      "answer": "Yes. Greenfield Hill is one of the few neighborhoods in Fairfield County's commuter corridor where equestrian properties are viable. The two-acre minimum zoning accommodates barns, paddocks, and riding rings. Several properties have direct or near-direct access to the Brett Woods Conservation Area's trail network, which spans 186 acres of protected forest. Equestrian use is a defining feature of the neighborhood's character.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

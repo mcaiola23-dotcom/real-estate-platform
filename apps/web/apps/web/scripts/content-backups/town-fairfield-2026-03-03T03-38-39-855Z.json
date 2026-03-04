@@ -1,0 +1,90 @@
+{
+  "_createdAt": "2026-01-06T17:41:46Z",
+  "_id": "26acc116-bdab-4b0d-9fba-12b96c6993a5",
+  "_rev": "cptc0PvA8gpHazoy2liBoo",
+  "_type": "town",
+  "_updatedAt": "2026-02-11T17:59:40Z",
+  "center": {
+    "_type": "geopoint",
+    "lat": 41.1409,
+    "lng": -73.2636
+  },
+  "faqs": [
+    {
+      "_key": "decdc9b9a8ff",
+      "_ref": "78f43c96-88c7-49a2-89df-a4fb47220a14",
+      "_type": "reference"
+    },
+    {
+      "_key": "e51cf9867ad0",
+      "_ref": "a71e8bef-2ae0-42d9-ae04-b98dd438701b",
+      "_type": "reference"
+    },
+    {
+      "_key": "479c249f61f6",
+      "_ref": "7f97a5fe-253d-4b75-9eef-49955b13b6c8",
+      "_type": "reference"
+    }
+  ],
+  "highlights": [
+    "Multiple Metro-North stations on the New Haven Line for flexible commuting options",
+    "Beautiful shoreline beaches and waterfront parks for year-round outdoor enjoyment",
+    "A town with distinct neighborhood identities - from shoreline sections to inland, spacious areas",
+    "Strong blend of beach lifestyle and practical, year-round suburban living",
+    "Vibrant town center with diverse dining, shopping, and community events",
+    "Commuter flexibility - choose neighborhoods based on the lifestyle and station that fits best"
+  ],
+  "lastReviewedAt": "2026-01-06T17:41:00.000Z",
+  "lifestyle": "Fairfield’s lifestyle is anchored by its shoreline and its neighborhood variety. Beach days are very real here, but so is the week-to-week routine—school schedules, local restaurants, and the ability to get around town without everything feeling like a long drive.\n\nFor many families, the appeal is that Fairfield can feel both coastal and suburban at the same time. You can live near the water and still have a practical day-to-day rhythm.\n\nCommuter flexibility is another advantage. Fairfield has multiple Metro-North stations serving the New Haven Line, which gives buyers more options to match train access to the neighborhood they actually want to live in.",
+  "marketNotes": "Fairfield’s real estate market is segmented by lifestyle and location. Proximity to the shoreline, the train, and specific neighborhood centers tends to drive demand, but each pocket has its own character and price dynamics.\n\nWhen I work with buyers here, I’m focused on matching the neighborhood to the routine you want—then doing the financial homework so the offer is disciplined and defensible. With my finance background, I’m always looking at the purchase as both a home decision and a major capital decision.\n\nFor sellers, Fairfield often performs best when the listing is positioned around a clear lifestyle story: beach access, train convenience, or a particular village/neighborhood feel—whatever is true and most compelling about the property.",
+  "name": "Fairfield",
+  "overviewLong": [
+    {
+      "_key": "77035b781aac",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "c9157839ff41",
+          "_type": "span",
+          "marks": [],
+          "text": "Fairfield is one of the towns I describe as “well-rounded” in the best sense. You have shoreline amenities, multiple neighborhood identities, and a town rhythm that works year-round—not just in the summer."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "8d2c922db6f3",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "901c2be592c3",
+          "_type": "span",
+          "marks": [],
+          "text": "The feel can change meaningfully by area: beach neighborhoods, the village character of Southport, and more space-forward sections inland. That variety is a real advantage for buyers, because Fairfield can fit different lifestyles without forcing you into one narrow version of what “coastal Connecticut” should be."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "31680ba2ae59",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "a8c77d8f28b4",
+          "_type": "span",
+          "marks": [],
+          "text": "From a market perspective, Fairfield rewards clarity. When you know whether your priorities are beach access, walkability, train convenience, or simply more land, the search gets much easier—and the decision usually feels more confident."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "overviewShort": "Fairfield blends classic coastal Connecticut living with multiple town centers, multiple Metro-North options, and neighborhoods that feel genuinely distinct from one another. It’s a place where beach days, walkable village errands, and a comfortable year-round routine can all coexist. If you want shoreline access without giving up everyday convenience, Fairfield is a strong fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "fairfield"
+  }
+}

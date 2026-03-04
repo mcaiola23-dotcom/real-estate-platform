@@ -1,0 +1,92 @@
+{
+  "type": "neighborhood",
+  "slug": "glenbrook",
+  "townSlug": "stamford",
+  "overview": "Glenbrook is an east-central Stamford neighborhood of roughly 15,400 residents spanning 1.7 square miles. It has its own Metro-North station on the New Canaan Branch, a distinction that shapes the entire area's identity. The Glenbrook Road corridor and Hope Street commercial strip anchor a housing stock of colonials, capes, and Victorians largely built between the 1920s and 1960s, with single-family homes making up about 65 percent of the inventory.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "gb1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gb1s1",
+          "text": "The Glenbrook station sits on the New Canaan Branch of Metro-North, placing commuters on a train to Stamford's main hub in under five minutes and into Grand Central Terminal in roughly 50 minutes on a local. That station existed on the mainline at Courtland Avenue before relocating to its current spot on the branch in the 1950s. The move embedded the platform deeper into the residential grid, and today dozens of homes on surrounding streets like Courtland Avenue and Crescent Street sit within a ten-minute walk of the platform."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gb2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gb2s1",
+          "text": "Hope Street is Glenbrook's commercial spine. The Glenbrook Shopping Center, a 110,000-square-foot plaza anchored by a ShopRite supermarket, shares the corridor with Ace Hardware, local salons, and a handful of restaurants. Trips' Restaurant at 348 Hope Street has served the neighborhood for years, known locally for its prime rib. Cosechas Restaurant, a few doors down at 324 Hope Street, adds Latin American flavors. These are not destination dining spots. They exist because families within walking distance keep them busy."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gb3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gb3s1",
+          "text": "Housing in Glenbrook tilts toward modest single-family homes with character. Colonial Revivals and Cape Cods from the early-to-mid twentieth century line streets like Hamilton Avenue and Pepper Ridge Road. Lot sizes are moderate, typically under half an acre, and the streetscape is tight enough to create a genuine neighborhood rhythm. Prices for updated colonials and capes cluster between $500,000 and $800,000, making Glenbrook one of the more accessible single-family markets in the city. The February 2026 median sale price sat near $490,000, reflecting the mix of condos and smaller homes that broaden the entry point."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "gb4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "gb4s1",
+          "text": "The Glenbrook Neighborhood Association organizes quarterly meetings at Grace Evangelical Free Church, maintaining a layer of civic engagement that newer subdivisions rarely replicate. The Glenbrook Community Center adds programming for families with children. Nearby, Scalzi Park — Stamford's largest municipal recreation area — sits just southwest of the neighborhood, offering baseball and softball fields, basketball courts, a skate park, and a splash pad. Glenbrook delivers a combination of train access, walkable commerce, and housing affordability that is increasingly hard to find inside city limits."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Own Metro-North station on the New Canaan Branch with service to Grand Central Terminal in approximately 50 minutes",
+    "Hope Street corridor includes the 110,000-square-foot Glenbrook Shopping Center anchored by ShopRite",
+    "Single-family colonials, capes, and Victorians from the 1920s through 1960s priced between $500K and $800K",
+    "Scalzi Park, Stamford's largest municipal recreation complex, borders the neighborhood to the southwest"
+  ],
+  "housingCharacteristics": "Glenbrook's housing stock is dominated by single-family homes, which account for roughly 65 percent of all residences. Colonial Revivals, Cape Cods, and scattered Victorians built between the 1920s and 1960s define the architectural character. Lots are moderate — generally a quarter-acre to just under half an acre — and the streets have a compact, walkable grid uncommon in many Stamford neighborhoods.\n\nCondominiums and co-ops make up about 25 percent of inventory, concentrated in converted multi-family buildings and smaller developments. These units provide an entry point below $400,000. Updated single-family colonials and capes in good condition trade between $500,000 and $800,000, with the higher end reserved for renovated four-bedroom homes on larger lots near the train station. The February 2026 median sale price across all property types was approximately $490,000, and homes averaged 54 days on market — a pace that reflects steady demand without the frenzy seen in Stamford's waterfront sections.",
+  "marketNotes": "Glenbrook draws consistent buyer interest from young families and commuters who prioritize train access and value. The Metro-North station on the New Canaan Branch is the primary demand driver, particularly for households relocating from New York who want a walk-to-train option without the price tags attached to neighborhoods like Springdale or Shippan. Updated colonials with three or four bedrooms within a half-mile of the station move quickest.\n\nThe neighborhood competes with Belltown and portions of the East Side for entry-level single-family buyers. Glenbrook's advantage is the train station and the Hope Street commercial strip, which together create a self-contained village dynamic. Transaction volume has been steady, with the median sale price rising about 4 percent year over year as of early 2026.",
+  "locationAccess": "Glenbrook station on the New Canaan Branch provides Metro-North service southbound to Stamford Transportation Center and onward to Grand Central Terminal. Local service reaches Grand Central in roughly 50 minutes; transferring at Stamford to an express train on the main New Haven Line can shorten the trip to approximately 45 minutes.\n\nHope Street connects Glenbrook to downtown Stamford about two miles to the west. Courtland Avenue links to the Post Road (Route 1) and I-95 interchanges within minutes. The Merritt Parkway is accessible via High Ridge Road to the north. Glenbrook sits east-central within the city, placing downtown, the waterfront, and northern Stamford all within a short drive.",
+  "seoTitle": "Glenbrook Stamford CT | Train Access & Family Homes",
+  "seoDescription": "Explore Glenbrook in Stamford CT — own Metro-North station, walkable Hope Street shops, and homes from $500K. Contact Matt Caiola for a private tour today.",
+  "faqs": [
+    {
+      "question": "Does Glenbrook have its own train station?",
+      "answer": "Yes. Glenbrook has a dedicated Metro-North commuter rail station on the New Canaan Branch of the New Haven Line. The station originally sat on the mainline at Courtland Avenue before relocating to its current position in the 1950s. Southbound service connects to Stamford Transportation Center, where riders can transfer to express trains reaching Grand Central Terminal in about 45 minutes. Many homes in the neighborhood are within walking distance of the platform.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are home prices like in Glenbrook, Stamford?",
+      "answer": "Glenbrook offers one of Stamford's more accessible single-family markets. Updated colonials and Cape Cods in good condition typically trade between $500,000 and $800,000, depending on size and proximity to the train station. Condominiums and co-ops provide an entry point below $400,000. As of early 2026, the overall median sale price across all property types sits near $490,000, with homes averaging about 54 days on market.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What shopping and dining options are available in Glenbrook?",
+      "answer": "Hope Street serves as Glenbrook's commercial corridor. The Glenbrook Shopping Center is a 110,000-square-foot plaza anchored by a ShopRite supermarket, with Ace Hardware, fitness studios, and personal services rounding out the tenant mix. Trips' Restaurant at 348 Hope Street is a neighborhood staple known for its prime rib, and Cosechas Restaurant at 324 Hope Street offers Latin American cuisine. Additional restaurants and takeout spots line the surrounding blocks.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

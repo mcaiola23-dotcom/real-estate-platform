@@ -1,0 +1,93 @@
+{
+  "type": "neighborhood",
+  "slug": "town-center",
+  "townSlug": "new-canaan",
+  "overview": "Town Center is downtown New Canaan — the walkable commercial and civic core that makes the town one of Fairfield County's few true village communities. Elm Street forms the commercial spine, lined with independent restaurants, boutiques, and professional offices in brick-front buildings that maintain an architectural consistency rare in suburban Connecticut. The New Canaan Branch Metro-North station sits at the southern end of the district, and the newly rebuilt New Canaan Library by Centerbrook Architects anchors the civic side.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "d1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d1s1",
+          "text": "Elm Street is not long, perhaps a quarter mile from end to end, but it packs a density of independent businesses that larger downtowns struggle to replicate. Elm restaurant serves seasonal New American cuisine at number 73. Gates Restaurant and Bar has occupied 10 Forest Street since 1979, offering brunch on weekends and live music on Saturday nights. The Roger Sherman Inn, a property with roots stretching back over 250 years and operating as an inn since 1925, presents French-inspired American dining under a recent renovation by restaurateurs Joseph and Nes Jaffre. These are not chain outposts. They are owner-operated establishments that depend on foot traffic from residents who live close enough to walk."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d2s1",
+          "text": "The New Canaan Library, designed by Centerbrook Architects under principal Jim Childress, opened its new 42,700-square-foot building in 2023. The $40 million project increased usable space by 30 percent while reducing energy consumption, and the original 1913 Alfred H. Taylor building was physically moved 100 feet on rails to sit across a courtyard from the new structure. Since opening, visitor numbers have risen 70 percent and programming has expanded by 250 percent. Around the corner, The Playhouse reopened in June 2024 under Cinema Lab's management after a pandemic-era closure, screening first-run films alongside live-streamed Metropolitan Opera and National Theatre performances in a 196-seat house."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d3s1",
+          "text": "Green space is closer than most downtowns allow. Mead Memorial Park offers baseball fields, lighted tennis courts, a pond with winter skating, batting cages, and a playground with an onsite cafe. Kiwanis Park, a 14-acre property on Old Norwalk Road, centers on a spring-fed swimming hole with a beach, basketball courts, a pavilion with a snack bar, and walking trails through wooded terrain. Both parks are within a short drive or bike ride from the center of town, extending the livability of a neighborhood where lot sizes are smaller but daily errands happen on foot."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "d4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "d4s1",
+          "text": "Housing in Town Center spans a wider range than any other New Canaan neighborhood. In-town colonials and Victorians on compact lots trade between $1 million and $2.5 million for single-family homes. Condominiums and townhomes along Elm Street and the surrounding blocks offer entry points between $500,000 and $1 million, a rarity in a town where most neighborhoods start above seven figures. The Metro-North station at the base of Elm Street puts Grand Central Terminal within roughly 75 minutes, with a transfer at Stamford. Buyers pay a premium per square foot here because they are purchasing something New Canaan's outer neighborhoods cannot provide: the ability to walk to dinner, the train, the library, and the park without starting a car."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Elm Street commercial district features owner-operated restaurants including Elm, Gates Restaurant and Bar, and the Roger Sherman Inn",
+    "New Canaan Library by Centerbrook Architects opened in 2023, a $40 million civic landmark that increased visitor counts by 70 percent",
+    "Metro-North New Canaan Branch station at the south end of Elm Street connects to Grand Central Terminal via Stamford",
+    "Mead Memorial Park and Kiwanis Park provide athletic fields, a spring-fed swimming hole, tennis courts, and winter skating within minutes of downtown",
+    "Condominiums and townhomes between $500K and $1M offer a New Canaan address at price points unavailable in surrounding neighborhoods"
+  ],
+  "housingCharacteristics": "Town Center's housing stock is the most diverse in New Canaan. In-town colonials, many dating to the early 1900s, sit on lots of a quarter acre or less along tree-lined side streets. Victorian-era homes appear on several blocks near the commercial district, often with wrap-around porches and period detailing that has been maintained through successive renovations. Newer townhome and condominium developments along Elm Street and Forest Street provide attached housing options uncommon elsewhere in town.\n\nSingle-family homes generally trade between $1 million and $2.5 million, with price per square foot running higher than New Canaan's average due to the walkability premium. Condominiums and townhomes range from approximately $500,000 to $1 million, offering buyers an entry point into the New Canaan school district and tax base. Lot sizes are the smallest in town, but the tradeoff is proximity: residents can walk to the train, restaurants, the library, and parks without crossing a single major road.",
+  "marketNotes": "Town Center commands the highest per-square-foot pricing in New Canaan because walkability cannot be replicated. Outer neighborhoods offer larger lots and more privacy, but none can match the ability to step out the front door and reach Elm Street shops, the Metro-North platform, or the New Canaan Library within minutes on foot.\n\nCondominiums attract downsizers from larger New Canaan properties and first-time buyers entering the market. Single-family homes near Elm Street draw young families who want the school district without the isolation of a two-acre lot. Inventory is constrained by the small geographic footprint of the walkable core, and well-maintained properties in the $1.2 million to $1.8 million range often attract multiple offers within the first week.",
+  "locationAccess": "Town Center is the geographic and transportation hub of New Canaan. The Metro-North New Canaan Branch station sits at the southern end of Elm Street, with trains running to Stamford in approximately 25 minutes; from Stamford, express New Haven Line service reaches Grand Central Terminal in about 50 minutes. The total commute to midtown Manhattan is roughly 75 minutes door to platform.\n\nThe Merritt Parkway is accessible within five minutes via South Avenue or Route 106, connecting to Stamford, Greenwich, and points north toward New Haven. Elm Street itself is the pedestrian spine, with restaurants, retail, the library, and professional offices concentrated within a walkable quarter-mile stretch. Mead Memorial Park is a short drive east on Park Street, and Kiwanis Park is accessible heading south on Old Norwalk Road. Town Center is the one New Canaan neighborhood where a car is optional for most daily routines.",
+  "seoTitle": "Town Center, New Canaan CT | Walkable Village Living",
+  "seoDescription": "Explore Town Center homes in walkable downtown New Canaan, CT — Elm Street dining, the new library, and Metro-North access. Contact Matt Caiola today.",
+  "faqs": [
+    {
+      "question": "What restaurants and shops are in downtown New Canaan's Town Center?",
+      "answer": "Elm Street anchors the commercial district with independent, owner-operated businesses. Elm restaurant at 73 Elm Street serves seasonal New American cuisine. Gates Restaurant and Bar on Forest Street has been a neighborhood fixture since 1979, known for weekend brunch and Saturday live music. The Roger Sherman Inn offers French-inspired American dining in a property that has operated as an inn since 1925. Boutiques, professional offices, and specialty retailers line both sides of Elm Street within a walkable quarter-mile stretch.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the price range for homes and condos in New Canaan Town Center?",
+      "answer": "Single-family homes in Town Center generally trade between $1 million and $2.5 million, with in-town colonials and Victorians on compact lots representing the majority of the inventory. Condominiums and townhomes along Elm Street and Forest Street range from approximately $500,000 to $1 million, providing entry points into the New Canaan school district that are unavailable in the town's outer neighborhoods. Per-square-foot pricing runs higher than New Canaan's average due to the walkability premium.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How walkable is New Canaan's Town Center neighborhood?",
+      "answer": "Town Center is the most walkable neighborhood in New Canaan and one of the few genuine walking villages in Fairfield County. Residents can reach Elm Street restaurants, the New Canaan Library, The Playhouse cinema, and the Metro-North station on foot without crossing major roads. Mead Memorial Park and Kiwanis Park are a short drive or bike ride away. The commercial district spans roughly a quarter mile along Elm Street, with tree-lined sidewalks connecting residential side streets to shops and services.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

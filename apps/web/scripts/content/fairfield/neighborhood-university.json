@@ -1,0 +1,97 @@
+{
+  "type": "neighborhood",
+  "slug": "university",
+  "townSlug": "fairfield",
+  "overview": "A 200-acre Jesuit campus next door and not a hint of college town — that is the University neighborhood in a sentence. Osborn Hill Elementary School, one of Fairfield's top-rated public schools, draws families to the established residential blocks along North Benson Road. Bellarmine Hall, the 1920s manor house at Fairfield University's high point, offers views to Long Island Sound that recall the area's estate-era origins.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "un1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "un1s1",
+          "text": "Two contiguous estates once occupied this land — the Brewster Jennings and Walter Lashar families owned the rolling acreage until the Jesuits acquired it in 1942 to establish Fairfield University. The three original manor houses survive as campus buildings: Bellarmine Hall, McAuliffe Hall, and the Dolan House. Around them, a residential neighborhood grew through the mid-20th century, and the coexistence has been remarkably stable for eight decades."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "un2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "un2s1",
+          "text": "North Benson Road is the neighborhood's spine. Single-family homes line both sides — colonials, raised ranches, and split-levels mostly built from the 1950s through the 1970s, with occasional new construction on subdivided lots. The streets branching off North Benson are residential, tree-covered, and walkable to Osborn Hill Elementary. The university campus occupies the eastern flank but its footprint is contained; the residential blocks do not read as student housing overflow. Homeowners here tend to stay. Turnover is lower than in Fairfield's more transient beach sections."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "un3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "un3s1",
+          "text": "Osborn Hill School is the anchor institution for families. Ranked in the top 20 percent of Connecticut elementary schools, it maintains a student-teacher ratio of roughly 12 to 1 and consistently outperforms district averages on standardized assessments. The school feeds into Roger Ludlowe Middle School and Fairfield Ludlowe High School — the eastern Fairfield track, distinct from the Warde pipeline that serves the town's western neighborhoods."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "un4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "un4s1",
+          "text": "Fairfield Metro station is roughly five minutes by car. The original Fairfield station downtown is similarly close. Express trains put commuters at Grand Central in 65 to 70 minutes. The Post Road corridor, with its restaurants, shops, and services, is a short drive south. Penfield Beach and Fairfield Beach are within two miles. The University neighborhood sits at a geographic center point — close to transit, close to the shoreline, close to campus amenities including the Walsh Athletic Center and the Quick Center for the Arts — without being defined by any single one of those proximities."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "Osborn Hill Elementary ranks in the top 20 percent of Connecticut public schools with a 12-to-1 student-teacher ratio",
+    "Fairfield University's 200-acre campus provides cultural amenities including the Quick Center for the Arts and Walsh Athletic Center",
+    "North Benson Road homes span colonials, raised ranches, and split-levels from the 1950s through 1970s",
+    "Penfield Beach and Fairfield Beach are both within a two-mile drive of the neighborhood"
+  ],
+  "housingCharacteristics": "The University neighborhood's housing stock is predominantly single-family, built during the suburban expansion of the 1950s through 1970s. Colonials, raised ranches, and split-levels on half-acre to three-quarter-acre lots make up the majority of the inventory. Original homes in unrenovated condition reflect the period's construction standards — hardwood floors, plaster walls, attached garages — while updated properties feature modern kitchens, finished lower levels, and expanded primary suites.\n\nPricing typically ranges from $500,000 for a smaller ranch or split-level in original condition to $900,000 or more for a renovated four-bedroom colonial on a larger lot. Occasional new construction on subdivided parcels pushes above $1 million. The neighborhood does not have the condo inventory found in Stratfield or Tunxis Hill; this is almost entirely an owner-occupied, single-family market. Proximity to Osborn Hill Elementary is the primary value driver, and homes within the school's walk zone command a consistent premium.",
+  "marketNotes": "Demand in the University neighborhood is anchored by the Osborn Hill Elementary district. Families relocating to Fairfield from New York or upgrading from adjacent towns frequently target these blocks specifically for the school assignment, and that demand keeps inventory tight. Homes priced below $700,000 in updated condition generate strong interest, often moving to contract within two to three weeks of listing.\n\nThe Fairfield Ludlowe High School track — distinct from the Warde pipeline that serves western Fairfield — is a secondary draw for families with older children. The neighborhood's stability means fewer listings per year than comparably sized sections of town, which compresses supply and supports pricing. The university's presence has no measurable negative effect on residential values; if anything, the campus amenities and maintained grounds function as an aesthetic buffer.",
+  "locationAccess": "Both Fairfield Metro station and the downtown Fairfield station are within a five-minute drive, providing two Metro-North New Haven Line options for Manhattan-bound commuters. Express trains reach Grand Central Terminal in approximately 65 to 70 minutes. I-95 is accessible via multiple interchanges along the Post Road corridor, and the Merritt Parkway is reachable in under ten minutes from North Benson Road.\n\nThe Post Road runs parallel to the south, offering the town's primary commercial corridor — restaurants, professional offices, retail, and services. Penfield Beach and Fairfield Beach are roughly two miles south, reachable by car or bike. Fairfield University's campus amenities — the Quick Center for the Arts, the DiMenna-Nyselius Library, Walsh Athletic Center, and the RecPlex — are accessible to neighborhood residents for select events and programming, adding a layer of cultural and recreational infrastructure not found in most suburban neighborhoods.",
+  "seoTitle": "University Area Fairfield CT | Homes & Top Schools",
+  "seoDescription": "Explore the University neighborhood in Fairfield CT with top-rated Osborn Hill Elementary and campus amenities. View homes and reach out to Matt Caiola.",
+  "faqs": [
+    {
+      "question": "What schools serve the University neighborhood in Fairfield?",
+      "answer": "The University neighborhood is served by Osborn Hill Elementary School (grades K-5), Roger Ludlowe Middle School, and Fairfield Ludlowe High School. This is the eastern Fairfield school track, separate from the Warde pipeline that covers the town's western neighborhoods. Osborn Hill ranks in the top 20 percent of Connecticut elementary schools and maintains a student-teacher ratio of approximately 12 to 1, consistently outperforming district and state averages.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How does Fairfield University affect the neighborhood?",
+      "answer": "Fairfield University has coexisted with the residential neighborhood since 1942, and the relationship is largely positive. The campus is self-contained on its 200-acre footprint along North Benson Road, and the residential blocks do not function as student housing spillover. Homeowners benefit from proximity to campus amenities — the Quick Center for the Arts, the Walsh Athletic Center, and maintained grounds — without experiencing the density or noise issues associated with urban university settings.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What do homes cost in the University neighborhood of Fairfield?",
+      "answer": "Single-family homes in the University neighborhood typically range from $500,000 for a smaller ranch or split-level in original condition to $900,000 or more for a renovated four-bedroom colonial. New construction on subdivided parcels can exceed $1 million. The neighborhood is almost entirely owner-occupied single-family homes without significant condo inventory. Proximity to Osborn Hill Elementary is the strongest pricing factor, with homes in the school's walk zone carrying a consistent premium.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is the University neighborhood from the train station?",
+      "answer": "Both Fairfield Metro station and the downtown Fairfield station are approximately five minutes by car from the University neighborhood. Both stations sit on the Metro-North New Haven Line, with express trains reaching Grand Central Terminal in roughly 65 to 70 minutes and local service running 75 to 80 minutes. The dual-station proximity gives commuters scheduling flexibility that many Fairfield neighborhoods lack.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-02T00:00:00Z",
+  "reviewPassed": false
+}

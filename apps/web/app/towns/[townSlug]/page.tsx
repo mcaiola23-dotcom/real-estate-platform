@@ -11,6 +11,7 @@ import TownFAQs from "../../components/TownFAQs";
 // Data Modules
 import { DataModuleGrid } from "../../components/data/DataModule";
 import { formatContentText } from "../../lib/formatters";
+import { getLifestyleHeading, getHighlightsHeading } from "../../lib/heading-variants";
 import AgentCTASection from "../../components/AgentCTASection";
 import SimilarTownsSection from "../../components/SimilarTownsSection";
 import EmailSignupSection from "../../components/EmailSignupSection";
@@ -43,8 +44,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         };
     }
 
-    const title = `${town.name} CT Real Estate | Homes, Neighborhoods & Market Info`;
+    const title = town.seoTitle || `${town.name} CT Real Estate | Homes, Neighborhoods & Market Info`;
     const description =
+        town.seoDescription ||
         town.overviewShort ||
         `Explore ${town.name}, Connecticut real estate. Browse homes for sale, neighborhoods, schools, and local market insights.`;
 
@@ -76,15 +78,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-// Custom PortableText components that sanitize em dashes
+// Custom PortableText components with consistent paragraph spacing
 const sanitizedComponents: PortableTextComponents = {
     block: {
         normal: ({ children }) => {
-            return <p>{children}</p>;
+            return <p className="mb-6 last:mb-0">{children}</p>;
         },
-    },
-    marks: {
-        // Override the default text rendering to sanitize
     },
 };
 
@@ -162,7 +161,7 @@ export default async function TownPage({
     }
 
     // Place structured data for the town
-    const jsonLd = {
+    const placeJsonLd = {
         "@context": "https://schema.org",
         "@type": "Place",
         name: `${town.name}, Connecticut`,
@@ -183,12 +182,35 @@ export default async function TownPage({
         url: `https://example.com/towns/${townSlug}`, // Placeholder domain
     };
 
+    // FAQ structured data (only for schema-enabled FAQs)
+    const schemaFaqs = town.faqs?.filter((f) => f.schemaEnabled !== false) || [];
+    const faqJsonLd = schemaFaqs.length > 0
+        ? {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: schemaFaqs.map((faq) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: faq.answer,
+                },
+            })),
+        }
+        : null;
+
     return (
         <>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(placeJsonLd) }}
             />
+            {faqJsonLd && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+                />
+            )}
             <div className="bg-white min-h-screen">
                 <TownHero
                     title={town.name}
@@ -203,8 +225,8 @@ export default async function TownPage({
                         <div className="max-w-3xl mx-auto">
                             <h2 className="text-2xl font-medium text-stone-900 mb-6 font-serif">About {town.name}</h2>
                             {town.overviewLong ? (
-                                <div className="prose prose-stone max-w-none text-stone-600 leading-relaxed">
-                                    <PortableText value={sanitizePortableText(town.overviewLong)} />
+                                <div className="max-w-none text-stone-600 leading-relaxed">
+                                    <PortableText value={sanitizePortableText(town.overviewLong)} components={sanitizedComponents} />
                                 </div>
                             ) : (
                                 <p className="text-stone-500 italic">Description coming soon.</p>
@@ -219,7 +241,7 @@ export default async function TownPage({
                         <Container>
                             <div className="max-w-3xl mx-auto">
                                 <h2 className="text-2xl font-medium text-stone-900 mb-6 font-serif">
-                                    Living in {town.name}
+                                    {getLifestyleHeading(town.name, town.overviewShort, town.highlights)}
                                 </h2>
                                 <div className="prose prose-stone max-w-none text-stone-600 leading-relaxed">
                                     <p className="whitespace-pre-line">{formatContentText(town.lifestyle)}</p>
@@ -265,7 +287,7 @@ export default async function TownPage({
                         <Container>
                             <div className="max-w-3xl mx-auto">
                                 <h2 className="text-2xl font-medium text-stone-900 mb-6 font-serif">
-                                    What Makes {town.name} Special
+                                    {getHighlightsHeading(town.name, town.overviewShort, town.highlights)}
                                 </h2>
                                 <ul className="space-y-3">
                                     {town.highlights.map((highlight, index) => (

@@ -1,0 +1,92 @@
+{
+  "type": "neighborhood",
+  "slug": "ponus-ridge",
+  "townSlug": "new-canaan",
+  "overview": "Ponus Ridge runs along New Canaan's western ridgeline near the Stamford border, where Ponus Ridge Road serves as the main corridor through a landscape of colonials, contemporaries, and custom-built homes on one- to three-acre lots. The neighborhood carries a more rural character than New Canaan's southern sections, with winding roads, low-density zoning, and proximity to the Silvermine Arts Center. The Philip Johnson Glass House sits on Ponus Ridge Road itself. Homes here trade between $1 million and $2.5 million.",
+  "description": [
+    {
+      "_type": "block",
+      "_key": "pr1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "pr1s1",
+          "text": "Ponus Ridge Road traces the western spine of New Canaan, climbing through terrain that is hillier, more wooded, and less manicured than the areas closer to downtown. Stone walls line the road at irregular intervals. Driveways are long, sometimes a quarter-mile of gravel before the house comes into view. There are no streetlights on most stretches. The density is genuinely low — one- to three-acre minimums are standard — and the effect is a neighborhood that reads as semi-rural despite sitting within a ten- to fifteen-minute drive of Elm Street."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "pr2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "pr2s1",
+          "text": "The Philip Johnson Glass House occupies a 49-acre parcel directly on Ponus Ridge Road, placing one of the 20th century's most significant architectural works within the neighborhood's boundaries. Johnson chose this site in 1949 for its rolling meadows and wooded backdrop. The campus now includes 14 structures and is operated as a National Trust for Historic Preservation site open for seasonal tours. Beyond the Glass House, Ponus Ridge's housing stock is more varied than New Canaan's southern corridors. Colonials predominate, but substantial contemporaries from the 1970s and 1980s mix with newer builds that take advantage of the terrain's natural elevation and tree cover."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "pr3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "pr3s1",
+          "text": "Silvermine Road intersects the southern end of the Ponus Ridge area, connecting to the Silvermine Arts Center — one of the oldest artist communities in the United States, founded in 1922. The center's five-acre campus holds five galleries, a sculpture walk, and a school of art offering more than 1,100 courses annually in ceramics, painting, woodworking, photography, and printmaking. The Silvermine neighborhood itself spans the borders of New Canaan, Norwalk, and Wilton, following the Silvermine River through a landscape that retains much of its pre-suburban character."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "pr4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "pr4s1",
+          "text": "Ponus Ridge delivers the most land per dollar in New Canaan. Homes on two- and three-acre lots trade between $1 million and $2.5 million — pricing that sits meaningfully below Oenoke Ridge and the downtown-adjacent zones. The tradeoff is a longer drive to town and less of the manicured estate character found further south. What buyers gain is acreage, privacy, and a setting where the natural landscape dominates. The New Canaan Nature Center, at the village's edge, and Grace Farms' 80-acre campus on Smith Ridge Road are both within a short drive. Schools follow the same district pipeline: West Elementary, Saxe Middle School, and New Canaan High School."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "highlights": [
+    "The 49-acre Glass House campus on Ponus Ridge Road — Philip Johnson's 1949 masterwork — is a National Trust landmark accessible from the neighborhood",
+    "Art courses and gallery exhibitions at the nearby Silvermine Arts Center draw residents from three towns into a shared creative community",
+    "One- to three-acre lots with colonials and contemporaries trading between $1M and $2.5M — New Canaan's strongest value corridor",
+    "SANAA's Pritzker Prize-winning River building at Grace Farms and the New Canaan Nature Center are both a short drive from the ridge"
+  ],
+  "housingCharacteristics": "Ponus Ridge's housing stock is architecturally diverse. Center-hall colonials on one to two acres make up the largest share of inventory, typically ranging from 3,000 to 5,000 square feet with traditional floor plans. Contemporaries from the 1970s and 1980s — some with dramatic glass walls, elevated decks, and open-plan living areas built into the hillside — represent a distinctive subset that draws buyers looking for mid-century or late-modern design. Newer custom builds on two- to three-acre parcels have introduced updated construction on the corridor's larger lots.\n\nLong gravel or paved driveways are standard, with many homes set well back from Ponus Ridge Road behind mature tree lines. Detached garages, stone walls, and cleared meadows are common features. The terrain is hillier than New Canaan's southern neighborhoods, and several properties sit at elevations that provide distant views through the canopy during leaf-off months.",
+  "marketNotes": "Ponus Ridge is New Canaan's most accessible neighborhood by price, with homes trading primarily between $1 million and $2.5 million. Two-acre colonials in good condition occupy the $1.3 million to $1.8 million band. Larger parcels with newer construction or substantial renovations push toward $2 million to $2.5 million. The pricing gap between Ponus Ridge and Oenoke Ridge or downtown-adjacent properties can exceed $1 million for comparable square footage, reflecting the northern location's greater distance from the town center.\n\nDemand has increased as buyers priced out of New Canaan's southern neighborhoods look north for equivalent lot sizes and the same school district. Inventory remains constrained across the town, and well-maintained Ponus Ridge listings in the $1.2 million to $1.8 million range attract multiple offers. The neighborhood is positioned for continued appreciation as the broader New Canaan market tightens.",
+  "locationAccess": "Ponus Ridge Road connects to Route 106 heading south toward downtown New Canaan, a drive of ten to fifteen minutes depending on the specific parcel. The Merritt Parkway is accessible in approximately ten minutes via Route 124 or Ponus Ridge Road itself. Stamford's commercial district and the Stamford Transportation Center — offering express Metro-North service to Grand Central Terminal — are roughly 20 minutes west.\n\nThe Silvermine area and its border with Norwalk and Wilton sit at the neighborhood's southern and eastern edges. Grace Farms on Smith Ridge Road is within a five-minute drive. The New Canaan Metro-North station at the foot of Elm Street serves as the primary rail connection, with Branch Line trains reaching the main New Haven Line at Stamford for a total commute of approximately 75 minutes to Grand Central.",
+  "seoTitle": "Ponus Ridge, New Canaan CT | Homes & Neighborhood Guide",
+  "seoDescription": "Ponus Ridge in New Canaan CT: wooded 1-3 acre lots, the Philip Johnson Glass House, Silvermine arts district, and top-ranked schools. Contact Matt Caiola.",
+  "faqs": [
+    {
+      "question": "What makes Ponus Ridge different from other New Canaan neighborhoods?",
+      "answer": "Ponus Ridge has a distinctly more rural character than New Canaan's southern neighborhoods, with winding roads, no streetlights on most stretches, and one- to three-acre lots set behind long driveways and mature tree cover. It is home to the Philip Johnson Glass House on Ponus Ridge Road and sits near the Silvermine Arts Center on Silvermine Road. Pricing runs $1 million to $2.5 million, which represents New Canaan's strongest value relative to lot size and school district access.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How far is Ponus Ridge from downtown New Canaan and the train station?",
+      "answer": "Ponus Ridge Road connects to Route 106 heading south, placing downtown Elm Street and the New Canaan Metro-North station ten to fifteen minutes away by car. The Merritt Parkway is accessible in roughly ten minutes. Stamford's Transportation Center, with express Metro-North trains to Grand Central Terminal, is approximately 20 minutes west. Buyers who commute daily to Manhattan typically use either the New Canaan Branch Line or drive to Stamford for faster main-line service.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What types of homes are available on Ponus Ridge?",
+      "answer": "The housing stock includes center-hall colonials of 3,000 to 5,000 square feet on one- to two-acre lots, contemporaries from the 1970s and 1980s with glass walls and hillside construction, and newer custom builds on larger parcels. Lot sizes range from one to three-plus acres, with long driveways, stone walls, and heavy tree cover as common features. The architectural variety distinguishes Ponus Ridge from the more uniformly colonial corridors in southern New Canaan.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

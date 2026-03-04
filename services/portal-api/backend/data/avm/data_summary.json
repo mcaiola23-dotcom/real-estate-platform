@@ -1,0 +1,15 @@
+{
+  "total_records": 10202,
+  "training_records": 8159,
+  "test_records": 2043,
+  "num_features": 39,
+  "median_price": 655000.0,
+  "min_price": 50000.0,
+  "max_price": 30000000.0,
+  "cities": 12,
+  "property_types": {
+    "SingleFamily": 7119,
+    "MultiFamily_2-4": 934,
+    "Condo": 106
+  }
+}

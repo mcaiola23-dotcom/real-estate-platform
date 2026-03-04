@@ -1,0 +1,73 @@
+{
+  "_createdAt": "2026-01-06T17:41:26Z",
+  "_id": "881cffd7-565b-403b-9769-2bb3c0d05522",
+  "_rev": "cptc0PvA8gpHazoy2liCc2",
+  "_type": "town",
+  "_updatedAt": "2026-02-11T17:59:44Z",
+  "center": {
+    "_type": "geopoint",
+    "lat": 41.2815,
+    "lng": -73.4983
+  },
+  "highlights": [
+    "Historic Main Street with dining, shopping, and a true town center atmosphere",
+    "Rich cultural scene including The Aldrich Contemporary Art Museum and Ridgefield Playhouse",
+    "Metro-North commuter access via the Danbury Branch line",
+    "Town variety - village-center living versus more private, space-forward sections",
+    "Strong year-round community energy with local events and traditions",
+    "A great fit for buyers who want culture and community without needing a shoreline address"
+  ],
+  "lastReviewedAt": "2026-01-06T17:41:00.000Z",
+  "lifestyle": "Ridgefield’s lifestyle is centered on Main Street and a strong cultural calendar, but the day-to-day can still feel quiet and residential once you’re home. You have the option to live closer to the center for a walkable routine, or farther out for privacy and land.\n\nCulturally, Ridgefield has major anchors. The Aldrich Contemporary Art Museum is located at 258 Main Street in Ridgefield (per the museum). Ridgefield Playhouse is another signature venue; the Playhouse notes GPS users should use 80 East Ridge Road.\n\nFor commuters, Branchville is the local Metro-North access point on the Danbury Branch. The MTA notes Branchville has no ticket machines, and riders can buy tickets on board with no additional fee (or use TrainTime). Ridgefield is best for buyers who want town-center energy with a more space-forward, quieter home life.",
+  "marketNotes": "Ridgefield is neighborhood-driven. In-town living near Main Street feels different from the more rural-feeling sections, and pricing is often shaped by whether a property is offering walkability and convenience, or privacy and land.\n\nMy approach here is to bring structure to the decision. With a finance background and investor experience, I focus on what drives value in the pocket you’re buying in—then we choose a strategy that’s competitive without losing discipline.\n\nFor sellers, Ridgefield typically performs best when the story is clear. Buyers are often choosing between “closer to town” and “more private,” and the presentation should reinforce that choice with honest specifics and strong positioning.",
+  "name": "Ridgefield",
+  "overviewLong": [
+    {
+      "_key": "412e64200a26",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "d2614d249e31",
+          "_type": "span",
+          "marks": [],
+          "text": "Ridgefield has one of the strongest “town identities” in northern Fairfield County. Main Street feels like a real center—not a strip—and the cultural scene is a meaningful part of what makes Ridgefield feel active year-round."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "592aa9b2c78b",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "a0202d2c1994",
+          "_type": "span",
+          "marks": [],
+          "text": "Outside the center, Ridgefield quickly becomes more space-forward. Neighborhoods and roads feel greener and quieter, and many buyers are drawn by the combination: a true town core when you want it, and a more private home base the rest of the time."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    },
+    {
+      "_key": "35c8513544c0",
+      "_type": "block",
+      "children": [
+        {
+          "_key": "291eb4e0d67a",
+          "_type": "span",
+          "marks": [],
+          "text": "From my perspective, Ridgefield works well for clients who want community and culture, but don’t need to live right on the shoreline corridor. It’s a different cadence than the coastal towns—more “in town” weekend life, more space at home—and that’s exactly the point for many buyers."
+        }
+      ],
+      "markDefs": [],
+      "style": "normal"
+    }
+  ],
+  "overviewShort": "Ridgefield is a town where Main Street energy and quieter, space-forward living can both be true. The center has a real cultural scene, while the surrounding areas offer privacy, land, and a calmer pace. If you want a strong town identity with more room to breathe than the shoreline corridor, Ridgefield is a great fit.",
+  "slug": {
+    "_type": "slug",
+    "current": "ridgefield"
+  }
+}

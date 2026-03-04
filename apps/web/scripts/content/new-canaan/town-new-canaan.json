@@ -1,0 +1,116 @@
+{
+  "type": "town",
+  "slug": "new-canaan",
+  "overviewShort": "New Canaan is a residential town of roughly 20,000 residents in Fairfield County where midcentury architectural history, a walkable village center anchored by Elm Street, and a top-ranked public school district converge inside strict zoning that keeps lot sizes at one to two acres across most neighborhoods. The Philip Johnson Glass House, a 49-acre National Trust landmark on Ponus Ridge Road, and Waveny Park's 300-acre former Lapham estate define the town's cultural and recreational identity.",
+  "overviewLong": [
+    {
+      "_type": "block",
+      "_key": "ol1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol1s1",
+          "text": "New Canaan occupies 22 square miles of wooded, rolling terrain in lower Fairfield County, bordered by Darien to the south, Norwalk to the southeast, Wilton to the east, and Stamford to the west. Unlike the shoreline towns that line Long Island Sound, New Canaan's appeal is entirely inland. There is no beach, no harbor, no yacht club. What there is: a town center with genuine village character, where Elm Street runs a clean half-mile of independent restaurants, boutiques, and galleries without a single big-box retailer. Elm Restaurant, the Roger Sherman Inn (a landmark since 1740), and Cava Wine Bar anchor the dining scene. Gates has served brunch and live music for more than 40 years on Forest Street."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol2s1",
+          "text": "Architecture is woven into the town's DNA. Between 1947 and 1966, the Harvard Five — Philip Johnson, Marcel Breuer, Eliot Noyes, Landis Gores, and John Johansen — built more than 100 modernist houses across New Canaan's wooded hillsides. Johnson's Glass House on Ponus Ridge Road, completed in 1949, became the movement's most recognized residential work and now operates as a 49-acre museum campus under the National Trust for Historic Preservation. The Gores Pavilion in Irwin Park, originally a pool house designed by Landis Gores, hosts rotating art exhibitions from May through October. Grace Farms, an 80-acre sanctuary designed by Pritzker Prize-winning firm SANAA, opened in 2015 and draws visitors for its River building, nature trails, and community programming."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol3s1",
+          "text": "The school system consistently ranks at or near the top in Connecticut. New Canaan Public Schools earned the No. 1 district ranking statewide in Niche's 2025 Best Schools report. New Canaan High School placed second among all Connecticut public high schools in both U.S. News & World Report and Niche rankings, and first for college prep. Elementary schools — East, West, and South — feed into Saxe Middle School before students converge at the high school. Families relocating from Manhattan or Brooklyn routinely cite the school district as the primary draw."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol4s1",
+          "text": "Waveny Park is the town's recreational centerpiece: 300 acres of fields, trails, and ponds built on the former Lewis Lapham estate, whose 1912 Tudor mansion — designed by William B. Tubby with grounds by Frederick Law Olmsted Jr. — still anchors the property. The park holds 3.5 miles of walking and jogging trails, Spencer's Run dog park, the Carriage Barn Art Center, and Waveny Pool. Irwin Park contributes another 36 acres of apple orchards and specimen trees near the center of town. The New Canaan Nature Center, at the village's edge, offers walking trails, wildlife exhibits, and year-round programming. Kiwanis Park provides a spring-fed swimming pond on Old Norwalk Road. Mead Memorial Park borders the Bristow Bird Sanctuary and adds a 4.75-acre skating pond in winter."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "ol5",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "ol5s1",
+          "text": "The commute to New York runs through the New Canaan Branch Line, an 8.2-mile Metro-North spur connecting to the main New Haven Line at Stamford. Total travel time to Grand Central Terminal averages roughly 75 minutes door to door; several weekday trains operate as through-service, eliminating the Stamford transfer. Most residential neighborhoods sit within a ten-minute drive of the New Canaan station at the foot of Elm Street. Strict one- and two-acre zoning minimums across the majority of residential land keep density low and wooded lots intact — a deliberate posture the town has maintained for decades."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "lifestyle": "New Canaan's town center is compact enough to walk but varied enough to sustain a full Saturday. Elm Street and its side streets hold more than 30 restaurants, independent retailers like J.McLaughlin and Vineyard Vines, and the Playhouse on Elm performance venue. Farmer & The Fish brings a Westchester-rooted seafood concept to South Avenue. Rosie, at 27 Elm Street, has been a morning staple since 2004. Le Pain Quotidien occupies one of the more distinctive buildings on the block, with vaulted ceilings and a chapel-like facade at 81 Elm Street.\n\nThe outdoor infrastructure is unusually deep for a town this size. Waveny Park handles soccer, baseball, lacrosse, and platform tennis on its fields and courts. Irwin Park's apple orchard and Mead Park's pond offer lower-key alternatives. The New Canaan Nature Center runs year-round environmental education. In summer, Kiwanis Park's sandy beach fills with families, while Waveny Pool operates as the town's primary lap and recreation facility.\n\nCultural life tracks two parallel lines. The Silvermine Arts Center, founded in 1922 on Silvermine Road, is one of the oldest artist communities in the country, with five galleries, a sculpture walk, and a school offering more than 1,100 courses annually. Grace Farms programs range from architecture tours to community dinners to justice-oriented talks. The New Canaan Museum and Historical Society documents the town's history and its modernist architectural legacy. New Canaan Library, rebuilt and expanded in recent years, functions as a civic gathering point in its own right.\n\nWeekend rhythms shift seasonally. Fall brings cross-country meets on the Waveny trails and apple picking at nearby Silverman's Farm in Easton. Winter moves indoors to paddle tennis courts and the library's lecture calendar. Spring opens the Silvermine galleries and Grace Farms trails again. The town's social fabric is organized less around private clubs — New Canaan has fewer exclusive membership organizations than Greenwich or Darien — and more around institutional anchors: the schools, the parks, the arts organizations, and the downtown businesses themselves.",
+  "marketNotes": "New Canaan's median sale price reached approximately $2.3 million in 2025, with the average sale price closer to $3 million, reflecting the pull of high-end estate transactions on Oenoke Ridge and in the Silvermine corridor. Year-over-year appreciation has run in the mid-teens percentage range, consistent with broader Fairfield County trends but amplified by the town's constrained supply. Homes on one- and two-acre lots in south New Canaan and along the Oenoke Ridge corridor regularly trade between $2 million and $5 million. Ponus Ridge and the northern sections offer relative value at $1 million to $2.5 million, where buyers find larger lots with more rural character.\n\nInventory remains tight. The combination of strict zoning, minimal new construction, and rate-locked homeowners has compressed available listings. Well-priced properties in the downtown-walkable zone or within the South Elementary School district are receiving multiple offers and selling within three to four weeks. The luxury segment above $3 million saw meaningful volume increases in 2024 and into 2025, driven partly by New York families converting pandemic-era rentals into permanent purchases.\n\nBuyers entering New Canaan should arrive with pre-approval confirmed and a clear understanding of which neighborhoods align with their commute preferences, school assignments, and lot-size requirements. The market rewards preparation and decisiveness — properties that match multiple criteria move quickly, and off-market transactions represent a real share of volume at the upper end.",
+  "highlights": [
+    "New Canaan Public Schools ranked No. 1 in Connecticut by Niche 2025, with the high school placing second statewide in U.S. News & World Report",
+    "Philip Johnson's Glass House, a 49-acre National Trust landmark on Ponus Ridge Road, anchors the town's legacy as home to the Harvard Five architects",
+    "Waveny Park spans 300 acres of trails, fields, and ponds on the former Lewis Lapham estate, with a 1912 Tudor mansion designed by William B. Tubby",
+    "Elm Street's walkable village center holds 30+ restaurants — including Elm, the Roger Sherman Inn, Gates, and Cava Wine Bar — with zero big-box retail",
+    "Grace Farms' 80-acre campus, designed by Pritzker Prize-winning firm SANAA, offers free public programming in nature, arts, justice, and community",
+    "Silvermine Arts Center, founded 1922, operates five galleries, a sculpture walk, and 1,100+ annual courses as one of America's oldest artist communities",
+    "Metro-North's New Canaan Branch Line connects to the main New Haven Line at Stamford, with through-service trains reaching Grand Central in about 75 minutes"
+  ],
+  "seoTitle": "New Canaan CT Real Estate | Luxury Homes & Town Guide",
+  "seoDescription": "New Canaan CT: top-ranked schools, Harvard Five architecture, walkable Elm Street village, and 300-acre Waveny Park. Contact Matt Caiola to explore homes.",
+  "faqs": [
+    {
+      "question": "How long is the commute from New Canaan to New York City?",
+      "answer": "The New Canaan Branch Line, an 8.2-mile Metro-North spur, connects to the main New Haven Line at Stamford. Total travel time to Grand Central Terminal averages roughly 75 minutes. Several weekday peak trains run as through-service, eliminating the Stamford transfer entirely. The New Canaan station sits at the foot of Elm Street, within a ten-minute drive of most residential neighborhoods in town.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What makes New Canaan's school district stand out?",
+      "answer": "New Canaan Public Schools earned the No. 1 district ranking in Connecticut from Niche's 2025 Best Schools report. New Canaan High School ranked second among all Connecticut public high schools in both U.S. News & World Report and Niche evaluations, and placed first for college prep statewide. Three elementary schools — East, West, and South — feed into Saxe Middle School, so the specific home address determines elementary school assignment. Families relocating from New York consistently cite the district as their primary reason for choosing the town.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What are the main neighborhoods in New Canaan, CT?",
+      "answer": "New Canaan's principal residential corridors include Oenoke Ridge (the town's most prestigious address, with historic estates on five to ten acres bordering Waveny Park), Clapboard Hill (southeast New Canaan near the Darien border, known for antique colonials on wooded one- to two-acre lots), Ponus Ridge (northern New Canaan with a more rural character and proximity to the Silvermine area), and the downtown-adjacent zone within walking distance of Elm Street and the train station. Each area carries distinct pricing, lot sizes, and proximity to town.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "What is the Philip Johnson Glass House?",
+      "answer": "The Glass House is a 49-acre museum campus on Ponus Ridge Road designed by Philip Johnson and completed in 1949. It was the first residential structure to bring the International Style into American home architecture, with exterior walls made entirely of glass and steel. The site includes 14 structures, a permanent collection of 20th-century painting and sculpture, and a landscape that Johnson developed over five decades. It is now a National Trust for Historic Preservation site open for public tours seasonally.",
+      "schemaEnabled": true
+    },
+    {
+      "question": "How do home prices in New Canaan compare to neighboring towns?",
+      "answer": "New Canaan's median sale price reached approximately $2.3 million in 2025, with the average closer to $3 million due to high-end estate sales. This positions it above Darien's median of about $2.1 million and below Greenwich's broader range. The town's strict one- and two-acre zoning keeps lot sizes large and inventory scarce. Oenoke Ridge estates trade between $2 million and $5 million or more. Northern areas like Ponus Ridge offer relative value starting around $1 million.",
+      "schemaEnabled": true
+    }
+  ],
+  "authorAgent": "claude-opus-4-6",
+  "promptVersion": "1.0",
+  "generatedAt": "2026-03-03T00:00:00Z",
+  "reviewPassed": false
+}

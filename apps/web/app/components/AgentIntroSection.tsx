@@ -27,15 +27,15 @@ export default function AgentIntroSection() {
                                 Matt Caiola
                             </h2>
                             <p className="text-stone-600 text-lg leading-relaxed mb-6">
-                                With a background in media and commodities at Fortune 500 companies,
-                                I bring analytical precision and market intelligence to every transaction.
-                                My approach combines data-driven insights with the discretion and
-                                personalized service that luxury clients expect.
+                                With a background in media and commodities at Fortune 500 companies
+                                and a portfolio of 25 rental units, I bring real transaction experience
+                                to every engagement. My approach pairs analytical rigor with the
+                                discretion and attentiveness that luxury clients require.
                             </p>
                             <p className="text-stone-600 leading-relaxed mb-8">
-                                Whether you&apos;re buying your dream home on the Gold Coast or selling
-                                a treasured property, I&apos;m committed to making the process seamless
-                                and successful.
+                                Whether you&apos;re buying on the Gold Coast or positioning a property
+                                for sale, I manage the details so you can focus on the decision
+                                that matters.
                             </p>
 
                             {/* Contact Info */}

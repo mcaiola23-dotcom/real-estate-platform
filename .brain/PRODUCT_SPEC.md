@@ -169,8 +169,39 @@ Managed service operating model:
 - Contract minimum: 3-month initial term for each add-on.
 - Fulfillment SLA: first response to managed-service requests within 1 business day; standard changes delivered within 3 business days.
 
-### 5.4 Future Strategic Add-on
-- Listing portal/network layer (deferred until core SaaS unit economics are stable).
+### 5.4 Portal Integration (Formerly Deferred)
+- The listing portal has been integrated into the monorepo as `apps/portal`. It is no longer deferred — the frontend is part of the platform, and the Python/FastAPI backend remains a standalone external service.
+
+---
+
+## 6. Listing Portal Product (`apps/portal`)
+
+### 6.1 Core Experience
+- Public listing search with filters (price, beds, baths, property type, location).
+- AI-powered natural language search (e.g., "3-bed colonial near good schools under $500k").
+- Interactive map with property markers and cluster views.
+- Property detail pages with photos, description, features, price history.
+- AVM (automated valuation model) with confidence intervals.
+
+### 6.2 User Features
+- Saved searches with email/push alerts for new matches.
+- Favorite properties and comparison tools.
+- Neighborhood insights and school data.
+- Mortgage/affordability calculator integration.
+
+### 6.3 Technical Architecture
+- Frontend: Next.js + TypeScript + Tailwind CSS (in `apps/portal`).
+- Backend: External Python/FastAPI service (`portal-api`) — not in this monorepo.
+- Data: MLS feed via RESO Web API, vector embeddings for AI search.
+- Maps: Mapbox GL JS.
+- Auth: NextAuth.js with Google/Facebook/Apple OAuth.
+
+### 6.4 Success Metrics
+- Search-to-detail-view conversion rate.
+- Saved search creation rate.
+- Return visitor frequency.
+- AI search usage and satisfaction.
+- Lead generation (inquiry form submissions to agents).
 
 ## Session Review (2026-02-17)
 - Reviewed during CRM checklist completion session; no scope/architecture/process changes required in this file beyond confirming continued tenant-isolation and shared-package boundaries.

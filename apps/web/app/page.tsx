@@ -39,7 +39,7 @@ export default async function Home() {
             </h1>
             <div className="w-12 h-px bg-stone-400 mx-auto mb-8"></div>
             <p className="font-sans text-lg md:text-xl text-stone-100 mb-10 max-w-3xl mx-auto leading-relaxed tracking-wide font-light drop-shadow-md">
-              Personal, data-driven insights and white-glove service guiding you through buying, selling, and investing in Connecticut&apos;s Gold Coast.
+              White-glove representation for buying, selling, and investing across Connecticut&apos;s Gold Coast.
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <Link
@@ -85,7 +85,7 @@ export default async function Home() {
           <div className="flex justify-between items-end mb-12">
             <div>
               <h2 className="text-3xl font-bold text-stone-900 mb-2">Latest Insights</h2>
-              <p className="text-stone-600">Market trends and real estate news.</p>
+              <p className="text-stone-600">Analysis, local market data, and neighborhood guides.</p>
             </div>
             <Link href="/insights" className="hidden sm:inline-block text-stone-900 font-medium hover:underline decoration-stone-400 underline-offset-4">
               View all insights &rarr;
