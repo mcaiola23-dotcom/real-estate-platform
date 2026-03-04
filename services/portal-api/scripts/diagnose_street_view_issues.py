@@ -75,7 +75,8 @@ def diagnose_parcels():
                 
                 # Test Google Street View URL
                 if row[5] and row[6]:
-                    sv_url = f"https://maps.googleapis.com/maps/api/streetview/metadata?location={row[6]},{row[5]}&radius=50&key=AIzaSyB1nXOuazIvXiZo8zRkWTW0iL-nawfFLFo"
+                    api_key = os.environ.get("GOOGLE_MAPS_SERVER_API_KEY", "")
+                    sv_url = f"https://maps.googleapis.com/maps/api/streetview/metadata?location={row[6]},{row[5]}&radius=50&key={api_key}"
                     print(f"\n  Google Metadata URL:")
                     print(f"  {sv_url}")
                 

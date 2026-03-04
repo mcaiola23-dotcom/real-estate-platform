@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sqlalchemy import text
 from app.db import SessionLocal
 
-API_KEY = "AIzaSyB1nXOuazIvXiZo8zRkWTW0iL-nawfFLFo"
+API_KEY = os.environ.get("GOOGLE_MAPS_SERVER_API_KEY", "")
 
 def test_street_view():
     """Test Street View for specific parcels."""
