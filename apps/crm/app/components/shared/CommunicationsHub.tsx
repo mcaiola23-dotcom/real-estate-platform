@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, type ReactNode } from 'react';
+import { useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import type { CrmActivity, CrmContact, CrmLead } from '@real-estate/types/crm';
 import { formatTimeAgo } from '../../lib/crm-formatters';
 import { ContactHistoryLog } from '../leads/ContactHistoryLog';
@@ -8,6 +8,7 @@ import { TemplateLibrary } from './TemplateLibrary';
 import { AiDraftComposer } from './AiDraftComposer';
 import { GmailComposer } from './GmailComposer';
 import { GmailThreads } from './GmailThreads';
+import { SmsComposer } from './SmsComposer';
 import type { MergeFieldContext } from '../../lib/crm-templates';
 
 // ---------------------------------------------------------------------------
@@ -15,7 +16,7 @@ import type { MergeFieldContext } from '../../lib/crm-templates';
 // ---------------------------------------------------------------------------
 
 type ChannelFilter = 'all' | 'email' | 'text' | 'phone';
-type ActiveComposer = 'none' | 'email' | 'ai' | 'templates' | 'threads' | 'log';
+type ActiveComposer = 'none' | 'email' | 'sms' | 'ai' | 'templates' | 'threads' | 'log';
 
 interface ExtractedInsight {
   category: string;
@@ -28,6 +29,7 @@ interface CommunicationsHubProps {
   activeContact: CrmContact | null;
   activities: CrmActivity[];
   googleConnected: boolean | null;
+  twilioConnected: boolean | null;
   mergeContext: MergeFieldContext;
   onLogContact: (activityType: string, summary: string) => Promise<void>;
   onApplyInsights: (insights: ExtractedInsight[]) => void;
@@ -84,10 +86,17 @@ const ACTIVITY_CHANNEL_MAP: Record<string, ChannelFilter> = {
   email_sent: 'email',
   email_logged: 'email',
   text_logged: 'text',
+  sms_sent: 'text',
+  sms_received: 'text',
   call_logged: 'phone',
+  call_initiated: 'phone',
 };
 
-const CONTACT_ACTIVITY_TYPES = new Set(['call_logged', 'text_logged', 'email_logged', 'email_sent']);
+const CONTACT_ACTIVITY_TYPES = new Set([
+  'call_logged', 'call_initiated',
+  'text_logged', 'sms_sent', 'sms_received',
+  'email_logged', 'email_sent',
+]);
 
 // ---------------------------------------------------------------------------
 // SVG icons for timeline entries
@@ -113,14 +122,17 @@ const EnvelopeIcon = (
 );
 
 function getTimelineIcon(type: string) {
-  if (type === 'call_logged') return PhoneIcon;
-  if (type === 'text_logged') return MessageIcon;
+  if (type === 'call_logged' || type === 'call_initiated') return PhoneIcon;
+  if (type === 'text_logged' || type === 'sms_sent' || type === 'sms_received') return MessageIcon;
   return EnvelopeIcon;
 }
 
 function getChannelLabel(type: string) {
   if (type === 'call_logged') return 'Call';
+  if (type === 'call_initiated') return 'Call (Twilio)';
   if (type === 'text_logged') return 'Text';
+  if (type === 'sms_sent') return 'SMS sent';
+  if (type === 'sms_received') return 'SMS received';
   if (type === 'email_sent') return 'Email sent';
   if (type === 'email_logged') return 'Email';
   return type;
@@ -135,6 +147,7 @@ export function CommunicationsHub({
   activeContact,
   activities,
   googleConnected,
+  twilioConnected,
   mergeContext,
   onLogContact,
   onApplyInsights,
@@ -143,6 +156,8 @@ export function CommunicationsHub({
   const [activeComposer, setActiveComposer] = useState<ActiveComposer>('none');
   const [replyContext, setReplyContext] = useState<{ threadId: string; subject: string } | null>(null);
   const [draftForEmail, setDraftForEmail] = useState<{ subject: string; body: string } | null>(null);
+  const [draftForSms, setDraftForSms] = useState<string | null>(null);
+  const [callInProgress, setCallInProgress] = useState(false);
 
   // Filter communication activities
   const contactActivities = useMemo(() => {
@@ -190,11 +205,15 @@ export function CommunicationsHub({
       setDraftForEmail({ subject: data.subject, body: data.body });
       setActiveComposer('email');
       void onLogContact('email_sent', 'AI-drafted email composed');
+    } else if (data.channel === 'sms' && activeContact?.phone && twilioConnected) {
+      // Route through SMS composer
+      setDraftForSms(data.body);
+      setActiveComposer('sms');
     } else {
       void onLogContact('text_logged', 'AI-drafted message copied');
       setActiveComposer('none');
     }
-  }, [activeContact?.email, onLogContact]);
+  }, [activeContact?.email, activeContact?.phone, twilioConnected, onLogContact]);
 
   const handleGmailSent = useCallback(() => {
     setActiveComposer('none');
@@ -202,6 +221,36 @@ export function CommunicationsHub({
     setDraftForEmail(null);
     void onLogContact('email_sent', `Email sent to ${activeContact?.email ?? 'contact'}`);
   }, [onLogContact, activeContact?.email]);
+
+  const handleSmsSent = useCallback(() => {
+    setActiveComposer('none');
+    setDraftForSms(null);
+    void onLogContact('sms_sent', `SMS sent to ${activeContact?.phone ?? 'contact'}`);
+  }, [onLogContact, activeContact?.phone]);
+
+  const handleClickToCall = useCallback(async () => {
+    if (!activeContact?.phone) return;
+    setCallInProgress(true);
+    try {
+      const res = await fetch('/api/integrations/twilio/voice/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: activeContact.phone,
+          leadId: lead.id,
+          contactId: activeContact.id,
+        }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        console.error('[Click-to-Call] Error:', data.error);
+      }
+    } catch (err) {
+      console.error('[Click-to-Call] Network error:', err);
+    } finally {
+      setCallInProgress(false);
+    }
+  }, [activeContact?.phone, activeContact?.id, lead.id]);
 
   const handleReply = useCallback((threadId: string, subject: string) => {
     setReplyContext({ threadId, subject });
@@ -246,7 +295,13 @@ export function CommunicationsHub({
             <path d="M2.5 3h11A1.5 1.5 0 0115 4.5v6a1.5 1.5 0 01-1.5 1.5H5L2 14.5V4.5A1.5 1.5 0 013.5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span>Twilio</span>
-          <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--unavailable" title="Coming soon">—</span>
+          {twilioConnected ? (
+            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--connected">Connected</span>
+          ) : twilioConnected === false ? (
+            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--unavailable" title="Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER in env">Not configured</span>
+          ) : (
+            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--checking">...</span>
+          )}
         </div>
       </div>
 
@@ -317,6 +372,29 @@ export function CommunicationsHub({
           >
             {EnvelopeIcon}
             <span>Email</span>
+          </button>
+        )}
+        {activeContact?.phone && twilioConnected && (
+          <button
+            type="button"
+            className={`crm-comm-hub__compose-btn ${activeComposer === 'sms' ? 'is-active' : ''}`}
+            onClick={() => { setDraftForSms(null); toggleComposer('sms'); }}
+            title="Send SMS"
+          >
+            {MessageIcon}
+            <span>SMS</span>
+          </button>
+        )}
+        {activeContact?.phone && twilioConnected && (
+          <button
+            type="button"
+            className={`crm-comm-hub__compose-btn ${callInProgress ? 'is-active' : ''}`}
+            onClick={() => void handleClickToCall()}
+            disabled={callInProgress}
+            title="Click to call"
+          >
+            {PhoneIcon}
+            <span>{callInProgress ? 'Calling...' : 'Call'}</span>
           </button>
         )}
         <button
@@ -391,6 +469,18 @@ export function CommunicationsHub({
           propertyAddress={lead.listingAddress}
           onClose={() => setActiveComposer('none')}
           onSend={handleAiSend}
+        />
+      )}
+
+      {activeComposer === 'sms' && activeContact?.phone && twilioConnected && (
+        <SmsComposer
+          to={activeContact.phone}
+          leadId={lead.id}
+          contactId={activeContact.id}
+          contactName={activeContact.fullName}
+          initialBody={draftForSms ?? undefined}
+          onClose={() => { setActiveComposer('none'); setDraftForSms(null); }}
+          onSent={handleSmsSent}
         />
       )}
 

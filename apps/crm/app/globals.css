@@ -10996,6 +10996,39 @@ textarea:focus {
   margin-top: 0.25rem;
 }
 
+/* ── SMS Composer ── */
+.crm-sms-composer {
+  border: 1px solid var(--crm-border);
+  border-radius: 0.7rem;
+  padding: 0.75rem;
+  background: var(--crm-surface);
+  margin-top: 0.5rem;
+  display: grid;
+  gap: 0.4rem;
+}
+.crm-sms-composer.crm-sms-sent {
+  background: rgba(34, 197, 94, 0.06);
+  border-color: #22c55e;
+  text-align: center;
+  color: #16a34a;
+  font-weight: 500;
+}
+.crm-sms-composer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.crm-sms-to {
+  opacity: 0.6;
+  cursor: default;
+}
+.crm-sms-composer__actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
 .crm-primary-button {
   display: inline-flex;
   align-items: center;

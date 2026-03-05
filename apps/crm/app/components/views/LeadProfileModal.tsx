@@ -161,6 +161,7 @@ export function LeadProfileModal({
 }: LeadProfileModalProps) {
   const [activeTab, setActiveTab] = useState<ModalTab>('overview');
   const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
+  const [twilioConnected, setTwilioConnected] = useState<boolean | null>(null);
   const [linkContactMsg, setLinkContactMsg] = useState<string | null>(null);
   const [showings, setShowings] = useState<CrmShowing[]>([]);
   const [portalLink, setPortalLink] = useState<string | null>(null);
@@ -250,6 +251,20 @@ export function LeadProfileModal({
       })
       .catch(() => {
         if (!cancelled) setGoogleConnected(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Check Twilio connection status
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/integrations/twilio/status', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setTwilioConnected(data.connected ?? false);
+      })
+      .catch(() => {
+        if (!cancelled) setTwilioConnected(false);
       });
     return () => { cancelled = true; };
   }, []);
@@ -825,6 +840,7 @@ export function LeadProfileModal({
               activeContact={activeContact}
               activities={activities}
               googleConnected={googleConnected}
+              twilioConnected={twilioConnected}
               mergeContext={{
                 leadName: activeContact?.fullName ?? null,
                 agentName: null,
