@@ -697,6 +697,7 @@ const testLead: CrmLead = {
   acreage: null,
   town: null,
   neighborhood: null,
+  houseStyle: null,
   lastContactAt: null,
   nextActionAt: null,
   nextActionNote: null,

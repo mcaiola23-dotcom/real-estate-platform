@@ -225,7 +225,15 @@ export function CommunicationsHub({
             <button
               type="button"
               className="crm-comm-hub__status-badge crm-comm-hub__status-badge--connect"
-              onClick={() => { window.location.href = '/api/integrations/google/connect'; }}
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/integrations/google/connect');
+                  const data = await res.json();
+                  if (data.ok && data.authUrl) {
+                    window.location.href = data.authUrl;
+                  }
+                } catch { /* silent */ }
+              }}
             >
               Connect
             </button>

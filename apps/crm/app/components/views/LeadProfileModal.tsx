@@ -180,15 +180,17 @@ export function LeadProfileModal({
   }, [activeLeadLastContact]);
 
   const modalRef = useRef<HTMLElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
-  // -- Focus trap --
+  // -- Focus trap (stable ref prevents re-run on every draft change) --
   useEffect(() => {
     const modal = modalRef.current;
     if (!modal) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== 'Tab') return;
@@ -215,7 +217,7 @@ export function LeadProfileModal({
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    // Auto-focus first interactive element
+    // Auto-focus first interactive element on mount only
     requestAnimationFrame(() => {
       const firstFocusable = modal.querySelector<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -224,7 +226,7 @@ export function LeadProfileModal({
     });
 
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch showings for this lead
   useEffect(() => {

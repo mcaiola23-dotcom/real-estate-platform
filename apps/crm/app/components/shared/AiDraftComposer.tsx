@@ -117,16 +117,19 @@ export const AiDraftComposer = memo(function AiDraftComposer({
   }, [drafts]);
 
   const handleSend = useCallback(() => {
+    // If parent handles sending (CommunicationsHub routes to GmailComposer), delegate
+    if (onSend) {
+      onSend({ channel, subject, body });
+      return;
+    }
+    // Fallback: open mailto or copy to clipboard
     if (channel === 'email' && contactEmail) {
       const mailtoSubject = encodeURIComponent(subject);
       const mailtoBody = encodeURIComponent(body);
       window.open(`mailto:${contactEmail}?subject=${mailtoSubject}&body=${mailtoBody}`, '_blank');
-    } else if (channel === 'sms' && contactPhone) {
-      void navigator.clipboard.writeText(body);
     } else {
       void navigator.clipboard.writeText(body);
     }
-    onSend?.({ channel, subject, body });
   }, [channel, contactEmail, contactPhone, subject, body, onSend]);
 
   const charCount = body.length;
@@ -304,7 +307,9 @@ export const AiDraftComposer = memo(function AiDraftComposer({
                 className="crm-btn crm-btn-primary"
                 onClick={handleSend}
               >
-                {channel === 'email' && contactEmail ? 'Open in Email' : 'Copy to Clipboard'}
+                {channel === 'email' && contactEmail
+                  ? (onSend ? 'Compose Email' : 'Open in Email')
+                  : 'Copy to Clipboard'}
               </button>
             </div>
           </div>
