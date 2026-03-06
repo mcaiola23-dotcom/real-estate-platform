@@ -39,7 +39,7 @@ test('getPipelineMoveNotice only returns a notice when active status filter woul
 });
 
 test('toggleTableSortState toggles sort direction and resets to asc for new columns', () => {
-  const initial = { column: 'updatedAt', direction: 'desc' } as const;
+  const initial = { column: 'lastActivity', direction: 'desc' } as const;
   const switchedColumn = toggleTableSortState(initial, 'name');
   const toggledDirection = toggleTableSortState(switchedColumn, 'name');
 

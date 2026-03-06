@@ -60,9 +60,42 @@ export interface ListingSuggestParams {
   limit?: number;
 }
 
+export type ListingsProviderAction =
+  | "searchListings"
+  | "getListingById"
+  | "getListingsByIds"
+  | "suggestListings"
+  | "listNeighborhoods";
+
+export interface ListingsProviderActionPayloadMap {
+  searchListings: ListingSearchParams;
+  getListingById: { id: string };
+  getListingsByIds: { ids: string[] };
+  suggestListings: ListingSuggestParams;
+  listNeighborhoods: { townSlugs?: string[] };
+}
+
+export interface ListingsProviderActionResultMap {
+  searchListings: ListingSearchResult;
+  getListingById: Listing | null;
+  getListingsByIds: Listing[];
+  suggestListings: Listing[];
+  listNeighborhoods: ListingNeighborhoodOption[];
+}
+
+export type ListingsProviderKind = 'mock' | 'idx';
+
+export interface ListingNeighborhoodOption {
+  slug: string;
+  name: string;
+  townSlug: string;
+}
+
 export interface ListingsProvider {
   searchListings(params: ListingSearchParams): Promise<ListingSearchResult>;
   getListingById(id: string): Promise<Listing | null>;
+  getListingsByIds(ids: string[]): Promise<Listing[]>;
   getAvailableFilters(): ListingFilters;
   suggestListings(params: ListingSuggestParams): Promise<Listing[]>;
+  listNeighborhoods(townSlugs?: string[]): Promise<ListingNeighborhoodOption[]>;
 }

@@ -4,17 +4,36 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { MagnifyingGlassIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { detectSearchType } from './unified-search/intent'
+import {
+  addRecentPropertyView,
+  addRecentSearch,
+  getRecentPropertyViews,
+  getRecentSearches,
+  type RecentPropertyEntry,
+  type RecentSearchKind,
+} from './unified-search/history'
 
 const API_BASE = '/api/portal';
+const MAX_RECENT_ITEMS = 4
 const debugLog = (..._args: unknown[]) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(..._args)
   }
 }
 
+type SuggestionType =
+  | 'address'
+  | 'neighborhood'
+  | 'city'
+  | 'ai_search'
+  | 'google_place'
+  | 'recent_search'
+  | 'recent_property'
+type StandardSuggestionType = 'address' | 'neighborhood' | 'city' | 'google_place'
 
-interface AutocompleteSuggestion {
-  type: 'address' | 'neighborhood' | 'city' | 'ai_search' | 'google_place'
+
+export interface AutocompleteSuggestion {
+  type: SuggestionType
   label: string
   value: string
   city?: string
@@ -22,6 +41,12 @@ interface AutocompleteSuggestion {
   lat?: number
   lng?: number
   place_id?: string
+  historyKind?: RecentSearchKind
+  historySourceType?: StandardSuggestionType
+  parcel_id?: string
+  listing_id?: number
+  status?: string
+  updated_at?: number
 }
 
 interface UnifiedSearchBarProps {
@@ -29,6 +54,7 @@ interface UnifiedSearchBarProps {
   onAddressSelect?: (suggestion: AutocompleteSuggestion) => void
   onCitySelect?: (city: string) => void
   onNeighborhoodSelect?: (neighborhood: string, city?: string) => void
+  onRecentPropertySelect?: (property: RecentPropertyEntry) => void
   placeholder?: string
   className?: string
   showHelperText?: boolean
@@ -41,6 +67,7 @@ export default function UnifiedSearchBar({
   onAddressSelect,
   onCitySelect,
   onNeighborhoodSelect,
+  onRecentPropertySelect,
   placeholder = "Search addresses or describe your dream home...",
   className = '',
   showHelperText = true,
@@ -58,7 +85,6 @@ export default function UnifiedSearchBar({
 
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout>()
 
   // Update search type as user types
@@ -79,6 +105,147 @@ export default function UnifiedSearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [])
+
+  const showRecentSuggestions = useCallback(() => {
+    const recentProperties: AutocompleteSuggestion[] = getRecentPropertyViews(MAX_RECENT_ITEMS).map(
+      (property) => ({
+        type: 'recent_property',
+        label: property.city ? `${property.address}, ${property.city}` : property.address,
+        value: property.address,
+        city: property.city,
+        confidence: 1,
+        parcel_id: property.parcelId,
+        listing_id: property.listingId,
+        status: property.status,
+        updated_at: property.updatedAt,
+      })
+    )
+
+    const recentSearches: AutocompleteSuggestion[] = getRecentSearches(MAX_RECENT_ITEMS).map(
+      (search) => {
+        const recentLabel =
+          search.kind === 'ai'
+            ? `AI: ${search.query}`
+            : search.label
+        return {
+          type: 'recent_search',
+          label: recentLabel,
+          value: search.value,
+          city: search.city,
+          confidence: 1,
+          place_id: search.placeId,
+          historyKind: search.kind,
+          historySourceType: search.kind === 'ai' ? undefined : search.kind,
+          updated_at: search.updatedAt,
+        }
+      }
+    )
+
+    const combinedRecent = [...recentProperties, ...recentSearches]
+      .sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0))
+      .slice(0, MAX_RECENT_ITEMS * 2)
+
+    setSuggestions(combinedRecent)
+    setIsOpen(combinedRecent.length > 0)
+    setSelectedIndex(combinedRecent.length > 0 ? 0 : -1)
+  }, [])
+
+  const executeAiSearch = useCallback(
+    (query: string) => {
+      const trimmedQuery = query.trim()
+      if (!trimmedQuery) return
+
+      addRecentSearch({
+        kind: 'ai',
+        query: trimmedQuery,
+      })
+
+      if (onAiSearch) {
+        onAiSearch(trimmedQuery)
+      } else {
+        const encodedQuery = encodeURIComponent(trimmedQuery)
+        router.push(`/properties?aiQuery=${encodedQuery}`)
+      }
+    },
+    [onAiSearch, router]
+  )
+
+  const trackSuggestionSelection = useCallback((suggestion: AutocompleteSuggestion) => {
+    if (suggestion.type === 'ai_search') {
+      addRecentSearch({
+        kind: 'ai',
+        query: suggestion.value,
+      })
+      return
+    }
+
+    if (
+      suggestion.type === 'address' ||
+      suggestion.type === 'city' ||
+      suggestion.type === 'neighborhood' ||
+      suggestion.type === 'google_place'
+    ) {
+      addRecentSearch({
+        kind: suggestion.type,
+        query: suggestion.value,
+        label: suggestion.label,
+        value: suggestion.value,
+        city: suggestion.city,
+        placeId: suggestion.place_id,
+      })
+      return
+    }
+
+    if (suggestion.type === 'recent_search') {
+      if (suggestion.historyKind === 'ai') {
+        addRecentSearch({
+          kind: 'ai',
+          query: suggestion.value,
+        })
+        return
+      }
+
+      if (suggestion.historySourceType) {
+        addRecentSearch({
+          kind: suggestion.historySourceType,
+          query: suggestion.value,
+          label: suggestion.label,
+          value: suggestion.value,
+          city: suggestion.city,
+          placeId: suggestion.place_id,
+        })
+      }
+      return
+    }
+
+    if (suggestion.type === 'recent_property' && suggestion.parcel_id) {
+      addRecentPropertyView({
+        parcelId: suggestion.parcel_id,
+        listingId: suggestion.listing_id,
+        address: suggestion.value,
+        city: suggestion.city,
+        status: suggestion.status,
+      })
+      return
+    }
+
+    if (suggestion.type === 'recent_property' && suggestion.listing_id) {
+      addRecentPropertyView({
+        listingId: suggestion.listing_id,
+        address: suggestion.value,
+        city: suggestion.city,
+        status: suggestion.status,
+      })
+    }
+  }, [])
+
   // Fetch mixed suggestions (portal parcel/city/neighborhood + Google Places)
   const fetchSuggestions = useCallback(async (query: string) => {
     const detectedType = detectSearchType(query)
@@ -97,8 +264,12 @@ export default function UnifiedSearchBar({
     }
 
     if (query.length < 2) {
-      setSuggestions([])
-      setIsOpen(false)
+      if (query.trim().length === 0) {
+        showRecentSuggestions()
+      } else {
+        setSuggestions([])
+        setIsOpen(false)
+      }
       return
     }
 
@@ -190,7 +361,7 @@ export default function UnifiedSearchBar({
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [showRecentSuggestions])
 
   // Handle input change with debouncing
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -199,6 +370,12 @@ export default function UnifiedSearchBar({
 
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current)
+    }
+
+    if (newValue.trim().length === 0) {
+      setLoading(false)
+      showRecentSuggestions()
+      return
     }
 
     debounceTimerRef.current = setTimeout(() => {
@@ -210,26 +387,20 @@ export default function UnifiedSearchBar({
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
 
-    if (!value.trim()) return
+    const trimmedValue = value.trim()
+    if (!trimmedValue) return
 
-    const detectedType = detectSearchType(value)
+    const detectedType = detectSearchType(trimmedValue)
 
     if (detectedType === 'ai' || searchType === 'ai') {
-      // Perform AI search
-      if (onAiSearch) {
-        onAiSearch(value.trim())
-      } else {
-        // Default: navigate to properties with aiQuery
-        const encodedQuery = encodeURIComponent(value.trim())
-        router.push(`/properties?aiQuery=${encodedQuery}`)
-      }
+      executeAiSearch(trimmedValue)
     } else if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
       // Select the highlighted suggestion
       handleSelect(suggestions[selectedIndex])
     } else if (suggestions.length > 0) {
       // If user entered a descriptive query, prefer the AI option over first address hit.
       const aiSuggestion = suggestions.find(s => s.type === 'ai_search')
-      const wordCount = value.trim().split(/\s+/).filter(Boolean).length
+      const wordCount = trimmedValue.split(/\s+/).filter(Boolean).length
       if (aiSuggestion && wordCount >= 3) {
         handleSelect(aiSuggestion)
       } else {
@@ -269,18 +440,31 @@ export default function UnifiedSearchBar({
   // Handle suggestion selection
   const handleSelect = (suggestion: AutocompleteSuggestion) => {
     debugLog('[UnifiedSearchBar] handleSelect called with:', suggestion)
+    trackSuggestionSelection(suggestion)
     setValue(suggestion.value)
     setIsOpen(false)
     setSelectedIndex(-1)
 
+    const replayStandardSuggestion = (sourceType: StandardSuggestionType) => {
+      if (sourceType === 'city') {
+        onCitySelect?.(suggestion.value)
+        return
+      }
+
+      if (sourceType === 'neighborhood') {
+        onNeighborhoodSelect?.(suggestion.value, suggestion.city)
+        return
+      }
+
+      onAddressSelect?.({
+        ...suggestion,
+        type: sourceType,
+      })
+    }
+
     switch (suggestion.type) {
       case 'ai_search':
-        if (onAiSearch) {
-          onAiSearch(suggestion.value)
-        } else {
-          const encodedQuery = encodeURIComponent(suggestion.value)
-          router.push(`/properties?aiQuery=${encodedQuery}`)
-        }
+        executeAiSearch(suggestion.value)
         break
       case 'address':
       case 'google_place':
@@ -292,6 +476,41 @@ export default function UnifiedSearchBar({
         break
       case 'neighborhood':
         onNeighborhoodSelect?.(suggestion.value, suggestion.city)
+        break
+      case 'recent_search':
+        if (suggestion.historyKind === 'ai') {
+          executeAiSearch(suggestion.value)
+          break
+        }
+
+        if (suggestion.historySourceType) {
+          replayStandardSuggestion(suggestion.historySourceType)
+          break
+        }
+
+        // Backward-safe fallback for malformed history entries.
+        onAddressSelect?.({
+          ...suggestion,
+          type: 'address',
+        })
+        break
+      case 'recent_property':
+        if (suggestion.parcel_id || suggestion.listing_id) {
+          onRecentPropertySelect?.({
+            parcelId: suggestion.parcel_id,
+            listingId: suggestion.listing_id,
+            address: suggestion.value,
+            city: suggestion.city,
+            status: suggestion.status,
+            updatedAt: Date.now(),
+          })
+          if (onRecentPropertySelect) break
+        }
+
+        onAddressSelect?.({
+          ...suggestion,
+          type: 'address',
+        })
         break
     }
   }
@@ -309,13 +528,17 @@ export default function UnifiedSearchBar({
         return <SparklesIcon className="h-5 w-5 text-stone-700" />
       case 'google_place':
         return '📍'
+      case 'recent_search':
+        return '🕘'
+      case 'recent_property':
+        return '🕘'
       default:
         return '📍'
     }
   }
 
-  const getTypeLabel = (type: string) => {
-    switch (type) {
+  const getTypeLabel = (suggestion: AutocompleteSuggestion) => {
+    switch (suggestion.type) {
       case 'address':
         return 'Address'
       case 'neighborhood':
@@ -326,6 +549,10 @@ export default function UnifiedSearchBar({
         return 'AI-Powered Search'
       case 'google_place':
         return 'Address'
+      case 'recent_search':
+        return suggestion.historyKind === 'ai' ? 'Recent AI Search' : 'Recent Search'
+      case 'recent_property':
+        return 'Recently Viewed'
       default:
         return ''
     }
@@ -367,7 +594,14 @@ export default function UnifiedSearchBar({
             onKeyDown={handleKeyDown}
             onFocus={() => {
               setIsFocused(true)
-              if (value.length >= 2 && suggestions.length > 0) setIsOpen(true)
+              if (value.trim().length === 0) {
+                showRecentSuggestions()
+                return
+              }
+
+              if (value.length >= 2 && suggestions.length > 0) {
+                setIsOpen(true)
+              }
             }}
             onBlur={() => setIsFocused(false)}
             className={`
@@ -469,7 +703,7 @@ export default function UnifiedSearchBar({
                   </div>
                   <p className={`text-xs mt-0.5 ${suggestion.type === 'ai_search' ? 'text-stone-700' : 'text-stone-500'
                     }`}>
-                    {getTypeLabel(suggestion.type)}
+                    {getTypeLabel(suggestion)}
                   </p>
                 </div>
               </div>

@@ -10,7 +10,7 @@ import type {
   LeadSearchSignal,
 } from '../../lib/crm-types';
 import { LEAD_STATUSES, TIMEFRAME_OPTIONS } from '../../lib/crm-types';
-import { formatDateTime, formatTimeAgo } from '../../lib/crm-formatters';
+import { formatDateTime, formatTimeAgo, formatPhoneDisplay, stripPhoneFormatting } from '../../lib/crm-formatters';
 import {
   formatLeadSourceLabel,
   formatLeadStatusLabel,
@@ -32,6 +32,8 @@ import { PriceRangeSlider } from '../shared/PriceRangeSlider';
 import { AiPredictiveScore } from '../shared/AiPredictiveScore';
 import { AiLeadRouting } from '../shared/AiLeadRouting';
 import { CommunicationsHub } from '../shared/CommunicationsHub';
+import { QuickActionButtons } from '../shared/QuickActionButtons';
+import { useCommunicationModals } from '../../lib/communication-modal-context';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { CrmListingModal } from '../shared/CrmListingModal';
 import type { MergeFieldContext } from '../../lib/crm-templates';
@@ -79,25 +81,6 @@ const TabActivityIcon = (
 // Quick action SVG icons (replacing emojis)
 // ---------------------------------------------------------------------------
 
-const QuickPhoneIcon = (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-    <path d="M6 3H4.5A1.5 1.5 0 003 4.5v1A8.5 8.5 0 0010.5 14h1a1.5 1.5 0 001.5-1.5V11l-2.5-1.5L9 11a5 5 0 01-4-4l1.5-1.5L5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const QuickEmailIcon = (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const QuickTextIcon = (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-    <path d="M2.5 3h11A1.5 1.5 0 0115 4.5v6a1.5 1.5 0 01-1.5 1.5H5L2 14.5V4.5A1.5 1.5 0 013.5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
@@ -119,6 +102,7 @@ interface LeadProfileModalProps {
   onClose: () => void;
   onSetLeadDraftField: (leadId: string, field: keyof LeadDraft, value: string | string[]) => void;
   onSetContactDraft: Dispatch<SetStateAction<Record<string, ContactDraft>>>;
+  onSetContactDraftField?: (contactId: string, field: keyof ContactDraft, value: string) => void;
   onUpdateLead: (leadId: string) => Promise<void>;
   onUpdateContact: (contactId: string) => Promise<void>;
   onClearLeadDraft: (leadId: string) => void;
@@ -150,6 +134,7 @@ export function LeadProfileModal({
   onClose,
   onSetLeadDraftField,
   onSetContactDraft,
+  onSetContactDraftField,
   onUpdateLead,
   onUpdateContact,
   onClearLeadDraft,
@@ -160,8 +145,7 @@ export function LeadProfileModal({
   onDismissDuplicate,
 }: LeadProfileModalProps) {
   const [activeTab, setActiveTab] = useState<ModalTab>('overview');
-  const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
-  const [twilioConnected, setTwilioConnected] = useState<boolean | null>(null);
+  const { googleConnected, twilioConnected } = useCommunicationModals();
   const [linkContactMsg, setLinkContactMsg] = useState<string | null>(null);
   const [showings, setShowings] = useState<CrmShowing[]>([]);
   const [portalLink, setPortalLink] = useState<string | null>(null);
@@ -241,33 +225,8 @@ export function LeadProfileModal({
     return () => { cancelled = true; };
   }, [lead.id]);
 
-  // Check Google connection status
-  useEffect(() => {
-    let cancelled = false;
-    fetch('/api/integrations/google/status', { cache: 'no-store' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && data) setGoogleConnected(data.connected ?? false);
-      })
-      .catch(() => {
-        if (!cancelled) setGoogleConnected(false);
-      });
-    return () => { cancelled = true; };
-  }, []);
-
-  // Check Twilio connection status
-  useEffect(() => {
-    let cancelled = false;
-    fetch('/api/integrations/twilio/status', { cache: 'no-store' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && data) setTwilioConnected(data.connected ?? false);
-      })
-      .catch(() => {
-        if (!cancelled) setTwilioConnected(false);
-      });
-    return () => { cancelled = true; };
-  }, []);
+  // Google/Twilio connection status is now provided via CommunicationModalContext
+  // (fetched once at workspace level, shared everywhere)
 
   // Suggested property matches
   interface MatchEntry { listing: Listing; score: number; matchReasons: string[] }
@@ -372,28 +331,14 @@ export function LeadProfileModal({
           </div>
           <div className="crm-modal-header-actions">
             {activeContact && (activeContact.phone || activeContact.email) ? (
-              <div className="crm-quick-actions">
-                {activeContact.phone ? (
-                  <a href={`tel:${activeContact.phone}`} className="crm-quick-action" title={`Call ${activeContact.phone}`} aria-label="Call lead">
-                    {QuickPhoneIcon}
-                  </a>
-                ) : null}
-                {activeContact.email ? (
-                  <a
-                    href={`mailto:${activeContact.email}?subject=${encodeURIComponent(`Re: ${leadDraft.listingAddress || 'Your inquiry'}`)}`}
-                    className="crm-quick-action"
-                    title={`Email ${activeContact.email}`}
-                    aria-label="Email lead"
-                  >
-                    {QuickEmailIcon}
-                  </a>
-                ) : null}
-                {activeContact.phone ? (
-                  <a href={`sms:${activeContact.phone}`} className="crm-quick-action" title={`Text ${activeContact.phone}`} aria-label="Text lead">
-                    {QuickTextIcon}
-                  </a>
-                ) : null}
-              </div>
+              <QuickActionButtons
+                phone={activeContact.phone}
+                email={activeContact.email}
+                contactName={activeContact.fullName}
+                leadId={lead.id}
+                contactId={activeContact.id}
+                propertyAddress={leadDraft.listingAddress}
+              />
             ) : null}
             <button
               type="button"
@@ -580,18 +525,22 @@ export function LeadProfileModal({
                       <input
                         value={activeContactDraft?.fullName ?? ''}
                         onChange={(event) => {
-                          const value = event.target.value;
-                          onSetContactDraft((prev) => ({
-                            ...prev,
-                            [activeContact.id]: {
-                              ...(prev[activeContact.id] ?? {
-                                fullName: activeContact.fullName ?? '',
-                                email: activeContact.email ?? '',
-                                phone: activeContact.phone ?? '',
-                              }),
-                              fullName: value,
-                            },
-                          }));
+                          if (onSetContactDraftField) {
+                            onSetContactDraftField(activeContact.id, 'fullName', event.target.value);
+                          } else {
+                            const value = event.target.value;
+                            onSetContactDraft((prev) => ({
+                              ...prev,
+                              [activeContact.id]: {
+                                ...(prev[activeContact.id] ?? {
+                                  fullName: activeContact.fullName ?? '',
+                                  email: activeContact.email ?? '',
+                                  phone: activeContact.phone ?? '',
+                                }),
+                                fullName: value,
+                              },
+                            }));
+                          }
                         }}
                         placeholder="Full name"
                       />
@@ -600,21 +549,26 @@ export function LeadProfileModal({
                       Phone
                       <input
                         inputMode="tel"
-                        value={activeContactDraft?.phone ?? ''}
+                        value={formatPhoneDisplay(activeContactDraft?.phone ?? '')}
                         onChange={(event) => {
-                          const value = event.target.value;
-                          onSetContactDraft((prev) => ({
-                            ...prev,
-                            [activeContact.id]: {
-                              ...(prev[activeContact.id] ?? {
-                                fullName: activeContact.fullName ?? '',
-                                email: activeContact.email ?? '',
-                                phone: activeContact.phone ?? '',
-                              }),
-                              phone: value,
-                            },
-                          }));
+                          const raw = stripPhoneFormatting(event.target.value);
+                          if (onSetContactDraftField) {
+                            onSetContactDraftField(activeContact.id, 'phone', raw);
+                          } else {
+                            onSetContactDraft((prev) => ({
+                              ...prev,
+                              [activeContact.id]: {
+                                ...(prev[activeContact.id] ?? {
+                                  fullName: activeContact.fullName ?? '',
+                                  email: activeContact.email ?? '',
+                                  phone: activeContact.phone ?? '',
+                                }),
+                                phone: raw,
+                              },
+                            }));
+                          }
                         }}
+                        placeholder="(123) 456-7890"
                       />
                     </label>
                   </div>
@@ -624,18 +578,22 @@ export function LeadProfileModal({
                       type="email"
                       value={activeContactDraft?.email ?? ''}
                       onChange={(event) => {
-                        const value = event.target.value;
-                        onSetContactDraft((prev) => ({
-                          ...prev,
-                          [activeContact.id]: {
-                            ...(prev[activeContact.id] ?? {
-                              fullName: activeContact.fullName ?? '',
-                              email: activeContact.email ?? '',
-                              phone: activeContact.phone ?? '',
-                            }),
-                            email: value,
-                          },
-                        }));
+                        if (onSetContactDraftField) {
+                          onSetContactDraftField(activeContact.id, 'email', event.target.value);
+                        } else {
+                          const value = event.target.value;
+                          onSetContactDraft((prev) => ({
+                            ...prev,
+                            [activeContact.id]: {
+                              ...(prev[activeContact.id] ?? {
+                                fullName: activeContact.fullName ?? '',
+                                email: activeContact.email ?? '',
+                                phone: activeContact.phone ?? '',
+                              }),
+                              email: value,
+                            },
+                          }));
+                        }
                       }}
                     />
                   </label>

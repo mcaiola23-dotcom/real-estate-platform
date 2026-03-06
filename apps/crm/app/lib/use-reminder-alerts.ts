@@ -15,7 +15,8 @@ export interface ReminderAlert {
 
 const STORAGE_KEY_PREFIX = 'crm.reminder-alerts-ack';
 const CHECK_INTERVAL_MS = 15_000; // Check every 15 seconds for responsiveness
-const DEDUP_WINDOW_MS = 5 * 60 * 1000;
+const DEDUP_WINDOW_MS = 60 * 60 * 1000; // 1 hour between re-fires for the same lead
+const MAX_OVERDUE_AGE_MS = 48 * 60 * 60 * 1000; // Only alert for reminders overdue within last 48h
 
 function getAcknowledged(tenantId: string): Record<string, number> {
   try {
@@ -73,6 +74,8 @@ export function useReminderAlerts(
 
       const dueTime = new Date(lead.nextActionAt).getTime();
       if (dueTime > now) continue;
+      // Skip reminders that are more than 48 hours overdue
+      if (now - dueTime > MAX_OVERDUE_AGE_MS) continue;
 
       // Respect snooze
       if (lead.reminderSnoozedUntil) {

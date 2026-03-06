@@ -4,11 +4,39 @@ import type { WebsiteLeadSubmittedEvent } from "@real-estate/types/events";
 import { LeadSubmissionSchema } from "../../lib/validators";
 import { writeClient } from "../../lib/sanity.server";
 import { getTenantContextFromRequest } from "../../lib/tenant/resolve-tenant";
+import {
+    enforceWebsiteApiGuard,
+    maskEmail,
+    maskPhone,
+    readJsonBodyWithLimit,
+    validateBotTokenIfRequired,
+} from "../../lib/api-security";
+
+const LEAD_ROUTE_POLICY = {
+    routeId: "website-lead",
+    maxRequests: 20,
+    windowMs: 60_000,
+    maxBodyBytes: 16_384,
+} as const;
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const result = LeadSubmissionSchema.safeParse(body);
+        const guardResponse = enforceWebsiteApiGuard(request, LEAD_ROUTE_POLICY);
+        if (guardResponse) {
+            return guardResponse;
+        }
+
+        const bodyResult = await readJsonBodyWithLimit(request, LEAD_ROUTE_POLICY.maxBodyBytes);
+        if (!bodyResult.ok) {
+            return bodyResult.response;
+        }
+
+        const botTokenResponse = validateBotTokenIfRequired(bodyResult.body);
+        if (botTokenResponse) {
+            return botTokenResponse;
+        }
+
+        const result = LeadSubmissionSchema.safeParse(bodyResult.body);
 
         if (!result.success) {
             return NextResponse.json(
@@ -54,12 +82,14 @@ export async function POST(request: Request) {
             },
         };
 
-        // Logging for immediate debug
-        console.log("------------------------------------------------");
-        console.log("NEW HOME VALUE LEAD RECEIVED");
-        console.log("Tenant:", leadEvent.tenant.tenantId, leadEvent.tenant.tenantSlug, leadEvent.tenant.tenantDomain);
-        console.log("Contact:", lead.email, lead.phone);
-        console.log("------------------------------------------------");
+        console.info("website.lead.submitted", {
+            tenantId: leadEvent.tenant.tenantId,
+            tenantSlug: leadEvent.tenant.tenantSlug,
+            source: leadEvent.payload.source,
+            contactEmailMasked: maskEmail(lead.email),
+            contactPhoneMasked: maskPhone(lead.phone),
+            hasPropertyDetails: Boolean(lead.propertyDetails),
+        });
 
         const ingestionResult = await enqueueWebsiteEvent(leadEvent);
         if (!ingestionResult.accepted) {

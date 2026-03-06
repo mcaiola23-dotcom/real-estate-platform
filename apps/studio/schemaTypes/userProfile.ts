@@ -20,6 +20,24 @@ export default defineType({
             readOnly: true,
         }),
         defineField({
+            name: 'tenantId',
+            title: 'Tenant ID',
+            description: 'Owning tenant identifier used by website profile API routes.',
+            type: 'string',
+        }),
+        defineField({
+            name: 'tenantSlug',
+            title: 'Tenant Slug',
+            description: 'Owning tenant slug for editor visibility and validation.',
+            type: 'string',
+        }),
+        defineField({
+            name: 'tenantDomain',
+            title: 'Tenant Domain',
+            description: 'Owning tenant domain captured at profile creation time.',
+            type: 'string',
+        }),
+        defineField({
             name: 'email',
             title: 'Email',
             type: 'string',

@@ -179,7 +179,7 @@ export default function BuyPage() {
                     Define the Target
                   </h3>
                   <p className="text-stone-600 leading-relaxed">
-                    A short consultation to align on towns, neighborhoods, timing, and deal preferences. We'll create a focused search strategy.
+                    A short consultation to align on towns, neighborhoods, timing, and deal preferences. We will create a focused search strategy.
                   </p>
                 </div>
               </li>
@@ -250,7 +250,7 @@ export default function BuyPage() {
                 Buyer Resources
               </p>
               <h2 className="font-serif text-3xl md:text-4xl font-medium text-white mb-4">
-                Fairfield County Buyer's Guide
+                Fairfield County Buyer Guide
               </h2>
               <p className="text-lg text-stone-200">
                 Essential information for navigating the Connecticut home buying process.
@@ -283,7 +283,7 @@ export default function BuyPage() {
                   Property Taxes in CT
                 </h3>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  Property taxes vary significantly by town. Greenwich has lower mill rates while smaller towns may be higher. I'll help you understand the true cost of ownership.
+                  Property taxes vary significantly by town. Greenwich has lower mill rates while smaller towns may be higher. I will help you understand the true cost of ownership.
                 </p>
               </div>
 
@@ -297,7 +297,7 @@ export default function BuyPage() {
                   Home Inspections
                 </h3>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  Always get a thorough inspection. In Connecticut, buyers typically have 7-14 days for due diligence. I'll help you interpret findings and negotiate repairs.
+                  Always get a thorough inspection. In Connecticut, buyers typically have 7-14 days for due diligence. I will help you interpret findings and negotiate repairs.
                 </p>
               </div>
 
@@ -311,7 +311,7 @@ export default function BuyPage() {
                   Timeline & Closing
                 </h3>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  From accepted offer to closing typically takes 45-60 days. Connecticut requires an attorney for closing—I'll connect you with experienced real estate attorneys.
+                  From accepted offer to closing typically takes 45-60 days. Connecticut requires an attorney for closing, and I will connect you with experienced real estate attorneys.
                 </p>
               </div>
             </div>
@@ -331,7 +331,7 @@ export default function BuyPage() {
               Ready to Start Your Search?
             </h2>
             <p className="text-lg text-stone-300 mb-8 leading-relaxed">
-              Tell me what you're looking for and your ideal timing. I'll reply with a clear next step and a plan for the search.
+              Tell me what you are looking for and your ideal timing. I will reply with a clear next step and a plan for the search.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link

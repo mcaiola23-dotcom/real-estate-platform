@@ -15,8 +15,16 @@ interface FunnelStage {
   count: number;
   pct: number;
   avgDays: number;
-  color: string;
 }
+
+// Warm stone palette — graduated from dark to light, with muted earth tones
+const STAGE_COLORS: Record<string, { bar: string; barHover: string }> = {
+  new:       { bar: '#78716c', barHover: '#57534e' },
+  qualified: { bar: '#8b7e74', barHover: '#6b5f55' },
+  nurturing: { bar: '#a39585', barHover: '#8b7d6d' },
+  won:       { bar: '#6b7c5e', barHover: '#566947' },
+  lost:      { bar: '#b8a99a', barHover: '#9c8d7e' },
+};
 
 function avgDaysInStatus(leads: CrmLead[], status: string): number {
   const matching = leads.filter((l) => l.status === status);
@@ -60,49 +68,13 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads, contactB
   };
 
   const stages: FunnelStage[] = [
-    {
-      key: 'new',
-      label: 'New',
-      count: countByStatus.new,
-      pct: Math.round((countByStatus.new / total) * 100),
-      avgDays: avgDaysInStatus(leads, 'new'),
-      color: 'var(--status-new)',
-    },
-    {
-      key: 'qualified',
-      label: 'Qualified',
-      count: countByStatus.qualified,
-      pct: Math.round((countByStatus.qualified / total) * 100),
-      avgDays: avgDaysInStatus(leads, 'qualified'),
-      color: 'var(--status-qualified)',
-    },
-    {
-      key: 'nurturing',
-      label: 'Nurturing',
-      count: countByStatus.nurturing,
-      pct: Math.round((countByStatus.nurturing / total) * 100),
-      avgDays: avgDaysInStatus(leads, 'nurturing'),
-      color: 'var(--status-nurturing)',
-    },
-    {
-      key: 'won',
-      label: 'Won',
-      count: countByStatus.won,
-      pct: Math.round((countByStatus.won / total) * 100),
-      avgDays: avgDaysInStatus(leads, 'won'),
-      color: 'var(--status-won)',
-    },
-    {
-      key: 'lost',
-      label: 'Lost',
-      count: countByStatus.lost,
-      pct: Math.round((countByStatus.lost / total) * 100),
-      avgDays: avgDaysInStatus(leads, 'lost'),
-      color: 'var(--status-lost)',
-    },
+    { key: 'new', label: 'New', count: countByStatus.new, pct: Math.round((countByStatus.new / total) * 100), avgDays: avgDaysInStatus(leads, 'new') },
+    { key: 'qualified', label: 'Qualified', count: countByStatus.qualified, pct: Math.round((countByStatus.qualified / total) * 100), avgDays: avgDaysInStatus(leads, 'qualified') },
+    { key: 'nurturing', label: 'Nurturing', count: countByStatus.nurturing, pct: Math.round((countByStatus.nurturing / total) * 100), avgDays: avgDaysInStatus(leads, 'nurturing') },
+    { key: 'won', label: 'Won', count: countByStatus.won, pct: Math.round((countByStatus.won / total) * 100), avgDays: avgDaysInStatus(leads, 'won') },
+    { key: 'lost', label: 'Lost', count: countByStatus.lost, pct: Math.round((countByStatus.lost / total) * 100), avgDays: avgDaysInStatus(leads, 'lost') },
   ];
 
-  // Helper: get first N lead names for tooltip
   const getLeadNames = (status: string, max: number) => {
     const matching = leads.filter((l) => l.status === status).slice(0, max);
     return matching.map((l) => {
@@ -111,90 +83,57 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads, contactB
     });
   };
 
-  // SVG dimensions
-  const svgW = 520;
-  const svgH = 160;
-  const stageW = svgW / stages.length;
-  const maxBarH = 140;
+  const maxCount = Math.max(...stages.map((s) => s.count), 1);
 
   return (
     <div ref={ref} className={`crm-funnel ${animated ? 'crm-funnel--animated' : ''}`}>
       <h3 className="crm-funnel__title">Conversion Funnel</h3>
-      <div className="crm-funnel__chart">
-        <svg viewBox={`0 0 ${svgW} ${svgH}`} className="crm-funnel__svg" aria-hidden="true">
-          {stages.map((stage, i) => {
-            const barH = Math.max(8, (stage.count / total) * maxBarH);
-            const x = i * stageW + stageW * 0.1;
-            const w = stageW * 0.8;
-            const y = svgH - barH - 10;
-            return (
-              <g
-                key={stage.key}
-                className="crm-funnel__bar-group"
-                onMouseEnter={() => setHoveredStage(stage.key)}
-                onMouseLeave={() => setHoveredStage(null)}
-                onClick={() => onClickStatus?.(stage.key)}
-                style={{ cursor: onClickStatus ? 'pointer' : undefined }}
-              >
-                <rect
-                  x={x}
-                  y={y}
-                  width={w}
-                  height={barH}
-                  rx={4}
-                  fill={stage.color}
-                  className="crm-funnel__bar"
-                  style={{ animationDelay: `${i * 120}ms` }}
-                />
-                <text x={x + w / 2} y={y - 6} textAnchor="middle" className="crm-funnel__bar-label">
-                  {stage.count}
-                </text>
-                <text x={x + w / 2} y={svgH - 1} textAnchor="middle" className="crm-funnel__stage-label">
-                  {stage.label}
-                </text>
-                {i < stages.length - 1 && (
-                  <path
-                    d={`M${(i + 1) * stageW},${svgH * 0.3} L${(i + 1) * stageW},${svgH * 0.7}`}
-                    stroke="var(--crm-border)"
-                    strokeWidth="1"
-                    strokeDasharray="3 3"
-                  />
-                )}
-              </g>
-            );
-          })}
-        </svg>
 
-        {/* Hover tooltips (rendered outside SVG) */}
-        {hoveredStage && (() => {
-          const idx = stages.findIndex((s) => s.key === hoveredStage);
-          if (idx < 0) return null;
-          const stage = stages[idx]!;
-          const names = getLeadNames(stage.key, 5);
-          const remaining = stage.count - names.length;
+      <div className="crm-funnel__bars">
+        {stages.map((stage, i) => {
+          const colors = STAGE_COLORS[stage.key] ?? STAGE_COLORS.new;
+          const heightPct = Math.max(6, (stage.count / maxCount) * 100);
+          const isHovered = hoveredStage === stage.key;
           return (
             <div
-              className="crm-funnel__tooltip"
-              style={{ left: `${((idx + 0.5) / stages.length) * 100}%` }}
+              key={stage.key}
+              className="crm-funnel__col"
+              onMouseEnter={() => setHoveredStage(stage.key)}
+              onMouseLeave={() => setHoveredStage(null)}
+              onClick={() => onClickStatus?.(stage.key)}
+              style={{ cursor: onClickStatus ? 'pointer' : undefined }}
             >
-              <strong>{stage.label} ({stage.count})</strong>
-              {names.map((name, ni) => (
-                <span key={ni} className="crm-funnel__tooltip-name">{name}</span>
-              ))}
-              {remaining > 0 && <span className="crm-muted">+{remaining} more</span>}
-              {onClickStatus && <span className="crm-funnel__tooltip-cta">Click to view all</span>}
+              <span className="crm-funnel__count">{stage.count}</span>
+              <div className="crm-funnel__bar-track">
+                <div
+                  className="crm-funnel__bar"
+                  style={{
+                    height: animated ? `${heightPct}%` : '0%',
+                    background: isHovered ? colors.barHover : colors.bar,
+                    transitionDelay: `${i * 80}ms`,
+                  }}
+                />
+              </div>
+              <span className="crm-funnel__label">{stage.label}</span>
+              <span className="crm-funnel__meta">{stage.pct}% · {stage.avgDays}d</span>
+
+              {isHovered && (() => {
+                const names = getLeadNames(stage.key, 5);
+                const remaining = stage.count - names.length;
+                return (
+                  <div className="crm-funnel__tooltip">
+                    <strong>{stage.label} ({stage.count})</strong>
+                    {names.map((name, ni) => (
+                      <span key={ni} className="crm-funnel__tooltip-name">{name}</span>
+                    ))}
+                    {remaining > 0 && <span className="crm-funnel__tooltip-more">+{remaining} more</span>}
+                    {onClickStatus && <span className="crm-funnel__tooltip-cta">Click to view</span>}
+                  </div>
+                );
+              })()}
             </div>
           );
-        })()}
-      </div>
-
-      <div className="crm-funnel__legend">
-        {stages.map((stage) => (
-          <span key={stage.key} className="crm-funnel__legend-item">
-            <span className="crm-funnel__legend-dot" style={{ background: stage.color }} />
-            {stage.label}: {stage.pct}% &middot; ~{stage.avgDays}d avg
-          </span>
-        ))}
+        })}
       </div>
     </div>
   );

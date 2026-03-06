@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { createClient } from '@sanity/client';
 import { getTenantContextFromRequest } from '../../../lib/tenant/resolve-tenant';
+import {
+    getTenantScopedUserProfile,
+    migrateLegacyUserProfileToTenant,
+} from '../../../lib/user-profile';
 
 /**
  * Sanity client with write access for user profile operations
@@ -10,7 +14,7 @@ const sanityClient = createClient({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-01-01',
-    token: process.env.SANITY_API_WRITE_TOKEN,
+    token: process.env.SANITY_API_WRITE_TOKEN, // secret-scan:allow
     useCdn: false, // Mutations require no CDN
 });
 
@@ -32,24 +36,23 @@ export async function GET(request: Request) {
             );
         }
 
-        // Fetch existing profile
-        let profile = await sanityClient.fetch(
-            `*[_type == "userProfile" && clerkId == $clerkId && (!defined(tenantId) || tenantId == $tenantId)][0]`,
-            { clerkId: userId, tenantId: tenantContext.tenantId }
+        // Fetch existing tenant-scoped profile
+        let profile = await getTenantScopedUserProfile(
+            sanityClient,
+            userId,
+            tenantContext.tenantId
         );
 
+        if (!profile) {
+            // Legacy migration path: adopt a pre-tenant profile only when the user has no scoped profile yet
+            profile = await migrateLegacyUserProfileToTenant(sanityClient, userId, {
+                tenantId: tenantContext.tenantId,
+                tenantSlug: tenantContext.tenantSlug,
+                tenantDomain: tenantContext.tenantDomain,
+            });
+        }
+
         if (profile) {
-            if (!profile.tenantId) {
-                profile = await sanityClient
-                    .patch(profile._id)
-                    .set({
-                        tenantId: tenantContext.tenantId,
-                        tenantSlug: tenantContext.tenantSlug,
-                        tenantDomain: tenantContext.tenantDomain,
-                        updatedAt: new Date().toISOString(),
-                    })
-                    .commit();
-            }
             return NextResponse.json({ profile });
         }
 

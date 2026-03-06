@@ -967,7 +967,7 @@
 **Reason**: Legacy backend tests are SQLite-coupled and no longer representative of current route/model behavior, causing noisy non-actionable failures. A focused hardening-smoke baseline keeps CI meaningful while a dedicated modernization pass is completed.
 
 ### D-224: Treat Postgres-backed Alembic validation as authoritative migration readiness signal
-**Decision**: Validate Alembic `current -> upgrade head -> current` against Postgres runtime (`postgresql://postgres:user@localhost:5432/smartmls_db`) in addition to SQLite checks, and record head revision `20260302_000002` as current migration baseline.
+**Decision**: Validate Alembic `current -> upgrade head -> current` against Postgres runtime (`postgresql://postgres:<redacted>@localhost:5432/smartmls_db`) in addition to SQLite checks, and record head revision `20260302_000002` as current migration baseline.
 **Reason**: Production-like migration confidence requires Postgres-backed verification, not SQLite-only validation. Running both confirms revision chain integrity and deployment-path readiness.
 
 ### D-225: Modernize legacy backend suites to dependency-overridden route-contract tests
@@ -1062,3 +1062,117 @@
 ### D-246: Replace off-market info card with status pill overlay on Street View image
 **Decision**: Remove the "This property is not currently listed for sale" card from the modal overview section and replace it with a small "Currently Off-Market" pill overlaying the top-right corner of the Street View image.
 **Reason**: The standalone card was taking up valuable vertical space. The pill overlay communicates the same information more efficiently while matching the visual language of existing status pills in the modal header.
+
+## 2026-03-04
+
+### D-247: Adopt a canonical 4-phase implementation roadmap for `apps/web` before launch
+**Decision**: Save and govern website hardening work through a single roadmap document (`project_tracking/agent_website_implementation_roadmap.md`) with explicit phased execution:
+1. Security + Stability Baseline,
+2. Performance + Speed,
+3. Multi-Tenant Productization,
+4. Maintainability + Launch Operations.
+**Reason**: Multiple agents are working in parallel and prior progress was fragmented. A single canonical phased roadmap improves coordination, reduces duplicate effort, and allows status tracking against explicit exit criteria.
+
+### D-248: Use shared Sanity dataset per environment as default multi-tenant strategy
+**Decision**: Keep one shared Sanity dataset per environment (`dev`/`staging`/`prod`) and enforce strict tenant scoping across schema/query paths; defer per-tenant dedicated datasets to optional enterprise isolation mode.
+**Reason**: Per-tenant datasets increase operational complexity (provisioning/migrations/token management/backups) at this stage. Shared dataset + strict tenant boundaries provides faster and safer operational scaling for current product maturity.
+
+### D-249: Keep SEO blocked in local/dev until launch gates are explicitly opened
+**Decision**: Preserve development SEO blocking posture for now (including current robots/sitemap launch placeholders) and treat SEO enablement as a controlled launch-gate item in Phase 4.
+**Reason**: The website is still under active development and not production-launched. Preventing indexability during buildout is intentional and reduces premature discovery risk.
+
+### D-250: Keep mock listings as temporary provider and require IDX-compatible provider contract before launch
+**Decision**: Treat mock listing data as temporary and explicitly require migration to an IDX/live MLS-backed provider before launch; Phase 2 includes formalizing a provider abstraction to minimize UI churn during cutover.
+**Reason**: Launch requires live listing accuracy. Decoupling UI from data source through a provider contract keeps the migration controlled and reduces regressions when switching from mock to IDX.
+
+### D-251: Centralize `apps/web` public write-route protections behind shared API guard utility
+**Decision**: Introduce `apps/web/app/lib/api-security.ts` and require `/api/lead`, `/api/valuation`, and `/api/website-events` to use it for same-host/origin validation, in-memory rate limiting, payload-size checks, and guarded JSON body parsing.
+**Reason**: Route-by-route ad hoc checks drift quickly under parallel agent work. A single utility provides consistent baseline hardening and faster enforcement for all public write endpoints.
+
+### D-252: Implement bot mitigation as an optional hook controlled by environment flag
+**Decision**: Add `validateBotTokenIfRequired(...)` to website API guards, gated by `WEB_API_REQUIRE_BOT_TOKEN=true`, with current behavior validating token presence/shape only and reserving a hook point for future Turnstile/reCAPTCHA server verification.
+**Reason**: We need immediate anti-abuse extension points without blocking current UI flows. Env-gated behavior enables progressive rollout once frontend token capture and provider verification are ready.
+
+### D-253: Remove transitional tenant-profile fallback query pattern and replace with strict-then-migrate flow
+**Decision**: Replace `(!defined(tenantId) || tenantId == $tenantId)` profile queries in website user-profile/sync APIs with strict tenant lookup (`tenantId == $tenantId`) plus explicit one-time legacy migration logic for unscoped profiles.
+**Reason**: The fallback query pattern can blur tenant boundaries. A strict-first flow preserves tenant isolation while still providing a controlled migration path for legacy data.
+
+### D-254: Enforce website runtime hardening centrally in `proxy.ts` with production-focused header policy + env fail-fast
+**Decision**: Add a centralized website runtime gate in `apps/web/proxy.ts` that applies baseline security headers to all matched requests, applies production-only HSTS/CSP headers, and blocks runtime with HTTP 500 when required environment configuration validation fails via `apps/web/app/lib/runtime-env.ts`.
+**Reason**: Hardening must happen before route execution and stay consistent under parallel development. A proxy-level policy avoids per-route drift and turns misconfiguration into immediate actionable startup/runtime feedback instead of latent production failures.
+
+### D-255: Clear legacy `apps/web` quality-gate blockers with behavior-preserving code safety fixes
+**Decision**: Resolve lint/typecheck blockers by fixing unsafe `any` usage, React hook safety issues, JSX text entity violations, and script typing gaps (including `apps/web/scripts/blog-pipeline.ts`) while preserving existing UI behavior and route contracts.
+**Reason**: Phase 1 exit criteria require clean quality gates before performance and productization work. Keeping these fixes behavior-preserving removes technical debt without introducing UI churn.
+
+### D-256: Replace broad website `force-dynamic` usage with targeted ISR windows and preserve dynamic rendering only where tenant headers are required
+**Decision**: Convert `apps/web` static/content routes (`/`, `/towns`, `/insights`, insights category/post pages, and `sitemap`) from `dynamic = "force-dynamic"` to explicit `revalidate` windows, while retaining `force-dynamic` on town/neighborhood detail pages that depend on `headers()` tenant context and module toggles.
+**Reason**: Blanket dynamic rendering increases server work and latency. Route-level ISR policies improve cacheability/performance while preserving tenant correctness for header-dependent pages.
+
+### D-257: Standardize website content caching through a tag-based Sanity query layer with token-protected revalidation
+**Decision**: Add shared cache utilities in `apps/web/app/lib/sanity.cache.ts` and route all core towns/neighborhood/posts query helpers in `apps/web/app/lib/sanity.queries.ts` through `unstable_cache` with explicit tags + revalidate windows; add `POST /api/sanity/revalidate` (token header gated by `SANITY_REVALIDATE_TOKEN`) to revalidate all or selected Sanity cache tags.
+**Reason**: Query-level ad hoc caching is brittle and hard to invalidate safely. A shared tagged cache layer improves response performance and provides a deterministic, auditable invalidation path for CMS-driven updates.
+
+### D-258: Enable Sanity CDN on public website reads by default in production with explicit override
+**Decision**: Update `apps/web/app/lib/sanity.client.ts` to resolve `useCdn` as:
+1. explicit `NEXT_PUBLIC_SANITY_USE_CDN=true|false` override when set, otherwise
+2. default `true` in production and `false` outside production.
+**Reason**: Public content routes should benefit from CDN performance in production, while local/dev correctness and debugging remain straightforward; an env override keeps rollout control explicit.
+
+### D-259: Optimize home-search interaction latency with render-churn reduction + modal chunking + timing baselines
+**Decision**: Apply a focused Phase 2 performance pass in `apps/web/app/home-search/*` by:
+1. reducing map interaction overhead (`HomeSearchMap`) via memoized map/marker rendering, removing per-marker `useMapEvents` listeners, and deduplicating bounds-change emissions,
+2. hardening search orchestration (`HomeSearchClient`) with stale-request guards and deferred map-listing updates,
+3. reducing first-open modal cost by dynamically importing `ListingModal` with idle/hover prefetch,
+4. adding dev-only timing traces for search duration and first modal-open mount latency.
+**Reason**: Home-search map panning/zooming and first property-modal open were the highest user-visible latency points in `apps/web`; these changes improve responsiveness without changing established UI layout/behavior.
+
+### D-260: Finalize Phase 2 website search-provider boundary and decompose home-search orchestration modules
+**Decision**: Close Phase 2 by:
+1. extracting URL/query parsing + serialization from `HomeSearchClient` into `apps/web/app/home-search/lib/search-url-state.ts`,
+2. extracting listing search request orchestration into `apps/web/app/home-search/hooks/useHomeSearchResults.ts` (including stale-request protection),
+3. expanding the listings provider contract in `apps/web/app/lib/data/providers/listings.types.ts`/`listings.provider.ts` with provider-backed `getListingsByIds` + `listNeighborhoods`,
+4. introducing provider selection boundary (`NEXT_PUBLIC_LISTINGS_PROVIDER`, controlled IDX fallback behavior) and removing direct mock listing JSON reads from `HomeSearchClient`.
+**Reason**: The website needed an IDX-ready provider seam and reduced component coupling before Phase 3 tenant productization. This keeps UI behavior unchanged while making data-source cutover and ongoing maintenance materially safer.
+
+### D-261: Centralize agent-website shell identity/SEO/contact copy behind tenant profile contract before content-tenantization
+**Decision**: Introduce a shared tenant website contract (`packages/types/src/tenant-website.ts`) and app-level tenant profile resolver (`apps/web/app/lib/tenant/website-profile.ts`), then route core shell and CTA paths (layout metadata/JSON-LD, header, footer, homepage intro/hero/CTA, home-search and listing inquiry/contact copy) through this tenant config surface.
+**Reason**: Phase 3 requires configuration-first replication for new agents without UI rewrites. Establishing one contract-backed identity layer first reduces hardcoded drift, keeps current visual layout intact, and creates a clean seam for later tenant-owned content scoping and onboarding automation.
+
+### D-262: Enforce tenant-owned Sanity content boundaries with tenant-aware query filters and cache partitioning
+**Decision**: Add tenant ownership fields to relevant Studio document schemas (`town`, `neighborhood`, `post`, `userProfile`) and update website Sanity query helpers (`apps/web/app/lib/sanity.queries.ts`) to require tenant-aware filters + tenant-partitioned cache keys. Use a controlled default-tenant legacy fallback (`!defined(tenantId)` allowed only for default tenant) during migration and provide a dedicated backfill script (`apps/web/scripts/backfill-sanity-tenant-content.ts`) for metadata population.
+**Reason**: Content documents were globally scoped, which blocks safe multi-tenant expansion and risks cross-tenant leakage once additional tenants are onboarded. Query-level enforcement plus migration tooling provides an incremental path without breaking current baseline content reads.
+
+### D-263: Standardize tenant website onboarding with generated profile modules + seeded provisioning/backfill artifacts
+**Decision**: Split website tenant profile definitions into a registry-backed module structure (`apps/web/app/lib/tenant/configs/*`, consumed by `website-profile.ts`) and add `apps/web/scripts/scaffold-tenant-onboarding.ts` as the canonical onboarding scaffolder. The scaffolder generates a new tenant profile module, updates the registry, and writes onboarding artifacts (`provision-request.json`, `sanity-tenant-defaults.json`, and checklist README) under `apps/web/scripts/content/tenant-onboarding/<tenant-slug>/`. Extend `apps/web/scripts/backfill-sanity-tenant-content.ts` with explicit tenant/doc-type override flags to support repeatable content ownership migration per tenant.
+**Reason**: Phase 3 needs configuration-first tenant launches with minimal manual code edits and clear operational handoff steps. Generated profile + provisioning/backfill artifacts reduce onboarding drift, keep tenant scope explicit, and reuse the existing control-plane provisioning + Sanity migration paths.
+
+### D-264: Keep SEO fully blocked by default and unlock indexing only via explicit production gate
+**Decision**: Implement environment-gated SEO controls in `apps/web` by introducing `apps/web/app/lib/seo/runtime.ts` and wiring it into `layout` metadata, `robots.ts`, and `sitemap.ts`. Indexing remains blocked unless both conditions are true: `NODE_ENV=production` and `SEO_ENABLE_INDEXING=true`.
+**Reason**: The website remains in development and should not be indexed accidentally. Explicit launch gating prevents premature crawl exposure while still supporting production-ready metadata/sitemap behavior when approved.
+
+### D-265: Add baseline smoke and performance regression tests to the website workspace gate
+**Decision**: Add `apps/web/tests/smoke/*` and `apps/web/tests/perf/*` and fold them into `apps/web/package.json` scripts (`test:smoke`, `test:perf`, `check`) so the default website quality gate now validates API guard behavior, tenant/header resolution, SEO runtime behavior, and home-search provider performance budgets.
+**Reason**: Phase 4 required repeatable launch hardening beyond lint/typecheck. Lightweight runtime tests provide fast safety coverage for critical flows and prevent silent regressions as multiple agents continue parallel work.
+
+### D-266: Treat generated backup/log artifacts as non-source and codify operational docs as first-class assets
+**Decision**: Remove tracked generated artifacts from `apps/web` (content backups and transient log outputs), add `.gitignore` protections, replace boilerplate README content with operational guidance, and add runbooks/checklists under `apps/web/docs/*`.
+**Reason**: Generated artifacts create noisy diffs and merge risk in multi-agent workflows. Launch readiness requires explicit runbooks/checklists to make onboarding, release, and rollback steps repeatable.
+
+## 2026-03-05
+
+### D-267: Keep IDX credentials server-side by routing website listings-provider calls through an internal bridge endpoint
+**Decision**: Implement `apps/web` IDX mode so client provider calls target internal route `POST /api/listings/provider`, and only the server route calls the external IDX bridge using `IDX_BRIDGE_URL` and `IDX_BRIDGE_TOKEN` from runtime env. The browser never receives IDX bridge secrets.
+**Reason**: Multi-tenant launch requires clean mock-to-IDX cutover without exposing provider credentials in frontend bundles or network payloads.
+
+### D-268: Add AI-answer-engine discovery artifacts and treat them as launch-gated crawl surfaces
+**Decision**: Add `llms.txt` routes (`/llms.txt`, `/.well-known/llms.txt`), machine-readable discovery (`/.well-known/llm.json`), and markdown extraction endpoints (`/api/content/*.md`), then wire robots/sitemap/metadata to include these artifacts while keeping global indexing gated by production env flags.
+**Reason**: We need AI agents/LLMs to discover and parse high-signal content efficiently, but we still need explicit environment controls to prevent premature indexing before launch approval.
+
+### D-269: Use `/api/content/towns/{townSlug}` as the canonical town markdown endpoint
+**Decision**: Replace the suffix-based route path (`/api/content/towns/{townSlug}.md`) with a standard dynamic segment route (`/api/content/towns/{townSlug}`) for town-level markdown extraction, and update llm-discovery/docs/tests accordingly.
+**Reason**: The `.md` suffix dynamic route shape did not resolve reliably at runtime and returned 404s for all slugs; the standard dynamic segment route is stable and preserves markdown response semantics.
+
+### D-270: Standardize launch-path verification with reusable scripts instead of ad hoc curl-only checks
+**Decision**: Add `apps/web/scripts/verify-seo-aeo.ts` and `apps/web/scripts/verify-idx-provider.ts`, wire them to workspace scripts (`verify:seo-aeo`, `verify:idx-provider`, `verify:launch`), and treat them as the default verification path in runbooks/checklists.
+**Reason**: Reusable scripted checks reduce operator error, make staging/prod verification repeatable across agents, and provide consistent PASS/FAIL signals for launch readiness.

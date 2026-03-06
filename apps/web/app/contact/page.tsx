@@ -1,7 +1,6 @@
 import ContactForm from "../components/ContactForm";
 import Container from "../components/Container";
 import EmailSignupSection from "@/app/components/EmailSignupSection";
-import Image from "next/image";
 
 export const metadata = {
     title: "Contact Matt | Fairfield County Real Estate",
@@ -24,7 +23,7 @@ export default function ContactPage() {
                             Contact Matt
                         </h1>
                         <p className="text-lg text-stone-300 leading-relaxed">
-                            Have questions about buying, selling, or the local market? Let's connect.
+                            Have questions about buying, selling, or the local market? Let us connect.
                         </p>
                     </div>
                 </Container>

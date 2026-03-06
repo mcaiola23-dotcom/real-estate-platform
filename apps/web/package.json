@@ -6,7 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "test:smoke": "node --import tsx --test tests/smoke/tenant-runtime.smoke.test.ts tests/smoke/public-api.smoke.test.ts tests/smoke/listings-provider.smoke.test.ts tests/smoke/seo-aeo.smoke.test.ts",
+    "test:perf": "node --import tsx --test tests/perf/home-search.perf.test.ts",
+    "check": "npm run lint && npm run typecheck && npm run test:smoke && npm run test:perf",
+    "verify:seo-aeo": "node --import tsx scripts/verify-seo-aeo.ts",
+    "verify:idx-provider": "node --import tsx scripts/verify-idx-provider.ts",
+    "verify:launch": "npm run verify:seo-aeo && npm run verify:idx-provider",
+    "sanity:tenant-backfill": "node --import tsx scripts/backfill-sanity-tenant-content.ts",
+    "tenant:onboard:scaffold": "node --import tsx scripts/scaffold-tenant-onboarding.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.37.3",

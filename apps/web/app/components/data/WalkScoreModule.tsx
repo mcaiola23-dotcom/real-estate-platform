@@ -14,10 +14,9 @@ import {
 
 interface WalkScoreModuleProps {
     result: WalkScoreResult;
-    locationName: string;
 }
 
-export function WalkScoreModule({ result, locationName }: WalkScoreModuleProps) {
+export function WalkScoreModule({ result }: WalkScoreModuleProps) {
     // Handle unavailable state
     if (!result.available || !result.data) {
         return (

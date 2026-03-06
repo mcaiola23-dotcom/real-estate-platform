@@ -3,6 +3,7 @@
 import { useUser, RedirectToSignIn } from "@clerk/nextjs";
 import { useSavedSearches, SavedSearch } from "../home-search/hooks/useSavedSearches";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Container from "../components/Container";
 
@@ -91,6 +92,7 @@ function SearchCard({
 }
 
 export default function SavedSearchesClient() {
+    const router = useRouter();
     const { isLoaded, isSignedIn } = useUser();
     const { savedSearches, deleteSearch, hasLoaded } = useSavedSearches();
 
@@ -105,7 +107,7 @@ export default function SavedSearchesClient() {
     };
 
     const runSearch = (params: string) => {
-        window.location.href = `/home-search?${params}`;
+        router.push(`/home-search?${params}`);
     };
 
     if (!isLoaded || !hasLoaded) return null;

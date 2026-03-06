@@ -4,15 +4,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import Container from "./Container";
+import type { TenantWebsiteConfig } from "@real-estate/types";
+import { getTenantWebsiteConfig } from "../lib/tenant/website-profile";
 
-export default function AgentCTASection() {
+export default function AgentCTASection({
+    tenantWebsiteConfig,
+}: {
+    tenantWebsiteConfig?: TenantWebsiteConfig;
+}) {
+    const websiteConfig = tenantWebsiteConfig ?? getTenantWebsiteConfig();
+
     return (
         <section className="relative py-24 md:py-32 overflow-hidden bg-stone-900 border-t border-stone-800">
             {/* Background Image Layer */}
             <div className="absolute inset-0 z-0 select-none">
                 <Image
                     src="/visual/home/coastal-sunset.jpg"
-                    alt="Fairfield County coastline at sunset"
+                    alt={`${websiteConfig.serviceArea.regionLabel} coastline at sunset`}
                     fill
                     className="object-cover opacity-40"
                     sizes="100vw"
@@ -26,7 +34,7 @@ export default function AgentCTASection() {
             {/* Content Layer */}
             <Container className="relative z-10 text-center text-white">
                 <p className="text-xs md:text-sm font-semibold tracking-[0.25em] text-stone-300 uppercase mb-4">
-                    Work With Me
+                    Work With {websiteConfig.agentFirstName}
                 </p>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-white mb-6">
                     Let&apos;s Find Your Perfect Home
@@ -45,7 +53,7 @@ export default function AgentCTASection() {
                     href="/contact"
                     className="inline-block px-8 py-3 border border-white text-white hover:bg-white hover:text-stone-900 transition-all duration-300 tracking-wide uppercase text-xs md:text-sm font-semibold"
                 >
-                    Contact Matt
+                    {websiteConfig.cta.contactAgentLabel}
                 </Link>
             </Container>
         </section>

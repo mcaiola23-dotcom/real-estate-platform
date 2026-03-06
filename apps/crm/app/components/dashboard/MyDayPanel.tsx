@@ -2,6 +2,7 @@
 
 import { memo, useState } from 'react';
 import type { CrmLead, CrmContact, CrmActivity } from '@real-estate/types/crm';
+import { QuickActionButtons } from '../shared/QuickActionButtons';
 import { NotificationDigest } from '../shared/NotificationDigest';
 
 interface MyDayPanelProps {
@@ -139,17 +140,15 @@ export const MyDayPanel = memo(function MyDayPanel({
                         )}
                       </button>
                       {contact && (contact.phone || contact.email) ? (
-                        <div className="crm-quick-actions crm-quick-actions--compact">
-                          {contact.phone ? (
-                            <a href={`tel:${contact.phone}`} className="crm-quick-action" title={`Call ${contact.phone}`} aria-label="Call lead">📞</a>
-                          ) : null}
-                          {contact.email ? (
-                            <a href={`mailto:${contact.email}?subject=${encodeURIComponent(`Re: ${lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${contact.email}`} aria-label="Email lead">✉️</a>
-                          ) : null}
-                          {contact.phone ? (
-                            <a href={`sms:${contact.phone}`} className="crm-quick-action" title={`Text ${contact.phone}`} aria-label="Text lead">💬</a>
-                          ) : null}
-                        </div>
+                        <QuickActionButtons
+                          phone={contact.phone}
+                          email={contact.email}
+                          contactName={contact.fullName}
+                          leadId={lead.id}
+                          contactId={contact.id}
+                          propertyAddress={lead.listingAddress}
+                          compact
+                        />
                       ) : null}
                     </li>
                   );
@@ -179,17 +178,15 @@ export const MyDayPanel = memo(function MyDayPanel({
                         <span className="crm-myday__item-due crm-myday__item-due--today">Today</span>
                       </button>
                       {contact && (contact.phone || contact.email) ? (
-                        <div className="crm-quick-actions crm-quick-actions--compact">
-                          {contact.phone ? (
-                            <a href={`tel:${contact.phone}`} className="crm-quick-action" title={`Call ${contact.phone}`} aria-label="Call lead">📞</a>
-                          ) : null}
-                          {contact.email ? (
-                            <a href={`mailto:${contact.email}?subject=${encodeURIComponent(`Re: ${lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${contact.email}`} aria-label="Email lead">✉️</a>
-                          ) : null}
-                          {contact.phone ? (
-                            <a href={`sms:${contact.phone}`} className="crm-quick-action" title={`Text ${contact.phone}`} aria-label="Text lead">💬</a>
-                          ) : null}
-                        </div>
+                        <QuickActionButtons
+                          phone={contact.phone}
+                          email={contact.email}
+                          contactName={contact.fullName}
+                          leadId={lead.id}
+                          contactId={contact.id}
+                          propertyAddress={lead.listingAddress}
+                          compact
+                        />
                       ) : null}
                     </li>
                   );
@@ -219,17 +216,15 @@ export const MyDayPanel = memo(function MyDayPanel({
                         <span className="crm-myday__item-due crm-myday__item-due--hot">Active</span>
                       </button>
                       {contact && (contact.phone || contact.email) ? (
-                        <div className="crm-quick-actions crm-quick-actions--compact">
-                          {contact.phone ? (
-                            <a href={`tel:${contact.phone}`} className="crm-quick-action" title={`Call ${contact.phone}`} aria-label="Call lead">📞</a>
-                          ) : null}
-                          {contact.email ? (
-                            <a href={`mailto:${contact.email}?subject=${encodeURIComponent(`Re: ${lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${contact.email}`} aria-label="Email lead">✉️</a>
-                          ) : null}
-                          {contact.phone ? (
-                            <a href={`sms:${contact.phone}`} className="crm-quick-action" title={`Text ${contact.phone}`} aria-label="Text lead">💬</a>
-                          ) : null}
-                        </div>
+                        <QuickActionButtons
+                          phone={contact.phone}
+                          email={contact.email}
+                          contactName={contact.fullName}
+                          leadId={lead.id}
+                          contactId={contact.id}
+                          propertyAddress={lead.listingAddress}
+                          compact
+                        />
                       ) : null}
                     </li>
                   );

@@ -5,6 +5,8 @@ import "./globals.css";
 import Header from "./components/Header";
 import GlobalFooter from "./components/GlobalFooter";
 import FloatingButtons from "./components/FloatingButtons";
+import { getTenantWebsiteConfig } from "./lib/tenant/website-profile";
+import { getSeoRuntimeConfig } from "./lib/seo/runtime";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -17,86 +19,119 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const tenantWebsiteConfig = getTenantWebsiteConfig();
+const seoRuntime = getSeoRuntimeConfig(tenantWebsiteConfig.seo.metadataBaseUrl);
+
 export const metadata: Metadata = {
   title: {
-    default: "Matt Caiola | Luxury Real Estate | Fairfield County CT",
-    template: "%s | Matt Caiola | Fairfield County Real Estate",
+    default: tenantWebsiteConfig.seo.defaultTitle,
+    template: tenantWebsiteConfig.seo.titleTemplate,
   },
-  description:
-    "Matt Caiola offers expert luxury real estate guidance in Fairfield County, Connecticut. Serving Greenwich, Stamford, Darien, New Canaan, Westport, Fairfield, Norwalk, and surrounding towns. Licensed with Higgins Group Private Brokerage.",
-  metadataBase: new URL("https://example.com"), // Placeholder — update before launch
+  description: tenantWebsiteConfig.seo.description,
+  keywords: tenantWebsiteConfig.seo.keywords,
+  metadataBase: new URL(seoRuntime.metadataBaseUrl),
+  alternates: {
+    canonical: "/",
+  },
+  robots: seoRuntime.indexingEnabled
+    ? {
+        index: true,
+        follow: true,
+      }
+    : {
+        index: false,
+        follow: false,
+      },
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Matt Caiola Luxury Properties",
-    title: "Matt Caiola | Luxury Real Estate | Fairfield County CT",
-    description:
-      "Matt Caiola offers expert luxury real estate guidance in Fairfield County, Connecticut. Serving Greenwich, Stamford, Darien, New Canaan, Westport, Fairfield, Norwalk, and surrounding towns.",
+    siteName: tenantWebsiteConfig.seo.siteName,
+    title: tenantWebsiteConfig.seo.defaultTitle,
+    description: tenantWebsiteConfig.seo.description,
     images: [
       {
-        url: "/visual/home/hero-1.jpg",
+        url: tenantWebsiteConfig.seo.openGraphImage.src,
         width: 1200,
         height: 630,
-        alt: "Matt Caiola - Fairfield County Connecticut luxury real estate",
+        alt: tenantWebsiteConfig.seo.openGraphImage.alt,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Matt Caiola | Luxury Real Estate | Fairfield County CT",
-    description:
-      "Matt Caiola offers expert luxury real estate guidance in Fairfield County, Connecticut. Serving Greenwich, Stamford, Darien, New Canaan, Westport, and surrounding towns.",
-    images: ["/visual/home/hero-1.jpg"],
+    title: tenantWebsiteConfig.seo.defaultTitle,
+    description: tenantWebsiteConfig.seo.description,
+    images: [tenantWebsiteConfig.seo.openGraphImage.src],
   },
 };
 
-const jsonLd = {
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${seoRuntime.metadataBaseUrl}/#organization`,
+  name: tenantWebsiteConfig.brandName,
+  url: seoRuntime.metadataBaseUrl,
+  logo: `${seoRuntime.metadataBaseUrl}${tenantWebsiteConfig.logos.primary.src}`,
+  description: tenantWebsiteConfig.seo.description,
+  telephone: tenantWebsiteConfig.contact.phoneE164,
+  sameAs: [tenantWebsiteConfig.brokerage.websiteUrl],
+};
+
+const webSiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${seoRuntime.metadataBaseUrl}/#website`,
+  name: tenantWebsiteConfig.seo.siteName,
+  url: seoRuntime.metadataBaseUrl,
+  description: tenantWebsiteConfig.seo.description,
+  publisher: {
+    "@id": `${seoRuntime.metadataBaseUrl}/#organization`,
+  },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${seoRuntime.metadataBaseUrl}/home-search?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const realEstateAgentJsonLd = {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
-  name: "Matt Caiola",
-  alternateName: "Matt Caiola Luxury Properties",
-  image: "https://example.com/brand/matt-headshot.jpg", // Placeholder domain
-  description:
-    "Matt Caiola provides expert luxury real estate services in Fairfield County, Connecticut. With a background in corporate finance and personal investment experience, Matt brings analytical rigor and genuine care to every transaction. Serving Greenwich, Stamford, Darien, New Canaan, Westport, Fairfield, Norwalk, and surrounding towns.",
-  url: "https://example.com", // Placeholder — update before launch
-  telephone: "+1-203-658-8282",
+  "@id": `${seoRuntime.metadataBaseUrl}/#agent`,
+  name: tenantWebsiteConfig.agentName,
+  alternateName: tenantWebsiteConfig.brandName,
+  image: `${seoRuntime.metadataBaseUrl}${tenantWebsiteConfig.logos.headshot.src}`,
+  description: tenantWebsiteConfig.seo.description,
+  url: seoRuntime.metadataBaseUrl,
+  telephone: tenantWebsiteConfig.contact.phoneE164,
   priceRange: "$$$",
   worksFor: {
     "@type": "RealEstateAgent",
-    name: "Higgins Group Private Brokerage",
-    url: "https://higginsgroup.com/",
+    name: tenantWebsiteConfig.brokerage.name,
+    url: tenantWebsiteConfig.brokerage.websiteUrl,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "1055 Washington Blvd.",
-      addressLocality: "Stamford",
-      addressRegion: "CT",
-      postalCode: "06901",
-      addressCountry: "US",
+      streetAddress: tenantWebsiteConfig.brokerage.address.streetAddress,
+      addressLocality: tenantWebsiteConfig.brokerage.address.city,
+      addressRegion: tenantWebsiteConfig.brokerage.address.region,
+      postalCode: tenantWebsiteConfig.brokerage.address.postalCode,
+      addressCountry: tenantWebsiteConfig.brokerage.address.country,
     },
-    telephone: "+1-203-658-8282",
+    telephone: tenantWebsiteConfig.brokerage.contactPhoneE164,
   },
-  areaServed: [
-    { "@type": "City", name: "Greenwich", addressRegion: "CT" },
-    { "@type": "City", name: "Stamford", addressRegion: "CT" },
-    { "@type": "City", name: "Darien", addressRegion: "CT" },
-    { "@type": "City", name: "New Canaan", addressRegion: "CT" },
-    { "@type": "City", name: "Westport", addressRegion: "CT" },
-    { "@type": "City", name: "Fairfield", addressRegion: "CT" },
-    { "@type": "City", name: "Norwalk", addressRegion: "CT" },
-    { "@type": "City", name: "Wilton", addressRegion: "CT" },
-    { "@type": "City", name: "Ridgefield", addressRegion: "CT" },
-  ],
-  knowsAbout: [
-    "Luxury Real Estate",
-    "Fairfield County Real Estate",
-    "Connecticut Gold Coast",
-    "Real Estate Investment",
-    "Property Management",
-  ],
-  sameAs: [
-    "https://higginsgroup.com/", // Brokerage website
-  ],
+  areaServed: tenantWebsiteConfig.serviceArea.cityNames.map((cityName) => ({
+    "@type": "City",
+    name: cityName,
+    addressRegion: tenantWebsiteConfig.serviceArea.stateCode,
+  })),
+  knowsAbout: tenantWebsiteConfig.seo.keywords,
+  parentOrganization: {
+    "@id": `${seoRuntime.metadataBaseUrl}/#organization`,
+  },
+  sameAs: [tenantWebsiteConfig.brokerage.websiteUrl],
 };
+
+const jsonLd = [organizationJsonLd, webSiteJsonLd, realEstateAgentJsonLd];
 
 /**
  * Clerk appearance configuration for luxury brand consistency
@@ -104,14 +139,14 @@ const jsonLd = {
  */
 const clerkAppearance = {
   variables: {
-    colorPrimary: '#1c1917', // stone-900
-    colorBackground: '#fafaf9', // stone-50
-    colorText: '#1c1917', // stone-900
-    colorTextSecondary: '#57534e', // stone-600
+    colorPrimary: tenantWebsiteConfig.theme.colorPrimary,
+    colorBackground: tenantWebsiteConfig.theme.colorSurface,
+    colorText: tenantWebsiteConfig.theme.colorText,
+    colorTextSecondary: tenantWebsiteConfig.theme.colorMutedText,
     colorInputBackground: '#ffffff',
-    colorInputText: '#1c1917',
+    colorInputText: tenantWebsiteConfig.theme.colorText,
     borderRadius: '0.375rem',
-    fontFamily: 'var(--font-inter), sans-serif',
+    fontFamily: `var(${tenantWebsiteConfig.theme.bodyFontVar}), sans-serif`,
   },
   elements: {
     formButtonPrimary:
@@ -142,15 +177,14 @@ export default function RootLayout({
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           />
-          <Header />
+          <Header tenantWebsiteConfig={tenantWebsiteConfig} />
           <main className="flex-grow">
             {children}
           </main>
-          <GlobalFooter />
+          <GlobalFooter tenantWebsiteConfig={tenantWebsiteConfig} />
           <FloatingButtons />
         </body>
       </html>
     </ClerkProvider>
   );
 }
-

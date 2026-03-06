@@ -7,15 +7,8 @@ import { Listing } from "../lib/data/providers/listings.types"; // Fixed import 
 import Link from "next/link"; // Added missing import
 import Image from "next/image"; // Added missing import
 import { useMemo, useState } from "react";
-import ListingInquiryModal from "../home-search/ListingInquiryModal"; // Ensure path is correct
 import { ListingModal } from "../home-search/ListingModal"; // Ensure path is correct
 import Container from "../components/Container";
-
-// Reusing ListingCard - ideally this should be a shared component, but copying locally for now 
-// or importing if it was exported. It wasn't exported from HomeSearchClient.
-// I'll quickly recreate a version here or better yet, refactor ListingCard to a shared component?
-// For speed/safety in this "agentic" flow, I'll inline a simple version or try to extract it.
-// Checking file structure, there isn't a shared ListingCard. I will create a simple one here.
 
 function SavedListingCard({
     listing,
@@ -128,7 +121,7 @@ export default function SavedHomesClient() {
                         </div>
                         <h2 className="text-xl font-medium text-stone-900 mb-2">No saved homes yet</h2>
                         <p className="text-stone-500 mb-8 max-w-sm mx-auto">
-                            Start exploring listings and tap the heart icon to save properties you're interested in.
+                            Start exploring listings and tap the heart icon to save properties you are interested in.
                         </p>
                         <Link
                             href="/home-search"

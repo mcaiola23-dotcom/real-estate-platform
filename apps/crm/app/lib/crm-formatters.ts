@@ -39,6 +39,32 @@ export function normalizeOptionalString(value: string | null | undefined): strin
   return trimmed.length > 0 ? trimmed : null;
 }
 
+/**
+ * Format a US phone number as (123) 456-7890.
+ * If the value doesn't look like a 10-digit US number, return it unchanged.
+ */
+export function formatPhoneDisplay(value: string | null | undefined): string {
+  if (!value) return '';
+  const digits = value.replace(/\D/g, '');
+  // Strip leading 1 for US numbers
+  const d = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+  if (d.length === 10) {
+    return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+  }
+  return value;
+}
+
+/**
+ * Strip phone formatting to raw digits for storage.
+ * Preserves leading + for international numbers.
+ */
+export function stripPhoneFormatting(value: string): string {
+  if (value.startsWith('+')) {
+    return '+' + value.slice(1).replace(/\D/g, '');
+  }
+  return value.replace(/\D/g, '');
+}
+
 export function classifyLeadType(raw: string): string {
   if (raw === 'website_lead') return 'buyer';
   if (raw === 'valuation_request') return 'seller';

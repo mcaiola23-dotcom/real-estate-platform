@@ -17,7 +17,6 @@ export default function HeroBackgroundCrossfade({
     intervalMs = 8000,
 }: HeroBackgroundCrossfadeProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [loadedImages, setLoadedImages] = useState<boolean[]>(new Array(images.length).fill(false));
 
     useEffect(() => {
         // Respect prefers-reduced-motion
@@ -32,14 +31,6 @@ export default function HeroBackgroundCrossfade({
 
         return () => clearInterval(timer);
     }, [images.length, intervalMs]);
-
-    const handleImageLoad = (index: number) => {
-        setLoadedImages(prev => {
-            const newState = [...prev];
-            newState[index] = true;
-            return newState;
-        });
-    };
 
     return (
         <div className="absolute inset-0 z-0 overflow-hidden bg-slate-100">
@@ -63,7 +54,6 @@ export default function HeroBackgroundCrossfade({
                         fill
                         className="object-cover"
                         priority={index === 0}
-                        onLoad={() => handleImageLoad(index)}
                         onError={(e) => {
                             // If image fails, conceal it
                             const target = e.target as HTMLImageElement;

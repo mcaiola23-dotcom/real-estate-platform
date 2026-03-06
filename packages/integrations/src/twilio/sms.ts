@@ -25,6 +25,18 @@ export interface SmsMessage {
 }
 
 /**
+ * Normalize a phone number to E.164 format for Twilio.
+ * Adds +1 (US) prefix if missing.
+ */
+function normalizePhoneE164(phone: string): string {
+  const digits = phone.replace(/[^\d+]/g, '');
+  if (digits.startsWith('+')) return digits;
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+  return `+${digits}`;
+}
+
+/**
  * Send an SMS message via Twilio.
  */
 export async function sendSms(params: SmsParams): Promise<SentSms> {
@@ -34,8 +46,10 @@ export async function sendSms(params: SmsParams): Promise<SentSms> {
     throw new Error('Twilio is not configured. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER.');
   }
 
+  const toNormalized = normalizePhoneE164(params.to);
+
   const message = await client.messages.create({
-    to: params.to,
+    to: toNormalized,
     from: config.phoneNumber,
     body: params.body,
   });
@@ -65,9 +79,10 @@ export async function listMessages(options: {
 
   // Fetch sent + received in parallel when filtering by phone number
   if (options.phoneNumber) {
+    const normalized = normalizePhoneE164(options.phoneNumber);
     const [sent, received] = await Promise.all([
-      client.messages.list({ ...filters, to: options.phoneNumber }),
-      client.messages.list({ ...filters, from: options.phoneNumber }),
+      client.messages.list({ ...filters, to: normalized }),
+      client.messages.list({ ...filters, from: normalized }),
     ]);
 
     const allMessages = [...sent, ...received]

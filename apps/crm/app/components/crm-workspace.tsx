@@ -9,6 +9,8 @@ import {
   formatLeadSourceLabel,
   formatLeadStatusLabel,
   formatLeadTypeLabel,
+  formatTimeframeLabel,
+  getLeadTypeColorClass,
 } from '../lib/crm-display';
 import {
   doesStatusMatchPreset,
@@ -61,6 +63,7 @@ import {
   normalizeOptionalString,
   parseNullableNumber,
   passthroughImageLoader,
+  formatPhoneDisplay,
 } from '../lib/crm-formatters';
 import { calculateLeadScore } from '../lib/crm-scoring';
 import {
@@ -99,6 +102,10 @@ import { useNotifications } from '../lib/use-notifications';
 import { usePinnedLeads } from '../lib/use-pinned-leads';
 import { EscalationAlertBanner } from './shared/EscalationBanner';
 import { CsvImportModal } from './shared/CsvImportModal';
+import { QuickActionButtons } from './shared/QuickActionButtons';
+import { CommunicationModalProvider, useCommunicationModals } from '../lib/communication-modal-context';
+import { SmsConversation } from './shared/SmsConversation';
+import { EmailComposeModal } from './shared/EmailComposeModal';
 import { NeedsAttention } from './dashboard/NeedsAttention';
 import { NewLeadModal } from './shared/NewLeadModal';
 import { NewActivityModal } from './shared/NewActivityModal';
@@ -840,21 +847,41 @@ export function CrmWorkspace({
 
       const linkedContact = lead.contactId ? contactById.get(lead.contactId) : undefined;
 
+      // Parse address into street + city
+      const fullAddr = draft.listingAddress || '';
+      const commaIdx = fullAddr.indexOf(',');
+      const streetAddress = commaIdx > 0 ? fullAddr.slice(0, commaIdx).trim() : fullAddr.trim();
+      const city = draft.town || (commaIdx > 0 ? fullAddr.slice(commaIdx + 1).split(',')[0].trim() : '');
+
+      // Last activity = most recent of updatedAt, lastContact, or any activity
+      const lastActivityCandidates = [new Date(lead.updatedAt).getTime()];
+      if (lastContact) lastActivityCandidates.push(new Date(lastContact).getTime());
+      const leadActs = activities.filter((a) => a.leadId === lead.id);
+      for (const a of leadActs) lastActivityCandidates.push(new Date(a.occurredAt).getTime());
+      const lastActivityTime = Math.max(...lastActivityCandidates);
+      const lastActivityAt = new Date(lastActivityTime).toISOString();
+
+      // Site activity = last website behavior event
+      const siteActivityAt = behavior?.lastBehaviorAt ?? null;
+
       return {
         lead,
         draft,
         contactLabel,
         priceRange,
-        location: draft.listingAddress || '-',
-        lastContact,
-        desired: `${draft.beds || '-'} / ${draft.baths || '-'} / ${draft.sqft || '-'}`,
+        streetAddress: streetAddress || '-',
+        city: city || '-',
+        beds: draft.beds ? Number(draft.beds) : null,
+        baths: draft.baths ? Number(draft.baths) : null,
+        sqft: draft.sqft ? Number(draft.sqft) : null,
+        acreage: draft.acreage ? Number(draft.acreage) : null,
+        tags: draft.tags,
+        lastActivityAt,
+        siteActivityAt,
+        timeframe: draft.timeframe || null,
         score,
         phone: linkedContact?.phone ?? null,
         email: linkedContact?.email ?? null,
-        intentLabel:
-          behavior && (behavior.favoritedCount > 0 || behavior.viewedCount > 0)
-            ? `${behavior.favoritedCount > 0 ? 'Favorited' : 'Viewed'} recently`
-            : 'No recent intent',
       };
     });
 
@@ -863,32 +890,45 @@ export function CrmWorkspace({
     rows.sort((left, right) => {
       const directionFactor = tableSort.direction === 'asc' ? 1 : -1;
       let comparison = 0;
+      const col = tableSort.column;
 
-      if (tableSort.column === 'name') {
+      if (col === 'name') {
         comparison = left.contactLabel.localeCompare(right.contactLabel);
-      } else if (tableSort.column === 'leadType') {
-        comparison = left.lead.leadType.localeCompare(right.lead.leadType);
-      } else if (tableSort.column === 'status') {
+      } else if (col === 'status') {
         comparison = left.draft.status.localeCompare(right.draft.status);
-      } else if (tableSort.column === 'priceRange') {
-        comparison = left.priceRange.localeCompare(right.priceRange);
-      } else if (tableSort.column === 'location') {
-        comparison = left.location.localeCompare(right.location);
-      } else if (tableSort.column === 'lastContact') {
-        const leftTime = left.lastContact ? new Date(left.lastContact).getTime() : 0;
-        const rightTime = right.lastContact ? new Date(right.lastContact).getTime() : 0;
-        comparison = leftTime - rightTime;
-      } else if (tableSort.column === 'desired') {
-        comparison = left.desired.localeCompare(right.desired);
-      } else if (tableSort.column === 'source') {
+      } else if (col === 'leadType') {
+        comparison = left.lead.leadType.localeCompare(right.lead.leadType);
+      } else if (col === 'source') {
         comparison = left.lead.source.localeCompare(right.lead.source);
-      } else if (tableSort.column === 'updatedAt') {
-        comparison = new Date(left.lead.updatedAt).getTime() - new Date(right.lead.updatedAt).getTime();
-      } else if (tableSort.column === 'score') {
+      } else if (col === 'score') {
         comparison = left.score.score - right.score.score;
-      } else if (tableSort.column === 'phone') {
+      } else if (col === 'address') {
+        comparison = left.streetAddress.localeCompare(right.streetAddress);
+      } else if (col === 'city') {
+        comparison = left.city.localeCompare(right.city);
+      } else if (col === 'priceRange') {
+        comparison = left.priceRange.localeCompare(right.priceRange);
+      } else if (col === 'beds') {
+        comparison = (left.beds ?? 0) - (right.beds ?? 0);
+      } else if (col === 'baths') {
+        comparison = (left.baths ?? 0) - (right.baths ?? 0);
+      } else if (col === 'sqft') {
+        comparison = (left.sqft ?? 0) - (right.sqft ?? 0);
+      } else if (col === 'acreage') {
+        comparison = (left.acreage ?? 0) - (right.acreage ?? 0);
+      } else if (col === 'tags') {
+        comparison = left.tags.join(',').localeCompare(right.tags.join(','));
+      } else if (col === 'lastActivity') {
+        comparison = new Date(left.lastActivityAt).getTime() - new Date(right.lastActivityAt).getTime();
+      } else if (col === 'siteActivity') {
+        const lt = left.siteActivityAt ? new Date(left.siteActivityAt).getTime() : 0;
+        const rt = right.siteActivityAt ? new Date(right.siteActivityAt).getTime() : 0;
+        comparison = lt - rt;
+      } else if (col === 'timeframe') {
+        comparison = (left.timeframe ?? '').localeCompare(right.timeframe ?? '');
+      } else if (col === 'phone') {
         comparison = (left.phone ?? '').localeCompare(right.phone ?? '');
-      } else if (tableSort.column === 'email') {
+      } else if (col === 'email') {
         comparison = (left.email ?? '').localeCompare(right.email ?? '');
       }
 
@@ -1223,7 +1263,8 @@ export function CrmWorkspace({
 
   async function updateContact(contactId: string) {
     const contact = contactById.get(contactId);
-    const draft = draftContactById[contactId];
+    // Read latest draft from store to avoid stale closure
+    const draft = useCrmStore.getState().draftContactById[contactId];
     if (!contact || !draft) {
       return;
     }
@@ -1481,10 +1522,16 @@ export function CrmWorkspace({
 
       replaceLeadById(activeLeadProfile.id, { ...activeLeadProfile, lastContactAt: nowIso });
 
-      pushToast('success', 'Contact logged.');
+      const toastLabel =
+        activityType === 'sms_sent' ? 'Message sent.' :
+        activityType === 'email_sent' ? 'Email sent.' :
+        activityType === 'call_initiated' ? 'Call initiated.' :
+        activityType === 'call_logged' ? 'Call logged.' :
+        'Activity logged.';
+      pushToast('success', toastLabel);
     } catch (err) {
       removeActivity(optimisticId);
-      pushToast('error', err instanceof Error ? err.message : 'Failed to log contact.');
+      pushToast('error', err instanceof Error ? err.message : 'Failed to log activity.');
     } finally {
       endMutation();
     }
@@ -1706,6 +1753,7 @@ export function CrmWorkspace({
   }
 
   return (
+    <CommunicationModalProvider>
     <div className={`crm-shell-app ${brandPreferences.showTexture ? 'crm-shell-texture' : ''}`} style={brandThemeVars} data-density="default">
       <aside className="crm-sidebar" aria-label="CRM navigation">
         <div className="crm-sidebar-brand">
@@ -2131,123 +2179,64 @@ export function CrmWorkspace({
               <EmptyState title="No leads in this table view" detail="Try switching presets or adjusting active filters." />
             ) : (
               <div className="crm-table-wrap">
-                <table className="crm-leads-table">
+                <table className="crm-leads-table crm-leads-table-compact">
                   <thead>
                     <tr>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('name')}>
-                          Name
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('leadType')}>
-                          Lead Type
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('status')}>
-                          Status
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('score')}>
-                          Score
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('priceRange')}>
-                          Price Range
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('location')}>
-                          Location
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('lastContact')}>
-                          Last Contact
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('desired')}>
-                          Beds / Baths / Size Desired
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('phone')}>
-                          Phone
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('email')}>
-                          Email
-                        </button>
-                      </th>
                       <th>Actions</th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('source')}>
-                          Source
-                        </button>
-                      </th>
-                      <th>
-                        <button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('updatedAt')}>
-                          Updated At
-                        </button>
-                      </th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('name')}>Name</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('status')}>Status</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('leadType')}>Type</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('score')}>Score</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('phone')}>Phone</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('email')}>Email</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('address')}>Address</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('city')}>City</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('priceRange')}>Price</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('timeframe')}>Timeframe</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('beds')}>Beds</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('baths')}>Baths</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('sqft')}>Sq Ft</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('acreage')}>Acres</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('tags')}>Tags</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('lastActivity')}>Last Activity</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('siteActivity')}>Site Activity</button></th>
+                      <th><button type="button" className="crm-table-head-btn" onClick={() => toggleTableSort('source')}>Source</button></th>
                     </tr>
                   </thead>
                   <tbody>
                     {leadsTableRows.map((row) => (
                       <tr key={row.lead.id}>
-                        <td>
-                          <button type="button" className="crm-inline-link" onClick={() => openLeadProfile(row.lead.id)}>
-                            {row.contactLabel}
-                          </button>
-                          <span className="crm-muted crm-table-sub">{row.intentLabel}</span>
-                        </td>
-                        <td>{formatLeadTypeLabel(row.lead.leadType)}</td>
-                        <td>
-                          <span className={`crm-status-badge crm-status-${row.draft.status}`}>
-                            {formatLeadStatusLabel(row.draft.status)}
-                          </span>
-                        </td>
-                        <td>
-                          <span className={`crm-score-badge crm-score-${row.score.label.toLowerCase()}`}>
-                            {row.score.score} {row.score.label}
-                          </span>
-                        </td>
-                        <td>{row.priceRange}</td>
-                        <td>
-                          <button type="button" className="crm-inline-link" onClick={() => openLeadProfile(row.lead.id)}>
-                            {row.location}
-                          </button>
-                        </td>
-                        <td>{row.lastContact ? formatDateTime(row.lastContact) : '-'}</td>
-                        <td>{row.desired}</td>
-                        <td>
-                          {row.phone ? <a href={`tel:${row.phone}`} className="crm-inline-link">{row.phone}</a> : '-'}
-                        </td>
-                        <td>
-                          {row.email ? <a href={`mailto:${row.email}`} className="crm-inline-link">{row.email}</a> : '-'}
-                        </td>
-                        <td>
+                        <td className="crm-actions-cell">
                           {row.phone || row.email ? (
-                            <div className="crm-quick-actions">
-                              {row.phone ? (
-                                <a href={`tel:${row.phone}`} className="crm-quick-action" title={`Call ${row.phone}`} aria-label="Call lead">📞</a>
-                              ) : null}
-                              {row.email ? (
-                                <a href={`mailto:${row.email}?subject=${encodeURIComponent(`Re: ${row.lead.listingAddress || 'Your inquiry'}`)}`} className="crm-quick-action" title={`Email ${row.email}`} aria-label="Email lead">✉️</a>
-                              ) : null}
-                              {row.phone ? (
-                                <a href={`sms:${row.phone}`} className="crm-quick-action" title={`Text ${row.phone}`} aria-label="Text lead">💬</a>
-                              ) : null}
-                            </div>
+                            <QuickActionButtons
+                              phone={row.phone}
+                              email={row.email}
+                              contactName={row.contactLabel}
+                              leadId={row.lead.id}
+                              contactId={row.lead.contactId}
+                              propertyAddress={row.lead.listingAddress}
+                              compact
+                            />
                           ) : '-'}
                         </td>
-                        <td>{formatLeadSourceLabel(row.lead.source)}</td>
-                        <td>{formatDateTime(row.lead.updatedAt)}</td>
+                        <td><button type="button" className="crm-inline-link crm-nowrap" onClick={() => openLeadProfile(row.lead.id)}>{row.contactLabel}</button></td>
+                        <td><span className={`crm-status-pill crm-status-${row.draft.status}`}>{formatLeadStatusLabel(row.draft.status)}</span></td>
+                        <td><span className={`crm-type-pill ${getLeadTypeColorClass(row.draft.leadType)}`}>{formatLeadTypeLabel(row.lead.leadType)}</span></td>
+                        <td><span className={`crm-score-pill crm-score-${row.score.label.toLowerCase()}`}>{row.score.score}</span></td>
+                        <td className="crm-nowrap">{row.phone ? <a href={`tel:${row.phone}`} className="crm-inline-link">{formatPhoneDisplay(row.phone)}</a> : '-'}</td>
+                        <td className="crm-nowrap">{row.email ? <a href={`mailto:${row.email}`} className="crm-inline-link">{row.email}</a> : '-'}</td>
+                        <td className="crm-nowrap">{row.streetAddress}</td>
+                        <td className="crm-nowrap">{row.city}</td>
+                        <td className="crm-nowrap">{row.priceRange}</td>
+                        <td className="crm-nowrap">{row.timeframe ? formatTimeframeLabel(row.timeframe) : '-'}</td>
+                        <td className="crm-center">{row.beds ?? '-'}</td>
+                        <td className="crm-center">{row.baths ?? '-'}</td>
+                        <td className="crm-center">{row.sqft ? row.sqft.toLocaleString() : '-'}</td>
+                        <td className="crm-center">{row.acreage ?? '-'}</td>
+                        <td>{row.tags.length > 0 ? <span className="crm-tag-chips">{row.tags.slice(0, 2).map((t) => <span key={t} className="crm-tag-chip">{t}</span>)}{row.tags.length > 2 ? <span className="crm-tag-chip crm-tag-more">+{row.tags.length - 2}</span> : null}</span> : '-'}</td>
+                        <td className="crm-nowrap">{formatTimeAgo(row.lastActivityAt)}</td>
+                        <td className="crm-nowrap">{row.siteActivityAt ? formatTimeAgo(row.siteActivityAt) : '-'}</td>
+                        <td className="crm-nowrap">{formatLeadSourceLabel(row.lead.source)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -2410,10 +2399,28 @@ export function CrmWorkspace({
           onSetContactDraft={(updater) => {
             // Compatibility wrapper: LeadProfileModal passes React-style setState updaters
             if (typeof updater === 'function') {
-              const next = updater(draftContactById);
+              // Read latest state inside callback to avoid stale closure
+              const current = useCrmStore.getState().draftContactById;
+              const next = updater(current);
               for (const [id, draft] of Object.entries(next)) {
                 store.setContactDraft(id, draft);
               }
+            }
+          }}
+          onSetContactDraftField={(contactId, field, value) => {
+            // Ensure draft is initialized from actual contact values (not empty strings)
+            // so that unchanged fields don't get sent as null in the PATCH payload
+            const existing = useCrmStore.getState().draftContactById[contactId];
+            if (!existing) {
+              const contact = contactById.get(contactId);
+              store.setContactDraft(contactId, {
+                fullName: contact?.fullName ?? '',
+                email: contact?.email ?? '',
+                phone: contact?.phone ?? '',
+                [field]: value,
+              });
+            } else {
+              store.setContactDraftField(contactId, field, value);
             }
           }}
           onUpdateLead={updateLead}
@@ -2485,6 +2492,25 @@ export function CrmWorkspace({
           onOpenLead={openLeadProfile}
           onDismiss={dismissNotification}
           onClearAll={clearAllNotifications}
+          onMarkComplete={async (leadId, notifId) => {
+            try {
+              const res = await fetch(`/api/leads/${leadId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nextActionAt: null, nextActionNote: null, nextActionChannel: null }),
+              });
+              if (res.ok) {
+                const lead = leads.find((l) => l.id === leadId);
+                if (lead) {
+                  replaceLeadById(leadId, { ...lead, nextActionAt: null, nextActionNote: null, nextActionChannel: null });
+                }
+                dismissNotification(notifId);
+                pushToast('success', 'Reminder completed.');
+              }
+            } catch {
+              pushToast('error', 'Failed to complete reminder.');
+            }
+          }}
         />
       </div>
 
@@ -2658,6 +2684,25 @@ export function CrmWorkspace({
         alerts={activeAlerts}
         onDismiss={dismissAlert}
         onSnooze={snoozeAlert}
+        onMarkComplete={async (alertId, leadId) => {
+          try {
+            const res = await fetch(`/api/leads/${leadId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ nextActionAt: null, nextActionNote: null, nextActionChannel: null }),
+            });
+            if (res.ok) {
+              const lead = leads.find((l) => l.id === leadId);
+              if (lead) {
+                replaceLeadById(leadId, { ...lead, nextActionAt: null, nextActionNote: null, nextActionChannel: null });
+              }
+              dismissAlert(alertId);
+              pushToast('success', 'Reminder completed.');
+            }
+          } catch {
+            pushToast('error', 'Failed to complete reminder.');
+          }
+        }}
         onDismissAll={dismissAllAlerts}
         onOpenLead={openLeadProfile}
       />
@@ -2669,6 +2714,81 @@ export function CrmWorkspace({
           </div>
         ))}
       </div>
+
+      {/* Global communication modals rendered via context */}
+      <CommunicationModals
+        tenantId={tenantContext.tenantId}
+        onLogContact={logContactActivity}
+      />
     </div>
+    </CommunicationModalProvider>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Communication Modals — consumes CommunicationModalContext
+// ---------------------------------------------------------------------------
+
+function CommunicationModals({
+  tenantId,
+  onLogContact,
+}: {
+  tenantId: string;
+  onLogContact: (activityType: string, summary: string) => Promise<void>;
+}) {
+  const {
+    emailCompose,
+    smsConversation,
+    closeEmailComposer,
+    closeSmsConversation,
+  } = useCommunicationModals();
+
+  return (
+    <>
+      {emailCompose && (
+        <EmailComposeModal
+          to={emailCompose.to}
+          leadId={emailCompose.leadId}
+          tenantId={tenantId}
+          contactName={emailCompose.contactName}
+          contactEmail={emailCompose.to}
+          propertyAddress={emailCompose.propertyAddress}
+          replyToMessageId={emailCompose.replyToMessageId}
+          initialSubject={emailCompose.initialSubject}
+          initialBody={emailCompose.initialBody}
+          mergeContext={{
+            leadName: emailCompose.contactName ?? null,
+            agentName: null,
+            agentEmail: null,
+            agentPhone: null,
+            propertyAddress: emailCompose.propertyAddress ?? null,
+            propertyType: null,
+            priceRange: null,
+            timeframe: null,
+          }}
+          onClose={closeEmailComposer}
+          onSent={() => {
+            void onLogContact('email_sent', `Email sent to ${emailCompose.to}`);
+            closeEmailComposer();
+          }}
+        />
+      )}
+
+      {smsConversation && (
+        <div className="crm-comm-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeSmsConversation(); }}>
+          <SmsConversation
+            to={smsConversation.to}
+            leadId={smsConversation.leadId}
+            contactId={smsConversation.contactId}
+            contactName={smsConversation.contactName}
+            initialBody={smsConversation.initialBody}
+            onClose={closeSmsConversation}
+            onSent={() => {
+              void onLogContact('sms_sent', `SMS sent to ${smsConversation.to}`);
+            }}
+          />
+        </div>
+      )}
+    </>
   );
 }

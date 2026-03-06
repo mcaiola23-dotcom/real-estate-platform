@@ -1,9 +1,10 @@
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import { urlFor } from '../lib/sanity.image'
 import Image from 'next/image'
+import type { PortableTextBlock } from 'sanity'
 
 type Props = {
-    value: any
+    value: PortableTextBlock[] | PortableTextBlock
 }
 
 const components: PortableTextComponents = {

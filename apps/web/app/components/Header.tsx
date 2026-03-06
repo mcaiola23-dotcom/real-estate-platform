@@ -9,8 +9,10 @@ import {
   SignInButton,
   useUser,
 } from '@clerk/nextjs';
+import type { TenantWebsiteConfig } from '@real-estate/types';
 import Container from './Container';
 import townData from '../data/acs/fairfield-county-towns.json';
+import { getTenantWebsiteConfig } from '../lib/tenant/website-profile';
 
 // Get towns from static JSON data
 const TOWNS = Object.entries(townData.towns).map(([slug, town]) => ({
@@ -100,7 +102,12 @@ function UserInitialsButton() {
   );
 }
 
-export default function Header() {
+export default function Header({
+  tenantWebsiteConfig,
+}: {
+  tenantWebsiteConfig?: TenantWebsiteConfig;
+}) {
+  const websiteConfig = tenantWebsiteConfig ?? getTenantWebsiteConfig();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isTownsOpen, setIsTownsOpen] = useState(false);
@@ -136,7 +143,7 @@ export default function Header() {
       <Container>
         <div className={`flex items-center transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20 md:h-24'
           }`}>
-          {/* Matt Caiola Logo - Primary */}
+          {/* Primary brand logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center">
               <div className={`relative transition-all duration-300 ${isScrolled
@@ -144,8 +151,8 @@ export default function Header() {
                 : 'h-12 w-44 sm:h-14 sm:w-52 md:h-16 md:w-60'
                 }`}>
                 <Image
-                  src="/brand/matt-caiola-logo.png"
-                  alt="Matt Caiola Luxury Properties"
+                  src={websiteConfig.logos.primary.src}
+                  alt={websiteConfig.logos.primary.alt}
                   fill
                   className="object-contain object-left"
                   priority
@@ -260,7 +267,7 @@ export default function Header() {
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
-              <span>Search</span>
+              <span>{websiteConfig.cta.homeSearchLabel}</span>
             </Link>
 
             {/* Separator between Search and Home Value */}
@@ -271,15 +278,15 @@ export default function Header() {
               href="/home-value"
               className="inline-flex items-center justify-center px-4 h-9 border border-transparent text-sm font-medium rounded-full text-white bg-stone-900 hover:bg-stone-800 shadow-sm transition-colors whitespace-nowrap"
             >
-              Home Value
+              {websiteConfig.cta.homeValueLabel}
             </Link>
 
-            {/* Higgins Group Logo - matching size */}
+            {/* Brokerage logo */}
             <div className={`relative transition-all duration-300 ml-1 ${isScrolled ? 'h-8 w-28' : 'h-12 w-40 xl:h-14 xl:w-44'
               }`}>
               <Image
-                src="/brand/higgins-lockup.jpg"
-                alt="Higgins Group Private Brokerage"
+                src={websiteConfig.logos.brokerage.src}
+                alt={websiteConfig.logos.brokerage.alt}
                 fill
                 className="object-contain object-right"
               />
@@ -366,18 +373,18 @@ export default function Header() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
-                  Search Homes
+                  {websiteConfig.cta.homeSearchLabel}
                 </Link>
                 <Link href="/home-value" className="block w-full text-center px-4 py-3 rounded-full font-bold text-white bg-stone-900 hover:bg-stone-800" onClick={() => setIsMenuOpen(false)}>
-                  Home Value Estimate
+                  {websiteConfig.cta.homeValueLabel}
                 </Link>
               </div>
-              {/* Higgins Group Logo in Mobile Menu */}
+              {/* Brokerage logo */}
               <div className="pt-4 mt-4 border-t border-stone-200 flex justify-center">
                 <div className="relative h-12 w-40">
                   <Image
-                    src="/brand/higgins-lockup.jpg"
-                    alt="Higgins Group Private Brokerage"
+                    src={websiteConfig.logos.brokerage.src}
+                    alt={websiteConfig.logos.brokerage.alt}
                     fill
                     className="object-contain"
                   />

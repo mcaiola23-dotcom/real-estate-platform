@@ -1,27 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { headers } from "next/headers";
 import { getNeighborhoodBySlug } from "../../../lib/sanity.queries";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
+import type { PortableTextBlock } from "sanity";
 import TownHero from "../../../components/TownHero";
 import Container from "../../../components/Container";
 import TownFAQs from "../../../components/TownFAQs";
 
 // Data Modules
-import { DataModuleGrid } from "../../../components/data/DataModule";
 import { formatContentText } from "../../../lib/formatters";
 import { getLifestyleHeading, getHighlightsHeading } from "../../../lib/heading-variants";
 import AgentCTASection from "../../../components/AgentCTASection";
 import EmailSignupSection from "../../../components/EmailSignupSection";
-import { AtAGlanceModule } from "../../../components/data/AtAGlanceModule";
-import { SchoolsModule } from "../../../components/data/SchoolsModule";
-import { WalkScoreModule, WalkScoreModulePlaceholder } from "../../../components/data/WalkScoreModule";
-import { PoisModule, PoisModulePlaceholder } from "../../../components/data/PoisModule";
-import { TaxesModule } from "../../../components/data/TaxesModule";
+import { WalkScoreModule } from "../../../components/data/WalkScoreModule";
 import { ListingsModule } from "../../../components/data/ListingsModule";
 import { getWalkScore } from "../../../lib/data/providers/walkscore.provider";
-import { getPois } from "../../../lib/data/providers/places.provider";
 import { TOWN_CENTERS } from "../../../lib/data/town-centers";
 import { getTenantContextFromHeaders } from "../../../lib/tenant/resolve-tenant";
 import { getTenantModuleToggles } from "../../../lib/modules/tenant-modules";
@@ -34,7 +28,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { townSlug, neighborhoodSlug } = await params;
-    const neighborhood = await getNeighborhoodBySlug(townSlug, neighborhoodSlug);
+    const tenantContext = await getTenantContextFromHeaders(await headers());
+    const neighborhood = await getNeighborhoodBySlug(townSlug, neighborhoodSlug, tenantContext);
 
     if (!neighborhood) {
         return {
@@ -88,15 +83,17 @@ const sanitizedComponents: PortableTextComponents = {
 };
 
 // Recursively sanitize Portable Text blocks to remove em/en dashes
-function sanitizePortableText(value: any): any {
+function sanitizePortableText(value: unknown): unknown {
     if (!value) return value;
     if (Array.isArray(value)) return value.map(sanitizePortableText);
-    if (typeof value === 'object') {
-        const result: any = {};
-        for (const key of Object.keys(value)) result[key] = sanitizePortableText(value[key]);
+    if (typeof value === "object") {
+        const result: Record<string, unknown> = {};
+        for (const [key, nestedValue] of Object.entries(value as Record<string, unknown>)) {
+            result[key] = sanitizePortableText(nestedValue);
+        }
         return result;
     }
-    if (typeof value === 'string') return formatContentText(value);
+    if (typeof value === "string") return formatContentText(value);
     return value;
 }
 
@@ -108,7 +105,7 @@ export default async function NeighborhoodPage({
     const { townSlug, neighborhoodSlug } = await params;
     const tenantContext = await getTenantContextFromHeaders(await headers());
     const moduleToggles = await getTenantModuleToggles(tenantContext);
-    const neighborhood = await getNeighborhoodBySlug(townSlug, neighborhoodSlug);
+    const neighborhood = await getNeighborhoodBySlug(townSlug, neighborhoodSlug, tenantContext);
 
     if (!neighborhood) {
         notFound();
@@ -223,7 +220,10 @@ export default async function NeighborhoodPage({
                     </h2>
                     {hasDescription ? (
                         <div className="max-w-none text-stone-600 leading-relaxed">
-                            <PortableText value={sanitizePortableText(neighborhood.description)} components={sanitizedComponents} />
+                            <PortableText
+                                value={sanitizePortableText(neighborhood.description) as PortableTextBlock[]}
+                                components={sanitizedComponents}
+                            />
                         </div>
                     ) : (
                         <p className="text-stone-500 italic">Description coming soon.</p>
@@ -289,7 +289,7 @@ export default async function NeighborhoodPage({
                         <h2 className="text-3xl md:text-4xl font-serif font-medium text-stone-900 mb-8">
                             Frequently Asked Questions About {neighborhood.name}
                         </h2>
-                        <TownFAQs faqs={neighborhood.faqs} townName={neighborhood.name} />
+                        <TownFAQs faqs={neighborhood.faqs} />
                     </section>
                 )}
 
@@ -300,7 +300,7 @@ export default async function NeighborhoodPage({
                             Walkability & Transit
                         </h2>
                         <div className="max-w-xl">
-                            <WalkScoreModule result={walkScoreResult} locationName={neighborhood.name} />
+                            <WalkScoreModule result={walkScoreResult} />
                         </div>
                     </section>
                 )}

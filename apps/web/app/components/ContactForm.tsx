@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getTenantWebsiteConfig } from "../lib/tenant/website-profile";
 
 const INTEREST_OPTIONS = [
     { value: "", label: "Select an option..." },
@@ -13,6 +14,7 @@ const INTEREST_OPTIONS = [
 ];
 
 export default function ContactForm() {
+    const tenantWebsiteConfig = getTenantWebsiteConfig();
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [formData, setFormData] = useState({
         name: "",
@@ -61,7 +63,9 @@ export default function ContactForm() {
                     </svg>
                 </div>
                 <h3 className="text-xl font-serif font-medium text-stone-900 mb-2">Message Sent!</h3>
-                <p className="text-stone-600 mb-6">Thank you for reaching out. Matt will get back to you shortly.</p>
+                <p className="text-stone-600 mb-6">
+                    Thank you for reaching out. {tenantWebsiteConfig.agentFirstName} will get back to you shortly.
+                </p>
                 <button
                     onClick={() => setStatus("idle")}
                     className="text-stone-700 hover:text-stone-900 font-medium transition-colors"
@@ -76,7 +80,7 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
             {status === "error" && (
                 <div className="bg-red-50 border border-red-200 rounded-md p-4 text-red-600">
-                    Something went wrong. Please try again or call Matt directly.
+                    Something went wrong. Please try again or call {tenantWebsiteConfig.agentFirstName} directly.
                 </div>
             )}
 
@@ -121,7 +125,7 @@ export default function ContactForm() {
 
             {/* C1: Interest Dropdown */}
             <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">I'm Interested In</label>
+                <label className="block text-sm font-medium text-stone-700 mb-1">I Am Interested In</label>
                 <select
                     name="interest"
                     value={formData.interest}

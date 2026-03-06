@@ -2,26 +2,13 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { MapIcon, ListBulletIcon, SparklesIcon, ChevronDownIcon, AdjustmentsHorizontalIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { MapIcon, ListBulletIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import type { ParcelData } from '../../components/LeafletParcelMap'
 import PropertyDetailModal from '../../components/PropertyDetailModal'
 import PinnedPropertiesPanel from '../../components/PinnedPropertiesPanel'
 import { useMapViewportFetch } from './hooks/useMapViewportFetch'
-// SearchResultsPanel removed — results now shown in sidebar
-import UnifiedSearchBar from '../../components/UnifiedSearchBar'
-import {
-  CityTownFilter,
-  NeighborhoodFilter,
-  PropertyTypeCheckboxes,
-  StatusFilter,
-  PriceRangeSlider,
-  BedroomSlider,
-  BathroomSlider,
-  SquareFootageSlider,
-  LotSizeSlider
-} from '../../components/filters'
-import { AiSearchLoadingOverlay, AnimatedFilterPills, FilterSummary, SavedSearches } from '../../components/search'
+import { useAddressSelection } from './hooks/useAddressSelection'
+import { AiSearchLoadingOverlay } from '../../components/search'
 import { usePropertySearch } from './hooks/usePropertySearch'
 import type { PropertyFilters, PropertySearchResult, PropertySortOption } from './types'
 import {
@@ -30,8 +17,12 @@ import {
   pruneNeighborhoodSelections
 } from './filter-utils'
 import { prefetchPropertyModalData } from '../../components/property-modal/usePropertyModalData'
+import { addRecentPropertyView, type RecentPropertyEntry } from '../../components/unified-search/history'
 import PropertiesMapPane, { type PropertiesMapLayers } from './components/PropertiesMapPane'
 import PropertiesResultsSidebar from './components/PropertiesResultsSidebar'
+import PropertiesFilterHeader from './components/PropertiesFilterHeader'
+import PropertiesMobileFiltersDrawer from './components/PropertiesMobileFiltersDrawer'
+import type { SearchFilters } from '../../components/search'
 
 const API_BASE = '/api/portal'
 const debugLog = (..._args: unknown[]) => {
@@ -379,22 +370,180 @@ export default function PropertiesPage() {
     })
   }, [])
 
+  const openListingModal = useCallback(({
+    listingId,
+    parcelId,
+    address,
+    city,
+    status
+  }: {
+    listingId: number
+    parcelId?: string
+    address?: string
+    city?: string
+    status?: string
+  }) => {
+    setParcelModalOpen(false)
+    setParcelModalId(null)
+    setModalListingId(listingId)
+    setModalOpen(true)
+
+    if (address) {
+      addRecentPropertyView({
+        parcelId,
+        listingId,
+        address,
+        city,
+        status
+      })
+    }
+  }, [])
+
+  const openParcelModal = useCallback(({
+    parcelId,
+    listingId,
+    address,
+    city,
+    status
+  }: {
+    parcelId: string
+    listingId?: number
+    address?: string
+    city?: string
+    status?: string
+  }) => {
+    setModalOpen(false)
+    setModalListingId(null)
+    setParcelModalId(parcelId)
+    setParcelModalOpen(true)
+
+    addRecentPropertyView({
+      parcelId,
+      listingId,
+      address: address || parcelId,
+      city,
+      status
+    })
+  }, [])
+
+  const handleAddressSelect = useAddressSelection({
+    apiBase: API_BASE,
+    debugLog,
+    onSearchTermChange: setSearchTerm,
+    onOpenListing: openListingModal,
+    onOpenParcel: openParcelModal
+  })
+
+  const handleRecentPropertySelect = useCallback((recentProperty: RecentPropertyEntry) => {
+    const matchedProperty =
+      (recentProperty.listingId
+        ? properties.find((item) => item.listing_id === recentProperty.listingId)
+        : null) ||
+      (recentProperty.parcelId
+        ? properties.find((item) => item.parcel_id === recentProperty.parcelId)
+        : null)
+
+    if (matchedProperty) {
+      setSelectedProperty(matchedProperty)
+      setSelectedParcelId(matchedProperty.parcel_id)
+    } else if (recentProperty.parcelId) {
+      setSelectedParcelId(recentProperty.parcelId)
+    }
+
+    if (recentProperty.listingId) {
+      openListingModal({
+        listingId: recentProperty.listingId,
+        parcelId: recentProperty.parcelId,
+        address: recentProperty.address,
+        city: recentProperty.city,
+        status: recentProperty.status
+      })
+
+      if (searchResultListingIds.length > 0) {
+        const index = searchResultListingIds.indexOf(recentProperty.listingId)
+        setCurrentSearchIndex(index >= 0 ? index : undefined)
+      } else {
+        setCurrentSearchIndex(undefined)
+      }
+      return
+    }
+
+    if (recentProperty.parcelId) {
+      openParcelModal({
+        parcelId: recentProperty.parcelId,
+        address: recentProperty.address,
+        city: recentProperty.city,
+        status: recentProperty.status
+      })
+      setCurrentSearchIndex(undefined)
+    }
+  }, [openListingModal, openParcelModal, properties, searchResultListingIds, setSelectedParcelId, setSelectedProperty])
+
+  const handleLoadSavedSearch = useCallback((loadedFilters: SearchFilters, loadedAiQuery?: string) => {
+    if (loadedAiQuery) {
+      performAiSearch(loadedAiQuery)
+      return
+    }
+
+    setFilters(prev => ({
+      ...prev,
+      cities: loadedFilters.cities || [],
+      neighborhoods: loadedFilters.neighborhoods || [],
+      propertyTypes: loadedFilters.propertyTypes || [],
+      statuses: loadedFilters.statuses || ['Active', 'Pending'],
+      priceMin: loadedFilters.priceMin || 0,
+      priceMax: loadedFilters.priceMax || 20000000,
+      bedroomsMin: loadedFilters.bedroomsMin || 0,
+      bedroomsMax: loadedFilters.bedroomsMax || 7,
+      bathroomsMin: loadedFilters.bathroomsMin || 0,
+      bathroomsMax: loadedFilters.bathroomsMax || 5,
+      squareFeetMin: loadedFilters.squareFeetMin || 0,
+      squareFeetMax: loadedFilters.squareFeetMax || 10000,
+    }))
+    setAiSearchMode(false)
+    setAiSearchQuery('')
+    setShouldAutoSearch(true)
+  }, [performAiSearch, setAiSearchMode, setAiSearchQuery])
+
+  const handleResetFilters = useCallback(() => {
+    setSelectedNeighborhoodId(null)
+    setFilters(createDefaultPropertyFilters())
+    setShouldAutoSearch(true)
+  }, [])
+
+  const handleToggleViewSaved = useCallback(() => {
+    setViewingSaved((prev) => !prev)
+  }, [])
+
   const handlePropertySelect = useCallback((property: PropertySearchResult) => {
     setSelectedProperty(property)
     setSelectedParcelId(property.parcel_id)
 
     // Open modal if property has a listing
     if (property.listing_id) {
-      setModalListingId(property.listing_id)
-      setModalOpen(true)
+      openListingModal({
+        listingId: property.listing_id,
+        parcelId: property.parcel_id,
+        address: property.address,
+        city: property.city,
+        status: property.status || undefined
+      })
 
       // Set navigation context if in search results
       if (searchResultListingIds.length > 0) {
         const index = searchResultListingIds.indexOf(property.listing_id)
         setCurrentSearchIndex(index >= 0 ? index : undefined)
       }
+    } else {
+      openParcelModal({
+        parcelId: property.parcel_id,
+        address: property.address,
+        city: property.city,
+        status: property.status || undefined
+      })
+      setCurrentSearchIndex(undefined)
     }
-  }, [searchResultListingIds])
+  }, [openListingModal, openParcelModal, searchResultListingIds, setSelectedParcelId, setSelectedProperty])
 
   // Handle clicking a neighbor property from the NeighborhoodMap inside a modal
   const handleNeighborPropertyClick = useCallback((parcelId: string, listingId?: number) => {
@@ -407,14 +556,25 @@ export default function PropertiesPage() {
     // Open the right modal after a brief delay so the close animation completes
     setTimeout(() => {
       if (listingId) {
-        setModalListingId(listingId)
-        setModalOpen(true)
+        const matchedProperty = properties.find((item) => item.listing_id === listingId)
+        openListingModal({
+          listingId,
+          parcelId,
+          address: matchedProperty?.address,
+          city: matchedProperty?.city,
+          status: matchedProperty?.status || undefined
+        })
       } else {
-        setParcelModalId(parcelId)
-        setParcelModalOpen(true)
+        const matchedProperty = properties.find((item) => item.parcel_id === parcelId)
+        openParcelModal({
+          parcelId,
+          address: matchedProperty?.address,
+          city: matchedProperty?.city,
+          status: matchedProperty?.status || undefined
+        })
       }
     }, 150)
-  }, [])
+  }, [openListingModal, openParcelModal, properties])
 
   const handleModalNavigate = useCallback((direction: 'prev' | 'next') => {
     if (currentSearchIndex === undefined) return
@@ -423,9 +583,20 @@ export default function PropertiesPage() {
     if (newIndex < 0 || newIndex >= searchResultListingIds.length) return
 
     const newListingId = searchResultListingIds[newIndex]
-    setModalListingId(newListingId)
+    const matchedProperty = properties.find((item) => item.listing_id === newListingId)
+    openListingModal({
+      listingId: newListingId,
+      parcelId: matchedProperty?.parcel_id,
+      address: matchedProperty?.address,
+      city: matchedProperty?.city,
+      status: matchedProperty?.status || undefined
+    })
+    if (matchedProperty) {
+      setSelectedProperty(matchedProperty)
+      setSelectedParcelId(matchedProperty.parcel_id)
+    }
     setCurrentSearchIndex(newIndex)
-  }, [currentSearchIndex, searchResultListingIds])
+  }, [currentSearchIndex, openListingModal, properties, searchResultListingIds, setSelectedParcelId, setSelectedProperty])
 
   // Update search result listing IDs when properties change
   useEffect(() => {
@@ -443,8 +614,13 @@ export default function PropertiesPage() {
       // Open appropriate modal based on whether property has listing
       if (matched.listing_id) {
         // Has listing - open full listing modal
-        setModalListingId(matched.listing_id)
-        setModalOpen(true)
+        openListingModal({
+          listingId: matched.listing_id,
+          parcelId: matched.parcel_id,
+          address: matched.address,
+          city: matched.city,
+          status: matched.status || undefined
+        })
 
         // Set navigation context if in search results
         if (searchResultListingIds.length > 0) {
@@ -455,16 +631,24 @@ export default function PropertiesPage() {
         }
       } else {
         // No listing - open parcel modal
-        setParcelModalId(parcel.parcel_id)
-        setParcelModalOpen(true)
+        openParcelModal({
+          parcelId: parcel.parcel_id,
+          address: matched.address || parcel.address,
+          city: matched.city || parcel.city,
+          status: matched.status || parcel.listing_status || undefined
+        })
       }
     } else {
       // No match in properties list - still open parcel modal
-      setParcelModalId(parcel.parcel_id)
-      setParcelModalOpen(true)
+      openParcelModal({
+        parcelId: parcel.parcel_id,
+        address: parcel.address,
+        city: parcel.city,
+        status: parcel.listing_status || undefined
+      })
     }
     setSelectedParcelId(parcel.parcel_id)
-  }, [properties, searchResultListingIds])
+  }, [openListingModal, openParcelModal, properties, searchResultListingIds, setSelectedParcelId, setSelectedProperty])
 
   // Pinned Properties Handlers
   const handlePinProperty = useCallback((parcel: ParcelData) => {
@@ -499,8 +683,12 @@ export default function PropertiesPage() {
   const handleSelectPinnedProperty = useCallback((property: typeof pinnedProperties[0]) => {
     if (property.listing_id) {
       // Open listing modal
-      setModalListingId(property.listing_id)
-      setModalOpen(true)
+      openListingModal({
+        listingId: property.listing_id,
+        parcelId: property.parcel_id,
+        address: property.address_full,
+        city: property.city
+      })
 
       // Set navigation to pinned properties
       const pinnedListingIds = pinnedProperties
@@ -511,10 +699,13 @@ export default function PropertiesPage() {
       setCurrentSearchIndex(index >= 0 ? index : undefined)
     } else {
       // Open parcel modal
-      setParcelModalId(property.parcel_id)
-      setParcelModalOpen(true)
+      openParcelModal({
+        parcelId: property.parcel_id,
+        address: property.address_full,
+        city: property.city
+      })
     }
-  }, [pinnedProperties])
+  }, [openListingModal, openParcelModal, pinnedProperties])
 
   const handleClearAllPins = useCallback(() => {
     setPinnedProperties([])
@@ -557,618 +748,36 @@ export default function PropertiesPage() {
   return (
     <div className="min-h-screen bg-stone-50 lg:h-screen lg:overflow-hidden">
       {/* ── Compact Filter Header ── */}
-      <div className="relative z-30 bg-stone-50 border-b border-stone-200 shadow-md">
-        <div className="max-w-[92rem] mx-auto px-3 sm:px-5 lg:px-6 py-1.5">
-          <div className="flex flex-col gap-1.5">
-
-            {/* Row 1: Search bar + Status + Sort + Type + Search + Advanced */}
-            {!aiSearchMode ? (
-              <div className="flex items-center gap-2 flex-wrap">
-                {/* Search bar */}
-                <div className="w-full lg:flex-1 lg:max-w-2xl flex-shrink-0">
-                  <UnifiedSearchBar
-                    initialValue={searchTerm}
-                    variant="compact"
-                    onAiSearch={(query) => performAiSearch(query)}
-                    onCitySelect={(city) => {
-                      if (!filters.cities.includes(city)) {
-                        const newFilters = { ...filters, cities: [...filters.cities, city] }
-                        setFilters(newFilters)
-                        setTimeout(() => {
-                          const applyButton = document.querySelector('[data-apply-filters]') as HTMLButtonElement
-                          if (applyButton) applyButton.click()
-                        }, 100)
-                      }
-                    }}
-                    onNeighborhoodSelect={(neighborhood, city) => {
-                      if (city && !filters.cities.includes(city)) {
-                        const newFilters = {
-                          ...filters,
-                          cities: [...filters.cities, city],
-                          neighborhoods: [...filters.neighborhoods, neighborhood]
-                        }
-                        setFilters(newFilters)
-                      } else if (!filters.neighborhoods.includes(neighborhood)) {
-                        const newFilters = {
-                          ...filters,
-                          neighborhoods: [...filters.neighborhoods, neighborhood]
-                        }
-                        setFilters(newFilters)
-                      }
-                      setTimeout(() => {
-                        const applyButton = document.querySelector('[data-apply-filters]') as HTMLButtonElement
-                        if (applyButton) applyButton.click()
-                      }, 100)
-                    }}
-                    onAddressSelect={async (suggestion) => {
-                      debugLog('[Properties] onAddressSelect called with:', suggestion)
-                      setSearchTerm(suggestion.value)
-
-                      try {
-                        debugLog('[Properties] Step 1: Trying database address lookup')
-                        const lookupRes = await fetch(
-                          `${API_BASE}/api/autocomplete/lookup?address=${encodeURIComponent(suggestion.value)}`
-                        )
-
-                        if (lookupRes.ok) {
-                          const lookupData = await lookupRes.json()
-                          debugLog('[Properties] Lookup result:', lookupData)
-
-                          if (lookupData.found && lookupData.best_match) {
-                            const match = lookupData.best_match
-                            debugLog('[Properties] Found match via lookup:', match.address_full, 'similarity:', match.similarity)
-
-                            if (match.similarity > 0.6) {
-                              if (match.listing_id) {
-                                setModalListingId(match.listing_id)
-                                setModalOpen(true)
-                                return
-                              } else if (match.parcel_id) {
-                                setParcelModalId(match.parcel_id)
-                                setParcelModalOpen(true)
-                                return
-                              }
-                            }
-                          }
-                        }
-
-                        debugLog('[Properties] Step 2: Trying search with coordinates')
-                        let lat: number | undefined
-                        let lng: number | undefined
-
-                        if (suggestion.place_id) {
-                          const detailsRes = await fetch(
-                            `${API_BASE}/api/places/details?place_id=${suggestion.place_id}`
-                          )
-                          if (detailsRes.ok) {
-                            const details = await detailsRes.json()
-                            lat = details.location?.lat
-                            lng = details.location?.lng
-                            debugLog('[Properties] Got coordinates from place_id:', lat, lng)
-                          }
-                        }
-
-                        const response = await fetch(
-                          `${API_BASE}/api/search/properties`,
-                          {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              query: suggestion.value,
-                              filters: {
-                                status: ['Active', 'Pending', 'Sold', 'Off-Market']
-                              },
-                              page: 1,
-                              page_size: 5
-                            })
-                          }
-                        )
-                        const data = await response.json()
-
-                        if (data.results && data.results.length > 0) {
-                          let property = data.results[0]
-
-                          if (lat && lng && data.results.length > 1) {
-                            let minDist = Infinity
-                            for (const p of data.results) {
-                              if (p.latitude && p.longitude) {
-                                const dist = Math.abs(p.latitude - lat) + Math.abs(p.longitude - lng)
-                                if (dist < minDist) {
-                                  minDist = dist
-                                  property = p
-                                }
-                              }
-                            }
-                          }
-
-                          if (property.listing_id) {
-                            setModalListingId(property.listing_id)
-                            setModalOpen(true)
-                            return
-                          } else if (property.parcel_id) {
-                            setParcelModalId(property.parcel_id)
-                            setParcelModalOpen(true)
-                            return
-                          }
-                        }
-
-                        if (lat && lng) {
-                          const searchLat = lat
-                          const searchLng = lng
-                          debugLog('[Properties] Step 3: Trying coordinate search at', searchLat, searchLng)
-
-                          const delta = 0.001
-                          const bbox = `${searchLng - delta},${searchLat - delta},${searchLng + delta},${searchLat + delta}`
-
-                          const parcelRes = await fetch(
-                            `${API_BASE}/api/map/parcels?bbox=${bbox}&zoom=18&limit=10&attributes=core`
-                          )
-
-                          if (parcelRes.ok) {
-                            const parcelData = await parcelRes.json()
-                            debugLog('[Properties] Coordinate search results:', parcelData)
-
-                            if (parcelData.features && parcelData.features.length > 0) {
-                              let closestParcel = parcelData.features[0]
-                              let minDist = Infinity
-
-                              const getCentroid = (coords: any): [number, number] | null => {
-                                try {
-                                  let points: number[][] = []
-                                  if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
-                                    points = coords[0]
-                                  } else if (Array.isArray(coords[0])) {
-                                    points = coords
-                                  } else {
-                                    return [coords[0], coords[1]]
-                                  }
-                                  let sumLng = 0, sumLat = 0
-                                  for (const pt of points) {
-                                    sumLng += pt[0]
-                                    sumLat += pt[1]
-                                  }
-                                  return [sumLng / points.length, sumLat / points.length]
-                                } catch {
-                                  return null
-                                }
-                              }
-
-                              for (const feature of parcelData.features) {
-                                const centroid = feature.properties?.centroid
-                                let pLat: number | undefined
-                                let pLng: number | undefined
-
-                                if (centroid && Array.isArray(centroid) && centroid.length >= 2) {
-                                  pLng = centroid[0]
-                                  pLat = centroid[1]
-                                } else {
-                                  const coords = feature.geometry?.coordinates
-                                  if (coords) {
-                                    const calculatedCentroid = getCentroid(coords)
-                                    if (calculatedCentroid) {
-                                      pLng = calculatedCentroid[0]
-                                      pLat = calculatedCentroid[1]
-                                    }
-                                  }
-                                }
-
-                                if (pLat && pLng) {
-                                  const dist = Math.abs(pLat - searchLat) + Math.abs(pLng - searchLng)
-                                  if (dist < minDist) {
-                                    minDist = dist
-                                    closestParcel = feature
-                                  }
-                                }
-                              }
-
-                              const parcelId = closestParcel.properties?.parcel_id
-                              const listingId = closestParcel.properties?.listing_id
-
-                              debugLog('[Properties] Found closest parcel:', parcelId, 'listing:', listingId)
-
-                              if (listingId) {
-                                setModalListingId(listingId)
-                                setModalOpen(true)
-                              } else if (parcelId) {
-                                setParcelModalId(parcelId)
-                                setParcelModalOpen(true)
-                              }
-                            } else {
-                              debugLog('[Properties] No parcels found near coordinates')
-                            }
-                          }
-                        } else {
-                          debugLog('[Properties] No property found for address:', suggestion.value)
-                        }
-                      } catch (error) {
-                        console.error('[Properties] Error fetching property:', error)
-                      }
-                    }}
-                    placeholder="Search addresses or describe your dream home..."
-                  />
-                </div>
-
-                {/* Status tabs (desktop) */}
-                <div className="hidden lg:flex rounded-full overflow-hidden border border-stone-200 bg-white">
-                  {(['Active', 'Pending', 'Sold'] as const).map(status => (
-                    <button
-                      key={status}
-                      onClick={() => {
-                        const newStatuses = filters.statuses.includes(status)
-                          ? filters.statuses.filter(s => s !== status)
-                          : [...filters.statuses, status]
-                        setFilters(prev => ({ ...prev, statuses: newStatuses }))
-                      }}
-                      className={`px-3 py-1 text-xs transition-colors ${
-                        filters.statuses.includes(status) ? 'bg-stone-900 text-white' : 'text-stone-500 hover:text-stone-800'
-                      }`}
-                    >
-                      {status}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Sort dropdown (desktop) */}
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                  className="hidden lg:block px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                >
-                  <option value="relevance">Sort: Relevance</option>
-                  <option value="price_desc">Price: High to Low</option>
-                  <option value="price_asc">Price: Low to High</option>
-                  <option value="newest">Newest First</option>
-                  <option value="beds_desc">Most Beds</option>
-                  <option value="sqft_desc">Largest</option>
-                </select>
-
-                {/* Property Type (desktop) */}
-                <select
-                  value={filters.propertyTypes[0] || ''}
-                  onChange={(e) => setFilters(prev => ({ ...prev, propertyTypes: e.target.value ? [e.target.value] : [] }))}
-                  className="hidden lg:block px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                >
-                  <option value="">All Types</option>
-                  {PROPERTY_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
-                </select>
-
-                {/* Search button (desktop) */}
-                <button
-                  onClick={handleApplyFilters}
-                  data-apply-filters
-                  className="hidden lg:inline-flex px-5 py-1.5 text-xs rounded-full bg-stone-900 text-white hover:bg-stone-800 transition-colors"
-                >
-                  Search
-                </button>
-
-                {/* Home link */}
-                <Link href="/" className="text-stone-600 hover:text-stone-900 text-xs hidden sm:inline whitespace-nowrap ml-auto">
-                  ← Home
-                </Link>
-              </div>
-            ) : aiParsedFilters && !aiSearchLoading ? (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0 w-full sm:w-auto">
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <SparklesIcon className="h-5 w-5 text-stone-700" />
-                    <span className="text-sm font-semibold text-stone-900">AI Search</span>
-                  </div>
-                  <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto sm:flex-wrap scrollbar-hide">
-                    <AnimatedFilterPills
-                      parsedFilters={aiParsedFilters}
-                      isVisible={true}
-                      onRemoveFilter={handleRemoveFilter}
-                      onEditFilter={handleEditFilter}
-                      availableCities={FAIRFIELD_COUNTY_TOWNS}
-                      className="flex-wrap sm:flex-wrap"
-                    />
-                  </div>
-                  <span className="text-sm text-stone-500 flex-shrink-0 hidden sm:inline">
-                    &bull; {searchSummary?.total_results || 0} results
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-start">
-                  <span className="text-sm text-stone-500 sm:hidden">
-                    {searchSummary?.total_results || 0} results
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <button onClick={clearAiSearch} className="text-sm text-stone-500 hover:text-stone-700 underline">Clear</button>
-                    <Link href="/" className="text-stone-900 hover:text-stone-700 text-sm hidden sm:inline">← Home</Link>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-
-            {/* AI Filter Summary */}
-            {aiSearchMode && aiParsedFilters && !aiSearchLoading && (
-              <FilterSummary
-                parsedFilters={aiParsedFilters}
-                resultCount={searchSummary?.total_results || 0}
-                className="text-stone-500 text-sm"
-              />
-            )}
-
-            {/* Row 2: Town, Price, Beds, Baths, Saved Searches, Reset (desktop) */}
-            {!aiSearchMode && (
-              <div className="hidden lg:flex flex-wrap items-end gap-2">
-                {/* Town dropdown */}
-                <details className="relative">
-                  <summary className={`list-none px-4 py-1.5 text-xs rounded-full border cursor-pointer bg-white transition-colors ${
-                    filters.cities.length > 0 ? 'border-stone-900 text-stone-900 font-medium' : 'border-stone-300 text-stone-600 hover:border-stone-400'
-                  }`}>
-                    {filters.cities.length > 0 ? `${filters.cities.length} Town${filters.cities.length > 1 ? 's' : ''}` : 'Town'}
-                    <ChevronDownIcon className="inline h-3 w-3 ml-1" />
-                  </summary>
-                  <div className="absolute left-0 mt-2 w-64 rounded-xl border border-stone-200 bg-white shadow-lg p-3 z-50 max-h-80 overflow-y-auto">
-                    {FAIRFIELD_COUNTY_TOWNS.map(town => (
-                      <label key={town} className="flex items-center gap-2 py-1 text-xs text-stone-700 cursor-pointer hover:bg-stone-50 px-2 rounded">
-                        <input
-                          type="checkbox"
-                          checked={filters.cities.includes(town)}
-                          onChange={() => {
-                            const newCities = filters.cities.includes(town)
-                              ? filters.cities.filter(c => c !== town)
-                              : [...filters.cities, town]
-                            setFilters(prev => ({ ...prev, cities: newCities }))
-                          }}
-                          className="rounded border-stone-300"
-                        />
-                        {town}
-                      </label>
-                    ))}
-                  </div>
-                </details>
-
-                {/* Neighborhood dropdown — auto-populates when town(s) selected */}
-                <details className="relative">
-                  <summary className={`list-none px-4 py-1.5 text-xs rounded-full border cursor-pointer bg-white transition-colors ${
-                    filters.neighborhoods.length > 0 ? 'border-stone-900 text-stone-900 font-medium' :
-                    filters.cities.length === 0 ? 'border-stone-200 text-stone-400 cursor-not-allowed' :
-                    'border-stone-300 text-stone-600 hover:border-stone-400'
-                  }`}
-                    onClick={(e) => { if (filters.cities.length === 0) e.preventDefault() }}
-                  >
-                    {filters.neighborhoods.length > 0
-                      ? `${filters.neighborhoods.length} Neighborhood${filters.neighborhoods.length > 1 ? 's' : ''}`
-                      : 'Neighborhood'}
-                    <ChevronDownIcon className="inline h-3 w-3 ml-1" />
-                  </summary>
-                  <div className="absolute left-0 mt-2 w-64 rounded-xl border border-stone-200 bg-white shadow-lg p-3 z-50 max-h-80 overflow-y-auto">
-                    {neighborhoodsLoading ? (
-                      <div className="py-3 text-center text-xs text-stone-400">Loading...</div>
-                    ) : neighborhoodOptions.length === 0 ? (
-                      <div className="py-3 text-center text-xs text-stone-400">No neighborhoods found</div>
-                    ) : (
-                      neighborhoodOptions.map(n => (
-                        <label key={n.name} className="flex items-center gap-2 py-1 text-xs text-stone-700 cursor-pointer hover:bg-stone-50 px-2 rounded">
-                          <input
-                            type="checkbox"
-                            checked={filters.neighborhoods.includes(n.name)}
-                            onChange={() => {
-                              const newNeighborhoods = filters.neighborhoods.includes(n.name)
-                                ? filters.neighborhoods.filter(nb => nb !== n.name)
-                                : [...filters.neighborhoods, n.name]
-                              setFilters(prev => ({ ...prev, neighborhoods: newNeighborhoods }))
-                            }}
-                            className="rounded border-stone-300"
-                          />
-                          <span>{n.name}</span>
-                          {filters.cities.length > 1 && (
-                            <span className="text-stone-400 text-[10px] ml-auto">{n.city}</span>
-                          )}
-                        </label>
-                      ))
-                    )}
-                  </div>
-                </details>
-
-                {/* Price inputs */}
-                <label className="flex flex-col text-xs text-stone-500">
-                  Price min
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={filters.priceMin || ''}
-                    onChange={(e) => setFilters(prev => ({ ...prev, priceMin: parseInt(e.target.value) || 0 }))}
-                    placeholder="No min"
-                    className="mt-0.5 w-28 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  />
-                </label>
-                <label className="flex flex-col text-xs text-stone-500">
-                  Price max
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={filters.priceMax >= 20000000 ? '' : filters.priceMax}
-                    onChange={(e) => setFilters(prev => ({ ...prev, priceMax: parseInt(e.target.value) || 20000000 }))}
-                    placeholder="No max"
-                    className="mt-0.5 w-28 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  />
-                </label>
-
-                {/* Beds */}
-                <label className="flex flex-col text-xs text-stone-500">
-                  Beds
-                  <select
-                    value={filters.bedroomsMin}
-                    onChange={(e) => setFilters(prev => ({ ...prev, bedroomsMin: parseInt(e.target.value) }))}
-                    className="mt-0.5 w-20 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  >
-                    <option value={0}>Any</option>
-                    {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}+</option>)}
-                  </select>
-                </label>
-
-                {/* Baths */}
-                <label className="flex flex-col text-xs text-stone-500">
-                  Baths
-                  <select
-                    value={filters.bathroomsMin}
-                    onChange={(e) => setFilters(prev => ({ ...prev, bathroomsMin: parseInt(e.target.value) }))}
-                    className="mt-0.5 w-20 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  >
-                    <option value={0}>Any</option>
-                    {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}+</option>)}
-                  </select>
-                </label>
-
-                {/* Advanced toggle — right after Baths */}
-                <button
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="px-4 py-1.5 text-xs border border-stone-300 rounded-full text-stone-600 hover:text-stone-900 hover:border-stone-400 transition-colors self-end mb-px"
-                >
-                  {showAdvanced ? 'Less' : 'Advanced'}
-                </button>
-
-                {/* Spacer to push save/reset right */}
-                <div className="flex-1" />
-
-                {/* Saved Searches */}
-                <SavedSearches
-                  currentFilters={{
-                    cities: filters.cities,
-                    neighborhoods: filters.neighborhoods,
-                    propertyTypes: filters.propertyTypes,
-                    statuses: filters.statuses,
-                    priceMin: filters.priceMin > 0 ? filters.priceMin : undefined,
-                    priceMax: filters.priceMax < 20000000 ? filters.priceMax : undefined,
-                    bedroomsMin: filters.bedroomsMin > 0 ? filters.bedroomsMin : undefined,
-                    bedroomsMax: filters.bedroomsMax < 7 ? filters.bedroomsMax : undefined,
-                    bathroomsMin: filters.bathroomsMin > 0 ? filters.bathroomsMin : undefined,
-                    bathroomsMax: filters.bathroomsMax < 5 ? filters.bathroomsMax : undefined,
-                    squareFeetMin: filters.squareFeetMin > 0 ? filters.squareFeetMin : undefined,
-                    squareFeetMax: filters.squareFeetMax < 10000 ? filters.squareFeetMax : undefined,
-                  }}
-                  currentAiQuery={aiSearchQuery || undefined}
-                  onLoadSearch={(loadedFilters, loadedAiQuery) => {
-                    if (loadedAiQuery) {
-                      performAiSearch(loadedAiQuery)
-                    } else {
-                      setFilters({
-                        ...filters,
-                        cities: loadedFilters.cities || [],
-                        neighborhoods: loadedFilters.neighborhoods || [],
-                        propertyTypes: loadedFilters.propertyTypes || [],
-                        statuses: loadedFilters.statuses || ['Active', 'Pending'],
-                        priceMin: loadedFilters.priceMin || 0,
-                        priceMax: loadedFilters.priceMax || 20000000,
-                        bedroomsMin: loadedFilters.bedroomsMin || 0,
-                        bedroomsMax: loadedFilters.bedroomsMax || 7,
-                        bathroomsMin: loadedFilters.bathroomsMin || 0,
-                        bathroomsMax: loadedFilters.bathroomsMax || 5,
-                        squareFeetMin: loadedFilters.squareFeetMin || 0,
-                        squareFeetMax: loadedFilters.squareFeetMax || 10000,
-                      })
-                      setAiSearchMode(false)
-                      setAiSearchQuery('')
-                      setShouldAutoSearch(true)
-                    }
-                  }}
-                  showViewSaved={true}
-                  viewingSaved={viewingSaved}
-                  onToggleViewSaved={() => setViewingSaved(!viewingSaved)}
-                />
-
-                {/* Reset */}
-                <button
-                  onClick={() => {
-                    setSelectedNeighborhoodId(null)
-                    setFilters(createDefaultPropertyFilters())
-                    setShouldAutoSearch(true)
-                  }}
-                  className="px-4 py-1.5 text-xs border border-stone-300 rounded-full text-stone-600 hover:text-stone-900 hover:border-stone-400 transition-colors"
-                >
-                  Reset
-                </button>
-              </div>
-            )}
-
-            {/* Mobile: Filter button + status pills */}
-            {!aiSearchMode && (
-              <div className="flex lg:hidden items-center gap-2">
-                <button
-                  onClick={() => setShowMobileFilters(true)}
-                  className="px-4 py-1.5 text-xs border border-stone-300 rounded-full text-stone-600 hover:text-stone-900 transition-colors flex items-center gap-1"
-                >
-                  <AdjustmentsHorizontalIcon className="h-3.5 w-3.5" />
-                  Filters
-                </button>
-                <div className="flex rounded-full overflow-hidden border border-stone-200 bg-white">
-                  {(['Active', 'Pending', 'Sold'] as const).map(status => (
-                    <button
-                      key={status}
-                      onClick={() => {
-                        const newStatuses = filters.statuses.includes(status)
-                          ? filters.statuses.filter(s => s !== status)
-                          : [...filters.statuses, status]
-                        setFilters(prev => ({ ...prev, statuses: newStatuses }))
-                      }}
-                      className={`px-3 py-1 text-xs transition-colors ${
-                        filters.statuses.includes(status) ? 'bg-stone-900 text-white' : 'text-stone-500 hover:text-stone-800'
-                      }`}
-                    >
-                      {status}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Row 3: Advanced filters (desktop) */}
-            {!aiSearchMode && showAdvanced && (
-              <div className="hidden lg:flex flex-wrap items-end gap-3 border-t border-stone-200 pt-3">
-                <label className="flex flex-col text-xs text-stone-500">
-                  Sqft min
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={filters.squareFeetMin || ''}
-                    onChange={(e) => setFilters(prev => ({ ...prev, squareFeetMin: parseInt(e.target.value) || 0 }))}
-                    placeholder="No min"
-                    className="mt-0.5 w-28 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  />
-                </label>
-                <label className="flex flex-col text-xs text-stone-500">
-                  Sqft max
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    value={filters.squareFeetMax >= 10000 ? '' : filters.squareFeetMax}
-                    onChange={(e) => setFilters(prev => ({ ...prev, squareFeetMax: parseInt(e.target.value) || 10000 }))}
-                    placeholder="No max"
-                    className="mt-0.5 w-28 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  />
-                </label>
-                <label className="flex flex-col text-xs text-stone-500">
-                  Acres min
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    step="0.1"
-                    value={filters.lotSizeMin || ''}
-                    onChange={(e) => setFilters(prev => ({ ...prev, lotSizeMin: parseFloat(e.target.value) || 0 }))}
-                    placeholder="No min"
-                    className="mt-0.5 w-28 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  />
-                </label>
-                <label className="flex flex-col text-xs text-stone-500">
-                  Acres max
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    step="0.1"
-                    value={filters.lotSizeMax >= 10 ? '' : filters.lotSizeMax}
-                    onChange={(e) => setFilters(prev => ({ ...prev, lotSizeMax: parseFloat(e.target.value) || 10 }))}
-                    placeholder="No max"
-                    className="mt-0.5 w-28 px-3 py-1.5 bg-white text-stone-700 rounded-full text-xs border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400"
-                  />
-                </label>
-              </div>
-            )}
-
-          </div>
-        </div>
-      </div>
+      <PropertiesFilterHeader
+        searchTerm={searchTerm}
+        aiSearchMode={aiSearchMode}
+        aiParsedFilters={aiParsedFilters}
+        aiSearchLoading={aiSearchLoading}
+        aiSearchQuery={aiSearchQuery}
+        searchSummary={searchSummary}
+        filters={filters}
+        sortBy={sortBy}
+        showAdvanced={showAdvanced}
+        neighborhoodsLoading={neighborhoodsLoading}
+        neighborhoodOptions={neighborhoodOptions}
+        viewingSaved={viewingSaved}
+        fairfieldCountyTowns={FAIRFIELD_COUNTY_TOWNS}
+        propertyTypes={PROPERTY_TYPES}
+        setFilters={setFilters}
+        setSortBy={setSortBy}
+        setShowAdvanced={setShowAdvanced}
+        onAiSearch={performAiSearch}
+        onAddressSelect={handleAddressSelect}
+        onRecentPropertySelect={handleRecentPropertySelect}
+        onApplyFilters={handleApplyFilters}
+        onRemoveAiFilter={handleRemoveFilter}
+        onEditAiFilter={handleEditFilter}
+        onClearAiSearch={clearAiSearch}
+        onLoadSavedSearch={handleLoadSavedSearch}
+        onToggleViewSaved={handleToggleViewSaved}
+        onResetFilters={handleResetFilters}
+        onOpenMobileFilters={() => setShowMobileFilters(true)}
+      />
 
       {/* ── Main Content: Map + Sidebar ── */}
       <div className="relative flex flex-col lg:flex-row min-h-[calc(100vh-180px)] lg:h-[calc(100vh-180px)] lg:overflow-hidden">
@@ -1241,84 +850,13 @@ export default function PropertiesPage() {
       </div>
 
       {/* Mobile Filter Drawer */}
-      {showMobileFilters && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowMobileFilters(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[85vh] overflow-y-auto p-4 space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-              <h3 className="text-lg font-semibold text-stone-900">Filters</h3>
-              <button onClick={() => setShowMobileFilters(false)} className="p-1 text-stone-400 hover:text-stone-600">
-                <XMarkIcon className="h-5 w-5" />
-              </button>
-            </div>
-
-            <CityTownFilter
-              selectedCities={filters.cities}
-              onChange={(cities) => setFilters(prev => ({ ...prev, cities }))}
-            />
-
-            {filters.cities.length > 0 && (
-              <NeighborhoodFilter
-                selectedCities={filters.cities}
-                selectedNeighborhoods={filters.neighborhoods}
-                onChange={(neighborhoods) => setFilters(prev => ({ ...prev, neighborhoods }))}
-              />
-            )}
-
-            <StatusFilter
-              selectedStatuses={filters.statuses}
-              soldYears={filters.soldYears}
-              onStatusChange={(statuses) => setFilters(prev => ({ ...prev, statuses }))}
-              onSoldYearsChange={(soldYears) => setFilters(prev => ({ ...prev, soldYears }))}
-            />
-
-            <PropertyTypeCheckboxes
-              selectedTypes={filters.propertyTypes}
-              onChange={(propertyTypes) => setFilters(prev => ({ ...prev, propertyTypes }))}
-            />
-
-            <PriceRangeSlider
-              min={filters.priceMin}
-              max={filters.priceMax}
-              onChange={(priceMin, priceMax) => setFilters(prev => ({ ...prev, priceMin, priceMax }))}
-            />
-
-            <BedroomSlider
-              min={filters.bedroomsMin}
-              max={filters.bedroomsMax}
-              onChange={(bedroomsMin, bedroomsMax) => setFilters(prev => ({ ...prev, bedroomsMin, bedroomsMax }))}
-            />
-
-            <BathroomSlider
-              min={filters.bathroomsMin}
-              max={filters.bathroomsMax}
-              onChange={(bathroomsMin, bathroomsMax) => setFilters(prev => ({ ...prev, bathroomsMin, bathroomsMax }))}
-            />
-
-            <SquareFootageSlider
-              min={filters.squareFeetMin}
-              max={filters.squareFeetMax}
-              onChange={(squareFeetMin, squareFeetMax) => setFilters(prev => ({ ...prev, squareFeetMin, squareFeetMax }))}
-            />
-
-            <LotSizeSlider
-              min={filters.lotSizeMin}
-              max={filters.lotSizeMax}
-              onChange={(lotSizeMin, lotSizeMax) => setFilters(prev => ({ ...prev, lotSizeMin, lotSizeMax }))}
-            />
-
-            <div className="sticky bottom-0 bg-white pt-3 border-t border-stone-200">
-              <button
-                onClick={() => { handleApplyFilters(); setShowMobileFilters(false) }}
-                className="btn-primary w-full shadow-lg"
-                data-apply-filters
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PropertiesMobileFiltersDrawer
+        isOpen={showMobileFilters}
+        filters={filters}
+        setFilters={setFilters}
+        onClose={() => setShowMobileFilters(false)}
+        onApplyFilters={handleApplyFilters}
+      />
 
       {/* Unified Property Detail Modal */}
       {(modalListingId || parcelModalId) && (

@@ -1,0 +1,285 @@
+{
+  "title": "1031 Exchanges in Fairfield County: What Every Property Investor Should Know",
+  "slug": "1031-exchange-fairfield-county-investor-guide",
+  "category": "investing",
+  "author": "Matt Caiola",
+  "publishedAt": "2026-02-10T10:00:00Z",
+  "featuredImage": "visual/stock/investment-charts.jpg",
+  "seoTitle": "1031 Exchange Guide for Fairfield County Investors",
+  "seoDescription": "Learn how 1031 exchanges work for Fairfield County property investors. Timelines, qualified intermediaries, and CT-specific strategies. Start planning now.",
+  "body": [
+    {
+      "_type": "block",
+      "_key": "p1",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s1",
+          "text": "Every year, I work with investors across Fairfield County who reach a turning point with one of their properties. The building has appreciated significantly, the cap rate no longer makes sense relative to the local rental market, or the asset class no longer aligns with their portfolio goals. The question that follows is almost always the same: how do I move this capital into a better position without handing a third of the gain to the IRS?"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p2",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s2",
+          "text": "The answer, in most cases, is a 1031 exchange. Named after Section 1031 of the Internal Revenue Code, this mechanism allows investors to defer capital gains taxes by reinvesting the proceeds from a sold property into a like-kind replacement property. It is one of the most powerful tools in real estate investing, and it is used constantly across Connecticut's Gold Coast, from multifamily buildings in Stamford's South End to mixed-use properties along the Post Road in Westport."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "h1",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s3",
+          "text": "How a 1031 Exchange Actually Works"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p3",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s4",
+          "text": "The core concept is straightforward: sell an investment property, reinvest the full proceeds into another investment property of equal or greater value, and defer the capital gains tax that would otherwise come due. But the execution requires precision. There are two hard deadlines that cannot be extended. You have 45 days from the date of sale to identify up to three potential replacement properties. You have 180 days to close on one of them. Miss either window and the exchange fails entirely, the gain becomes taxable in the year of sale."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p4",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s5",
+          "text": "Both properties must be held for investment or used in a trade or business. Your primary residence does not qualify. A vacation home you occasionally rent may qualify under specific conditions, but the IRS scrutinizes these closely. The properties must be like-kind, which in real estate is broadly defined, a duplex can be exchanged for a retail building, an office condo for raw land. The flexibility is significant."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "h2",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s6",
+          "text": "The Qualified Intermediary Requirement"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p5",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s7",
+          "text": "You cannot touch the proceeds between the sale and the purchase. This is non-negotiable. A qualified intermediary (sometimes called an accommodator) must hold the funds in escrow during the exchange period. If the money hits your bank account at any point, the exchange is disqualified. I have seen investors lose six-figure tax deferrals because they wired proceeds to their own account before the QI was in place."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p6",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s8",
+          "text": "Choosing the right QI matters. Connecticut has several reputable firms, and many national intermediaries operate here as well. Look for a QI with fidelity bond or surety protection, segregated escrow accounts, and a track record handling exchanges in the $1 million to $10 million range common in Fairfield County. Your real estate attorney should have direct relationships with several."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "h3",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s9",
+          "text": "Common 1031 Strategies in Fairfield County"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p7",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s10",
+          "text": "The most frequent pattern I see locally is a consolidation trade: an investor with two or three older multifamily properties in Norwalk or Bridgeport exchanges into a single, newer building in Stamford's Harbor Point area or along lower Atlantic Street. The logic is straightforward, newer construction means lower maintenance costs, stronger rental demand from young professionals commuting to Manhattan, and better long-term appreciation in a submarket with significant infrastructure investment."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p8",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s11",
+          "text": "The reverse also happens. An investor sells a single high-value asset (say a mixed-use building on Greenwich Avenue or a waterfront commercial property in Westport) and exchanges into multiple smaller properties to diversify risk. This is especially common among investors approaching retirement who want to spread their exposure across different tenants, locations, and property types."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p9",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s12",
+          "text": "A third strategy gaining traction is the geographic exchange. Fairfield County investors sell a local property and acquire a replacement in a different market (often Florida, the Carolinas, or Nashville) where cap rates are higher and property taxes are lower. The 1031 framework accommodates this entirely. There is no geographic restriction on like-kind exchanges within the United States."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "h4",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s13",
+          "text": "Connecticut-Specific Tax Considerations"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p10",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s14",
+          "text": "Federal tax deferral is only part of the equation. Connecticut levies its own capital gains tax at the state income tax rate, which can reach 6.99 percent for high earners. A properly structured 1031 exchange defers both federal and state taxes simultaneously. However, Connecticut requires that you report the exchange on your state return, and the deferred gain carries forward, it does not disappear. If you eventually sell the replacement property in a taxable transaction, the cumulative deferred gain comes due at both levels."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p11",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s15",
+          "text": "There is also the Connecticut conveyance tax to consider. The state imposes a real estate conveyance tax on every property sale, currently 0.75 percent for most transactions and 1.25 percent for properties above $800,000. This tax applies regardless of whether you are doing a 1031 exchange, it is not deferrable. On a $3 million investment property sale, that is $37,500 in conveyance tax alone. Factor this into your exchange economics from the start."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "h5",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s16",
+          "text": "Mistakes That Sink Exchanges"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p12",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s17",
+          "text": "The 45-day identification window is where most exchanges fail. Investors close on a sale, start the clock, and then struggle to find a suitable replacement property in a competitive market. Fairfield County's limited commercial and multifamily inventory compounds this. I always advise clients to begin identifying potential replacement properties before listing the relinquished property. You want a shortlist of three to five realistic targets ready before the 45-day clock starts."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p13",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s18",
+          "text": "Boot is another issue. If the replacement property costs less than the relinquished property, the difference (called boot) is taxable. The same applies if you receive cash out of the exchange or if the mortgage on the replacement property is smaller than the mortgage on the relinquished property. To achieve full deferral, the replacement must be equal to or greater in both price and equity."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "h6",
+      "style": "h2",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s19",
+          "text": "When a 1031 Exchange Does Not Make Sense"
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p14",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s20",
+          "text": "Not every sale warrants an exchange. If your basis is close to the sale price, the tax bill may be small enough that the cost and complexity of an exchange are not justified. If you are planning to exit real estate entirely, an exchange just delays the inevitable. And if the current market for replacement properties is overheated, locking yourself into a 180-day purchase window can force you into a suboptimal acquisition. A 1031 exchange should improve your investment position, not just defer taxes."
+        }
+      ],
+      "markDefs": []
+    },
+    {
+      "_type": "block",
+      "_key": "p15",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "s21",
+          "text": "For investors with properties in the Stamford, Greenwich, Norwalk, or Westport markets, the calculus usually favors exchanging, the appreciation in these submarkets over the past decade has created substantial embedded gains. But the decision is always property-specific and portfolio-specific. Work with a CPA who understands real estate, a real estate attorney experienced in exchange transactions, and an agent who can execute on both the sale and acquisition sides within the required timelines."
+        }
+      ],
+      "markDefs": []
+    }
+  ]
+}

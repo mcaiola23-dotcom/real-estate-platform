@@ -4,34 +4,38 @@
 Use this file to start the next session quickly. Update it at the end of every work session.
 
 ## Next Session Starting Task
-- **Authoritative runtime confirmation for new Google startup checks** — run `python run.py` from Windows backend venv and confirm fail-fast behavior/messages for missing/invalid split keys.
-- **Secret-handling policy closeout** — rotate exposed Google/OpenAI keys and finalize pre-launch key-rotation checklist docs.
-- **Keep authoritative CI evidence current** — rerun `services/portal-api/scripts/ci-gate-windows.cmd` after backend hardening changes and record output in `.brain`.
-- **UI work remains out-of-scope for this lane** — another agent is currently handling portal UI; this lane should stay on stability/security/hardening.
+- **Primary lane (as of 2026-03-05): post-roadmap launch-path completion in `apps/web`** — roadmap Phases 1 through 4 are complete and post-roadmap implementation slice is in place.
+- **Immediate implementation target** — run staging verification for IDX bridge contract and AI discovery/content endpoints.
+- **Follow-on implementation target** — complete production launch gate approvals (`SEO_ENABLE_INDEXING`, canonical domain config, monitoring/rollback ownership) and finalize checklist sign-off.
+- **Parallel lane note** — other agents are active on CRM/blog tasks; keep this lane isolated to `apps/web` + roadmap/.brain tracking unless user redirects.
 
 ## Why This Is Next
-- Google key usage is now split by function (server vs places) with legacy fallback support, and startup validation has become stricter by default.
-- The new smoke checklist is documented, but authoritative host-runtime execution should confirm startup behavior in the production-like toolchain.
-- Remaining risk is key governance/rotation and keeping CI evidence current after config hardening changes.
+- User asked to proceed after roadmap completion, and core post-roadmap implementation is now landed.
+- Validation now shows both `check` and host-authoritative `build` passing for `apps/web`.
+- Remaining value is in environment/runtime verification and go-live controls, not additional refactor work.
 
-## Current Snapshot (2026-03-03, Session 32 end)
+## Current Snapshot (2026-03-05, Agent Website Post-Roadmap Implementation Complete)
 - **Branch**: `main`
-- **Portal frontend status**:
-  - `npm run typecheck --workspace @real-estate/portal` — PASS
-  - `npm run test:routes --workspace @real-estate/portal` — PASS
-  - `npm run lint --workspace @real-estate/portal` — PASS (pre-existing warnings only)
-- **Backend CI gate status**: `ci:portal-api` now defaults `PORTAL_API_TEST_TARGETS` to `tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py`, enforces PostgreSQL/PostGIS, and keeps Alembic current/upgrade/current checks.
-- **Google config status**:
-  - Split env support added: `GOOGLE_MAPS_SERVER_API_KEY` + `GOOGLE_PLACES_API_KEY` with legacy fallback `GOOGLE_MAPS_API_KEY`.
-  - Startup validation added in `app/core/config.py` (presence + placeholder/shape checks) with toggles:
-    - `GOOGLE_REQUIRE_KEYS_ON_STARTUP` (default `true`)
-    - `GOOGLE_VALIDATE_KEY_FORMAT` (default `true`)
-- **Smoke checklist status**: `services/portal-api/docs/portal-smoke-test-checklist.md` added and linked from backend README.
-- **Backend test status**: `services/portal-api/tests/test_hardening_smoke.py` now includes write/error/authz checks plus authenticated create success-path coverage for `saved-searches` and `favorites`; legacy suites remain modernized and in default targets (`app/tests/test_api.py`, `tests/test_phase0.py`).
-- **Alembic status**: runtime upgrade validation executed successfully in Windows virtualenv on both `sqlite:///./test.db` and `postgresql://postgres:user@localhost:5432/smartmls_db`, reaching `20260302_000002 (head)`.
-- **Authoritative gate status**: `cmd.exe /v:on /c "... set DATABASE_URL=postgresql://postgres:user@localhost:5432/smartmls_db&& services\\portal-api\\scripts\\ci-gate-windows.cmd"` passes with `29 passed`, Alembic pre/post-upgrade at `20260302_000002 (head)`.
-- **Environment note**: Alembic was installed in external Windows venv `C:\\Users\\19143\\Projects\\smartmls-ai-app\\backend\\.venv`; this repo-local WSL Python environment still lacks `pytest`/`alembic`.
-- **Environment note**: WSL runtime still lacks backend dependencies like `pydantic_settings`; authoritative startup/CI checks remain Windows-via-venv.
+- **Canonical roadmap file**: `project_tracking/agent_website_implementation_roadmap.md` (Phase 1-4 `Done`; post-roadmap launch-path section now active).
+- **Locked strategy inputs**:
+  - shared Sanity dataset per environment with strict tenant scoping,
+  - SEO blocked by default and only enabled when production + explicit gate,
+  - mock listing data is temporary pending IDX integration.
+- **Latest implementation closeout**:
+  - Completed enterprise isolation design note: `project_tracking/agent_website_enterprise_isolation_mode.md`.
+  - Modularized home-search UI (`SearchToolbar`, `ResultsSidebar`) and cleaned stale/dead code paths.
+  - Added SEO runtime gate wiring (`layout`, `robots`, `sitemap`, `lib/seo/runtime.ts`).
+  - Added smoke/perf tests with workspace `check` command.
+  - Added launch runbooks/checklists in `apps/web/docs/*`.
+  - Added secure IDX bridge routing + provider wiring (`/api/listings/provider`, `idx-bridge.ts`, provider contract updates).
+  - Added AI discovery + extraction surfaces (`/llms.txt`, `/.well-known/*`, `/api/content/agent.md`, `/api/content/market.md`, `/api/content/towns/{townSlug}`) and SEO/AEO runbook.
+  - Fixed town extraction endpoint path mismatch by replacing `/api/content/towns/{townSlug}.md` with `/api/content/towns/{townSlug}`.
+  - Removed tracked generated backup/log artifacts and added ignore protections.
+- **Validation baseline**:
+  - `npm run check --workspace @real-estate/web` — PASS (2026-03-05).
+  - `cmd.exe /c "... npm run build --workspace @real-estate/web"` — PASS (2026-03-05, host Windows runtime).
+  - Local runtime smoke (`next start --port 3105` + curl checks) — PASS (`200` for robots/sitemap/llms/content endpoints and `/home-search`).
+- **Concurrent-agent note**: worktree contains active parallel edits in `apps/crm`, `apps/portal`, and `apps/web`; avoid touching unrelated files in this lane.
 
 ## Completed This Session (Session 33 — Property Detail Modal Fix & Polish + Neighborhood Data)
 1. Implemented 7-issue Property Detail Modal Fix & Polish sprint: sticky header restructure, section reorder, print preview fix, market stats two-column table, comps error handling (404→200 + 3mi radius), neighborhood display throughout modal, photo vertical gallery.
@@ -83,13 +87,16 @@ Use this file to start the next session quickly. Update it at the end of every w
 
 ## First Actions Next Session
 1. Run `/session-bootstrap`.
-2. Add authenticated `/api/alerts` write-path success-path smoke coverage.
-3. Re-run `services/portal-api/scripts/ci-gate-windows.cmd` after that test change and capture output deltas.
-4. Finalize secret-manager policy + pre-launch key-rotation checklist documentation (rotation itself still deferred per user direction).
-5. Keep `.brain` + `portal_crm_integration_suggestions.md` synchronized after each backend-gate execution/update.
+2. Open and align against `project_tracking/agent_website_implementation_roadmap.md`.
+3. Run staging verification against `apps/web/docs/idx-cutover-runbook.md` and confirm bridge contract responses for all provider actions.
+4. Run staging/production SEO-AEO verification against `apps/web/docs/seo-aeo-runbook.md` and `apps/web/docs/launch-readiness-checklist.md`.
+5. Use the automation scripts instead of manual curls where possible:
+   - `npm run verify:seo-aeo --workspace @real-estate/web`
+   - `npm run verify:idx-provider --workspace @real-estate/web` (staging/prod expects configured bridge)
+6. Keep `.brain` + roadmap status synchronized as launch-path checks are completed.
 
 ## Constraints To Keep
 - Preserve tenant isolation for all CRM/Admin/portal data operations.
 - Keep shared package boundaries strict: contracts in `packages/types`, persistence/helpers in `packages/db`, UI in `apps/*`.
 - No cross-app imports.
-- Keep this session lane focused on technical hardening while separate UI work proceeds in parallel.
+- Keep this session lane focused on `apps/web` roadmap execution while separate portal/CRM workstreams proceed in parallel.

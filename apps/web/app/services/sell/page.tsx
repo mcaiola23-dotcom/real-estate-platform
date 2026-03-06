@@ -139,7 +139,7 @@ export default function SellPage() {
                     Initial Consultation
                   </h3>
                   <p className="text-stone-600 leading-relaxed">
-                    Walk me through your home, timeline, and goals. I'll share preliminary pricing perspective and outline next steps.
+                    Walk me through your home, timeline, and goals. I will share preliminary pricing perspective and outline next steps.
                   </p>
                 </div>
               </li>
@@ -211,7 +211,7 @@ export default function SellPage() {
                 Seller Resources
               </p>
               <h2 className="font-serif text-3xl md:text-4xl font-medium text-white mb-4">
-                Connecticut Seller's Guide
+                Connecticut Seller Guide
               </h2>
               <p className="text-lg text-stone-200">
                 Essential information for navigating the Connecticut home selling process.
@@ -243,7 +243,7 @@ export default function SellPage() {
                   Disclosure Requirements
                 </h3>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  Connecticut requires sellers to complete a Residential Property Condition Disclosure Report. I'll guide you through what needs to be disclosed and how.
+                  Connecticut requires sellers to complete a Residential Property Condition Disclosure Report. I will guide you through what needs to be disclosed and how.
                 </p>
               </div>
 
@@ -257,7 +257,7 @@ export default function SellPage() {
                   Preparing Your Home
                 </h3>
                 <p className="text-sm text-stone-600 leading-relaxed">
-                  Strategic preparation pays off. I'll advise on what improvements matter most and connect you with trusted contractors if needed.
+                  Strategic preparation pays off. I will advise on what improvements matter most and connect you with trusted contractors if needed.
                 </p>
               </div>
 

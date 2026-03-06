@@ -9,6 +9,7 @@ interface NotificationCenterProps {
   onOpenLead: (leadId: string) => void;
   onDismiss?: (id: string) => void;
   onClearAll?: () => void;
+  onMarkComplete?: (leadId: string, notifId: string) => void;
 }
 
 function formatRelativeTime(timestamp: string): string {
@@ -44,7 +45,7 @@ const CATEGORY_CONFIG = {
 
 const CATEGORY_ORDER: (keyof typeof CATEGORY_CONFIG)[] = ['overdue', 'reminder', 'activity', 'milestone'];
 
-export function NotificationCenter({ open, onClose, notifications, onOpenLead, onDismiss, onClearAll }: NotificationCenterProps) {
+export function NotificationCenter({ open, onClose, notifications, onOpenLead, onDismiss, onClearAll, onMarkComplete }: NotificationCenterProps) {
   if (!open) return null;
 
   const grouped: Record<string, CrmNotification[]> = {};
@@ -108,16 +109,34 @@ export function NotificationCenter({ open, onClose, notifications, onOpenLead, o
                           </span>
                         </div>
                       </button>
-                      {onDismiss && (
-                        <button
-                          type="button"
-                          className="crm-notif-panel__dismiss"
-                          onClick={(e) => { e.stopPropagation(); onDismiss(notif.id); }}
-                          aria-label="Dismiss"
-                        >
-                          ✕
-                        </button>
-                      )}
+                      <div className="crm-notif-panel__item-actions">
+                        {onMarkComplete && notif.leadId && (notif.category === 'overdue' || notif.category === 'reminder') && (
+                          <button
+                            type="button"
+                            className="crm-notif-panel__action-btn crm-notif-panel__action-btn--complete"
+                            onClick={(e) => { e.stopPropagation(); onMarkComplete(notif.leadId!, notif.id); }}
+                            title="Clear this reminder from the lead"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                              <path d="M3 8.5l3.5 3.5 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            <span>Done</span>
+                          </button>
+                        )}
+                        {onDismiss && (
+                          <button
+                            type="button"
+                            className="crm-notif-panel__action-btn crm-notif-panel__action-btn--dismiss"
+                            onClick={(e) => { e.stopPropagation(); onDismiss(notif.id); }}
+                            title="Dismiss this notification"
+                          >
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                              <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                            <span>Dismiss</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

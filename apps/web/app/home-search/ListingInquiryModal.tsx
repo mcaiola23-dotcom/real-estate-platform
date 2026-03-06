@@ -1,13 +1,21 @@
 import { useState } from "react";
+import type { TenantWebsiteConfig } from "@real-estate/types";
 import { Listing } from "../lib/data/providers/listings.types";
+import {
+    formatListingInquirySuccessMessage,
+    getTenantWebsiteConfig,
+} from "../lib/tenant/website-profile";
 
 export default function ListingInquiryModal({
     listing,
     onClose,
+    tenantWebsiteConfig,
 }: {
     listing: Listing;
     onClose: () => void;
+    tenantWebsiteConfig?: TenantWebsiteConfig;
 }) {
+    const websiteConfig = tenantWebsiteConfig ?? getTenantWebsiteConfig();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -66,7 +74,7 @@ export default function ListingInquiryModal({
                     </div>
                     <h3 className="text-xl font-semibold text-stone-900">Inquiry Sent!</h3>
                     <p className="mt-2 text-stone-600">
-                        Thanks for your interest in {listing.address.street}. Matt will reach out to you shortly.
+                        {formatListingInquirySuccessMessage(websiteConfig, listing.address.street)}
                     </p>
                     <button
                         onClick={onClose}
@@ -90,7 +98,7 @@ export default function ListingInquiryModal({
             >
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-xl font-semibold text-stone-900">Contact Matt</h3>
+                        <h3 className="text-xl font-semibold text-stone-900">{websiteConfig.content.search.listingInquiryTitle}</h3>
                         <p className="text-sm text-stone-500">regarding {listing.address.street}</p>
                     </div>
                     <button

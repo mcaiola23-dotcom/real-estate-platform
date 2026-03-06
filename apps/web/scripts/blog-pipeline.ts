@@ -47,7 +47,7 @@ const client = createClient({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
     apiVersion: '2024-01-01',
-    token: process.env.SANITY_API_WRITE_TOKEN,
+    token: process.env.SANITY_API_WRITE_TOKEN, // secret-scan:allow
     useCdn: false,
 });
 
@@ -66,8 +66,26 @@ interface BlogPostPayload {
     faqs?: Array<{ question: string; answer: string; schemaEnabled?: boolean }>;
 }
 
+type ImageReference = { _type: string; asset: { _type: string; _ref: string } };
+type FaqReference = { _type: string; _ref: string; _key: string };
+
+interface SanityPostDocument {
+    _type: "post";
+    title: string;
+    slug: { _type: "slug"; current: string };
+    category: string;
+    author: string;
+    publishedAt: string;
+    body: unknown[];
+    updatedAt?: string;
+    featuredImage?: ImageReference;
+    seoTitle?: string;
+    seoDescription?: string;
+    faqs?: FaqReference[];
+}
+
 // ── Image upload ──────────────────────────────────────────────
-async function uploadImage(imagePath: string): Promise<{ _type: string; asset: { _type: string; _ref: string } }> {
+async function uploadImage(imagePath: string): Promise<ImageReference> {
     const fullPath = path.resolve(process.cwd(), 'public', imagePath);
     if (!fs.existsSync(fullPath)) {
         throw new Error(`Image not found: ${fullPath}`);
@@ -95,10 +113,10 @@ async function uploadImage(imagePath: string): Promise<{ _type: string; asset: {
 }
 
 // ── FAQ creation ──────────────────────────────────────────────
-async function createFaqDocuments(faqs: BlogPostPayload['faqs']): Promise<Array<{ _type: string; _ref: string; _key: string }>> {
+async function createFaqDocuments(faqs: BlogPostPayload['faqs']): Promise<FaqReference[]> {
     if (!faqs || faqs.length === 0) return [];
 
-    const refs: Array<{ _type: string; _ref: string; _key: string }> = [];
+    const refs: FaqReference[] = [];
     for (let i = 0; i < faqs.length; i++) {
         const faq = faqs[i];
         if (DRY_RUN) {
@@ -135,7 +153,7 @@ async function createBlogPost(payload: BlogPostPayload): Promise<void> {
     }
 
     // Upload featured image
-    let featuredImage: { _type: string; asset: { _type: string; _ref: string } } | undefined;
+    let featuredImage: ImageReference | undefined;
     if (payload.featuredImage) {
         if (DRY_RUN) {
             console.log(`  [DRY RUN] Would upload image: ${payload.featuredImage}`);
@@ -149,7 +167,7 @@ async function createBlogPost(payload: BlogPostPayload): Promise<void> {
     const faqRefs = await createFaqDocuments(payload.faqs);
 
     // Build document
-    const doc: Record<string, unknown> = {
+    const doc: SanityPostDocument = {
         _type: 'post',
         title: payload.title,
         slug: { _type: 'slug', current: payload.slug },
@@ -185,7 +203,7 @@ async function createBlogPost(payload: BlogPostPayload): Promise<void> {
 // ── Update existing post ──────────────────────────────────────
 async function updateExistingPost(docId: string, payload: BlogPostPayload): Promise<void> {
     // Upload featured image if provided
-    let featuredImage: { _type: string; asset: { _type: string; _ref: string } } | undefined;
+    let featuredImage: ImageReference | undefined;
     if (payload.featuredImage) {
         if (DRY_RUN) {
             console.log(`  [DRY RUN] Would upload image: ${payload.featuredImage}`);

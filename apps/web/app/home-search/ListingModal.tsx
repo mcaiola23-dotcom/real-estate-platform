@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Listing, ListingStatus, STATUS_LABELS, PROPERTY_TYPE_LABELS } from "../lib/data/providers/listings.types";
 import { formatFullPrice } from "../lib/data/providers/listings.provider";
 import ListingInquiryModal from "./ListingInquiryModal";
+import { getTenantWebsiteConfig } from "../lib/tenant/website-profile";
 
 // --- Components ---
 
@@ -97,6 +98,7 @@ export function ListingModal({
     photoIndex,
     onPhotoChange,
     onClose,
+    onMount,
     isFavorite,
     onToggleFavorite,
 }: {
@@ -104,11 +106,13 @@ export function ListingModal({
     photoIndex: number;
     onPhotoChange: (index: number) => void;
     onClose: () => void;
+    onMount?: () => void;
     isFavorite: boolean;
     onToggleFavorite: () => void;
 }) {
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+    const tenantWebsiteConfig = getTenantWebsiteConfig();
 
     const statusStyles: Record<ListingStatus, string> = {
         active: 'bg-stone-900 text-white border border-stone-800', // Dark pill for modal
@@ -133,12 +137,17 @@ export function ListingModal({
         return () => window.removeEventListener("keydown", handleEscape);
     }, [onClose, isLightboxOpen]);
 
+    useEffect(() => {
+        onMount?.();
+    }, [onMount]);
+
     return (
         <>
             {isInquiryOpen && (
                 <ListingInquiryModal
                     listing={listing}
                     onClose={() => setIsInquiryOpen(false)}
+                    tenantWebsiteConfig={tenantWebsiteConfig}
                 />
             )}
             <ListingLightbox
@@ -332,16 +341,16 @@ export function ListingModal({
                                     <div className="flex items-center justify-center">
                                         <div className="relative h-16 w-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-md -mr-2">
                                             <Image
-                                                src="/brand/matt-headshot.jpg"
-                                                alt="Matt Caiola"
+                                                src={tenantWebsiteConfig.logos.headshot.src}
+                                                alt={tenantWebsiteConfig.logos.headshot.alt}
                                                 fill
                                                 className="object-cover"
                                             />
                                         </div>
                                         <div className="relative h-14 w-52 flex-shrink-0">
                                             <Image
-                                                src="/brand/matt-caiola-logo.png"
-                                                alt="Matt Caiola Luxury Properties"
+                                                src={tenantWebsiteConfig.logos.primary.src}
+                                                alt={tenantWebsiteConfig.logos.primary.alt}
                                                 fill
                                                 className="object-contain object-right"
                                             />
@@ -349,8 +358,8 @@ export function ListingModal({
                                         <div className="h-12 w-px bg-stone-300 flex-shrink-0 mx-2"></div>
                                         <div className="relative h-12 w-44 opacity-90 flex-shrink-0">
                                             <Image
-                                                src="/brand/higgins-lockup.jpg"
-                                                alt="Higgins Group Private Brokerage"
+                                                src={tenantWebsiteConfig.logos.brokerage.src}
+                                                alt={tenantWebsiteConfig.logos.brokerage.alt}
                                                 fill
                                                 className="object-contain object-left"
                                             />
@@ -368,16 +377,16 @@ export function ListingModal({
                                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                             </svg>
-                                            Contact Matt
+                                            {tenantWebsiteConfig.cta.contactAgentLabel}
                                         </button>
                                         <a
-                                            href="tel:914-325-6746"
+                                            href={`tel:${tenantWebsiteConfig.contact.phoneE164}`}
                                             className="sm:hidden flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
                                         >
                                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                             </svg>
-                                            Call Matt
+                                            {tenantWebsiteConfig.cta.callAgentLabel}
                                         </a>
                                     </div>
                                 </div>

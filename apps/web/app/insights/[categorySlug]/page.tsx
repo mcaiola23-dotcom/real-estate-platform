@@ -4,7 +4,7 @@ import Image from "next/image";
 import { getPostsByCategoryLabel, getCategoryLabelFromValue, getCategoryValueFromSlug } from "../../lib/sanity.queries";
 import Container from "../../components/Container";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 type Props = {
     params: Promise<{

@@ -3,11 +3,37 @@ import { enqueueWebsiteEvent } from "@real-estate/db/crm";
 import type { WebsiteValuationRequestedEvent } from "@real-estate/types/events";
 import { ValuationRequestSchema } from "../../lib/validators";
 import { getTenantContextFromRequest } from "../../lib/tenant/resolve-tenant";
+import {
+    enforceWebsiteApiGuard,
+    readJsonBodyWithLimit,
+    validateBotTokenIfRequired,
+} from "../../lib/api-security";
+
+const VALUATION_ROUTE_POLICY = {
+    routeId: "website-valuation",
+    maxRequests: 20,
+    windowMs: 60_000,
+    maxBodyBytes: 12_288,
+} as const;
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const result = ValuationRequestSchema.safeParse(body);
+        const guardResponse = enforceWebsiteApiGuard(request, VALUATION_ROUTE_POLICY);
+        if (guardResponse) {
+            return guardResponse;
+        }
+
+        const bodyResult = await readJsonBodyWithLimit(request, VALUATION_ROUTE_POLICY.maxBodyBytes);
+        if (!bodyResult.ok) {
+            return bodyResult.response;
+        }
+
+        const botTokenResponse = validateBotTokenIfRequired(bodyResult.body);
+        if (botTokenResponse) {
+            return botTokenResponse;
+        }
+
+        const result = ValuationRequestSchema.safeParse(bodyResult.body);
 
         if (!result.success) {
             return NextResponse.json(
@@ -36,7 +62,12 @@ export async function POST(request: Request) {
             },
         };
 
-        console.log("VALUATION REQUEST TENANT:", valuationEvent.tenant.tenantId, valuationEvent.tenant.tenantSlug);
+        console.info("website.valuation.requested", {
+            tenantId: valuationEvent.tenant.tenantId,
+            tenantSlug: valuationEvent.tenant.tenantSlug,
+            propertyType: valuationEvent.payload.propertyType,
+            hasSqft: valuationEvent.payload.sqft !== null,
+        });
         const ingestionResult = await enqueueWebsiteEvent(valuationEvent);
         if (!ingestionResult.accepted) {
             console.warn("CRM ingestion enqueue failed for valuation event:", ingestionResult.reason);

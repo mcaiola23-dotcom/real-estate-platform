@@ -2,9 +2,18 @@
 
 import { useState } from "react";
 
+type ValuationResponse = {
+    status?: "success" | "needs_review";
+    reason?: string;
+    low?: number;
+    high?: number;
+    confidence?: string;
+    message?: string;
+};
+
 export default function ValuationForm() {
     const [step, setStep] = useState<"input" | "loading" | "result">("input");
-    const [valuation, setValuation] = useState<any>(null);
+    const [valuation, setValuation] = useState<ValuationResponse | null>(null);
     const [formData, setFormData] = useState({
         address: "",
         propertyType: "single-family",
@@ -61,7 +70,7 @@ export default function ValuationForm() {
                 // Non-blocking for user flow
             }
 
-            const valData = await valResponse.json();
+            const valData: ValuationResponse = await valResponse.json();
 
             if (!valResponse.ok) {
                 throw new Error(valData.message || "Something went wrong.");
@@ -70,9 +79,10 @@ export default function ValuationForm() {
             setValuation(valData);
             setStep("result");
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setError(err.message || "An error occurred. Please try again.");
+            const errorMessage = err instanceof Error ? err.message : "An error occurred. Please try again.";
+            setError(errorMessage);
             setStep("input");
         }
     };
@@ -86,8 +96,8 @@ export default function ValuationForm() {
         );
     }
 
-    if (step === "result") {
-        const isReview = valuation?.status === "needs_review";
+    if (step === "result" && valuation) {
+        const isReview = valuation.status === "needs_review";
 
         return (
             <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-stone-100 text-center">
@@ -108,7 +118,7 @@ export default function ValuationForm() {
                     <div className="mb-8 p-8 bg-green-50 rounded-xl border border-green-100">
                         <p className="text-sm text-green-700 font-semibold uppercase tracking-wider mb-2">Estimated Range</p>
                         <div className="text-4xl md:text-5xl font-extrabold text-stone-900 text-green-800">
-                            ${valuation.low.toLocaleString()} - ${valuation.high.toLocaleString()}
+                            ${(valuation.low ?? 0).toLocaleString()} - ${(valuation.high ?? 0).toLocaleString()}
                         </div>
                         <p className="mt-4 text-sm text-stone-500">
                             Confidence: <span className="font-medium capitalize">{valuation.confidence}</span>

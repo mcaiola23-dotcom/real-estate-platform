@@ -7,6 +7,7 @@ interface ReminderAlertProps {
   alerts: ReminderAlertType[];
   onDismiss: (alertId: string) => void;
   onSnooze: (alertId: string, leadId: string) => void;
+  onMarkComplete: (alertId: string, leadId: string) => void;
   onDismissAll: () => void;
   onOpenLead: (leadId: string) => void;
 }
@@ -43,11 +44,13 @@ function AlertCard({
   alert,
   onDismiss,
   onSnooze,
+  onMarkComplete,
   onOpenLead,
 }: {
   alert: ReminderAlertType;
   onDismiss: (id: string) => void;
   onSnooze: (id: string, leadId: string) => void;
+  onMarkComplete: (id: string, leadId: string) => void;
   onOpenLead: (leadId: string) => void;
 }) {
   const [paused, setPaused] = useState(false);
@@ -108,6 +111,13 @@ function AlertCard({
         </button>
         <button
           type="button"
+          className="crm-reminder-alert-btn crm-reminder-alert-btn--success"
+          onClick={() => onMarkComplete(alert.id, alert.leadId)}
+        >
+          Done
+        </button>
+        <button
+          type="button"
           className="crm-reminder-alert-btn crm-reminder-alert-btn--ghost"
           onClick={() => onSnooze(alert.id, alert.leadId)}
         >
@@ -122,6 +132,7 @@ export function ReminderAlertStack({
   alerts,
   onDismiss,
   onSnooze,
+  onMarkComplete,
   onDismissAll,
   onOpenLead,
 }: ReminderAlertProps) {
@@ -138,6 +149,7 @@ export function ReminderAlertStack({
           alert={alert}
           onDismiss={onDismiss}
           onSnooze={onSnooze}
+          onMarkComplete={onMarkComplete}
           onOpenLead={onOpenLead}
         />
       ))}

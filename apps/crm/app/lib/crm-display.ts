@@ -6,15 +6,22 @@ const LEAD_TYPE_LABELS: Record<CrmLeadType, string> = {
   investor: 'Investor',
   renter: 'Renter',
   other: 'Other',
-  website_lead: 'Website Lead',
-  valuation_request: 'Valuation Request',
+  website_lead: 'Buyer',
+  valuation_request: 'Seller',
 };
 
 const SOURCE_LABELS: Record<string, string> = {
-  website: 'Website',
+  website: 'Website Lead',
   website_valuation: 'Valuation Request',
-  crm_manual: 'CRM Manual',
+  crm_manual: 'Manual',
   csv_import: 'CSV Import',
+  referral: 'Referral',
+  social: 'Social Media',
+  cold_call: 'Cold Call',
+  open_house: 'Open House',
+  contact_form: 'Contact Form',
+  listing_inquiry: 'Listing Inquiry',
+  other: 'Other',
 };
 
 const ACTIVITY_LABELS: Record<string, string> = {

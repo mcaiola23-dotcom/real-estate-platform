@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { createClient } from '@sanity/client';
 import { getTenantContextFromRequest } from '../../../lib/tenant/resolve-tenant';
+import {
+    getTenantScopedUserProfile,
+    migrateLegacyUserProfileToTenant,
+} from '../../../lib/user-profile';
 
 /**
  * Sanity client with write access for user sync operations
@@ -10,7 +14,7 @@ const sanityClient = createClient({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
     apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-01-01',
-    token: process.env.SANITY_API_WRITE_TOKEN,
+    token: process.env.SANITY_API_WRITE_TOKEN, // secret-scan:allow
     useCdn: false,
 });
 
@@ -45,11 +49,20 @@ export async function POST(request: NextRequest) {
         const body: SyncRequestBody = await request.json();
         const { savedHomes = [], savedSearches = [] } = body;
 
-        // Fetch existing profile or create new one
-        let profile = await sanityClient.fetch(
-            `*[_type == "userProfile" && clerkId == $clerkId && (!defined(tenantId) || tenantId == $tenantId)][0]`,
-            { clerkId: userId, tenantId: tenantContext.tenantId }
+        // Fetch existing profile or migrate legacy profile to tenant scope
+        let profile = await getTenantScopedUserProfile(
+            sanityClient,
+            userId,
+            tenantContext.tenantId
         );
+
+        if (!profile) {
+            profile = await migrateLegacyUserProfileToTenant(sanityClient, userId, {
+                tenantId: tenantContext.tenantId,
+                tenantSlug: tenantContext.tenantSlug,
+                tenantDomain: tenantContext.tenantDomain,
+            });
+        }
 
         if (!profile) {
             // Create new profile
@@ -68,16 +81,6 @@ export async function POST(request: NextRequest) {
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             });
-        } else if (!profile.tenantId) {
-            profile = await sanityClient
-                .patch(profile._id)
-                .set({
-                    tenantId: tenantContext.tenantId,
-                    tenantSlug: tenantContext.tenantSlug,
-                    tenantDomain: tenantContext.tenantDomain,
-                    updatedAt: new Date().toISOString(),
-                })
-                .commit();
         }
 
         // Merge saved homes (union of local + cloud, no duplicates)
@@ -144,11 +147,20 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
-        // Fetch existing profile
-        const profile = await sanityClient.fetch(
-            `*[_type == "userProfile" && clerkId == $clerkId && (!defined(tenantId) || tenantId == $tenantId)][0]`,
-            { clerkId: userId, tenantId: tenantContext.tenantId }
+        // Fetch existing profile and try legacy migration fallback once
+        let profile = await getTenantScopedUserProfile(
+            sanityClient,
+            userId,
+            tenantContext.tenantId
         );
+
+        if (!profile) {
+            profile = await migrateLegacyUserProfileToTenant(sanityClient, userId, {
+                tenantId: tenantContext.tenantId,
+                tenantSlug: tenantContext.tenantSlug,
+                tenantDomain: tenantContext.tenantDomain,
+            });
+        }
 
         if (!profile) {
             return NextResponse.json(

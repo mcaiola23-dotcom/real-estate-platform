@@ -36,10 +36,10 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
     }
   });
 
-  // Minute-based ticker so overdue/reminder notifications refresh over time
+  // 5-minute ticker so overdue/reminder notifications refresh periodically
   const [tick, setTick] = useState(0);
   useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 30_000);
+    const interval = setInterval(() => setTick((t) => t + 1), 300_000);
     return () => clearInterval(interval);
   }, []);
 
@@ -71,6 +71,9 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
     const items: CrmNotification[] = [];
     const now = new Date();
     const oneDayAgo = now.getTime() - 24 * 60 * 60 * 1000;
+    // Only show overdue reminders from the last 48 hours — older ones belong
+    // in the My Day panel, not as persistent alert-style notifications.
+    const twoDaysAgo = now.getTime() - 48 * 60 * 60 * 1000;
     const endOfToday = new Date(now);
     endOfToday.setHours(23, 59, 59, 999);
 
@@ -87,8 +90,8 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
       const due = new Date(lead.nextActionAt);
       const name = getLeadName(lead, contactById);
 
-      if (due.getTime() < now.getTime()) {
-        // Overdue
+      if (due.getTime() < now.getTime() && due.getTime() >= twoDaysAgo) {
+        // Overdue (within last 48h only)
         items.push({
           id: `overdue-${lead.id}`,
           category: 'overdue',
@@ -97,7 +100,7 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
           timestamp: lead.nextActionAt,
           leadId: lead.id,
         });
-      } else if (due.getTime() <= endOfToday.getTime()) {
+      } else if (due.getTime() >= now.getTime() && due.getTime() <= endOfToday.getTime()) {
         // Due today (upcoming)
         items.push({
           id: `reminder-${lead.id}`,
@@ -107,31 +110,12 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
           timestamp: lead.nextActionAt,
           leadId: lead.id,
         });
-      } else {
-        // Scheduled for future — show in reminders section
-        items.push({
-          id: `reminder-${lead.id}`,
-          category: 'reminder',
-          title: `Scheduled: ${name}`,
-          detail: lead.nextActionNote || `Follow-up on ${due.toLocaleDateString()}`,
-          timestamp: lead.nextActionAt,
-          leadId: lead.id,
-        });
       }
     }
 
-    // Recent activity (last 24h)
-    for (const activity of activities.slice(0, 20)) {
-      if (new Date(activity.occurredAt).getTime() < oneDayAgo) continue;
-      items.push({
-        id: `activity-${activity.id}`,
-        category: 'activity',
-        title: activity.summary,
-        detail: activity.activityType,
-        timestamp: activity.occurredAt,
-        leadId: activity.leadId || undefined,
-      });
-    }
+    // Activity-type notifications removed — activities belong in the
+    // timeline/feed, not as alert-style notifications that regenerate on
+    // every render cycle and cause notification spam.
 
     // Milestone: leads that recently moved to 'won'
     for (const lead of leads) {
@@ -148,8 +132,9 @@ export function useNotifications({ leads, activities, contactById, tenantId }: U
     }
 
     items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    return items;
-  }, [leads, activities, contactById, tick]); // tick forces periodic recalculation
+    // Cap at 10 to avoid notification overload
+    return items.slice(0, 10);
+  }, [leads, contactById, tick]); // tick forces periodic recalculation
 
   const notifications = useMemo(() => {
     return allNotifications.filter((n) => !dismissedIds.has(n.id));

@@ -2,6 +2,7 @@
 
 import { forwardRef } from 'react';
 import type { CrmContact, CrmLead, CrmLeadStatus } from '@real-estate/types/crm';
+import { QuickActionButtons } from '../shared/QuickActionButtons';
 
 import { formatLeadSourceLabel, formatLeadStatusLabel, formatLeadTypeLabel } from '../../lib/crm-display';
 import { formatTimeAgo, getLeadContactLabel, formatDateTime } from '../../lib/crm-formatters';
@@ -131,28 +132,14 @@ export const PipelineCard = forwardRef<HTMLElement, PipelineCardProps & React.HT
         </div>
 
         {!isOverlay && linkedContact && (linkedContact.phone || linkedContact.email) ? (
-          <div className="crm-quick-actions">
-            {linkedContact.phone ? (
-              <a href={`tel:${linkedContact.phone}`} className="crm-quick-action" title={`Call ${linkedContact.phone}`} aria-label="Call lead">
-                📞
-              </a>
-            ) : null}
-            {linkedContact.email ? (
-              <a
-                href={`mailto:${linkedContact.email}?subject=Following up on your inquiry`}
-                className="crm-quick-action"
-                title={`Email ${linkedContact.email}`}
-                aria-label="Email lead"
-              >
-                ✉️
-              </a>
-            ) : null}
-            {linkedContact.phone ? (
-              <a href={`sms:${linkedContact.phone}`} className="crm-quick-action" title={`Text ${linkedContact.phone}`} aria-label="Text lead">
-                💬
-              </a>
-            ) : null}
-          </div>
+          <QuickActionButtons
+            phone={linkedContact.phone}
+            email={linkedContact.email}
+            contactName={linkedContact.fullName}
+            leadId={lead.id}
+            contactId={linkedContact.id}
+            propertyAddress={lead.listingAddress}
+          />
         ) : null}
 
         <div className="crm-chip-row">

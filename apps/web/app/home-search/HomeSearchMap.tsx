@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, useMapEvents, Tooltip, useMap } from "react-leaflet";
 import L from "leaflet";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { memo, useMemo, useRef, useState, useEffect } from "react";
 import type { Listing, ListingBounds } from "../lib/data/providers/listings.types";
 import { formatListingPrice } from "../lib/data/providers/listings.provider";
 
@@ -20,12 +20,25 @@ function getMarkerIcon(price: number) {
   });
 }
 
+const markerIconCache = new Map<string, { price: number; icon: L.DivIcon }>();
+
+function getCachedMarkerIcon(listingId: string, price: number): L.DivIcon {
+  const cached = markerIconCache.get(listingId);
+  if (!cached || cached.price !== price) {
+    const next = { price, icon: getMarkerIcon(price) };
+    markerIconCache.set(listingId, next);
+    return next.icon;
+  }
+  return cached.icon;
+}
+
 function MapEvents({
   onBoundsChange,
 }: {
   onBoundsChange: (bounds: ListingBounds) => void;
 }) {
   const hasInitialized = useRef(false);
+  const lastBoundsKeyRef = useRef<string | null>(null);
   const map = useMapEvents({
     moveend: () => {
       if (!hasInitialized.current) {
@@ -33,12 +46,18 @@ function MapEvents({
         return;
       }
       const bounds = map.getBounds();
-      onBoundsChange({
+      const nextBounds = {
         north: bounds.getNorth(),
         south: bounds.getSouth(),
         east: bounds.getEast(),
         west: bounds.getWest(),
-      });
+      };
+      const key = `${nextBounds.north.toFixed(5)}|${nextBounds.south.toFixed(5)}|${nextBounds.east.toFixed(5)}|${nextBounds.west.toFixed(5)}`;
+      if (lastBoundsKeyRef.current === key) {
+        return;
+      }
+      lastBoundsKeyRef.current = key;
+      onBoundsChange(nextBounds);
     },
     zoomend: () => {
       if (!hasInitialized.current) {
@@ -46,19 +65,25 @@ function MapEvents({
         return;
       }
       const bounds = map.getBounds();
-      onBoundsChange({
+      const nextBounds = {
         north: bounds.getNorth(),
         south: bounds.getSouth(),
         east: bounds.getEast(),
         west: bounds.getWest(),
-      });
+      };
+      const key = `${nextBounds.north.toFixed(5)}|${nextBounds.south.toFixed(5)}|${nextBounds.east.toFixed(5)}|${nextBounds.west.toFixed(5)}`;
+      if (lastBoundsKeyRef.current === key) {
+        return;
+      }
+      lastBoundsKeyRef.current = key;
+      onBoundsChange(nextBounds);
     },
   });
 
   return null;
 }
 
-function ListingMarker({
+const ListingMarker = memo(function ListingMarker({
   listing,
   position,
   icon,
@@ -123,29 +148,27 @@ function ListingMarker({
     }
   };
 
-  // Calculate direction on mount and whenever map changes
-  useEffect(() => {
-    calculateDirection();
-  }, [map, position]);
-
   // Also recalculate on map events
-  useMapEvents({
-    move: calculateDirection,
-    moveend: calculateDirection,
-    zoom: calculateDirection,
-    zoomend: calculateDirection,
-    viewreset: calculateDirection,
-  });
+  // Keep this on-demand (hover/click) to avoid per-marker listeners during pan/zoom.
 
   // Check for touch device to disable tooltip
-  const [isTouch, setIsTouch] = useState(false);
+  const [isTouch, setIsTouch] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.matchMedia("(hover: none)").matches;
+  });
+
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(hover: none)');
-    setIsTouch(mediaQuery.matches);
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(hover: none)");
 
     const handler = (e: MediaQueryListEvent) => setIsTouch(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   return (
@@ -203,9 +226,9 @@ function ListingMarker({
       )}
     </Marker>
   );
-}
+});
 
-export default function HomeSearchMap({
+const HomeSearchMap = memo(function HomeSearchMap({
   listings,
   center,
   onBoundsChange,
@@ -217,15 +240,28 @@ export default function HomeSearchMap({
   onSelectListing: (listing: Listing) => void;
 }) {
   const markers = useMemo(
-    () =>
-      listings
+    () => {
+      const activeIds = new Set<string>();
+      const nextMarkers = listings
         .filter((listing) => listing.lat !== undefined && listing.lng !== undefined)
-        .map((listing) => ({
-          id: listing.id,
-          listing,
-          position: [listing.lat!, listing.lng!] as [number, number],
-          icon: getMarkerIcon(listing.price),
-        })),
+        .map((listing) => {
+          activeIds.add(listing.id);
+          return {
+            id: listing.id,
+            listing,
+            position: [listing.lat!, listing.lng!] as [number, number],
+            icon: getCachedMarkerIcon(listing.id, listing.price),
+          };
+        });
+
+      for (const cachedId of markerIconCache.keys()) {
+        if (!activeIds.has(cachedId)) {
+          markerIconCache.delete(cachedId);
+        }
+      }
+
+      return nextMarkers;
+    },
     [listings]
   );
 
@@ -252,4 +288,6 @@ export default function HomeSearchMap({
       ))}
     </MapContainer>
   );
-}
+});
+
+export default HomeSearchMap;

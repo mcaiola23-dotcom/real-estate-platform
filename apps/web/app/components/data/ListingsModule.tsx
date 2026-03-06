@@ -10,7 +10,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
     Listing,
     ListingFilters,
@@ -20,7 +19,6 @@ import {
     PROPERTY_TYPE_LABELS,
     STATUS_LABELS,
     DEFAULT_FILTERS,
-    ListingBounds,
 } from '../../lib/data/providers/listings.types';
 import {
     searchListings,
@@ -606,7 +604,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
             </div>
             <p className="text-lg text-white font-medium mb-2">No listings found in this area</p>
             <p className="text-stone-400 mb-6 max-w-sm mx-auto">
-                We couldn't find any listings matching your current filters. Try changing your search or checking a different status.
+                We could not find any listings matching your current filters. Try changing your search or checking a different status.
             </p>
             <button
                 onClick={onReset}

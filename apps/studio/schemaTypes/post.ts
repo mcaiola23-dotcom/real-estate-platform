@@ -22,6 +22,18 @@ export default defineType({
             validation: (Rule) => Rule.required(),
         }),
         defineField({
+            name: 'tenantId',
+            title: 'Tenant ID',
+            description: 'Owning tenant identifier for multi-tenant scoping.',
+            type: 'string',
+        }),
+        defineField({
+            name: 'tenantSlug',
+            title: 'Tenant Slug',
+            description: 'Owning tenant slug for editor visibility and filter checks.',
+            type: 'string',
+        }),
+        defineField({
             name: 'category',
             title: 'Category',
             type: 'string',

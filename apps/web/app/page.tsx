@@ -7,16 +7,18 @@ import SellBuySection from "./components/SellBuySection";
 import MortgageCalculator from "./components/MortgageCalculator";
 import AgentIntroSection from "./components/AgentIntroSection";
 import EmailSignupSection from "./components/EmailSignupSection";
+import { getTenantWebsiteConfig } from "./lib/tenant/website-profile";
+
+const tenantWebsiteConfig = getTenantWebsiteConfig();
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Matt Caiola | Luxury Real Estate | Fairfield County CT",
+    absolute: tenantWebsiteConfig.seo.defaultTitle,
   },
-  description:
-    "Matt Caiola offers personalized luxury real estate guidance in Fairfield County, Connecticut. Serving Greenwich, Stamford, Darien, New Canaan, Westport, Fairfield, Norwalk, and surrounding towns. Licensed with Higgins Group Private Brokerage.",
+  description: tenantWebsiteConfig.seo.description,
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function Home() {
   const [towns, posts] = await Promise.all([
@@ -32,14 +34,14 @@ export default async function Home() {
         <div className="relative z-10 container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto pt-0 pb-16 -mt-8">
             <p className="text-sm md:text-base font-semibold tracking-[0.25em] text-stone-100 uppercase mb-5 opacity-100 drop-shadow-md">
-              Matt Caiola Luxury Properties
+              {tenantWebsiteConfig.content.hero.eyebrow}
             </p>
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium text-white mb-6 tracking-tight leading-[0.95] font-serif drop-shadow-lg">
-              Fairfield County<br className="hidden md:block" /> Real Estate
+              {tenantWebsiteConfig.content.hero.headline}
             </h1>
             <div className="w-12 h-px bg-stone-400 mx-auto mb-8"></div>
             <p className="font-sans text-lg md:text-xl text-stone-100 mb-10 max-w-3xl mx-auto leading-relaxed tracking-wide font-light drop-shadow-md">
-              White-glove representation for buying, selling, and investing across Connecticut&apos;s Gold Coast.
+              {tenantWebsiteConfig.content.hero.subheadline}
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <Link
@@ -122,7 +124,7 @@ export default async function Home() {
       </section>
 
       {/* Agent Intro */}
-      <AgentIntroSection />
+      <AgentIntroSection tenantWebsiteConfig={tenantWebsiteConfig} />
 
       {/* Footer CTA - Split Layout */}
       <section className="bg-stone-900 text-white grid grid-cols-1 lg:grid-cols-2">
@@ -130,23 +132,23 @@ export default async function Home() {
         <div className="flex items-center justify-center py-20 px-4 order-2 lg:order-1">
           <div className="max-w-xl mx-auto text-center lg:text-left">
             <h2 className="font-serif text-3xl md:text-4xl font-medium mb-6">
-              Ready to make a move?
+              {tenantWebsiteConfig.content.footerCta.heading}
             </h2>
             <p className="text-lg text-stone-300 mb-8 leading-relaxed">
-              Whether you&apos;re curious about your home&apos;s value or ready to start touring, I&apos;m here to help you take the next step.
+              {tenantWebsiteConfig.content.footerCta.body}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
                 href="/home-value"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-stone-900 font-semibold rounded-none hover:bg-stone-100 transition-colors"
               >
-                Get Home Estimate
+                {tenantWebsiteConfig.content.footerCta.primaryLabel}
               </Link>
               <Link
                 href="/contact"
                 className="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-semibold rounded-none hover:bg-white/10 transition-colors"
               >
-                Contact Matt
+                {tenantWebsiteConfig.content.footerCta.secondaryLabel}
               </Link>
             </div>
           </div>

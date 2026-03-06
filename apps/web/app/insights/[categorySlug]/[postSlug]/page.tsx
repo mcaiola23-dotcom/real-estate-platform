@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Container from "../../../components/Container";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 type Props = {
     params: Promise<{

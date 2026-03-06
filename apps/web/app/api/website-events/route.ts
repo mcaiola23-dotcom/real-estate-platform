@@ -7,7 +7,12 @@ import type {
 } from '@real-estate/types/events';
 import { NextResponse } from 'next/server';
 
+import {
+  enforceWebsiteApiGuard,
+  readJsonBodyWithLimit,
+} from '../../lib/api-security';
 import { getTenantContextFromRequest } from '../../lib/tenant/resolve-tenant';
+import { WebsiteEventRequestSchema } from '../../lib/validators';
 
 type TrackableEventType =
   | 'website.search.performed'
@@ -15,37 +20,66 @@ type TrackableEventType =
   | 'website.listing.favorited'
   | 'website.listing.unfavorited';
 
-interface WebsiteEventRequestBody {
-  eventType?: TrackableEventType;
-  payload?: WebsiteSearchPerformedPayload | WebsiteListingInteractionPayload;
-}
-
 type TrackableWebsiteEvent = Extract<WebsiteEvent, { eventType: TrackableEventType }>;
 
-const TRACKABLE_EVENT_TYPES: Set<TrackableEventType> = new Set([
-  'website.search.performed',
-  'website.listing.viewed',
-  'website.listing.favorited',
-  'website.listing.unfavorited',
-]);
+const WEBSITE_EVENTS_ROUTE_POLICY = {
+  routeId: 'website-events',
+  maxRequests: 120,
+  windowMs: 60_000,
+  maxBodyBytes: 24_576,
+} as const;
 
-function isTrackableEventType(value: unknown): value is TrackableEventType {
-  return typeof value === 'string' && TRACKABLE_EVENT_TYPES.has(value as TrackableEventType);
+function withSearchActor(
+  payload: WebsiteSearchPerformedPayload,
+  clerkUserId: string | null
+): WebsiteSearchPerformedPayload {
+  return {
+    ...payload,
+    actor: {
+      ...(payload.actor ?? {}),
+      clerkUserId: clerkUserId ?? payload.actor?.clerkUserId ?? null,
+    },
+  };
+}
+
+function withListingActor(
+  payload: WebsiteListingInteractionPayload,
+  clerkUserId: string | null
+): WebsiteListingInteractionPayload {
+  return {
+    ...payload,
+    actor: {
+      ...(payload.actor ?? {}),
+      clerkUserId: clerkUserId ?? payload.actor?.clerkUserId ?? null,
+    },
+  };
 }
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json().catch(() => null)) as WebsiteEventRequestBody | null;
-    if (!body || !isTrackableEventType(body.eventType) || !body.payload) {
+    const guardResponse = enforceWebsiteApiGuard(request, WEBSITE_EVENTS_ROUTE_POLICY);
+    if (guardResponse) {
+      return guardResponse;
+    }
+
+    const bodyResult = await readJsonBodyWithLimit(request, WEBSITE_EVENTS_ROUTE_POLICY.maxBodyBytes);
+    if (!bodyResult.ok) {
+      return bodyResult.response;
+    }
+
+    const validationResult = WebsiteEventRequestSchema.safeParse(bodyResult.body);
+    if (!validationResult.success) {
       return NextResponse.json(
         {
           ok: false,
           error: 'Invalid event payload.',
+          issues: validationResult.error.issues,
         },
         { status: 400 }
       );
     }
 
+    const { eventType, payload } = validationResult.data;
     const { userId } = await auth();
     const tenantContext = await getTenantContextFromRequest(request);
     const occurredAt = new Date().toISOString();
@@ -56,46 +90,42 @@ export async function POST(request: Request) {
       tenantDomain: tenantContext.tenantDomain,
     };
 
-    const payloadWithActor = {
-      ...body.payload,
-      actor: {
-        ...(body.payload.actor ?? {}),
-        clerkUserId: userId ?? body.payload.actor?.clerkUserId ?? null,
-      },
-    };
-
     let event: TrackableWebsiteEvent;
-    if (body.eventType === 'website.search.performed') {
+    if (eventType === 'website.search.performed') {
+      const payloadWithActor = withSearchActor(payload, userId ?? null);
       event = {
         eventType: 'website.search.performed',
         version: 1,
         occurredAt,
         tenant,
-        payload: payloadWithActor as WebsiteSearchPerformedPayload,
+        payload: payloadWithActor,
       };
-    } else if (body.eventType === 'website.listing.viewed') {
+    } else if (eventType === 'website.listing.viewed') {
+      const payloadWithActor = withListingActor(payload, userId ?? null);
       event = {
         eventType: 'website.listing.viewed',
         version: 1,
         occurredAt,
         tenant,
-        payload: payloadWithActor as WebsiteListingInteractionPayload,
+        payload: payloadWithActor,
       };
-    } else if (body.eventType === 'website.listing.favorited') {
+    } else if (eventType === 'website.listing.favorited') {
+      const payloadWithActor = withListingActor(payload, userId ?? null);
       event = {
         eventType: 'website.listing.favorited',
         version: 1,
         occurredAt,
         tenant,
-        payload: payloadWithActor as WebsiteListingInteractionPayload,
+        payload: payloadWithActor,
       };
     } else {
+      const payloadWithActor = withListingActor(payload, userId ?? null);
       event = {
         eventType: 'website.listing.unfavorited',
         version: 1,
         occurredAt,
         tenant,
-        payload: payloadWithActor as WebsiteListingInteractionPayload,
+        payload: payloadWithActor,
       };
     }
 

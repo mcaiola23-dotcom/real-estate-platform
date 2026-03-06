@@ -36,9 +36,9 @@ export function SavedSearchesModal({
                 <div className="max-h-[60vh] overflow-y-auto p-4 sm:p-6 space-y-4">
                     {savedSearches.length === 0 ? (
                         <div className="text-center py-10 text-stone-500">
-                            <p>You haven't saved any searches yet.</p>
+                            <p>You have not saved any searches yet.</p>
                             <p className="text-sm mt-2">
-                                Set up your filters and click "Save search" to quickly access them later.
+                                Set up your filters and click Save search to quickly access them later.
                             </p>
                         </div>
                     ) : (

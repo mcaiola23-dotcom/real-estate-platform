@@ -1,22 +1,33 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { headers } from "next/headers";
+import type { Metadata } from "next";
 import HomeSearchClient from "./HomeSearchClient";
 import { getTenantContextFromHeaders } from "../lib/tenant/resolve-tenant";
+import { getTenantWebsiteConfig } from "../lib/tenant/website-profile";
 
-export const metadata = {
-  title: "Home Search | Fairfield County Real Estate",
-  description:
-    "Explore a refined home search experience for Fairfield County listings, with map-based browsing and thoughtful filters.",
+const defaultTenantWebsiteConfig = getTenantWebsiteConfig();
+
+export const metadata: Metadata = {
+  title: defaultTenantWebsiteConfig.content.search.pageTitle,
+  description: defaultTenantWebsiteConfig.content.search.pageDescription,
+  alternates: {
+    canonical: "/home-search",
+  },
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default async function HomeSearchPage() {
   const tenantContext = await getTenantContextFromHeaders(await headers());
+  const tenantWebsiteConfig = getTenantWebsiteConfig(tenantContext);
 
   return (
     <>
       <Suspense fallback={<div className="min-h-screen grid place-items-center">Loading search...</div>}>
-        <HomeSearchClient tenantContext={tenantContext} />
+        <HomeSearchClient tenantContext={tenantContext} tenantWebsiteConfig={tenantWebsiteConfig} />
       </Suspense>
 
       {/* Bottom CTA */}
@@ -25,23 +36,23 @@ export default async function HomeSearchPage() {
         <div className="flex items-center justify-center py-16 px-4 order-2 lg:order-1">
           <div className="max-w-xl mx-auto text-center lg:text-left">
             <h2 className="font-serif text-3xl md:text-3xl font-medium mb-4">
-              Ready to make a move?
+              {tenantWebsiteConfig.content.footerCta.heading}
             </h2>
             <p className="text-base text-stone-300 mb-6 leading-relaxed">
-              Whether you&apos;re curious about your home&apos;s value or ready to start touring, I&apos;m here to help you take the next step.
+              {tenantWebsiteConfig.content.footerCta.body}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Link
                 href="/home-value"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-stone-900 font-semibold rounded-none hover:bg-stone-100 transition-colors"
               >
-                Get Home Estimate
+                {tenantWebsiteConfig.content.footerCta.primaryLabel}
               </Link>
               <Link
                 href="/contact"
                 className="inline-flex items-center justify-center px-6 py-3 border-2 border-white text-white font-semibold rounded-none hover:bg-white/10 transition-colors"
               >
-                Contact Matt
+                {tenantWebsiteConfig.content.footerCta.secondaryLabel}
               </Link>
             </div>
           </div>

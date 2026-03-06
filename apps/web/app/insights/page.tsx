@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         "Expert analysis, market updates, and community news for Fairfield County real estate. Stay informed about trends, tips, and local developments.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 // All available categories with display info
 const CATEGORIES = [
@@ -125,7 +125,7 @@ export default async function InsightsPage() {
                             Ready to work together?
                         </h2>
                         <p className="text-lg text-stone-300 mb-8 leading-relaxed">
-                            Whether you're looking for market data or ready to make a move, let's start the conversation.
+                            Whether you are looking for market data or ready to make a move, let us start the conversation.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <Link href="/contact" className="inline-flex items-center justify-center px-8 py-3 bg-white text-stone-900 font-semibold rounded-none hover:bg-stone-100 transition-colors">

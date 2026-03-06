@@ -12,10 +12,9 @@ type FAQ = {
 
 type TownFAQsProps = {
     faqs: FAQ[];
-    townName: string;
 };
 
-export default function TownFAQs({ faqs, townName }: TownFAQsProps) {
+export default function TownFAQs({ faqs }: TownFAQsProps) {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     if (!faqs || faqs.length === 0) {

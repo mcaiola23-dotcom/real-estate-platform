@@ -1,7 +1,154 @@
 # CURRENT_FOCUS
 
 ## Active Objective
-Portal technical hardening follow-through (Session 31, 2026-03-02) — keep this lane focused on backend stability/security hardening while UI work proceeds in a separate lane, with priority on sustained CI gate reliability and remaining security hardening closeout items.
+Agent website post-roadmap launch-path completion in `apps/web` (Session 36, 2026-03-05) — roadmap Phases 1 through 4 are complete; current focus is staging/prod verification for IDX cutover and SEO/AEO launch gates.
+
+## Agent Website Roadmap Snapshot (2026-03-04)
+- Canonical roadmap file: `project_tracking/agent_website_implementation_roadmap.md`.
+- Current status:
+  - Phase 1: `Done`
+  - Phase 2: `Done`
+  - Phase 3: `Done`
+  - Phase 4: `Done`
+
+## Session Update (2026-03-05, Post-Roadmap Launch-Path Validation)
+
+### Completed This Session
+1. Validated launch-path quality baseline in current workspace:
+- `npm run check --workspace @real-estate/web` — PASS (`lint`, `typecheck`, `test:smoke`, `test:perf`).
+2. Closed authoritative production-build blocker by running host Windows build path:
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && npm run build --workspace @real-estate/web"` — PASS.
+3. Confirmed build output includes new SEO/AEO/AI discovery surfaces:
+- `/.well-known/llms.txt`
+- `/.well-known/llm.json`
+- `/llms.txt`
+- `/api/content/agent.md`
+- `/api/content/market.md`
+- `/api/content/towns/[townSlug]`
+4. Updated canonical roadmap and runbooks to reflect post-roadmap implementation status and remaining launch-gate checks:
+- `project_tracking/agent_website_implementation_roadmap.md`
+- `apps/web/docs/launch-readiness-checklist.md`
+- `apps/web/docs/seo-aeo-runbook.md`
+- `.brain/PICKUP.md`
+5. Fixed AI extraction town route mismatch and validated live endpoint responses:
+- moved town content endpoint to stable dynamic route `apps/web/app/api/content/towns/[townSlug]/route.ts` (`/api/content/towns/{townSlug}`),
+- updated LLM discovery URL generation + docs/tests for the new path,
+- local runtime smoke on port `3105` confirmed `200` for robots/sitemap/llms + markdown endpoints.
+6. Added repeatable launch-path verification scripts and validated them locally:
+- `apps/web/scripts/verify-seo-aeo.ts` (`npm run verify:seo-aeo --workspace @real-estate/web`) — PASS,
+- `apps/web/scripts/verify-idx-provider.ts` (`IDX_VERIFY_EXPECT_CONFIGURED=false npm run verify:idx-provider --workspace @real-estate/web`) — PASS,
+- re-ran `npm run check --workspace @real-estate/web` and host Windows build — PASS.
+
+### Remaining Next Steps
+- Run staging verification for IDX bridge responses and end-to-end provider behavior (per `apps/web/docs/idx-cutover-runbook.md`).
+- Run staging/production runtime HTTP verification for robots/sitemap/AI discovery endpoints (per `apps/web/docs/seo-aeo-runbook.md`).
+- Complete production launch approvals (`SEO_ENABLE_INDEXING`, canonical domain env, monitoring/rollback owner assignment).
+
+## Session Update (2026-03-04, Agent Website Phase 3/4 Closeout)
+
+### Completed This Session
+1. Closed remaining Phase 3 item by documenting enterprise isolation mode design:
+- `project_tracking/agent_website_enterprise_isolation_mode.md`.
+2. Completed Phase 4 maintainability/performance hardening:
+- extracted `HomeSearchClient` UI sections into:
+  - `apps/web/app/home-search/components/SearchToolbar.tsx`
+  - `apps/web/app/home-search/components/ResultsSidebar.tsx`
+- completed warning-driven stale/dead-code cleanup across touched `apps/web` files.
+3. Added environment-gated SEO controls:
+- `apps/web/app/lib/seo/runtime.ts`
+- `apps/web/app/layout.tsx`
+- `apps/web/app/robots.ts`
+- `apps/web/app/sitemap.ts`
+4. Added smoke and performance regression tests plus unified check script:
+- `apps/web/tests/smoke/tenant-runtime.smoke.test.ts`
+- `apps/web/tests/smoke/public-api.smoke.test.ts`
+- `apps/web/tests/perf/home-search.perf.test.ts`
+- `apps/web/package.json` scripts: `typecheck`, `test:smoke`, `test:perf`, `check`.
+5. Completed launch-ops documentation and hygiene:
+- removed tracked generated backup/log artifacts in `apps/web`,
+- updated `apps/web/.gitignore`,
+- replaced boilerplate `apps/web/README.md`,
+- added runbooks/checklists under `apps/web/docs/*`.
+6. Updated canonical roadmap and `.brain` tracking to mark Phase 3/4 complete.
+
+### Session Validation (2026-03-04, Phase 3/4 Closeout)
+- `npm run check --workspace @real-estate/web` — PASS.
+  - `lint` PASS
+  - `typecheck` PASS
+  - `test:smoke` PASS
+  - `test:perf` PASS
+
+### Immediate Next Steps
+- Begin IDX/live-feed cutover planning using the now-stable `ListingsProvider` boundary in `apps/web`.
+- Run host-authoritative production-like build validation for `apps/web` (network-enabled environment) before launch sign-off.
+
+## Session Update (2026-03-04, Agent Website Phase 3 Kickoff - Tenant Shell Config)
+
+### Completed This Session
+1. Added a shared tenant website identity contract in `packages/types/src/tenant-website.ts` and exported it from `packages/types/src/index.ts`.
+2. Added website tenant profile resolver in `apps/web/app/lib/tenant/website-profile.ts` with default Fairfield tenant config for:
+- identity/brand assets,
+- contact + brokerage/legal details,
+- SEO defaults,
+- service-area metadata,
+- theme token model,
+- homepage/search CTA copy.
+3. Replaced hardcoded shell/core CTA copy with tenant config values in:
+- `apps/web/app/layout.tsx` (metadata + JSON-LD + Header/Footer config wiring),
+- `apps/web/app/components/Header.tsx`,
+- `apps/web/app/components/GlobalFooter.tsx`,
+- `apps/web/app/page.tsx`,
+- `apps/web/app/components/AgentIntroSection.tsx`,
+- `apps/web/app/components/AgentCTASection.tsx`,
+- `apps/web/app/home-search/page.tsx`,
+- `apps/web/app/home-search/HomeSearchClient.tsx`,
+- `apps/web/app/home-search/ListingModal.tsx`,
+- `apps/web/app/home-search/ListingInquiryModal.tsx`,
+- `apps/web/app/components/ContactForm.tsx`.
+4. Added tenant-owned content scoping implementation in website query/content surfaces:
+- tenant fields added to Studio schemas: `apps/studio/schemaTypes/town.ts`, `neighborhood.ts`, `post.ts`, `userProfile.ts`,
+- tenant-aware query filtering + cache partitioning added in `apps/web/app/lib/sanity.queries.ts`,
+- dynamic tenant pages now pass tenant scope into query helpers (`apps/web/app/towns/[townSlug]/page.tsx`, `apps/web/app/towns/[townSlug]/[neighborhoodSlug]/page.tsx`).
+5. Added tenant metadata backfill script scaffold at `apps/web/scripts/backfill-sanity-tenant-content.ts` and workspace command `apps/web/package.json#sanity:tenant-backfill`.
+
+### Session Validation (2026-03-04, Agent Website Phase 3 Kickoff)
+- `npm run lint --workspace @real-estate/web -- app/layout.tsx app/page.tsx app/home-search/page.tsx app/home-search/HomeSearchClient.tsx app/home-search/ListingModal.tsx app/home-search/ListingInquiryModal.tsx app/components/Header.tsx app/components/GlobalFooter.tsx app/components/AgentIntroSection.tsx app/components/AgentCTASection.tsx app/components/ContactForm.tsx app/lib/tenant/website-profile.ts` — PASS.
+- `npm run lint --workspace @real-estate/web -- app/lib/sanity.queries.ts app/towns/[townSlug]/page.tsx app/towns/[townSlug]/[neighborhoodSlug]/page.tsx scripts/backfill-sanity-tenant-content.ts app/lib/tenant/website-profile.ts` — PASS (warnings only, no errors).
+- `npm run lint --workspace @real-estate/studio -- schemaTypes/town.ts schemaTypes/neighborhood.ts schemaTypes/post.ts schemaTypes/userProfile.ts` — PASS.
+- `npx tsc --noEmit --project apps/web/tsconfig.json` — PASS.
+
+### Immediate Next Steps
+- Verify web content reads after backfill application and close remaining Phase 3 follow-through tasks.
+- Define/document optional enterprise tenant-isolation mode design to close remaining Phase 3 roadmap item.
+
+## Session Update (2026-03-04, Agent Website Phase 3 - Backfill Validation + Onboarding Scaffold)
+
+### Completed This Session
+1. Refactored tenant website profiles into per-tenant module registry structure:
+- `apps/web/app/lib/tenant/configs/fairfield.ts`
+- `apps/web/app/lib/tenant/configs/index.ts`
+- `apps/web/app/lib/tenant/website-profile.ts` now reads from registry-backed config array.
+2. Added onboarding scaffolder command and script:
+- `apps/web/scripts/scaffold-tenant-onboarding.ts`
+- `apps/web/package.json#tenant:onboard:scaffold`
+- Generates new tenant website config module + registry updates + onboarding artifacts (`provision-request.json`, `sanity-tenant-defaults.json`, `README.md`) under `apps/web/scripts/content/tenant-onboarding/<tenant-slug>/`.
+3. Extended tenant metadata backfill script to support explicit tenant/doc-type overrides:
+- `apps/web/scripts/backfill-sanity-tenant-content.ts` now accepts `--tenant-id`, `--tenant-slug`, `--tenant-domain`, and `--types`.
+4. Executed authoritative tenant-backfill dry-run and apply run after script extension:
+- Result: `97` candidate patches (`town=9`, `neighborhood=69`, `post=19`, `userProfile=0`) and `97` docs patched in apply mode.
+
+### Session Validation (2026-03-04, Phase 3 Onboarding + Backfill Tooling)
+- `npm run lint --workspace @real-estate/web -- app/lib/tenant/website-profile.ts app/lib/tenant/configs/index.ts app/lib/tenant/configs/fairfield.ts scripts/backfill-sanity-tenant-content.ts scripts/scaffold-tenant-onboarding.ts` — PASS.
+- `npx tsc --noEmit --project apps/web/tsconfig.json` — PASS.
+- `npm run tenant:onboard:scaffold --workspace @real-estate/web -- --slug demo-agent --brand-name \"Demo Agent Homes\" --agent-name \"Demo Agent\" --email \"demo@example.com\" --phone-display \"203-555-0000\" --phone-e164 \"+12035550000\" --primary-domain \"demo-agent.localhost\"` — PASS (dry-run preview, no writes).
+- `npm run sanity:tenant-backfill --workspace @real-estate/web -- --tenant-id tenant_fairfield --tenant-slug fairfield --tenant-domain fairfield.localhost --types userProfile --dry-run` — PASS.
+- `npm run sanity:tenant-backfill --workspace @real-estate/web -- --dry-run` — PASS (`97` candidate patches).
+- `npm run sanity:tenant-backfill --workspace @real-estate/web` — PASS (`97` docs patched).
+- `npm run sanity:tenant-backfill --workspace @real-estate/web -- --dry-run` (post-apply verification) — PASS (`0` remaining candidates).
+
+### Updated Next Steps
+- Validate website content routes after backfill apply (sanity check town/neighborhood/insights paths remain intact under tenant filters).
+- Define/document optional enterprise tenant-isolation mode design to close remaining Phase 3 planning item.
 
 ## In-Progress Workstream
 1. Tenant-aware web runtime baseline is in place via host-header tenant resolution in `apps/web/proxy.ts` and tenant-aware `lead`/`valuation` API handling.
@@ -84,7 +231,7 @@ Portal technical hardening follow-through (Session 31, 2026-03-02) — keep this
 74. Portal-api settings now load `.env.local` (in addition to `.env`) via `services/portal-api/app/core/config.py`, aligning backend runtime config with the migration-era env convention and enabling Google Maps keys placed in `.env.local` to be picked up at startup.
 75. Backend hardening smoke coverage is now in place in `services/portal-api/tests/test_hardening_smoke.py` for `/health/`, `/test-sentry` non-local gating, and `/leads/` authn/authz behavior; the suite passes (`5 passed`) in Windows virtualenv validation.
 76. Backend CI gate defaults are now aligned to current hardening realities in `services/portal-api/scripts/ci-gate.sh` via configurable `PORTAL_API_TEST_TARGETS` (default `tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py`) while preserving Alembic `current -> upgrade head -> current` checks and strict PostgreSQL/PostGIS requirement.
-77. Alembic runtime validation is now confirmed in both SQLite and Postgres-backed contexts (`postgresql://postgres:user@localhost:5432/smartmls_db`), with `current -> upgrade head -> current` landing at `20260302_000002 (head)`.
+77. Alembic runtime validation is now confirmed in both SQLite and Postgres-backed contexts (`postgresql://postgres:<redacted>@localhost:5432/smartmls_db`), with `current -> upgrade head -> current` landing at `20260302_000002 (head)`.
 78. Legacy backend suites are now modernized in-place: `services/portal-api/app/tests/test_api.py` and `services/portal-api/tests/test_phase0.py` no longer rely on SQLite schema setup and instead use deterministic dependency-override/fake-session route-contract tests aligned to current API behavior.
 79. Backend hardening smoke coverage is now expanded in `services/portal-api/tests/test_hardening_smoke.py` to include lead write-path success, invalid payload (422) error path, and lead-detail authz/not-found checks.
 80. Authoritative runtime-path tooling is now codified via `services/portal-api/scripts/ci-gate-windows.cmd` and README runbook updates; both backend gate scripts now default `PORTAL_API_TEST_TARGETS` to `tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py`.
@@ -127,7 +274,7 @@ Portal technical hardening follow-through (Session 31, 2026-03-02) — keep this
 - `alembic upgrade head` could not be executed in this WSL sandbox because Alembic CLI/runtime is not installed in the active Python environment (later validated in Windows virtualenv; see Session 27 validation).
 
 ## Session Validation (2026-03-02, Session 27 — Portal backend hardening follow-through)
-- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform\services\portal-api && set \"PYTHONPATH=.\" && C:\Users\19143\Projects\smartmls-ai-app\backend\.venv\Scripts\python.exe -m alembic -c alembic.ini upgrade head"` passes against Postgres runtime (`postgresql://postgres:user@localhost:5432/smartmls_db`).
+- `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform\services\portal-api && set \"PYTHONPATH=.\" && C:\Users\19143\Projects\smartmls-ai-app\backend\.venv\Scripts\python.exe -m alembic -c alembic.ini upgrade head"` passes against Postgres runtime (`postgresql://postgres:<redacted>@localhost:5432/smartmls_db`).
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform\services\portal-api && set \"PYTHONPATH=.\" && C:\Users\19143\Projects\smartmls-ai-app\backend\.venv\Scripts\python.exe -m alembic -c alembic.ini current"` reports `20260302_000002 (head)` after upgrade.
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform\services\portal-api && set \"PYTHONPATH=.\" && C:\Users\19143\Projects\smartmls-ai-app\backend\.venv\Scripts\python.exe -m pytest tests/test_hardening_smoke.py -q"` passes (`5 passed`).
 - Historical note from Session 27: `app/tests/test_api.py` + `tests/test_phase0.py` were non-passing due legacy SQLite coupling/route drift at that time; this is now superseded by Session 28 suite modernization and CI-target reintegration.
@@ -143,11 +290,11 @@ Portal technical hardening follow-through (Session 31, 2026-03-02) — keep this
 
 ## Session Validation (2026-03-02, Session 30 — authoritative gate closure + success-path smoke)
 - `python3 -m py_compile tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py` passes after adding authenticated saved-search create success-path coverage.
-- `cmd.exe /v:on /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=postgresql://postgres:user@localhost:5432/smartmls_db&& services\portal-api\scripts\ci-gate-windows.cmd"` passes authoritatively: backend tests `28 passed`, Alembic `current -> upgrade head -> current` at `20260302_000002 (head)`.
+- `cmd.exe /v:on /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=postgresql://postgres:<redacted>@localhost:5432/smartmls_db&& services\portal-api\scripts\ci-gate-windows.cmd"` passes authoritatively: backend tests `28 passed`, Alembic `current -> upgrade head -> current` at `20260302_000002 (head)`.
 
 ## Session Validation (2026-03-02, Session 31 — favorites success-path smoke + authoritative re-run)
 - `python3 -m py_compile tests/test_hardening_smoke.py app/tests/test_api.py tests/test_phase0.py` passes after adding authenticated favorites create success-path coverage.
-- `cmd.exe /v:on /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=postgresql://postgres:user@localhost:5432/smartmls_db&& services\portal-api\scripts\ci-gate-windows.cmd"` passes authoritatively: backend tests `29 passed`, Alembic `current -> upgrade head -> current` at `20260302_000002 (head)`.
+- `cmd.exe /v:on /c "cd /d C:\Users\19143\Projects\real-estate-platform && set DATABASE_URL=postgresql://postgres:<redacted>@localhost:5432/smartmls_db&& services\portal-api\scripts\ci-gate-windows.cmd"` passes authoritatively: backend tests `29 passed`, Alembic `current -> upgrade head -> current` at `20260302_000002 (head)`.
 
 ## Session Validation (2026-02-12)
 - `npm run lint:web` from root now resolves workspace scripts correctly and reports existing `apps/web` lint violations.
@@ -1352,3 +1499,82 @@ Hybrid merge: portal frontend lives in monorepo (`apps/portal`), Python/FastAPI 
 
 ### Session Validation (2026-03-03 Properties/Modal Refactor Phase 1)
 - `cmd.exe /c "cd /d C:\Users\19143\Projects\real-estate-platform && .\node_modules\.bin\tsc.cmd --noEmit --project apps\portal\tsconfig.json"` passes.
+
+## Session Update (2026-03-04 Agent Website Full Review + 4-Phase Implementation Roadmap)
+
+### Completed This Session
+1. Completed a read-only full technical review of `apps/web` (performance, security, maintainability, multi-tenant SaaS readiness), including key supporting surfaces in `apps/studio`, `packages/db`, and `packages/types`.
+2. Captured current validation baseline for the website app:
+- typecheck currently fails in `apps/web/scripts/blog-pipeline.ts`,
+- lint currently fails with `40 errors` / `20 warnings` (notably map/search state-churn and typing issues),
+- production build in this sandbox is blocked by external Google Fonts fetch connectivity.
+3. Identified primary risk areas for launch readiness:
+- missing API abuse controls and PII logging in website routes,
+- incomplete tenant-content productization (hardcoded single-agent identity across layout/header/footer/intro/CTA),
+- broad dynamic rendering/cache posture and large component maintainability hotspots (`HomeSearchClient` etc.).
+4. Created canonical implementation roadmap document at `project_tracking/agent_website_implementation_roadmap.md` with phased execution and checklists:
+- Phase 1: Security + Stability Baseline,
+- Phase 2: Performance + Speed,
+- Phase 3: Multi-Tenant Productization,
+- Phase 4: Maintainability + Launch Operations.
+5. Locked planning inputs from user responses:
+- shared Sanity dataset per environment with strict tenant scoping (default strategy),
+- SEO intentionally blocked in dev/local,
+- mock listing data remains temporary pending IDX integration.
+
+### Session Validation (2026-03-04 Agent Website Full Review)
+- `npx tsc --noEmit --project apps/web/tsconfig.json` fails at `apps/web/scripts/blog-pipeline.ts` (`TS2345`, missing `_type` in create payload typing).
+- `npm run lint --workspace @real-estate/web` fails with `40 errors` and `20 warnings`.
+- `npm run build --workspace @real-estate/web` fails in sandbox due network-blocked Google Fonts fetch (`Cormorant Garamond`, `Inter`); host-runtime build validation still required.
+
+### Current Active Objective (As Of 2026-03-04)
+- Shift this lane from portal modal/map optimization into `apps/web` Phase 1 execution planning and hardening, using `project_tracking/agent_website_implementation_roadmap.md` as the canonical source of truth.
+- Keep portal/crm concurrent workstreams isolated (other agents active in parallel) and avoid cross-lane file interference.
+
+## Session Update (2026-03-04 Agent Website Phase 1 Execution - API Guardrails)
+
+### Completed This Session
+1. Added shared website API hardening utility `apps/web/app/lib/api-security.ts` with:
+- origin checks (same-host + optional env allowlist `WEB_API_ALLOWED_ORIGINS`),
+- in-memory sliding-window rate limiter,
+- payload-size checks (`content-length` + raw byte length),
+- JSON body parser with size enforcement,
+- optional bot-token hook (`WEB_API_REQUIRE_BOT_TOKEN`),
+- PII masking helpers (`maskEmail`, `maskPhone`).
+2. Applied the guard utility to public write routes:
+- `apps/web/app/api/lead/route.ts`,
+- `apps/web/app/api/valuation/route.ts`,
+- `apps/web/app/api/website-events/route.ts`.
+3. Removed plaintext lead/contact logging from website APIs and replaced with redacted structured logs (masked email/phone in lead submissions; valuation logs now metadata-only).
+4. Added strict Zod validation for website interaction event payloads in `apps/web/app/lib/validators.ts` (`WebsiteEventRequestSchema`) and switched `/api/website-events` from manual shape checks to schema validation.
+5. Updated roadmap + `.brain` backlog to mark completed Phase 1 items and keep canonical status in sync.
+
+### Session Validation (2026-03-04 Agent Website Phase 1 Execution - API Guardrails)
+- `npm run lint --workspace @real-estate/web -- app/api/lead/route.ts app/api/valuation/route.ts app/api/website-events/route.ts app/lib/api-security.ts app/lib/validators.ts` passes.
+- `npx tsc --noEmit --project apps/web/tsconfig.json` still fails at pre-existing issue `apps/web/scripts/blog-pipeline.ts(180)` (`TS2345`, `_type` missing from typed create payload).
+
+### Immediate Next Steps
+- Continue Phase 1 by removing transitional tenant profile fallback queries (`!defined(tenantId)`), adding migration/backfill path, and then clearing remaining global typecheck/lint baseline blockers.
+
+## Session Update (2026-03-04 Agent Website Phase 1 Execution - Tenant Profile Scope Hardening)
+
+### Completed This Session
+1. Removed transitional tenant fallback query usage (`!defined(tenantId) || tenantId == $tenantId`) from:
+- `apps/web/app/api/user/profile/route.ts`,
+- `apps/web/app/api/user/sync/route.ts`.
+2. Added shared profile lookup/migration helper `apps/web/app/lib/user-profile.ts`:
+- strict tenant-scoped profile fetch (`tenantId == $tenantId`),
+- on-access migration for legacy profiles without tenant fields,
+- migration safety guard that skips legacy adoption if any scoped profile already exists for that Clerk user.
+3. Updated profile and sync route flows to:
+- resolve strict tenant profile first,
+- attempt one-time legacy migration path only when strict profile is absent,
+- create fresh tenant profile when no scoped/legacy profile is available.
+4. Updated roadmap/backlog status to mark Phase 1 tenant profile scope item completed.
+
+### Session Validation (2026-03-04 Agent Website Phase 1 Execution - Tenant Profile Scope Hardening)
+- `npm run lint --workspace @real-estate/web -- app/api/user/profile/route.ts app/api/user/sync/route.ts app/lib/user-profile.ts` passes.
+- `npx tsc --noEmit --project apps/web/tsconfig.json --pretty false` now reports only pre-existing `apps/web/scripts/blog-pipeline.ts(180)` typing issue.
+
+### Immediate Next Steps
+- Continue Phase 1 by restoring full `apps/web` baseline gates (remaining global lint + typecheck failures) and adding server env fail-fast/security header policy.

@@ -381,7 +381,7 @@ export const useCrmStore = create<CrmStore>((set, get) => ({
   pipelineLeadTypeFilter: ALL_LEAD_TYPE_FILTER,
 
   tableStatusPreset: 'all',
-  tableSort: { column: 'updatedAt', direction: 'desc' },
+  tableSort: { column: 'lastActivity', direction: 'desc' },
 
   activitySortMode: 'recent',
 

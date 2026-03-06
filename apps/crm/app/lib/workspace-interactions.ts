@@ -8,15 +8,21 @@ export type TableStatusPreset = 'all' | 'new' | 'follow_up' | 'open_pipeline' | 
 
 export type LeadsTableSortColumn =
   | 'name'
-  | 'leadType'
   | 'status'
-  | 'score'
-  | 'priceRange'
-  | 'location'
-  | 'lastContact'
-  | 'desired'
+  | 'leadType'
   | 'source'
-  | 'updatedAt'
+  | 'score'
+  | 'address'
+  | 'city'
+  | 'priceRange'
+  | 'beds'
+  | 'baths'
+  | 'sqft'
+  | 'acreage'
+  | 'tags'
+  | 'lastActivity'
+  | 'siteActivity'
+  | 'timeframe'
   | 'phone'
   | 'email';
 

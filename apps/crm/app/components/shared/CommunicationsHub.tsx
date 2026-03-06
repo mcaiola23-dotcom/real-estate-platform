@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import { useState, useCallback, useMemo, type ReactNode } from 'react';
 import type { CrmActivity, CrmContact, CrmLead } from '@real-estate/types/crm';
 import { formatTimeAgo } from '../../lib/crm-formatters';
 import { ContactHistoryLog } from '../leads/ContactHistoryLog';
 import { TemplateLibrary } from './TemplateLibrary';
 import { AiDraftComposer } from './AiDraftComposer';
-import { GmailComposer } from './GmailComposer';
 import { GmailThreads } from './GmailThreads';
-import { SmsComposer } from './SmsComposer';
+import { ConversationInsights } from '../leads/ConversationInsights';
+import { useCommunicationModals } from '../../lib/communication-modal-context';
 import type { MergeFieldContext } from '../../lib/crm-templates';
 
 // ---------------------------------------------------------------------------
@@ -16,7 +16,7 @@ import type { MergeFieldContext } from '../../lib/crm-templates';
 // ---------------------------------------------------------------------------
 
 type ChannelFilter = 'all' | 'email' | 'text' | 'phone';
-type ActiveComposer = 'none' | 'email' | 'sms' | 'ai' | 'templates' | 'threads' | 'log';
+type ActiveComposer = 'none' | 'email' | 'ai' | 'templates' | 'threads' | 'log';
 
 interface ExtractedInsight {
   category: string;
@@ -154,10 +154,10 @@ export function CommunicationsHub({
 }: CommunicationsHubProps) {
   const [channelFilter, setChannelFilter] = useState<ChannelFilter>('all');
   const [activeComposer, setActiveComposer] = useState<ActiveComposer>('none');
-  const [replyContext, setReplyContext] = useState<{ threadId: string; subject: string } | null>(null);
   const [draftForEmail, setDraftForEmail] = useState<{ subject: string; body: string } | null>(null);
-  const [draftForSms, setDraftForSms] = useState<string | null>(null);
   const [callInProgress, setCallInProgress] = useState(false);
+  const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null);
+  const { openEmailComposer, openSmsConversation } = useCommunicationModals();
 
   // Filter communication activities
   const contactActivities = useMemo(() => {
@@ -190,43 +190,58 @@ export function CommunicationsHub({
 
   const handleTemplateUse = useCallback((data: { subject: string | null; body: string; channel: string }) => {
     if (data.channel === 'email' && activeContact?.email) {
-      // Route through Gmail composer with pre-filled content
-      setDraftForEmail({ subject: data.subject || '', body: data.body });
-      setActiveComposer('email');
+      openEmailComposer({
+        to: activeContact.email,
+        leadId: lead.id,
+        contactName: activeContact.fullName ?? undefined,
+        propertyAddress: lead.listingAddress ?? undefined,
+        initialSubject: data.subject || '',
+        initialBody: data.body,
+      });
+      setActiveComposer('none');
+    } else if (data.channel === 'sms' && activeContact?.phone && twilioConnected) {
+      openSmsConversation({
+        to: activeContact.phone,
+        leadId: lead.id,
+        contactId: activeContact.id,
+        contactName: activeContact.fullName ?? undefined,
+        initialBody: data.body,
+      });
+      setActiveComposer('none');
     } else {
       void navigator.clipboard.writeText(data.body);
       setActiveComposer('none');
     }
-  }, [activeContact?.email]);
+  }, [activeContact?.email, activeContact?.phone, activeContact?.fullName, activeContact?.id, twilioConnected, lead.id, lead.listingAddress, openEmailComposer, openSmsConversation]);
 
   const handleAiSend = useCallback((data: { channel: string; subject: string; body: string }) => {
     if (data.channel === 'email' && activeContact?.email) {
-      // Route through Gmail composer
-      setDraftForEmail({ subject: data.subject, body: data.body });
-      setActiveComposer('email');
+      // Open email popup with AI-drafted content
+      openEmailComposer({
+        to: activeContact.email,
+        leadId: lead.id,
+        contactName: activeContact.fullName ?? undefined,
+        propertyAddress: lead.listingAddress ?? undefined,
+        initialSubject: data.subject,
+        initialBody: data.body,
+      });
+      setActiveComposer('none');
       void onLogContact('email_sent', 'AI-drafted email composed');
     } else if (data.channel === 'sms' && activeContact?.phone && twilioConnected) {
-      // Route through SMS composer
-      setDraftForSms(data.body);
-      setActiveComposer('sms');
+      // Open SMS popup with AI-drafted content
+      openSmsConversation({
+        to: activeContact.phone,
+        leadId: lead.id,
+        contactId: activeContact.id,
+        contactName: activeContact.fullName ?? undefined,
+        initialBody: data.body,
+      });
+      setActiveComposer('none');
     } else {
       void onLogContact('text_logged', 'AI-drafted message copied');
       setActiveComposer('none');
     }
-  }, [activeContact?.email, activeContact?.phone, twilioConnected, onLogContact]);
-
-  const handleGmailSent = useCallback(() => {
-    setActiveComposer('none');
-    setReplyContext(null);
-    setDraftForEmail(null);
-    void onLogContact('email_sent', `Email sent to ${activeContact?.email ?? 'contact'}`);
-  }, [onLogContact, activeContact?.email]);
-
-  const handleSmsSent = useCallback(() => {
-    setActiveComposer('none');
-    setDraftForSms(null);
-    void onLogContact('sms_sent', `SMS sent to ${activeContact?.phone ?? 'contact'}`);
-  }, [onLogContact, activeContact?.phone]);
+  }, [activeContact?.email, activeContact?.phone, activeContact?.fullName, activeContact?.id, twilioConnected, onLogContact, lead.id, lead.listingAddress, openEmailComposer, openSmsConversation]);
 
   const handleClickToCall = useCallback(async () => {
     if (!activeContact?.phone) return;
@@ -253,59 +268,45 @@ export function CommunicationsHub({
   }, [activeContact?.phone, activeContact?.id, lead.id]);
 
   const handleReply = useCallback((threadId: string, subject: string) => {
-    setReplyContext({ threadId, subject });
+    if (!activeContact?.email) return;
+    openEmailComposer({
+      to: activeContact.email,
+      leadId: lead.id,
+      contactName: activeContact.fullName ?? undefined,
+      propertyAddress: lead.listingAddress ?? undefined,
+      replyToMessageId: threadId,
+      initialSubject: subject,
+    });
+  }, [activeContact, lead.id, lead.listingAddress, openEmailComposer]);
+
+  // Open email in popup via modal context
+  const handleOpenEmail = useCallback(() => {
+    if (!activeContact?.email) return;
+    openEmailComposer({
+      to: activeContact.email,
+      leadId: lead.id,
+      contactName: activeContact.fullName ?? undefined,
+      propertyAddress: lead.listingAddress ?? undefined,
+      initialSubject: draftForEmail?.subject,
+      initialBody: draftForEmail?.body,
+    });
     setDraftForEmail(null);
-    setActiveComposer('email');
-  }, []);
+  }, [activeContact, lead.id, lead.listingAddress, draftForEmail, openEmailComposer]);
+
+  // Open SMS in popup via modal context
+  const handleOpenSms = useCallback(() => {
+    if (!activeContact?.phone) return;
+    openSmsConversation({
+      to: activeContact.phone,
+      leadId: lead.id,
+      contactId: activeContact.id,
+      contactName: activeContact.fullName ?? undefined,
+    });
+  }, [activeContact, lead.id, openSmsConversation]);
 
   return (
     <div className="crm-comm-hub">
-      {/* ── Integration Status Bar ── */}
-      <div className="crm-comm-hub__status-bar">
-        <div className="crm-comm-hub__status-item">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-            <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span>Gmail</span>
-          {googleConnected ? (
-            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--connected">Connected</span>
-          ) : googleConnected === false ? (
-            <button
-              type="button"
-              className="crm-comm-hub__status-badge crm-comm-hub__status-badge--connect"
-              onClick={async () => {
-                try {
-                  const res = await fetch('/api/integrations/google/connect');
-                  const data = await res.json();
-                  if (data.ok && data.authUrl) {
-                    window.location.href = data.authUrl;
-                  }
-                } catch { /* silent */ }
-              }}
-            >
-              Connect
-            </button>
-          ) : (
-            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--checking">...</span>
-          )}
-        </div>
-        <div className="crm-comm-hub__status-item">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-            <path d="M2.5 3h11A1.5 1.5 0 0115 4.5v6a1.5 1.5 0 01-1.5 1.5H5L2 14.5V4.5A1.5 1.5 0 013.5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span>Twilio</span>
-          {twilioConnected ? (
-            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--connected">Connected</span>
-          ) : twilioConnected === false ? (
-            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--unavailable" title="Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER in env">Not configured</span>
-          ) : (
-            <span className="crm-comm-hub__status-badge crm-comm-hub__status-badge--checking">...</span>
-          )}
-        </div>
-      </div>
-
-      {/* ── Channel Filter Tabs ── */}
+      {/* ── Channel Filter Tabs with inline status dots ── */}
       <div className="crm-comm-hub__filters">
         {CHANNEL_FILTERS.map((f) => (
           <button
@@ -321,123 +322,180 @@ export function CommunicationsHub({
             )}
           </button>
         ))}
+        <div className="crm-comm-hub__status-dots">
+          <span className={`crm-comm-hub__status-dot ${googleConnected ? 'crm-comm-hub__status-dot--ok' : googleConnected === false ? 'crm-comm-hub__status-dot--off' : ''}`}>
+            <svg viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="crm-comm-hub__status-tooltip">
+              {googleConnected ? 'Gmail connected' : googleConnected === false ? 'Gmail not connected' : 'Checking Gmail...'}
+            </span>
+          </span>
+          <span className={`crm-comm-hub__status-dot ${twilioConnected ? 'crm-comm-hub__status-dot--ok' : twilioConnected === false ? 'crm-comm-hub__status-dot--off' : ''}`}>
+            <svg viewBox="0 0 16 16" fill="none">
+              <path d="M6 3H4.5A1.5 1.5 0 003 4.5v1A8.5 8.5 0 0010.5 14h1a1.5 1.5 0 001.5-1.5V11l-2.5-1.5L9 11a5 5 0 01-4-4l1.5-1.5L5 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="crm-comm-hub__status-tooltip">
+              {twilioConnected ? 'Twilio connected' : twilioConnected === false ? 'Twilio not configured' : 'Checking Twilio...'}
+            </span>
+          </span>
+        </div>
       </div>
 
       {/* ── Unified Timeline ── */}
       <div className="crm-comm-hub__timeline">
         {contactActivities.length > 0 ? (
           <ul className="crm-comm-hub__timeline-list">
-            {contactActivities.map((a) => (
-              <li key={a.id} className="crm-comm-hub__timeline-entry">
-                <span className="crm-comm-hub__timeline-icon">{getTimelineIcon(a.activityType)}</span>
-                <div className="crm-comm-hub__timeline-content">
-                  <div className="crm-comm-hub__timeline-header">
-                    <span className="crm-comm-hub__timeline-channel">{getChannelLabel(a.activityType)}</span>
-                    <span className="crm-comm-hub__timeline-time">{formatTimeAgo(a.occurredAt)}</span>
+            {contactActivities.map((a) => {
+              const isExpanded = expandedEntryId === a.id;
+              return (
+                <li key={a.id} className={`crm-comm-hub__timeline-entry ${isExpanded ? 'crm-comm-hub__timeline-entry--expanded' : ''}`}>
+                  <span className="crm-comm-hub__timeline-icon">{getTimelineIcon(a.activityType)}</span>
+                  <div className="crm-comm-hub__timeline-content">
+                    <button
+                      type="button"
+                      className="crm-comm-hub__timeline-header crm-comm-hub__timeline-header--clickable"
+                      onClick={() => setExpandedEntryId(isExpanded ? null : a.id)}
+                    >
+                      <span className="crm-comm-hub__timeline-channel">{getChannelLabel(a.activityType)}</span>
+                      <span className="crm-comm-hub__timeline-time">{formatTimeAgo(a.occurredAt)}</span>
+                      <svg
+                        width="10" height="10" viewBox="0 0 16 16" fill="none"
+                        className={`crm-comm-hub__timeline-chevron ${isExpanded ? 'crm-comm-hub__timeline-chevron--open' : ''}`}
+                      >
+                        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                    <p className="crm-comm-hub__timeline-summary">{a.summary}</p>
+                    {isExpanded && (
+                      <div className="crm-comm-hub__timeline-detail">
+                        <ConversationInsights
+                          text={a.summary}
+                          leadId={lead.id}
+                          tenantId={lead.tenantId}
+                          onApplyInsights={onApplyInsights}
+                        />
+                      </div>
+                    )}
                   </div>
-                  <p className="crm-comm-hub__timeline-summary">{a.summary}</p>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="crm-muted crm-comm-hub__empty">
             {channelFilter === 'all'
-              ? 'No communication history yet. Use the compose bar below to get started.'
+              ? 'No communication history yet. Use the actions below to get started.'
               : `No ${channelFilter} communications yet.`}
           </p>
         )}
       </div>
 
-      {/* ── Compose Bar ── */}
+      {/* ── Sticky Compose Bar (centered) ── */}
       <div className="crm-comm-hub__compose-bar">
-        <button
-          type="button"
-          className={`crm-comm-hub__compose-btn ${activeComposer === 'log' ? 'is-active' : ''}`}
-          onClick={() => toggleComposer('log')}
-          title="Log a contact"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M8 5v6M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <span>Log</span>
-        </button>
-        {activeContact?.email && (
+        {/* Reach Out group */}
+        <div className="crm-comm-hub__compose-group">
+          {activeContact?.email && (
+            <button
+              type="button"
+              className="crm-comm-hub__compose-btn"
+              onClick={handleOpenEmail}
+              title="Compose email"
+            >
+              {EnvelopeIcon}
+              <span>Email</span>
+            </button>
+          )}
+          {activeContact?.phone && twilioConnected && (
+            <button
+              type="button"
+              className="crm-comm-hub__compose-btn"
+              onClick={handleOpenSms}
+              title="Send SMS"
+            >
+              {MessageIcon}
+              <span>SMS</span>
+            </button>
+          )}
+          {activeContact?.phone && twilioConnected && (
+            <button
+              type="button"
+              className={`crm-comm-hub__compose-btn ${callInProgress ? 'is-active' : ''}`}
+              onClick={() => void handleClickToCall()}
+              disabled={callInProgress}
+              title="Click to call"
+            >
+              {PhoneIcon}
+              <span>{callInProgress ? 'Calling...' : 'Call'}</span>
+            </button>
+          )}
+        </div>
+
+        <span className="crm-comm-hub__compose-divider" />
+
+        {/* Assist group */}
+        <div className="crm-comm-hub__compose-group">
           <button
             type="button"
-            className={`crm-comm-hub__compose-btn ${activeComposer === 'email' ? 'is-active' : ''}`}
-            onClick={() => { setDraftForEmail(null); toggleComposer('email'); }}
-            title="Compose email"
-          >
-            {EnvelopeIcon}
-            <span>Email</span>
-          </button>
-        )}
-        {activeContact?.phone && twilioConnected && (
-          <button
-            type="button"
-            className={`crm-comm-hub__compose-btn ${activeComposer === 'sms' ? 'is-active' : ''}`}
-            onClick={() => { setDraftForSms(null); toggleComposer('sms'); }}
-            title="Send SMS"
-          >
-            {MessageIcon}
-            <span>SMS</span>
-          </button>
-        )}
-        {activeContact?.phone && twilioConnected && (
-          <button
-            type="button"
-            className={`crm-comm-hub__compose-btn ${callInProgress ? 'is-active' : ''}`}
-            onClick={() => void handleClickToCall()}
-            disabled={callInProgress}
-            title="Click to call"
-          >
-            {PhoneIcon}
-            <span>{callInProgress ? 'Calling...' : 'Call'}</span>
-          </button>
-        )}
-        <button
-          type="button"
-          className={`crm-comm-hub__compose-btn ${activeComposer === 'ai' ? 'is-active' : ''}`}
-          onClick={() => toggleComposer('ai')}
-          title="Draft with AI"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" opacity="0.7" />
-          </svg>
-          <span>AI Draft</span>
-        </button>
-        <button
-          type="button"
-          className={`crm-comm-hub__compose-btn ${activeComposer === 'templates' ? 'is-active' : ''}`}
-          onClick={() => toggleComposer('templates')}
-          title="Message templates"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
-            <path d="M5 5h6M5 8h6M5 11h3" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
-          </svg>
-          <span>Templates</span>
-        </button>
-        {activeContact?.email && googleConnected && (
-          <button
-            type="button"
-            className={`crm-comm-hub__compose-btn ${activeComposer === 'threads' ? 'is-active' : ''}`}
-            onClick={() => toggleComposer('threads')}
-            title="Email history"
+            className={`crm-comm-hub__compose-btn ${activeComposer === 'ai' ? 'is-active' : ''}`}
+            onClick={() => toggleComposer('ai')}
+            title="Draft with AI"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M5 9h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+              <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" opacity="0.7" />
             </svg>
-            <span>Threads</span>
+            <span>AI Draft</span>
           </button>
-        )}
+          <button
+            type="button"
+            className={`crm-comm-hub__compose-btn ${activeComposer === 'templates' ? 'is-active' : ''}`}
+            onClick={() => toggleComposer('templates')}
+            title="Message templates"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <path d="M5 5h6M5 8h6M5 11h3" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+            </svg>
+            <span>Templates</span>
+          </button>
+        </div>
+
+        <span className="crm-comm-hub__compose-divider" />
+
+        {/* History group */}
+        <div className="crm-comm-hub__compose-group">
+          {activeContact?.email && googleConnected && (
+            <button
+              type="button"
+              className={`crm-comm-hub__compose-btn ${activeComposer === 'threads' ? 'is-active' : ''}`}
+              onClick={() => toggleComposer('threads')}
+              title="Email history"
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M2 5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 9h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+              </svg>
+              <span>Threads</span>
+            </button>
+          )}
+          <button
+            type="button"
+            className={`crm-comm-hub__compose-btn ${activeComposer === 'log' ? 'is-active' : ''}`}
+            onClick={() => toggleComposer('log')}
+            title="Log a contact"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M8 5v6M5 8h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <span>Log</span>
+          </button>
+        </div>
       </div>
 
-      {/* ── Active Composer Panel ── */}
+      {/* ── Active Composer Panel (inline panels only — SMS/Email use popups) ── */}
       {activeComposer === 'log' && (
         <ContactHistoryLog
           leadId={lead.id}
@@ -469,33 +527,6 @@ export function CommunicationsHub({
           propertyAddress={lead.listingAddress}
           onClose={() => setActiveComposer('none')}
           onSend={handleAiSend}
-        />
-      )}
-
-      {activeComposer === 'sms' && activeContact?.phone && twilioConnected && (
-        <SmsComposer
-          to={activeContact.phone}
-          leadId={lead.id}
-          contactId={activeContact.id}
-          contactName={activeContact.fullName}
-          initialBody={draftForSms ?? undefined}
-          onClose={() => { setActiveComposer('none'); setDraftForSms(null); }}
-          onSent={handleSmsSent}
-        />
-      )}
-
-      {activeComposer === 'email' && activeContact?.email && (
-        <GmailComposer
-          to={activeContact.email}
-          leadId={lead.id}
-          contactName={activeContact.fullName ?? undefined}
-          propertyAddress={lead.listingAddress ?? undefined}
-          googleConnected={googleConnected ?? false}
-          replyToMessageId={replyContext?.threadId}
-          initialSubject={draftForEmail?.subject ?? replyContext?.subject}
-          initialBody={draftForEmail?.body}
-          onClose={() => { setActiveComposer('none'); setReplyContext(null); setDraftForEmail(null); }}
-          onSent={handleGmailSent}
         />
       )}
 

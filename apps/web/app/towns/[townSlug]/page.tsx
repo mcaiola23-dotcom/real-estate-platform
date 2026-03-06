@@ -4,12 +4,12 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { getTownBySlug, getNeighborhoodsByTown } from "../../lib/sanity.queries";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
+import type { PortableTextBlock } from "sanity";
 import TownHero from "../../components/TownHero";
 import Container from "../../components/Container";
 import TownFAQs from "../../components/TownFAQs";
 
 // Data Modules
-import { DataModuleGrid } from "../../components/data/DataModule";
 import { formatContentText } from "../../lib/formatters";
 import { getLifestyleHeading, getHighlightsHeading } from "../../lib/heading-variants";
 import AgentCTASection from "../../components/AgentCTASection";
@@ -35,7 +35,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { townSlug } = await params;
-    const town = await getTownBySlug(townSlug);
+    const tenantContext = await getTenantContextFromHeaders(await headers());
+    const town = await getTownBySlug(townSlug, tenantContext);
 
     if (!town) {
         return {
@@ -88,19 +89,19 @@ const sanitizedComponents: PortableTextComponents = {
 };
 
 // Recursively sanitize Portable Text blocks to remove em dashes
-function sanitizePortableText(value: any): any {
+function sanitizePortableText(value: unknown): unknown {
     if (!value) return value;
     if (Array.isArray(value)) {
         return value.map(sanitizePortableText);
     }
-    if (typeof value === 'object') {
-        const result: any = {};
-        for (const key of Object.keys(value)) {
-            result[key] = sanitizePortableText(value[key]);
+    if (typeof value === "object") {
+        const result: Record<string, unknown> = {};
+        for (const [key, nestedValue] of Object.entries(value as Record<string, unknown>)) {
+            result[key] = sanitizePortableText(nestedValue);
         }
         return result;
     }
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
         return formatContentText(value);
     }
     return value;
@@ -114,13 +115,13 @@ export default async function TownPage({
     const { townSlug } = await params;
     const tenantContext = await getTenantContextFromHeaders(await headers());
     const moduleToggles = await getTenantModuleToggles(tenantContext);
-    const town = await getTownBySlug(townSlug);
+    const town = await getTownBySlug(townSlug, tenantContext);
 
     if (!town) {
         notFound();
     }
 
-    const neighborhoods = await getNeighborhoodsByTown(townSlug);
+    const neighborhoods = await getNeighborhoodsByTown(townSlug, tenantContext);
 
     // Fetch Walk Score data if center coordinates are available
     let walkScoreResult = null;
@@ -226,7 +227,10 @@ export default async function TownPage({
                             <h2 className="text-2xl font-medium text-stone-900 mb-6 font-serif">About {town.name}</h2>
                             {town.overviewLong ? (
                                 <div className="max-w-none text-stone-600 leading-relaxed">
-                                    <PortableText value={sanitizePortableText(town.overviewLong)} components={sanitizedComponents} />
+                                    <PortableText
+                                        value={sanitizePortableText(town.overviewLong) as PortableTextBlock[]}
+                                        components={sanitizedComponents}
+                                    />
                                 </div>
                             ) : (
                                 <p className="text-stone-500 italic">Description coming soon.</p>
@@ -275,7 +279,7 @@ export default async function TownPage({
                                 <h2 className="text-2xl font-medium text-stone-900 mb-8 font-serif">
                                     Frequently Asked Questions About {town.name}
                                 </h2>
-                                <TownFAQs faqs={town.faqs} townName={town.name} />
+                                <TownFAQs faqs={town.faqs} />
                             </div>
                         </Container>
                     </section>
@@ -339,7 +343,7 @@ export default async function TownPage({
                                 {moduleToggles.walk_score && (
                                     <>
                                         {walkScoreResult ? (
-                                            <WalkScoreModule result={walkScoreResult} locationName={town.name} />
+                                            <WalkScoreModule result={walkScoreResult} />
                                         ) : (
                                             <WalkScoreModulePlaceholder />
                                         )}

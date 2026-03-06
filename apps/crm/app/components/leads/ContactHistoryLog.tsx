@@ -2,7 +2,6 @@
 
 import { useState, type ReactNode } from 'react';
 import type { CrmActivity } from '@real-estate/types/crm';
-import { formatTimeAgo } from '../../lib/crm-formatters';
 import { ConversationInsights } from './ConversationInsights';
 
 /* SVG icons replacing emoji glyphs */
@@ -49,18 +48,11 @@ interface ContactHistoryLogProps {
   onApplyInsights?: (insights: ExtractedInsight[]) => void;
 }
 
-function getIcon(type: string): ReactNode {
-  const ct = CONTACT_TYPES.find((t) => t.value === type);
-  return ct?.icon ?? PhoneIcon;
-}
-
 export function ContactHistoryLog({ leadId, tenantId, contactId, activities, onLogContact, onApplyInsights }: ContactHistoryLogProps) {
   const [selectedType, setSelectedType] = useState('call_logged');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [lastLoggedNotes, setLastLoggedNotes] = useState('');
-  const [expandedInsight, setExpandedInsight] = useState<string | null>(null);
-
   const contactActivities = activities.filter((a) =>
     CONTACT_ACTIVITY_TYPES.has(a.activityType) && (a.leadId === leadId || a.contactId === contactId)
   );
@@ -129,38 +121,8 @@ export function ContactHistoryLog({ leadId, tenantId, contactId, activities, onL
         />
       )}
 
-      {/* Timeline with per-entry extraction */}
-      {contactActivities.length > 0 ? (
-        <ul className="crm-modal-timeline">
-          {contactActivities.map((a) => (
-            <li key={a.id}>
-              <span className="crm-contact-history-glyph">{getIcon(a.activityType)}</span>
-              <div className="crm-contact-history-entry">
-                <div className="crm-contact-history-entry__top">
-                  <strong>{a.summary}</strong>
-                  <button
-                    type="button"
-                    className="crm-btn-icon crm-insights-toggle"
-                    title="Extract insights from this entry"
-                    onClick={() => setExpandedInsight(expandedInsight === a.id ? null : a.id)}
-                  >
-                    <span className="crm-ai-glyph">◆</span>
-                  </button>
-                </div>
-                <p>{formatTimeAgo(a.occurredAt)}</p>
-                {expandedInsight === a.id && (
-                  <ConversationInsights
-                    text={a.summary}
-                    leadId={leadId}
-                    tenantId={tenantId}
-                    onApplyInsights={onApplyInsights}
-                  />
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
+      {/* Timeline is rendered in CommunicationsHub to avoid duplication */}
+      {contactActivities.length === 0 && (
         <p className="crm-muted">No contact history yet. Log your first call, text, or email above.</p>
       )}
     </div>
